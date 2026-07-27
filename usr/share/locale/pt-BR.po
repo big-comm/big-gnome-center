@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: layout-switcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-30 19:34-0300\n"
+"POT-Creation-Date: 2026-07-27 15:13-0300\n"
 "PO-Revision-Date: 2026-04-22 14:40\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Portuguese (Brazil) <pt-BR@li.org>\n"
@@ -404,6 +404,11 @@ msgstr "{name} (desativado)"
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (não instalado)"
+
+#: usr/share/layout-switcher/ui/page_effects.py:145
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "Prévia do efeito {name}"
 
 #: usr/share/layout-switcher/ui/page_effects.py:176
 #: usr/share/layout-switcher/ui/page_extensions.py:277
@@ -935,52 +940,88 @@ msgstr "Layout restaurado"
 msgid "Previous layout restored"
 msgstr "Layout anterior restaurado"
 
-#: usr/share/layout-switcher/ui/page_themes.py:94
+#: usr/share/layout-switcher/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Azul"
+
+#: usr/share/layout-switcher/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Verde-azulado"
+
+#: usr/share/layout-switcher/ui/page_themes.py:22
+msgid "Green"
+msgstr "Verde"
+
+#: usr/share/layout-switcher/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Amarelo"
+
+#: usr/share/layout-switcher/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Laranja"
+
+#: usr/share/layout-switcher/ui/page_themes.py:25
+msgid "Red"
+msgstr "Vermelho"
+
+#: usr/share/layout-switcher/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Rosa"
+
+#: usr/share/layout-switcher/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Roxo"
+
+#: usr/share/layout-switcher/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Cinza-azulado"
+
+#: usr/share/layout-switcher/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/layout-switcher/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "Filtrar temas…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "GTK"
-msgstr "GTK"
+#: usr/share/layout-switcher/ui/page_themes.py:106
+msgid "Colors"
+msgstr "Cores"
 
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "Applications"
-msgstr "Aplicativos"
-
-#: usr/share/layout-switcher/ui/page_themes.py:130
+#: usr/share/layout-switcher/ui/page_themes.py:107
 msgid "Icons"
 msgstr "Ícones"
 
-#: usr/share/layout-switcher/ui/page_themes.py:210
+#: usr/share/layout-switcher/ui/page_themes.py:163
+msgid "Accent color"
+msgstr "Cor de realce"
+
+#: usr/share/layout-switcher/ui/page_themes.py:172
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "Escolha a cor usada em botões, seleções e destaques."
+
+#: usr/share/layout-switcher/ui/page_themes.py:203
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "Cor de realce {color}"
+
+#: usr/share/layout-switcher/ui/page_themes.py:235
 msgid "No themes found"
 msgstr "Nenhum tema encontrado"
 
-#: usr/share/layout-switcher/ui/page_themes.py:211
+#: usr/share/layout-switcher/ui/page_themes.py:236
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "Instale temas em ~/.themes ou /usr/share/themes"
 
-#: usr/share/layout-switcher/ui/page_themes.py:218
+#: usr/share/layout-switcher/ui/page_themes.py:242
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "{n} temas disponíveis"
 
-#: usr/share/layout-switcher/ui/page_themes.py:304
-#: usr/share/layout-switcher/ui/page_themes.py:358
+#: usr/share/layout-switcher/ui/page_themes.py:311
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} tema"
-
-#: usr/share/layout-switcher/ui/page_themes.py:420
-msgid "User Themes required"
-msgstr "Temas do usuário necessários"
-
-#: usr/share/layout-switcher/ui/page_themes.py:421
-msgid "Install the User Themes extension to apply shell themes."
-msgstr "Instale a extensão User Themes para aplicar temas ao shell."
-
-#: usr/share/layout-switcher/ui/page_themes.py:424
-msgid "Open Extensions Page"
-msgstr "Abrir página de Extensões"
 
 #: usr/share/layout-switcher/ui/window.py:66
 #: usr/share/layout-switcher/ui/window.py:323

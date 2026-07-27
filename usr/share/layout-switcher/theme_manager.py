@@ -13,7 +13,7 @@ import ast
 from pathlib import Path
 from typing import List, Tuple
 
-from constants import DBUS_EXT_IFACE, DBUS_EXT_PATH, DBUS_SHELL_NAME
+from constants import ACCENT_COLORS, DBUS_EXT_IFACE, DBUS_EXT_PATH, DBUS_SHELL_NAME
 from extension_manager import ExtMgr
 from settings_store import Settings
 from shell_reloader import ShellReloader
@@ -26,6 +26,31 @@ _USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 _SHELL_DARK_LAYOUTS = {"BigGnome", "G-Unity", "Minimal"}
 _ORCHIS_SHELL_DARK = "Big-Blue"
 _ORCHIS_SHELL_LIGHT = "Big-Blue-Light"
+_ORCHIS_LAYOUTS = {"BigGnome", "Desk UX", "Desk-UX"}
+_ORCHIS_LAYOUT_FINGERPRINTS = (
+    {
+        "dash-to-dock@micxgx.gmail.com",
+        "blur-my-shell@aunetx",
+    },
+    {
+        "dash-to-panel@jderose9.github.com",
+        "community-menu@bigcommunity.org",
+        "blur-my-shell@aunetx",
+        "drive-menu@gnome-shell-extensions.gcampax.github.com",
+    },
+)
+_ORCHIS_ACCENT_STEMS = {
+    "blue": "Blue",
+    "teal": "Teal",
+    "green": "Green",
+    "yellow": "Yellow",
+    "orange": "Orange",
+    "red": "Red",
+    "pink": "Pink",
+    "purple": "Purple",
+    "slate": "Grey",
+    "maia": "Teal",
+}
 
 
 class ThemeMgr:
@@ -205,6 +230,48 @@ class ThemeMgr:
         )
 
     # ── Esquema de cores ──────────────────────────────────────────────────────
+
+    @staticmethod
+    def set_accent_color(color: str) -> Tuple[bool, str]:
+        """Apply a GNOME accent and synchronize Orchis layouts."""
+        if color not in ACCENT_COLORS:
+            return False, f"unknown accent color: {color!r}"
+
+        active_layout = Settings().get("active_layout")
+        current_shell = ThemeMgr.current("shell")
+        uses_orchis = ThemeMgr._uses_orchis_layout(active_layout)
+        if uses_orchis:
+            light_suffix = "-Light" if current_shell.endswith("-Light") else ""
+            shell_theme = f"Big-{_ORCHIS_ACCENT_STEMS[color]}{light_suffix}"
+            ok, msg = ThemeMgr.apply("shell", shell_theme)
+            if not ok:
+                return False, msg
+
+        ok, msg = gsettings_set(
+            "org.gnome.desktop.interface",
+            "accent-color",
+            color,
+        )
+        if ok:
+            ThemeMgr._invalidate_layout_snapshot()
+        return ok, msg
+
+    @staticmethod
+    def _uses_orchis_layout(active_layout: str | None) -> bool:
+        """Detect Orchis layouts without relying on a stale shell theme."""
+        if active_layout:
+            return active_layout in _ORCHIS_LAYOUTS
+
+        enabled = set(
+            ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "enabled-extensions"))
+        )
+        return any(fingerprint <= enabled for fingerprint in _ORCHIS_LAYOUT_FINGERPRINTS)
+
+    @staticmethod
+    def accent_color() -> str:
+        """Return the active GNOME accent color."""
+        color = gsettings_get("org.gnome.desktop.interface", "accent-color")
+        return color if color in ACCENT_COLORS else "blue"
 
     @staticmethod
     def set_color_scheme(dark: bool) -> Tuple[bool, str]:

@@ -214,6 +214,178 @@ class TestCurrent:
         assert ThemeMgr.current("invalid") == ""
 
 
+class TestAccentColor:
+    @patch("theme_manager.ThemeMgr.apply")
+    @patch("theme_manager.gsettings_set", return_value=(True, ""))
+    def test_native_layout_only_sets_gnome_accent(self, mock_set, mock_apply):
+        with patch("theme_manager.Settings") as mock_settings:
+            mock_settings.return_value.get.return_value = "Classic"
+            ok, msg = ThemeMgr.set_accent_color("purple")
+
+        assert ok is True
+        assert msg == ""
+        mock_apply.assert_not_called()
+        mock_set.assert_called_once_with(
+            "org.gnome.desktop.interface",
+            "accent-color",
+            "purple",
+        )
+
+    @patch("theme_manager.ThemeMgr.current", return_value="Big-Blue")
+    @patch("theme_manager.ThemeMgr.apply", return_value=(True, ""))
+    @patch("theme_manager.gsettings_set", return_value=(True, ""))
+    def test_biggnome_sets_matching_orchis_theme(
+        self,
+        mock_set,
+        mock_apply,
+        _mock_current,
+    ):
+        with patch("theme_manager.Settings") as mock_settings:
+            mock_settings.return_value.get.return_value = "BigGnome"
+            ok, msg = ThemeMgr.set_accent_color("purple")
+
+        assert ok is True
+        assert msg == ""
+        mock_apply.assert_called_once_with("shell", "Big-Purple")
+        mock_set.assert_called_once_with(
+            "org.gnome.desktop.interface",
+            "accent-color",
+            "purple",
+        )
+
+    @patch("theme_manager.ThemeMgr.current", return_value="Big-Blue")
+    @patch("theme_manager.ThemeMgr.apply", return_value=(True, ""))
+    @patch("theme_manager.gsettings_set", return_value=(True, ""))
+    @patch(
+        "theme_manager.gsettings_get",
+        return_value=(
+            "['dash-to-dock@micxgx.gmail.com', "
+            "'blur-my-shell@aunetx']"
+        ),
+    )
+    def test_installed_default_detects_biggnome_extensions(
+        self,
+        _mock_get,
+        mock_set,
+        mock_apply,
+        _mock_current,
+    ):
+        with patch("theme_manager.Settings") as mock_settings:
+            mock_settings.return_value.get.return_value = None
+            ok, msg = ThemeMgr.set_accent_color("pink")
+
+        assert ok is True
+        assert msg == ""
+        mock_apply.assert_called_once_with("shell", "Big-Pink")
+        mock_set.assert_called_once_with(
+            "org.gnome.desktop.interface",
+            "accent-color",
+            "pink",
+        )
+
+    @patch("theme_manager.ThemeMgr.current", return_value="Big-Teal")
+    @patch("theme_manager.ThemeMgr.apply")
+    @patch("theme_manager.gsettings_set", return_value=(True, ""))
+    @patch(
+        "theme_manager.gsettings_get",
+        return_value=(
+            "['light-style@gnome-shell-extensions.gcampax.github.com', "
+            "'dash-to-panel@jderose9.github.com', "
+            "'community-menu@bigcommunity.org']"
+        ),
+    )
+    def test_installed_classic_ignores_stale_orchis_theme(
+        self,
+        _mock_get,
+        mock_set,
+        mock_apply,
+        _mock_current,
+    ):
+        with patch("theme_manager.Settings") as mock_settings:
+            mock_settings.return_value.get.return_value = None
+            ok, msg = ThemeMgr.set_accent_color("green")
+
+        assert ok is True
+        assert msg == ""
+        mock_apply.assert_not_called()
+        mock_set.assert_called_once_with(
+            "org.gnome.desktop.interface",
+            "accent-color",
+            "green",
+        )
+
+    @patch(
+        "theme_manager.gsettings_get",
+        return_value=(
+            "['dash-to-panel@jderose9.github.com', "
+            "'community-menu@bigcommunity.org', "
+            "'blur-my-shell@aunetx', "
+            "'drive-menu@gnome-shell-extensions.gcampax.github.com']"
+        ),
+    )
+    def test_installed_default_detects_desk_ux_extensions(self, _mock_get):
+        assert ThemeMgr._uses_orchis_layout(None) is True
+
+    @patch("theme_manager.ThemeMgr.current", return_value="Big-Blue-Light")
+    @patch("theme_manager.ThemeMgr.apply", return_value=(True, ""))
+    @patch("theme_manager.gsettings_set", return_value=(True, ""))
+    def test_desk_ux_preserves_light_orchis_variant(
+        self,
+        mock_set,
+        mock_apply,
+        _mock_current,
+    ):
+        with patch("theme_manager.Settings") as mock_settings:
+            mock_settings.return_value.get.return_value = "Desk UX"
+            ok, msg = ThemeMgr.set_accent_color("green")
+
+        assert ok is True
+        assert msg == ""
+        mock_apply.assert_called_once_with("shell", "Big-Green-Light")
+        mock_set.assert_called_once()
+
+    @pytest.mark.parametrize(
+        ("accent", "theme"),
+        [
+            ("slate", "Big-Grey"),
+            ("maia", "Big-Teal"),
+        ],
+    )
+    @patch("theme_manager.ThemeMgr.current", return_value="Big-Blue")
+    @patch("theme_manager.ThemeMgr.apply", return_value=(True, ""))
+    @patch("theme_manager.gsettings_set", return_value=(True, ""))
+    def test_maps_gnome_only_accents_to_nearest_orchis_theme(
+        self,
+        _mock_set,
+        mock_apply,
+        _mock_current,
+        accent,
+        theme,
+    ):
+        with patch("theme_manager.Settings") as mock_settings:
+            mock_settings.return_value.get.return_value = "Desk UX"
+            ok, _msg = ThemeMgr.set_accent_color(accent)
+
+        assert ok is True
+        mock_apply.assert_called_once_with("shell", theme)
+
+    @patch("theme_manager.gsettings_set")
+    def test_rejects_unknown_accent(self, mock_set):
+        ok, msg = ThemeMgr.set_accent_color("chartreuse")
+
+        assert ok is False
+        assert msg == "unknown accent color: 'chartreuse'"
+        mock_set.assert_not_called()
+
+    @patch("theme_manager.gsettings_get", return_value="pink")
+    def test_reads_current_accent(self, _mock_get):
+        assert ThemeMgr.accent_color() == "pink"
+
+    @patch("theme_manager.gsettings_get", return_value=None)
+    def test_missing_accent_falls_back_to_blue(self, _mock_get):
+        assert ThemeMgr.accent_color() == "blue"
+
+
 class TestColorScheme:
     @patch("theme_manager.gsettings_get", return_value="prefer-dark")
     def test_color_scheme_dark(self, mock_gs):

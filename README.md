@@ -26,7 +26,7 @@ Community Layout Switcher is the appearance-management tool for [BigCommunity Li
 - **Layouts** — Apply curated desktop layouts (BigGnome, Desk UX, Hybrid, G-Unity, Classic, Minimal) with one click. Automatic pre-apply backup; per-layout user snapshots with a Plasma-style *Resume your changes* or *Apply original* prompt when revisiting a customized layout.
 - **Community Menu** — Bundled GNOME Shell 50 menu used independently from ArcMenu: application list in Classic, application grid in Desk UX, and Mint-style categories in Hybrid.
 - **Fonts** — Interface / document / monospace / legacy title selectors via `Gtk.FontDialog`, plus hinting and antialiasing controls, a searchable list of installed families with live previews, and quick access to Google Fonts.
-- **Themes** — GTK, icon and shell themes with real previews (actual `folder` icon from each icon theme; accent color parsed from each theme's CSS), search filter and one-click apply.
+- **Themes** — Unified GNOME accent colors with automatic Orchis synchronization for BigGnome and Desk UX, plus independent icon-theme previews and one-click apply.
 - **Effects** — Dedicated page for visual extensions (Desktop Cube, Magic Lamp, Compiz Windows, Desktop Icons NG). Installs prefer `pacman` for stability and fall back to extensions.gnome.org.
 - **Extensions** — Three sub-tabs:
   - **Featured** — curated set with one-click install/toggle/remove.
@@ -109,14 +109,14 @@ usr/share/layout-switcher/
 ├── ego_client.py                    # extensions.gnome.org HTTP client
 ├── ego_cache.py                     # disk cache (JSON TTL + thumbs LRU)
 ├── update_checker.py                # detect & apply EGO updates
-├── theme_manager.py                 # GTK / icons / shell theme apply
+├── theme_manager.py                 # Accent / Orchis / icon theme apply
 ├── theme_preview.py                 # folder icon + CSS color extraction
 ├── settings_store.py                # JSON settings + GSettings watcher
 └── ui/
     ├── window.py                    # main window, sidebar, menu
     ├── page_layouts.py              # layout grid with Resume/Original
     ├── page_fonts.py                # font selectors + installed list
-    ├── page_themes.py               # GTK / icons / shell with previews
+    ├── page_themes.py               # Accent colors + icon-theme previews
     ├── page_effects.py              # featured visual extensions
     ├── page_extensions.py           # Featured / Browse / Installed
     ├── ext_browse_view.py           # paginated EGO search + cards

@@ -27,15 +27,23 @@ def test_effect_assets_and_gallery_geometry():
     assert "icon_frame = Gtk.CenterBox()" in effects_source
     assert "icon_frame.set_center_widget(ico)" in effects_source
     assert "set_max_children_per_line(5)" in themes_source
-    assert "width=128, height=68" in themes_source
-    assert 'if kind == "icons"' in themes_source
-    assert 'self._theme_kind = "shell"' in themes_source
-    assert themes_source.index('(\"shell\", tr(\"Shell\"))') < themes_source.index(
-        '(\"gtk\", tr(\"Applications\"))'
+    assert "set_size_request(128, 68)" in themes_source
+    assert 'self._section = "accent"' in themes_source
+    assert themes_source.index('("accent", tr("Colors"))') < themes_source.index(
+        '("icons", tr("Icons"))'
     )
-    assert themes_source.index('(\"gtk\", tr(\"Applications\"))') < themes_source.index(
-        '(\"icons\", tr(\"Icons\"))'
-    )
+    assert 'tr("Applications")' not in themes_source
+    assert 'tr("Shell")' not in themes_source
+    assert "ThemeMgr.set_accent_color(color)" in themes_source
+    assert "ColorDot(hex_value, size=26)" in themes_source
+    assert "set_accessible_name" not in themes_source
+    assert "Gtk.AccessibleProperty.LABEL" in themes_source
+    assert 'tabs.add_css_class("linked")' not in themes_source
+    assert "Gtk.Orientation.HORIZONTAL, spacing=4" in themes_source
+    assert "tabs.set_margin_top(8)" in themes_source
+    assert "tabs.set_margin_bottom(10)" in themes_source
+    assert "self.append(self._build_section_tabs())" in themes_source
+    assert "surface.append(self._build_section_tabs())" not in themes_source
 
     constants = (ROOT / "usr/share/layout-switcher/constants.py").read_text()
     for icon in (

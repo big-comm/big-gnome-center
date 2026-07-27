@@ -147,7 +147,7 @@ class MainWindow(Adw.ApplicationWindow):
         )
         self._monitor.watch(
             "org.gnome.desktop.interface",
-            "gtk-theme",
+            "accent-color",
             lambda: self._schedule_refresh("theme", self._on_theme_changed),
         )
         self._monitor.watch(

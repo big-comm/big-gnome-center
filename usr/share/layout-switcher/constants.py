@@ -93,6 +93,19 @@ DBUS_EVAL_IFACE = "org.gnome.Shell.Eval"  # legacy, ainda funciona GS < 46
 DBUS_EXT_PATH = "/org/gnome/Shell"
 
 # ── Mapa de cores para temas ──────────────────────────────────────────────────
+ACCENT_COLORS: Dict[str, str] = {
+    "blue": "#3584e4",
+    "teal": "#2190a4",
+    "green": "#3a944a",
+    "yellow": "#c88800",
+    "orange": "#ed5b00",
+    "red": "#e62d42",
+    "pink": "#d56199",
+    "purple": "#9141ac",
+    "slate": "#6f8396",
+    "maia": "#16a085",
+}
+
 COLOR_MAP: Dict[str, str] = {
     "blue": "#3584e4",
     "green": "#26a269",

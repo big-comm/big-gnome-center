@@ -177,6 +177,30 @@ APP_CSS = """
     outline-offset: -1px;
 }
 
+/* ── Seletor de cor de realce ───────────────────────────────────────── */
+.accent-color-card {
+    border-radius: 12px;
+    background-color: alpha(@card_bg_color, 0.72);
+    outline: 1px solid alpha(@card_fg_color, 0.10);
+    outline-offset: -1px;
+    padding: 18px;
+}
+.accent-color-choice {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 4px;
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
+}
+.accent-color-choice:hover {
+    background-color: alpha(@window_fg_color, 0.08);
+}
+.accent-color-choice.accent-color-active {
+    outline: 3px solid @accent_color;
+    outline-offset: -3px;
+}
+
 /* ── Sub-abas de tipo de tema ────────────────────────────────────────── */
 .kind-tab                   { border-radius: 8px; padding: 5px 14px; font-weight: 500; }
 .kind-tab.kind-on           { background-color: alpha(@accent_bg_color, 0.18); color: @accent_color; font-weight: 700; }
