@@ -2,10 +2,19 @@
 """Static checks for the redesigned theme and effect galleries."""
 
 import struct
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EFFECTS = ROOT / "usr/share/layout-switcher/effects"
+
+
+def test_application_icon_has_large_intrinsic_size():
+    icon = ROOT / "usr/share/icons/hicolor/scalable/apps/layout-switcher.svg"
+    root = ET.parse(icon).getroot()
+
+    assert root.attrib["width"] == "128"
+    assert root.attrib["height"] == "128"
 
 
 def test_effect_assets_and_gallery_geometry():
