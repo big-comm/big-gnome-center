@@ -51,6 +51,10 @@ class ExtensionsPage(Gtk.Box):
         self.rebuild_featured()
         self.refresh_installed()
 
+    def show_installed(self) -> None:
+        """Open the installed extensions tab."""
+        self._switch_sub("installed")
+
     def _build(self) -> None:
         # ── Sub-abas + botão global na mesma linha, no topo ───────────────────
         tab_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)

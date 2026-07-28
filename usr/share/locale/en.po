@@ -1209,3 +1209,33 @@ msgstr "The required layout helper was re-enabled automatically."
 
 msgid "Required for layout switching"
 msgstr "Required for layout switching"
+
+msgid "Extension updates available"
+msgstr "Extension updates available"
+
+#, python-brace-format
+msgid "Available updates: {names}"
+msgstr "Available updates: {names}"
+
+msgid "View updates"
+msgstr "View updates"
+
+#, python-brace-format
+msgid "Updated: {names}"
+msgstr "Updated: {names}"
+
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Failed: {names}"
+
+msgid "Some extension updates failed"
+msgstr "Some extension updates failed"
+
+msgid "Try again"
+msgstr "Try again"
+
+msgid "Extension updates installed"
+msgstr "Extension updates installed"
+
+msgid "View extensions"
+msgstr "View extensions"

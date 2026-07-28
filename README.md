@@ -31,7 +31,7 @@ Community Layout Switcher is the appearance-management tool for [BigCommunity Li
 - **Extensions** — Three sub-tabs:
   - **Featured** — curated set with one-click install/toggle/remove.
   - **Browse** — full search of [extensions.gnome.org](https://extensions.gnome.org) inside the app, with sort, compatibility filter, screenshots carousel, recent comments and direct install.
-  - **Installed** — every installed extension with toggle, remove, *Update* badge and *Update all* button when new versions are available. Optional auto-update is **opt-in** in the main menu.
+  - **Installed** — every installed extension with toggle, remove, *Update* badge and *Update all* button when new versions are available. A session monitor checks for updates while the app is closed and shows actionable GNOME notifications. Optional auto-update is **opt-in** in the main menu.
 - **Backups** — Every apply creates a timestamped dconf dump. A dedicated dialog lists all backups with restore/delete and a manual-snapshot button.
 - **Sync-aware** — Cooperates with the `dconf-sync-gnome.service` from `comm-gnome-config`: the monitor is paused around each apply, user extensions are suspended to avoid transient error states, and the final state is persisted atomically to `~/.config/dconf/settings.gnome`.
 

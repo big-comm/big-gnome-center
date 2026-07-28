@@ -1223,3 +1223,33 @@ msgstr "O auxiliar de layout obrigatório foi reativado automaticamente."
 
 msgid "Required for layout switching"
 msgstr "Necessário para trocar layouts"
+
+msgid "Extension updates available"
+msgstr "Atualizações de extensões disponíveis"
+
+#, python-brace-format
+msgid "Available updates: {names}"
+msgstr "Atualizações disponíveis: {names}"
+
+msgid "View updates"
+msgstr "Ver atualizações"
+
+#, python-brace-format
+msgid "Updated: {names}"
+msgstr "Extensões atualizadas: {names}"
+
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Falharam: {names}"
+
+msgid "Some extension updates failed"
+msgstr "Algumas atualizações de extensões falharam"
+
+msgid "Try again"
+msgstr "Tentar novamente"
+
+msgid "Extension updates installed"
+msgstr "Atualizações de extensões instaladas"
+
+msgid "View extensions"
+msgstr "Ver extensões"

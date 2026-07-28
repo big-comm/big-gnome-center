@@ -364,16 +364,8 @@ def _info_from_dict(payload: dict) -> ExtensionInfo:
     )
 
 
-def latest_version(uuid: str, shell_version: str) -> Optional[int]:
-    """
-    Retorna a versão (inteira) mais recente da extensão para a versão do Shell
-    informada, ou None se incompatível / inexistente.
-
-    O `shell_version_map` do EGO mapeia "47" → {"version": 12, "pk": ..., "version_tag": ...}.
-    """
-    detail = info(uuid, shell_version=shell_version)
-    if detail is None:
-        return None
+def version_from_info(detail: ExtensionInfo, shell_version: str) -> Optional[int]:
+    """Return the newest version in an already-fetched EGO record."""
     svm = detail.shell_version_map or {}
     candidates = []
     if shell_version and shell_version != SHELL_ALL and shell_version in svm:
@@ -393,6 +385,23 @@ def latest_version(uuid: str, shell_version: str) -> Optional[int]:
         except (TypeError, ValueError):
             continue
     return None
+
+
+def latest_version(
+    uuid: str,
+    shell_version: str,
+    use_cache: bool = True,
+) -> Optional[int]:
+    """
+    Retorna a versão (inteira) mais recente da extensão para a versão do Shell
+    informada, ou None se incompatível / inexistente.
+
+    O `shell_version_map` do EGO mapeia "47" → {"version": 12, "pk": ..., "version_tag": ...}.
+    """
+    detail = info(uuid, shell_version=shell_version, use_cache=use_cache)
+    if detail is None:
+        return None
+    return version_from_info(detail, shell_version)
 
 
 def fetch_screenshot(url: str) -> Optional[Path]:

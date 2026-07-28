@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Layout Switcher Helper Guard
-Comment=Keep the required layout helper enabled
+Comment=Keep the layout helper enabled and check extension updates
 Exec=/usr/bin/layout-switcher-helper-guard
 Icon=layout-switcher
 OnlyShowIn=GNOME;

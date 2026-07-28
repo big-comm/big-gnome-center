@@ -15,4 +15,4 @@ Keywords=layout;theme;extension;gnome;desktop;appearance;switcher;
 Keywords[pt_BR]=layout;tema;extensão;gnome;desktop;aparência;
 StartupNotify=true
 StartupWMClass=org.communitybig.layout-switcher
-X-GNOME-UsesNotifications=false
+X-GNOME-UsesNotifications=true

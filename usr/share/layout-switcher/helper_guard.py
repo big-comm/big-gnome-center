@@ -4,6 +4,7 @@
 import logging
 
 from constants import ICON_NAME, tr
+from extension_update_monitor import ExtensionUpdateMonitor
 from helper_client import HelperClient
 
 log = logging.getLogger("layout-switcher-helper-guard")
@@ -17,6 +18,7 @@ class HelperGuard:
 
         self._settings = Gio.Settings.new("org.gnome.shell")
         self._pending_source = 0
+        self._update_monitor = ExtensionUpdateMonitor()
 
     def start(self) -> None:
         from gi.repository import GLib
@@ -29,8 +31,12 @@ class HelperGuard:
 
         self._settings.connect("changed::enabled-extensions", self._on_settings_changed)
         self._settings.connect("changed::disabled-extensions", self._on_settings_changed)
+        self._update_monitor.start()
         self._loop = GLib.MainLoop()
-        self._loop.run()
+        try:
+            self._loop.run()
+        finally:
+            self._update_monitor.stop()
 
     def _on_settings_changed(self, settings, key: str) -> None:
         from gi.repository import GLib

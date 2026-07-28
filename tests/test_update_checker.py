@@ -43,16 +43,12 @@ class TestCheckAll:
             ),
             patch(
                 "update_checker.ego_client.info",
-                side_effect=lambda u, shell_version: _info(
+                side_effect=lambda u, shell_version, use_cache: _info(
                     u,
                     pk=1 if u == "a@x.com" else 2,
                     shell="47",
                     version=7 if u == "a@x.com" else 10,
                 ),
-            ),
-            patch(
-                "update_checker.ego_client.latest_version",
-                side_effect=lambda u, s: 7 if u == "a@x.com" else 10,
             ),
         ):
             updates = check_all()
@@ -63,6 +59,26 @@ class TestCheckAll:
             assert info.current_version == 5
             assert info.latest_version == 7
             assert info.ego_id == 1
+
+    def test_force_refresh_bypasses_ego_cache(self):
+        installed = [{"uuid": "a@x.com", "user": True, "version": "5"}]
+        with (
+            patch("update_checker.ExtMgr.list_installed", return_value=installed),
+            patch("update_checker.gnome_shell_version", return_value=(50, 0)),
+            patch("update_checker.ExtMgr.installed_version", return_value=5),
+            patch(
+                "update_checker.ego_client.info",
+                return_value=_info("a@x.com", pk=1, shell="50", version=6),
+            ) as mock_info,
+        ):
+            updates = check_all(force_refresh=True)
+
+        assert "a@x.com" in updates
+        mock_info.assert_called_once_with(
+            "a@x.com",
+            shell_version="50",
+            use_cache=False,
+        )
 
     def test_skips_system_extensions(self):
         installed = [{"uuid": "sys@z.com", "user": False, "version": "1"}]

@@ -17,6 +17,22 @@ def test_application_icon_has_large_intrinsic_size():
     assert root.attrib["height"] == "128"
 
 
+def test_update_notification_opens_installed_extensions():
+    main_source = (ROOT / "usr/share/layout-switcher/main.py").read_text()
+    window_source = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
+    extensions_source = (
+        ROOT / "usr/share/layout-switcher/ui/page_extensions.py"
+    ).read_text()
+
+    assert "Gio.ApplicationFlags.HANDLES_COMMAND_LINE" in main_source
+    assert '"--extensions-updates"' in main_source
+    assert "win.show_extension_updates()" in main_source
+    assert "def show_extension_updates(self)" in window_source
+    assert 'self._nav_rows["extensions"]' in window_source
+    assert "page.show_installed()" in window_source
+    assert 'self._switch_sub("installed")' in extensions_source
+
+
 def test_effect_assets_and_gallery_geometry():
     for name in ("cube.png", "lamp.png", "wobbly.png"):
         path = EFFECTS / name

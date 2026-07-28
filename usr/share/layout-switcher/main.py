@@ -46,8 +46,13 @@ class App(Adw.Application):
     """
 
     def __init__(self) -> None:
-        super().__init__(application_id=APP_ID)
+        super().__init__(
+            application_id=APP_ID,
+            flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
+        )
+        self._open_extension_updates = False
         self.connect("activate", self._on_activate)
+        self.connect("command-line", self._on_command_line)
 
         quit_action = Gio.SimpleAction.new("quit", None)
         quit_action.connect("activate", lambda a, p: self.quit())
@@ -55,8 +60,19 @@ class App(Adw.Application):
         self.set_accels_for_action("app.quit", ["<primary>q"])
 
     def _on_activate(self, app: "App") -> None:
-        win = MainWindow(self)
+        win = self.get_active_window()
+        if win is None:
+            win = MainWindow(self)
         win.present()
+        if self._open_extension_updates:
+            self._open_extension_updates = False
+            win.show_extension_updates()
+
+    def _on_command_line(self, app: "App", command_line) -> int:
+        args = command_line.get_arguments()[1:]
+        self._open_extension_updates = "--extensions-updates" in args
+        self.activate()
+        return 0
 
 
 def main() -> int:

@@ -43,6 +43,7 @@ def _shell_version_str() -> str:
 
 def check_all(
     progress_cb: Callable[[int, int], None] = None,
+    force_refresh: bool = False,
 ) -> Dict[str, UpdateInfo]:
     """
     Verifica atualizações para todas as extensões instaladas pelo usuário.
@@ -62,10 +63,14 @@ def check_all(
             current = ExtMgr.installed_version(uuid)
             if current <= 0:
                 continue  # versão local indisponível → não temos baseline
-            detail = ego_client.info(uuid, shell_version=shell)
+            detail = ego_client.info(
+                uuid,
+                shell_version=shell,
+                use_cache=not force_refresh,
+            )
             if detail is None:
                 continue
-            latest = ego_client.latest_version(uuid, shell)
+            latest = ego_client.version_from_info(detail, shell)
             if latest is None or latest <= current:
                 continue
             updates[uuid] = UpdateInfo(

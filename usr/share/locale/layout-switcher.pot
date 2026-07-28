@@ -1137,3 +1137,44 @@ msgstr ""
 #: usr/share/layout-switcher/ui/page_extensions.py
 msgid "Required for layout switching"
 msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:238
+msgid "Extension updates available"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:239
+#, python-brace-format
+msgid "Available updates: {names}"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:243
+#: usr/share/layout-switcher/extension_update_monitor.py:336
+msgid "View updates"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:307
+#: usr/share/layout-switcher/extension_update_monitor.py:322
+#, python-brace-format
+msgid "Updated: {names}"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:328
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:333
+msgid "Some extension updates failed"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:338
+msgid "Try again"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:306
+msgid "Extension updates installed"
+msgstr ""
+
+#: usr/share/layout-switcher/extension_update_monitor.py:311
+msgid "View extensions"
+msgstr ""

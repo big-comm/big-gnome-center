@@ -62,6 +62,7 @@ class MainWindow(Adw.ApplicationWindow):
         self._pages: Dict[str, Gtk.Widget] = {}
         self._page_factories: Dict[str, Callable[[], Gtk.Widget]] = {}
         self._pending_updates: Dict = {}
+        self._update_check_running = False
         self._loading_token = 0
         self._active_loading_token = 0
 
@@ -307,7 +308,13 @@ class MainWindow(Adw.ApplicationWindow):
 
         # Register check-updates action (manual trigger)
         check_action = Gio.SimpleAction.new("check-updates", None)
-        check_action.connect("activate", lambda a, p: self._run_update_check(manual=True))
+        check_action.connect(
+            "activate",
+            lambda a, p: self._run_update_check(
+                manual=True,
+                force_refresh=True,
+            ),
+        )
         self.get_application().add_action(check_action)
 
         # Register stateful auto-update toggle (matches Settings 'ext_auto_update')
@@ -342,6 +349,13 @@ class MainWindow(Adw.ApplicationWindow):
         if key == "extensions" and self._pending_updates:
             page.set_updates(self._pending_updates)
         return page
+
+    def show_extension_updates(self) -> None:
+        """Open Extensions > Installed and refresh update metadata."""
+        self._nav.select_row(self._nav_rows["extensions"])
+        page = self._ensure_page("extensions")
+        page.show_installed()
+        self._run_update_check(manual=False, force_refresh=True)
 
     # ── Sidebar ───────────────────────────────────────────────────────────────
 
@@ -637,18 +651,23 @@ class MainWindow(Adw.ApplicationWindow):
 
     def _periodic_update_check(self) -> bool:
         """Re-checa periodicamente enquanto a janela estiver aberta."""
-        self._run_update_check(manual=False)
+        if update_checker.time_since_last_check(self._prefs) >= UPDATE_CHECK_INTERVAL:
+            self._run_update_check(manual=False)
         return True  # GLib.SOURCE_CONTINUE
 
-    def _run_update_check(self, manual: bool) -> None:
+    def _run_update_check(self, manual: bool, force_refresh: bool = False) -> None:
         """
         Roda a verificação de updates fora da UI thread; aplica auto-update se
         `ext_auto_update` estiver habilitado, do contrário só notifica.
         """
 
+        if self._update_check_running:
+            return
+        self._update_check_running = True
+
         def task():
             try:
-                updates = update_checker.check_all()
+                updates = update_checker.check_all(force_refresh=force_refresh)
             except Exception:
                 updates = {}
             update_checker.mark_checked(self._prefs)
@@ -657,6 +676,7 @@ class MainWindow(Adw.ApplicationWindow):
         self._pool.submit(task)
 
     def _on_update_check_done(self, updates: Dict, manual: bool) -> bool:
+        self._update_check_running = False
         self._pending_updates = dict(updates or {})
         ext_page = self._pages.get("extensions")
         if ext_page is not None:
