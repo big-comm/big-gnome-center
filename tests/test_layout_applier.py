@@ -432,7 +432,7 @@ class TestLayoutApplier:
 
         assert "icon-theme='bigicons-papient'" in out
 
-    def test_desk_ux_light_keeps_orchis_shell(self):
+    def test_desk_ux_uses_native_dark_shell(self):
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
@@ -444,23 +444,22 @@ class TestLayoutApplier:
             f"enabled-extensions=['{light_style}', 'stay@ext']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
-            "name='Big-Blue'\n"
+            "name=''\n"
         )
 
         out = LayoutApplier._rewrite_shell_theme_mode(
             data,
-            prefer_dark=False,
-            desk_ux_shell=True,
+            prefer_dark=True,
         )
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
 
-        assert "name='Big-Blue-Light'" in out
-        assert user_theme in enabled
+        assert "name=''" in out
+        assert user_theme not in enabled
         assert light_style not in enabled
         assert light_style in disabled
-        assert user_theme not in disabled
+        assert user_theme in disabled
 
     @patch("layout_applier.run_cmd")
     def test_preserve_user_light_color_scheme(self, mock_run):
@@ -1574,6 +1573,12 @@ class TestCuratedLayoutFiles:
         assert values["group-apps"] == "true"
         assert values["show-favorites"] == "true"
         assert values["show-running-apps"] == "true"
+        assert values["trans-use-custom-bg"] == "true"
+        assert values["trans-bg-color"] == "'#000000'"
+        assert values["trans-use-custom-opacity"] == "true"
+        assert float(values["trans-panel-opacity"]) == 0.65
+        assert values["tray-padding"] == "9"
+        assert values["status-icon-padding"] == "0"
 
 
 class TestShellReloader:

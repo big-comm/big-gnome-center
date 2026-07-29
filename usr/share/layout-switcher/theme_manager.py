@@ -23,33 +23,12 @@ from utils import gsettings_get, gsettings_set, run_cmd
 _SHELL_SCHEMA = "org.gnome.shell"
 _LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 _USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
-_SHELL_DARK_LAYOUTS = {"BigGnome", "G-Unity", "Minimal"}
-_ORCHIS_SHELL_DARK = "Big-Blue"
-_ORCHIS_SHELL_LIGHT = "Big-Blue-Light"
-_ORCHIS_LAYOUTS = {"BigGnome", "Desk UX", "Desk-UX"}
-_ORCHIS_LAYOUT_FINGERPRINTS = (
-    {
-        "dash-to-dock@micxgx.gmail.com",
-        "blur-my-shell@aunetx",
-    },
-    {
-        "dash-to-panel@jderose9.github.com",
-        "community-menu@bigcommunity.org",
-        "blur-my-shell@aunetx",
-        "drive-menu@gnome-shell-extensions.gcampax.github.com",
-    },
-)
-_ORCHIS_ACCENT_STEMS = {
-    "blue": "Blue",
-    "teal": "Teal",
-    "green": "Green",
-    "yellow": "Yellow",
-    "orange": "Orange",
-    "red": "Red",
-    "pink": "Pink",
-    "purple": "Purple",
-    "slate": "Grey",
-    "maia": "Teal",
+_SHELL_DARK_LAYOUTS = {
+    "BigGnome",
+    "Desk UX",
+    "Desk-UX",
+    "G-Unity",
+    "Minimal",
 }
 
 
@@ -233,19 +212,9 @@ class ThemeMgr:
 
     @staticmethod
     def set_accent_color(color: str) -> Tuple[bool, str]:
-        """Apply a GNOME accent and synchronize Orchis layouts."""
+        """Apply the native GNOME accent."""
         if color not in ACCENT_COLORS:
             return False, f"unknown accent color: {color!r}"
-
-        active_layout = Settings().get("active_layout")
-        current_shell = ThemeMgr.current("shell")
-        uses_orchis = ThemeMgr._uses_orchis_layout(active_layout)
-        if uses_orchis:
-            light_suffix = "-Light" if current_shell.endswith("-Light") else ""
-            shell_theme = f"Big-{_ORCHIS_ACCENT_STEMS[color]}{light_suffix}"
-            ok, msg = ThemeMgr.apply("shell", shell_theme)
-            if not ok:
-                return False, msg
 
         ok, msg = gsettings_set(
             "org.gnome.desktop.interface",
@@ -255,17 +224,6 @@ class ThemeMgr:
         if ok:
             ThemeMgr._invalidate_layout_snapshot()
         return ok, msg
-
-    @staticmethod
-    def _uses_orchis_layout(active_layout: str | None) -> bool:
-        """Detect Orchis layouts without relying on a stale shell theme."""
-        if active_layout:
-            return active_layout in _ORCHIS_LAYOUTS
-
-        enabled = set(
-            ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "enabled-extensions"))
-        )
-        return any(fingerprint <= enabled for fingerprint in _ORCHIS_LAYOUT_FINGERPRINTS)
 
     @staticmethod
     def accent_color() -> str:
@@ -288,7 +246,6 @@ class ThemeMgr:
             ThemeMgr._sync_shell_color_scheme(
                 shell_dark,
                 native_shell=active_layout in {"Classic", "Hybrid"},
-                desk_ux_shell=active_layout in {"Desk UX", "Desk-UX"},
                 fixed_shell=active_layout in _SHELL_DARK_LAYOUTS,
             )
             # Notifica o StyleManager do processo atual
@@ -335,13 +292,17 @@ class ThemeMgr:
         dark: bool,
         *,
         native_shell: bool = False,
-        desk_ux_shell: bool = False,
         fixed_shell: bool = False,
     ) -> None:
+        # These layouts intentionally keep GNOME's native dark Shell while
+        # their application color scheme changes independently.
+        if fixed_shell:
+            return
+
         enabled = ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "enabled-extensions"))
         disabled = ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "disabled-extensions"))
         user_theme_name = ""
-        if dark or native_shell or desk_ux_shell:
+        if dark or native_shell:
             user_theme_name = ThemeMgr._string_value(
                 gsettings_get("org.gnome.shell.extensions.user-theme", "name")
             )
@@ -354,32 +315,14 @@ class ThemeMgr:
 
         # Fixed-shell layouts and explicit user overrides are authoritative.
         # Applying "Original" remains responsible for restoring layout defaults.
-        if fixed_shell:
-            return
         if native_shell and (user_theme_enabled or user_theme_name):
             return
-        if desk_ux_shell and not (
-            user_theme_enabled
-            and not light_style_enabled
-            and user_theme_name in {_ORCHIS_SHELL_DARK, _ORCHIS_SHELL_LIGHT}
-        ):
-            return
-
-        if desk_ux_shell:
-            target = _ORCHIS_SHELL_DARK if dark else _ORCHIS_SHELL_LIGHT
-            if user_theme_name != target:
-                gsettings_set(
-                    "org.gnome.shell.extensions.user-theme",
-                    "name",
-                    repr(target),
-                )
-            user_theme_name = target
 
         def add_once(values: List[str], uuid: str) -> None:
             if uuid not in values:
                 values.append(uuid)
 
-        if dark or desk_ux_shell:
+        if dark:
             enabled = [uuid for uuid in enabled if uuid != _LIGHT_STYLE_UUID]
             add_once(disabled, _LIGHT_STYLE_UUID)
             if user_theme_name:
@@ -397,7 +340,7 @@ class ThemeMgr:
         gsettings_set(_SHELL_SCHEMA, "disabled-extensions", repr(disabled))
         gsettings_set(_SHELL_SCHEMA, "enabled-extensions", repr(enabled))
         ShellReloader.reload_extension(_LIGHT_STYLE_UUID, timeout=5)
-        if (dark or desk_ux_shell) and user_theme_name:
+        if dark and user_theme_name:
             ShellReloader.reload_extension(_USER_THEME_UUID, timeout=5)
 
     # ── Consultas ─────────────────────────────────────────────────────────────

@@ -956,7 +956,6 @@ class LayoutApplier:
         text: str,
         *,
         prefer_dark: Optional[bool],
-        desk_ux_shell: bool = False,
     ) -> str:
         """Keep Shell light/dark helper extensions aligned with user mode."""
         if prefer_dark is None:
@@ -971,20 +970,11 @@ class LayoutApplier:
         )
         user_theme_name = cls._gvariant_string(user_theme_values.get("name"))
 
-        if desk_ux_shell:
-            user_theme_name = "Big-Blue" if prefer_dark else "Big-Blue-Light"
-            text = cls._replace_or_add_dconf_key(
-                text,
-                "/org/gnome/shell/extensions/user-theme",
-                "name",
-                repr(user_theme_name),
-            )
-
         def add_once(values: List[str], uuid: str) -> None:
             if uuid not in values:
                 values.append(uuid)
 
-        if prefer_dark or desk_ux_shell:
+        if prefer_dark:
             enabled = [uuid for uuid in enabled if uuid != _LIGHT_STYLE_UUID]
             add_once(disabled, _LIGHT_STYLE_UUID)
             if user_theme_name:
@@ -1018,7 +1008,6 @@ class LayoutApplier:
         text: str,
         *,
         force_shell_dark: bool = False,
-        desk_ux_shell: bool = False,
     ) -> str:
         """
         Keep only the user's light/dark preference out of layout switching.
@@ -1051,7 +1040,6 @@ class LayoutApplier:
         return cls._rewrite_shell_theme_mode(
             out,
             prefer_dark=shell_dark,
-            desk_ux_shell=desk_ux_shell,
         )
 
     @classmethod
@@ -2353,16 +2341,18 @@ class LayoutApplier:
         layout_text = cls._rewrite_dtp_keys_in_text(layout_text, local_dtp_monitors)
 
         before = cls._enabled_extensions()
-        force_shell_dark = config_path.stem in {"biggnome", "g-unity", "minimal"}
-        desk_ux_shell = config_path.stem == "desk-ux"
+        force_shell_dark = config_path.stem in {
+            "biggnome",
+            "desk-ux",
+            "g-unity",
+            "minimal",
+        }
         layout_text = cls._preserve_user_color_scheme(
             layout_text,
-            # biggnome (Big-Blue) and the kiwi layouts (minimal, g-unity) keep a
-            # dark Shell panel in every color-scheme — only the GTK apps follow
-            # light/dark. Without this, light mode enables light-style and the
-            # top bar turns white.
+            # BigGnome, Desk UX, and the Kiwi layouts keep a dark native Shell
+            # in every color-scheme. Only their GTK applications follow the
+            # light/dark preference.
             force_shell_dark=force_shell_dark,
-            desk_ux_shell=desk_ux_shell,
         )
         layout_text = cls._adjust_icon_theme_for_scheme(
             layout_text,

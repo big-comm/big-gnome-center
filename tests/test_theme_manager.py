@@ -234,7 +234,7 @@ class TestAccentColor:
     @patch("theme_manager.ThemeMgr.current", return_value="Big-Blue")
     @patch("theme_manager.ThemeMgr.apply", return_value=(True, ""))
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
-    def test_biggnome_sets_matching_orchis_theme(
+    def test_biggnome_only_sets_gnome_accent(
         self,
         mock_set,
         mock_apply,
@@ -246,7 +246,7 @@ class TestAccentColor:
 
         assert ok is True
         assert msg == ""
-        mock_apply.assert_called_once_with("shell", "Big-Purple")
+        mock_apply.assert_not_called()
         mock_set.assert_called_once_with(
             "org.gnome.desktop.interface",
             "accent-color",
@@ -263,7 +263,7 @@ class TestAccentColor:
             "'blur-my-shell@aunetx']"
         ),
     )
-    def test_installed_default_detects_biggnome_extensions(
+    def test_installed_default_treats_biggnome_as_native_shell(
         self,
         _mock_get,
         mock_set,
@@ -276,7 +276,7 @@ class TestAccentColor:
 
         assert ok is True
         assert msg == ""
-        mock_apply.assert_called_once_with("shell", "Big-Pink")
+        mock_apply.assert_not_called()
         mock_set.assert_called_once_with(
             "org.gnome.desktop.interface",
             "accent-color",
@@ -323,13 +323,16 @@ class TestAccentColor:
             "'drive-menu@gnome-shell-extensions.gcampax.github.com']"
         ),
     )
-    def test_installed_default_detects_desk_ux_extensions(self, _mock_get):
-        assert ThemeMgr._uses_orchis_layout(None) is True
+    def test_installed_default_does_not_infer_orchis_from_extensions(
+        self,
+        _mock_get,
+    ):
+        assert not hasattr(ThemeMgr, "_uses_orchis_layout")
 
     @patch("theme_manager.ThemeMgr.current", return_value="Big-Blue-Light")
     @patch("theme_manager.ThemeMgr.apply", return_value=(True, ""))
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
-    def test_desk_ux_preserves_light_orchis_variant(
+    def test_desk_ux_only_sets_gnome_accent(
         self,
         mock_set,
         mock_apply,
@@ -341,33 +344,26 @@ class TestAccentColor:
 
         assert ok is True
         assert msg == ""
-        mock_apply.assert_called_once_with("shell", "Big-Green-Light")
+        mock_apply.assert_not_called()
         mock_set.assert_called_once()
 
-    @pytest.mark.parametrize(
-        ("accent", "theme"),
-        [
-            ("slate", "Big-Grey"),
-            ("maia", "Big-Teal"),
-        ],
-    )
+    @pytest.mark.parametrize("accent", ["slate", "maia"])
     @patch("theme_manager.ThemeMgr.current", return_value="Big-Blue")
     @patch("theme_manager.ThemeMgr.apply", return_value=(True, ""))
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
-    def test_maps_gnome_only_accents_to_nearest_orchis_theme(
+    def test_desk_ux_gnome_only_accents_stay_native(
         self,
         _mock_set,
         mock_apply,
         _mock_current,
         accent,
-        theme,
     ):
         with patch("theme_manager.Settings") as mock_settings:
             mock_settings.return_value.get.return_value = "Desk UX"
             ok, _msg = ThemeMgr.set_accent_color(accent)
 
         assert ok is True
-        mock_apply.assert_called_once_with("shell", theme)
+        mock_apply.assert_not_called()
 
     @patch("theme_manager.gsettings_set")
     def test_rejects_unknown_accent(self, mock_set):
@@ -406,65 +402,22 @@ class TestColorScheme:
         mock_sync.assert_called_once_with(
             True,
             native_shell=True,
-            desk_ux_shell=False,
             fixed_shell=False,
         )
 
-    @patch(
-        "theme_manager.gsettings_get",
-        side_effect=[
-            "['user-theme@gnome-shell-extensions.gcampax.github.com', 'stay@ext']",
-            "['light-style@gnome-shell-extensions.gcampax.github.com']",
-            "'Big-Blue'",
-        ],
-    )
-    @patch("theme_manager.ShellReloader.reload_extension", return_value=True)
+    @patch("theme_manager.ThemeMgr._sync_shell_color_scheme")
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
-    def test_desk_ux_light_uses_big_blue_light_shell(
-        self,
-        mock_set,
-        mock_reload,
-        _mock_get,
-    ):
-        ThemeMgr._sync_shell_color_scheme(False, desk_ux_shell=True)
+    def test_desk_ux_keeps_native_dark_shell(self, _mock_set, mock_sync):
+        with patch("theme_manager.Settings") as mock_settings:
+            mock_settings.return_value.get.return_value = "Desk UX"
+            ok, _msg = ThemeMgr.set_color_scheme(False)
 
-        assert mock_set.call_args_list[0].args == (
-            "org.gnome.shell.extensions.user-theme",
-            "name",
-            "'Big-Blue-Light'",
+        assert ok is True
+        mock_sync.assert_called_once_with(
+            True,
+            native_shell=False,
+            fixed_shell=True,
         )
-        assert mock_set.call_args_list[1].args == (
-            "org.gnome.shell",
-            "disabled-extensions",
-            "['light-style@gnome-shell-extensions.gcampax.github.com']",
-        )
-        assert mock_set.call_args_list[2].args == (
-            "org.gnome.shell",
-            "enabled-extensions",
-            "['user-theme@gnome-shell-extensions.gcampax.github.com', 'stay@ext']",
-        )
-        assert [call.args[0] for call in mock_reload.call_args_list] == [
-            "light-style@gnome-shell-extensions.gcampax.github.com",
-            "user-theme@gnome-shell-extensions.gcampax.github.com",
-        ]
-
-    @patch(
-        "theme_manager.gsettings_get",
-        side_effect=[
-            "['user-theme@gnome-shell-extensions.gcampax.github.com']",
-            "['light-style@gnome-shell-extensions.gcampax.github.com']",
-            "'Custom-Shell'",
-        ],
-    )
-    @patch("theme_manager.ShellReloader.reload_extension", return_value=True)
-    @patch("theme_manager.gsettings_set", return_value=(True, ""))
-    def test_desk_ux_preserves_custom_shell(
-        self, mock_set, mock_reload, _mock_get
-    ):
-        ThemeMgr._sync_shell_color_scheme(False, desk_ux_shell=True)
-
-        mock_set.assert_not_called()
-        mock_reload.assert_not_called()
 
     @patch(
         "theme_manager.gsettings_get",

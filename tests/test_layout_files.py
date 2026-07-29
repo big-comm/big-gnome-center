@@ -108,6 +108,20 @@ def test_original_layouts_reset_accent_to_blue():
         assert values["accent-color"] == "'blue'"
 
 
+def test_fixed_dark_layouts_do_not_require_user_theme():
+    for filename in ("biggnome.txt", "desk-ux.txt"):
+        text = (LAYOUT_DIR / filename).read_text()
+        enabled, disabled = _shell_extension_lists(text)
+        user_theme_values = _section_key_values(
+            text,
+            "org/gnome/shell/extensions/user-theme",
+        )
+
+        assert USER_THEME_UUID not in enabled
+        assert USER_THEME_UUID in disabled
+        assert user_theme_values["name"] == "''"
+
+
 def test_community_menu_layout_mapping_and_panel_order():
     for filename, menu_layout in COMMUNITY_MENU_LAYOUTS.items():
         text = (LAYOUT_DIR / filename).read_text()

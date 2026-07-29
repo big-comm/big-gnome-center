@@ -67,11 +67,10 @@ const HELPER_VERSION = 7;
 const USER_THEME_UUID = 'user-theme@gnome-shell-extensions.gcampax.github.com';
 const LIGHT_STYLE_UUID = 'light-style@gnome-shell-extensions.gcampax.github.com';
 const DTP_UUID = 'dash-to-panel@jderose9.github.com';
+const DASH_TO_DOCK_UUID = 'dash-to-dock@micxgx.gmail.com';
 const KIWI_UUID = 'kiwi@kemma';
 const COMMUNITY_MENU_UUID = 'community-menu@bigcommunity.org';
 const ARCMENU_UUID = 'arcmenu@arcmenu.com';
-const ORCHIS_SHELL_DARK = 'Big-Blue';
-const ORCHIS_SHELL_LIGHT = 'Big-Blue-Light';
 const CLASSIC_MENU_LAYOUT = 1; // APPS_ONLY
 const DESK_UX_MENU_LAYOUT = 3; // APP_GRID
 const HYBRID_MENU_LAYOUT = 4; // MINT
@@ -79,13 +78,14 @@ const ARCMENU_HYBRID_LAYOUT = 'enterprise';
 const COMMUNITY_LIGHT_ICON_LAYOUTS = new Set([CLASSIC_MENU_LAYOUT, HYBRID_MENU_LAYOUT]);
 const LIGHT_OVERVIEW_PANEL_CLASS = 'layout-switcher-light-overview-panel';
 const NATIVE_ACCENT_PANEL_CLASS = 'layout-switcher-native-accent-panel';
+const BIGGNOME_PANEL_CLASS = 'layout-switcher-biggnome-panel';
 const ACCENT_PROBE_CLASS = 'layout-switcher-accent-probe';
 const HYBRID_INDICATOR_SCALE = 0.8;
 const HYBRID_UNFOCUSED_EFFECT = 'layout-switcher-hybrid-unfocused';
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 37;
+const HELPER_BUILD = 39;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -193,6 +193,7 @@ export default class LayoutSwitcherHelper extends Extension {
         // the delayed pass below only covers unusually late panel startup.
         this._setupPanelSystemIndicator();
         this._syncNativeAccentPanelClass();
+        this._syncBigGnomePanelClass();
         // Live appearance follower. Classic/Hybrid use GNOME's native Shell;
         // the other Community layouts use their configured shell themes.
         // Papient variants follow the app color scheme in all six layouts.
@@ -210,6 +211,7 @@ export default class LayoutSwitcherHelper extends Extension {
                     this._ifaceSettings.get_string('color-scheme') === 'prefer-dark';
                 this._syncLightOverviewPanelClass();
                 this._syncNativeAccentPanelClass();
+                this._syncBigGnomePanelClass();
                 // At login, preserve the saved Shell theme and extension
                 // choices. The delayed pass only refreshes derived visuals.
                 this._sleep(1000).then(() => {
@@ -217,6 +219,7 @@ export default class LayoutSwitcherHelper extends Extension {
                     this._setupPanelSystemIndicator();
                     this._syncLightOverviewPanelClass();
                     this._syncNativeAccentPanelClass();
+                    this._syncBigGnomePanelClass();
                 });
             } catch (e) {
                 logHelper(`color-scheme follower unavailable: ${e}`);
@@ -280,6 +283,7 @@ export default class LayoutSwitcherHelper extends Extension {
         this._teardownHybridFocusedIndicators();
         this._clearLightOverviewPanelClass();
         this._clearNativeAccentPanelClass();
+        this._clearBigGnomePanelClass();
         this._unexport();
         if (this._schemeDebounce) {
             GLib.Source.remove(this._schemeDebounce);
@@ -604,6 +608,29 @@ export default class LayoutSwitcherHelper extends Extension {
             }
         }
         this._nativeAccentPanels?.clear();
+    }
+
+    _clearBigGnomePanelClass() {
+        for (const panel of this._bigGnomePanels ?? []) {
+            try {
+                panel.remove_style_class_name(BIGGNOME_PANEL_CLASS);
+            } catch (e) {
+                logHelper(`BigGnome panel cleanup failed: ${e}`);
+            }
+        }
+        this._bigGnomePanels?.clear();
+    }
+
+    _syncBigGnomePanelClass() {
+        this._clearBigGnomePanelClass();
+        if (!this._extensionWillRun(DASH_TO_DOCK_UUID) ||
+            this._extensionWillRun(DTP_UUID) ||
+            this._extensionWillRun(KIWI_UUID))
+            return;
+
+        this._bigGnomePanels ??= new Set();
+        Main.panel.add_style_class_name(BIGGNOME_PANEL_CLASS);
+        this._bigGnomePanels.add(Main.panel);
     }
 
     _shellAccentColor() {
@@ -946,15 +973,15 @@ export default class LayoutSwitcherHelper extends Extension {
                 logHelper(`icon-theme follow failed: ${e}`);
             }
 
-            // BigGnome and the Kiwi layouts keep an always-dark Shell. Their
-            // app/icon preference above still follows light/dark.
+            // BigGnome, Desk UX, and the Kiwi layouts keep an always-dark
+            // native Shell. Their app/icon preference still follows light/dark.
             if (live.has(KIWI_UUID) || !live.has(DTP_UUID) ||
+                communityLayout === DESK_UX_MENU_LAYOUT ||
                 (!live.has(COMMUNITY_MENU_UUID) && !hybridArcMenu))
                 return;
 
             const nativeShell = communityLayout === CLASSIC_MENU_LAYOUT ||
                 communityLayout === HYBRID_MENU_LAYOUT || hybridArcMenu;
-            const deskUxOrchisShell = communityLayout === DESK_UX_MENU_LAYOUT;
             this._shellSettings ??= new Gio.Settings({schema_id: 'org.gnome.shell'});
             const enabled = this._shellSettings.get_strv('enabled-extensions');
             const disabled = this._shellSettings.get_strv('disabled-extensions');
@@ -967,34 +994,13 @@ export default class LayoutSwitcherHelper extends Extension {
                 currentShellTheme === '' &&
                 !configured(USER_THEME_UUID) &&
                 configured(LIGHT_STYLE_UUID) === !previousDark;
-            const previousDeskUxTheme = previousDark
-                ? ORCHIS_SHELL_DARK
-                : ORCHIS_SHELL_LIGHT;
-            const managedDeskUxState = deskUxOrchisShell &&
-                currentShellTheme === previousDeskUxTheme &&
-                configured(USER_THEME_UUID) &&
-                !configured(LIGHT_STYLE_UUID);
-            const manageShell = reconcileShell &&
-                (managedNativeState || managedDeskUxState);
-            const wantOn = deskUxOrchisShell
-                ? USER_THEME_UUID
-                : (dark ? USER_THEME_UUID : LIGHT_STYLE_UUID);
-            const wantOff = deskUxOrchisShell
-                ? LIGHT_STYLE_UUID
-                : (dark ? LIGHT_STYLE_UUID : USER_THEME_UUID);
-            const shellMode = nativeShell
-                ? 'native'
-                : (deskUxOrchisShell
-                    ? (dark ? ORCHIS_SHELL_DARK : ORCHIS_SHELL_LIGHT)
-                    : (dark ? ORCHIS_SHELL_DARK : 'light-style'));
-            logHelper(`color-scheme follow: ${dark ? 'dark' : 'light'} (${shellMode}, ${
+            const manageShell = reconcileShell && managedNativeState;
+            const wantOn = dark ? USER_THEME_UUID : LIGHT_STYLE_UUID;
+            const wantOff = dark ? LIGHT_STYLE_UUID : USER_THEME_UUID;
+            logHelper(`color-scheme follow: ${dark ? 'dark' : 'light'} (native, ${
                 manageShell ? 'managed' : 'preserved'})`);
 
-            const shellThemeName = nativeShell
-                ? ''
-                : (deskUxOrchisShell
-                    ? (dark ? ORCHIS_SHELL_DARK : ORCHIS_SHELL_LIGHT)
-                    : (dark ? ORCHIS_SHELL_DARK : userThemeSettings.get_string('name')));
+            const shellThemeName = '';
             if (manageShell) {
                 if (currentShellTheme !== shellThemeName)
                     userThemeSettings.set_string('name', shellThemeName);
@@ -1083,6 +1089,7 @@ export default class LayoutSwitcherHelper extends Extension {
             this._setupPanelSystemIndicator();
             this._syncLightOverviewPanelClass();
             this._syncNativeAccentPanelClass();
+            this._syncBigGnomePanelClass();
             // Cross-frame style recompute so the panel picks the new theme.
             Main.panel.add_style_class_name('ls-style-recompute');
             await this._sleep(60);
@@ -1396,6 +1403,7 @@ export default class LayoutSwitcherHelper extends Extension {
         }
         this._syncLightOverviewPanelClass();
         this._syncNativeAccentPanelClass();
+        this._syncBigGnomePanelClass();
         await this._panelRepaint();
         this._setupPanelSystemIndicator();
         this._curtainDown();
@@ -1595,6 +1603,7 @@ export default class LayoutSwitcherHelper extends Extension {
         }
         this._syncLightOverviewPanelClass();
         this._syncNativeAccentPanelClass();
+        this._syncBigGnomePanelClass();
         await this._panelRepaint();
         steps.push('panel repaint');
         this._setupPanelSystemIndicator();
@@ -1801,6 +1810,7 @@ export default class LayoutSwitcherHelper extends Extension {
         this._setupPanelSystemIndicator();
         this._syncLightOverviewPanelClass();
         this._syncNativeAccentPanelClass();
+        this._syncBigGnomePanelClass();
 
         logHelper(`ApplyLayout done: ${steps.join(' | ')}`);
         return JSON.stringify({ok: true, steps, error: ''});

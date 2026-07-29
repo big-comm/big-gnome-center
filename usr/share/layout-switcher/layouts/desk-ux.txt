@@ -247,8 +247,8 @@ sleep-inactive-ac-type='nothing'
 app-picker-layout=[{'AudioVideo': <{'position': <0>}>, 'Office': <{'position': <1>}>, 'Utilities': <{'position': <2>}>, 'Settings': <{'position': <3>}>, 'Network': <{'position': <4>}>, 'Game': <{'position': <5>}>, 'WebApps': <{'position': <6>}>}]
 command-history=['ajustes', 'r']
 disable-user-extensions=false
-disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'dash-to-dock@micxgx.gmail.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com']
-enabled-extensions=['layout-switcher-helper@bigcommunity.org', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'gsconnect@andyholmes.github.io', 'pamac-updates@manjaro.org', 'blur-my-shell@aunetx', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@bigcommunity.org', 'dash-to-panel@jderose9.github.com', 'community-menu@bigcommunity.org', 'appindicatorsupport@rgcjonas.gmail.com']
+disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'dash-to-dock@micxgx.gmail.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com']
+enabled-extensions=['layout-switcher-helper@bigcommunity.org', 'gsconnect@andyholmes.github.io', 'pamac-updates@manjaro.org', 'blur-my-shell@aunetx', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@bigcommunity.org', 'dash-to-panel@jderose9.github.com', 'community-menu@bigcommunity.org', 'appindicatorsupport@rgcjonas.gmail.com']
 favorite-apps=['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.communitybig.ashyterm.desktop', 'org.gnome.TextEditor.desktop']
 welcome-dialog-last-shown-version='43.2'
 
@@ -382,6 +382,12 @@ show-favorites-all-monitors=true
 show-running-apps=true
 stockgs-keep-dash=false
 stockgs-keep-top-panel=false
+status-icon-padding=0
+trans-bg-color='#000000'
+trans-panel-opacity=0.65000000000000002
+trans-use-custom-bg=true
+trans-use-custom-opacity=true
+tray-padding=9
 window-preview-title-position='TOP'
 
 [org/gnome/shell/extensions/gsconnect]
@@ -424,7 +430,7 @@ workspace-popup=true
 workspaces-in-app-grid=true
 
 [org/gnome/shell/extensions/user-theme]
-name='Big-Blue'
+name=''
 
 [org/gnome/shell/keybindings]
 toggle-message-tray=['<Super>e']
