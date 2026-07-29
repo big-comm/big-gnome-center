@@ -8,11 +8,27 @@ import pytest
 
 from layout_applier import LayoutApplier
 
+CURRENT_DCONF = """\
+[org/gnome/desktop/input-sources]
+sources=[('xkb', 'br')]
+
+[org/gnome/desktop/peripherals/touchpad]
+natural-scroll=false
+
+[org/gnome/shell]
+enabled-extensions=[]
+"""
+
 
 @pytest.fixture(autouse=True)
 def required_helper_available():
     """Keep layout tests focused on the apply stage after helper preflight."""
-    with patch("layout_applier.HelperClient.ensure_available", return_value=(True, "")):
+    with (
+        patch("layout_applier.HelperClient.ensure_available", return_value=(True, "")),
+        patch("layout_applier.HelperClient.helper_version", return_value=0),
+        patch("layout_applier.HelperClient._call", return_value=None),
+        patch("shell_reloader.run_cmd", return_value=(False, "test isolation")),
+    ):
         yield
 
 
@@ -25,7 +41,7 @@ class TestLayoutApplier:
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=True)
-    @patch("layout_applier.run_cmd", return_value=(True, ""))
+    @patch("layout_applier.run_cmd")
     def test_apply_full_flow(
         self,
         mock_run,
@@ -40,6 +56,15 @@ class TestLayoutApplier:
         reads) -> read enabled-ext (before, vazio) -> stop watcher Qt ->
         persist -> orphan scan -> load -> read enabled-ext (after) ->
         start watcher Qt."""
+
+        def respond(cmd, **_kwargs):
+            if cmd[:2] == ["dconf", "dump"]:
+                return True, CURRENT_DCONF
+            if cmd[:2] == ["dconf", "read"]:
+                return True, "[]"
+            return True, ""
+
+        mock_run.side_effect = respond
         layout = tmp_path / "classic.txt"
         layout.write_text("[/]\nfoo='bar'")
 
@@ -51,8 +76,8 @@ class TestLayoutApplier:
         # load + 1 read enabled-extensions (after) + start watcher = 12.
         # (The light-mode icon/label adjusts early-return: this layout text
         # carries no icon-theme / dash-to-panel label keys.)
-        assert mock_run.call_count == 12
         calls = [c.args[0] for c in mock_run.call_args_list]
+        assert mock_run.call_count == 12, "\n".join(map(str, calls))
         # 1: gdbus probe to mutter for monitor IDs
         assert calls[0][0] == "gdbus"
         assert "Mutter.DisplayConfig" in calls[0][4]
@@ -63,7 +88,7 @@ class TestLayoutApplier:
         assert calls[6] == ["dconf", "read", "/org/gnome/shell/enabled-extensions"]
         # 8: stop Qt theme watcher
         assert calls[7][:3] == ["systemctl", "--user", "stop"]
-        # 9-10: orphan scan + load (no per-UUID disables since before=[])
+        # 9-10: orphan scan + layout load
         assert calls[8] == ["dconf", "dump", "/"]
         assert calls[9] == ["dconf", "load", "/"]
         # 11: enabled-extensions after
@@ -82,7 +107,7 @@ class TestLayoutApplier:
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
-    @patch("layout_applier.run_cmd", return_value=(True, ""))
+    @patch("layout_applier.run_cmd")
     def test_apply_without_sync_service(
         self,
         mock_run,
@@ -94,6 +119,15 @@ class TestLayoutApplier:
         tmp_path,
     ):
         """Quando o watcher Qt nao existe, systemctl e pulado."""
+
+        def respond(cmd, **_kwargs):
+            if cmd[:2] == ["dconf", "dump"]:
+                return True, CURRENT_DCONF
+            if cmd[:2] == ["dconf", "read"]:
+                return True, "[]"
+            return True, ""
+
+        mock_run.side_effect = respond
         layout = tmp_path / "x.txt"
         layout.write_text("[/]\nx=1")
 
@@ -113,7 +147,7 @@ class TestLayoutApplier:
             "read",
             "/org/gnome/shell/enabled-extensions",
         ]
-        # 8th-9th: orphan scan + load
+        # 8th-9th: orphan scan + layout load
         assert mock_run.call_args_list[7].args[0] == ["dconf", "dump", "/"]
         assert mock_run.call_args_list[8].args[0] == ["dconf", "load", "/"]
         # 10th: enabled-extensions after
@@ -163,8 +197,8 @@ class TestLayoutApplier:
     ):
         """Se o dconf load falhar: watcher Qt reinicia e shell nao recarrega."""
         # 1 mutter gdbus probe (returns empty so dconf fallback runs),
-        # 5 dtp dconf reads, read-before (vazio -> []), stop OK,
-        # orphan scan OK, load FAIL, start OK (finally). Sem read-after.
+        # 5 dtp dconf reads, read-before (vazio -> []), stop OK, orphan scan
+        # OK, load FAIL, start OK (finally). Sem read-after.
         mock_run.side_effect = [
             (True, ""),  # gdbus mutter probe
             (True, ""),  # dtp probe 1
@@ -175,7 +209,7 @@ class TestLayoutApplier:
             (True, "[]"),  # read enabled-extensions (before)
             (True, ""),  # systemctl stop watcher
             (True, ""),  # dconf dump orphan scan
-            (False, "dconf error"),  # dconf load FAILS
+            (False, "dconf error"),  # layout dconf load FAILS
             (True, ""),  # systemctl start watcher (finally)
         ]
         layout = tmp_path / "bad.txt"
@@ -376,10 +410,7 @@ class TestLayoutApplier:
 
     @patch.object(LayoutApplier, "_current_color_scheme_value", return_value="'prefer-dark'")
     def test_classic_dark_uses_dark_papient_variant(self, _mock_scheme):
-        data = (
-            "[org/gnome/desktop/interface]\n"
-            "icon-theme='bigicons-papient-light'\n"
-        )
+        data = "[org/gnome/desktop/interface]\nicon-theme='bigicons-papient-light'\n"
 
         out = LayoutApplier._adjust_icon_theme_for_scheme(data)
 
@@ -387,10 +418,7 @@ class TestLayoutApplier:
 
     @patch.object(LayoutApplier, "_current_color_scheme_value", return_value="'default'")
     def test_classic_light_uses_light_papient_variant(self, _mock_scheme):
-        data = (
-            "[org/gnome/desktop/interface]\n"
-            "icon-theme='bigicons-papient-dark'\n"
-        )
+        data = "[org/gnome/desktop/interface]\nicon-theme='bigicons-papient-dark'\n"
 
         out = LayoutApplier._adjust_icon_theme_for_scheme(data, light_variant=True)
 
@@ -398,10 +426,7 @@ class TestLayoutApplier:
 
     @patch.object(LayoutApplier, "_current_color_scheme_value", return_value="'default'")
     def test_other_light_layout_uses_unsuffixed_papient_variant(self, _mock_scheme):
-        data = (
-            "[org/gnome/desktop/interface]\n"
-            "icon-theme='bigicons-papient-dark'\n"
-        )
+        data = "[org/gnome/desktop/interface]\nicon-theme='bigicons-papient-dark'\n"
 
         out = LayoutApplier._adjust_icon_theme_for_scheme(data)
 
@@ -502,11 +527,7 @@ class TestLayoutApplier:
 
     @patch.object(LayoutApplier, "_current_color_scheme_value", return_value="'prefer-dark'")
     def test_preserve_color_scheme_keeps_original_accent(self, _mock_scheme):
-        data = (
-            "[org/gnome/desktop/interface]\n"
-            "accent-color='blue'\n"
-            "color-scheme='default'\n"
-        )
+        data = "[org/gnome/desktop/interface]\naccent-color='blue'\ncolor-scheme='default'\n"
 
         out = LayoutApplier._preserve_user_color_scheme(data)
 
@@ -1640,7 +1661,13 @@ class TestHelperIntegration:
     def test_managed_subdirs_include_legacy_arcmenu_for_cleanup(self, tmp_path):
         data = (
             "[org/gnome/shell/extensions/community-menu]\n"
-            "layout='APPS_ONLY'\n"
+            "layout='APPS_ONLY'\n\n"
+            "[org/gnome/shell/extensions/appindicator]\n"
+            "tray-pos='center'\n\n"
+            "[org/gnome/shell/extensions/gsconnect]\n"
+            "devices={}\n\n"
+            "[org/gnome/shell/extensions/gtk4-ding]\n"
+            "icon-size='standard'\n"
         )
         (tmp_path / "classic.txt").write_text(data)
 
@@ -1648,6 +1675,9 @@ class TestHelperIntegration:
 
         assert "community-menu" in subdirs
         assert "arcmenu" in subdirs
+        assert "appindicator" in subdirs
+        assert "gsconnect" not in subdirs
+        assert "gtk4-ding" in subdirs
 
     def test_inject_helper_uuid_adds(self):
         from helper_client import HELPER_UUID
@@ -1705,9 +1735,7 @@ class TestHelperIntegration:
     def test_prefers_cleanroom_on_v7_helper(self, _has, _persist, _run, _ver, mock_v7):
         """A v7+ helper routes the apply through the clean-room protocol."""
         data = "[org/gnome/shell]\nenabled-extensions=['kiwi@kemma']\n"
-        ok, _msg = LayoutApplier.load_dconf_safely(
-            data, before_uuids=[], layout_label="G-Unity"
-        )
+        ok, _msg = LayoutApplier.load_dconf_safely(data, before_uuids=[], layout_label="G-Unity")
         assert ok is True
         mock_v7.assert_called_once()
         assert mock_v7.call_args.kwargs["layout_label"] == "G-Unity"

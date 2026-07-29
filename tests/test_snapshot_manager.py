@@ -27,13 +27,31 @@ class TestSnapshotManager:
         for p in self._patches:
             p.stop()
 
-    @patch("snapshot_manager.run_cmd", return_value=(True, "[/]\n" + "x" * 200))
+    @patch(
+        "snapshot_manager.run_cmd",
+        return_value=(
+            True,
+            "[org/gnome/desktop/input-sources]\n"
+            "sources=[('xkb', 'us')]\n\n"
+            "[org/gnome/shell]\n"
+            "favorite-apps=['org.gnome.Nautilus.desktop']\n"
+            "enabled-extensions=['dash-to-dock@micxgx.gmail.com']\n\n"
+            "[org/gnome/shell/extensions/dash-to-dock]\n"
+            "dock-position='BOTTOM'\n"
+            "dash-max-icon-size=48\n",
+        ),
+    )
     def test_save_creates_snapshot(self, _mock_run):
         ok, path = self.SnapshotManager.save("biggnome")
         assert ok is True
         assert "biggnome" in path
         assert self.SNAPSHOTS_DIR.exists()
-        assert (self.SNAPSHOTS_DIR / "biggnome.dconf").exists()
+        snapshot = self.SNAPSHOTS_DIR / "biggnome.dconf"
+        assert snapshot.exists()
+        content = snapshot.read_text()
+        assert "favorite-apps=" in content
+        assert "dash-to-dock" in content
+        assert "input-sources" in content
 
     @patch("snapshot_manager.run_cmd", return_value=(False, "dconf error"))
     def test_save_fails_on_dump_error(self, _mock_run):
@@ -71,12 +89,21 @@ class TestSnapshotManager:
         assert self.SnapshotManager.load("classic") is None
         assert self.SnapshotManager.has("classic") is False
 
-    def test_read_returns_contents(self):
+    def test_read_returns_full_snapshot(self):
         self.SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
         f = self.SNAPSHOTS_DIR / "minimal.dconf"
-        content = "[/]\n" + "y" * 200
+        content = (
+            "[org/gnome/desktop/input-sources]\n"
+            "sources=[('xkb', 'us')]\n\n"
+            "[org/gnome/shell]\n"
+            "favorite-apps=['org.gnome.Nautilus.desktop']\n"
+            "enabled-extensions=['kiwi@kemma']\n\n"
+            "[org/gnome/shell/extensions/kiwi]\n"
+            "panel-position='TOP'\n"
+        )
         f.write_text(content)
-        assert self.SnapshotManager.read("minimal") == content
+        restored = self.SnapshotManager.read("minimal")
+        assert restored == content
 
     def test_read_returns_none_when_absent(self):
         assert self.SnapshotManager.read("nothing") is None

@@ -224,10 +224,7 @@ class LayoutsPage(Gtk.Box):
     # ── Interacao ─────────────────────────────────────────────────────────────
 
     def _on_click(self, name: str, cfg: str) -> None:
-        if name == self._active_layout:
-            self._toast(tr("This layout is already active"))
-            return
-
+        reapplying_active = name == self._active_layout
         target_id = self._layout_id(cfg)
         has_snapshot = SnapshotManager.has(target_id)
 
@@ -266,7 +263,11 @@ class LayoutsPage(Gtk.Box):
             ok_bk, info = BackupManager.create()
             if not ok_bk:
                 self._toast(tr("Backup failed") + f": {info}")
-            self._save_current_snapshot()
+            # Reapplying the active layout is a recovery action. Saving its
+            # current broken state here would overwrite the last good snapshot
+            # immediately before the original is restored.
+            if not reapplying_active:
+                self._save_current_snapshot()
             use_snapshot = r == "resume"
             self._apply(name, cfg, use_snapshot=use_snapshot)
 
@@ -330,6 +331,7 @@ class LayoutsPage(Gtk.Box):
                     # o gsettings listener do Shell reabilita as extensões via
                     # enabled-extensions, então não precisa reload_all manual.
                     before = LayoutApplier._enabled_extensions()
+                    layout_path = find_file(cfg, ["layouts"])
                     ok, err = LayoutApplier.load_dconf_safely(
                         data,
                         persist=True,
@@ -337,6 +339,7 @@ class LayoutsPage(Gtk.Box):
                         progress_cb=progress,
                         layout_label=name,
                         layout_label_from=self._active_layout or "",
+                        layouts_dir=layout_path.parent if layout_path else None,
                         icon_from=str(from_icon) if from_icon else "",
                         icon_to=str(to_icon) if to_icon else "",
                     )

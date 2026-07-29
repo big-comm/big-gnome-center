@@ -164,6 +164,10 @@ _HELPER_PERSIST_UUIDS = frozenset(
         "drive-menu@gnome-shell-extensions.gcampax.github.com",
     }
 )
+# Persisting an extension process does not imply preserving all its settings.
+# GSConnect pairing data must survive layout switches. AppIndicator stays live
+# for stability, but its visual placement remains owned by original layouts.
+_PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect"})
 # Extensions that paint the GNOME *shell* stylesheet themselves (the panel,
 # menus). Main.loadTheme() rebuilds the global St theme and clobbers their
 # styling, so they must (re)apply AFTER it. The in-shell helper v3 already
@@ -500,13 +504,13 @@ class LayoutApplier:
                 line = line.strip()
                 if not line.startswith(prefix) or not line.endswith("]"):
                     continue
-                inner = line[len(prefix):-1]
+                inner = line[len(prefix) : -1]
                 subdir = inner.split("/", 1)[0].strip()
                 if subdir:
                     subdirs.add(subdir)
         persist_stems = {
-            uuid.split("@", 1)[0]
-            for uuid in (*_HELPER_PERSIST_UUIDS, HELPER_UUID)
+            *_PROTECTED_PERSIST_SETTINGS_SUBDIRS,
+            HELPER_UUID.split("@", 1)[0],
         }
         return sorted(s for s in subdirs if s not in persist_stems)
 
@@ -657,14 +661,18 @@ class LayoutApplier:
         disabled_list = cls._string_list(shell_values.get("disabled-extensions"))
         run_cmd(
             [
-                "dconf", "write", "/org/gnome/shell/disabled-extensions",
+                "dconf",
+                "write",
+                "/org/gnome/shell/disabled-extensions",
                 cls._quote_string_list(disabled_list),
             ],
             timeout=10,
         )
         run_cmd(
             [
-                "dconf", "write", "/org/gnome/shell/enabled-extensions",
+                "dconf",
+                "write",
+                "/org/gnome/shell/enabled-extensions",
                 cls._quote_string_list(target_enabled),
             ],
             timeout=10,
@@ -1075,15 +1083,9 @@ class LayoutApplier:
         target = (
             "'bigicons-papient-dark'"
             if scheme == "prefer-dark"
-            else (
-                "'bigicons-papient-light'"
-                if light_variant
-                else "'bigicons-papient'"
-            )
+            else ("'bigicons-papient-light'" if light_variant else "'bigicons-papient'")
         )
-        return cls._replace_or_add_dconf_key(
-            text, _INTERFACE_SECTION, "icon-theme", target
-        )
+        return cls._replace_or_add_dconf_key(text, _INTERFACE_SECTION, "icon-theme", target)
 
     # dash-to-panel window-title label colors in LIGHT mode: the focused
     # window label sits on the blue focus highlight (white text), while the
@@ -1091,7 +1093,7 @@ class LayoutApplier:
     # 'inherit' resolves to WHITE for both, unreadable for the unfocused
     # ones. Explicit per-state colors fix the contrast.
     _DTP_LABEL_LIGHT_COLORS = {
-        "group-apps-label-font-color": "'#ffffff'",            # focused, on blue
+        "group-apps-label-font-color": "'#ffffff'",  # focused, on blue
         "group-apps-label-font-color-minimized": "'#000000'",  # unfocused, on bar
     }
 
@@ -2008,7 +2010,9 @@ class LayoutApplier:
             if persist:
                 # settings.gnome carries the helper UUID so it loads at every
                 # login (the live orchestration keeps using the original text).
-                ok_persist, info = cls._persist_to_settings_file(cls._inject_helper_uuid(data))
+                ok_persist, info = cls._persist_to_settings_file(
+                    cls._inject_helper_uuid(data)
+                )
                 if not ok_persist:
                     log.warning("could not persist settings.gnome: %s", info)
                     return False, f"settings.gnome write failed: {info}"
@@ -2094,9 +2098,7 @@ class LayoutApplier:
                 )
             target_uses_dtp = _DASH_TO_PANEL_UUID in target_enabled
             target_panel_menus = [
-                uuid
-                for uuid in (_COMMUNITY_MENU_UUID, _ARCMENU_UUID)
-                if uuid in target_enabled
+                uuid for uuid in (_COMMUNITY_MENU_UUID, _ARCMENU_UUID) if uuid in target_enabled
             ]
             target_uses_light_style = _LIGHT_STYLE_UUID in target_enabled
             target_panel_menus_after_dtp = target_panel_menus if target_uses_dtp else []
@@ -2329,15 +2331,11 @@ class LayoutApplier:
         icon_to: str = "",
     ) -> Tuple[bool, str]:
         """
-        Apply a layout file as the complete next-login dconf state, and
-        best-effort apply to the live session.
+        Apply the bundled original layout as an absolute dconf state.
 
-        ``settings.gnome`` becomes the layout file adjusted only for
-        machine-local DTP monitor IDs and the user's current light/dark
-        preference. GTK, icon and Shell themes follow the target layout.
-        The live session also gets stale extension keys reset before
-        ``dconf load`` so a layout applies as exact state instead of
-        inheriting values from the previous layout.
+        Original layouts intentionally use their complete configuration and
+        clean-room reset behavior. Saved user snapshots use the same complete
+        representation so returning to a layout restores the captured state.
 
         ``progress_cb`` is forwarded to ``load_dconf_safely`` so the
         caller can update its loading overlay between stages.
