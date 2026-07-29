@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 39" in source
+    assert "const HELPER_BUILD = 41" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_extensionWillRun(DTP_UUID)" in source
     assert "_usesMenuSessionActions()" in source
@@ -93,7 +93,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 39" in source
+    assert "const HELPER_BUILD = 41" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -120,6 +120,23 @@ def test_biggnome_uses_helper_owned_floating_panel():
     assert "#panel.layout-switcher-biggnome-panel" in stylesheet
     assert "background-color: rgba(0, 0, 0, 0.65)" in stylesheet
     assert "border-radius: 9999px" in stylesheet
+
+
+def test_biggnome_uses_compact_accent_aware_dock():
+    source = HELPER.read_text()
+    stylesheet = HELPER_STYLESHEET.read_text()
+
+    assert "BIGGNOME_DOCK_CLASS" in source
+    assert "_findActorsByName(" in source
+    assert "'dashtodockContainer'" in source
+    assert "_clearBigGnomeDockClass()" in source
+    assert "layout-switcher-biggnome-dock.bottom.shrink" in stylesheet
+    assert "margin-left: 0 !important" in stylesheet
+    assert "padding: 4px !important" in stylesheet
+    assert "margin-left: 2px" in stylesheet
+    assert ".app-well-app.focused .app-grid-running-dot" in stylesheet
+    assert "background-color: rgba(255, 255, 255, 0.35)" in stylesheet
+    assert "background-color: -st-accent-color" in stylesheet
 
 
 def test_hybrid_focused_indicator_is_twenty_percent_shorter():

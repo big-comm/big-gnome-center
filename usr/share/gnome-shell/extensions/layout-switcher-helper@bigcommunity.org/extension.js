@@ -79,13 +79,14 @@ const COMMUNITY_LIGHT_ICON_LAYOUTS = new Set([CLASSIC_MENU_LAYOUT, HYBRID_MENU_L
 const LIGHT_OVERVIEW_PANEL_CLASS = 'layout-switcher-light-overview-panel';
 const NATIVE_ACCENT_PANEL_CLASS = 'layout-switcher-native-accent-panel';
 const BIGGNOME_PANEL_CLASS = 'layout-switcher-biggnome-panel';
+const BIGGNOME_DOCK_CLASS = 'layout-switcher-biggnome-dock';
 const ACCENT_PROBE_CLASS = 'layout-switcher-accent-probe';
 const HYBRID_INDICATOR_SCALE = 0.8;
 const HYBRID_UNFOCUSED_EFFECT = 'layout-switcher-hybrid-unfocused';
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 39;
+const HELPER_BUILD = 41;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -284,6 +285,7 @@ export default class LayoutSwitcherHelper extends Extension {
         this._clearLightOverviewPanelClass();
         this._clearNativeAccentPanelClass();
         this._clearBigGnomePanelClass();
+        this._clearBigGnomeDockClass();
         this._unexport();
         if (this._schemeDebounce) {
             GLib.Source.remove(this._schemeDebounce);
@@ -621,8 +623,30 @@ export default class LayoutSwitcherHelper extends Extension {
         this._bigGnomePanels?.clear();
     }
 
+    _clearBigGnomeDockClass() {
+        for (const dock of this._bigGnomeDocks ?? []) {
+            try {
+                dock.remove_style_class_name(BIGGNOME_DOCK_CLASS);
+            } catch (e) {
+                logHelper(`BigGnome dock cleanup failed: ${e}`);
+            }
+        }
+        this._bigGnomeDocks?.clear();
+    }
+
+    _findActorsByName(root, name, matches = []) {
+        if (!root)
+            return matches;
+        if (root.get_name?.() === name)
+            matches.push(root);
+        for (const child of root.get_children?.() ?? [])
+            this._findActorsByName(child, name, matches);
+        return matches;
+    }
+
     _syncBigGnomePanelClass() {
         this._clearBigGnomePanelClass();
+        this._clearBigGnomeDockClass();
         if (!this._extensionWillRun(DASH_TO_DOCK_UUID) ||
             this._extensionWillRun(DTP_UUID) ||
             this._extensionWillRun(KIWI_UUID))
@@ -631,6 +655,15 @@ export default class LayoutSwitcherHelper extends Extension {
         this._bigGnomePanels ??= new Set();
         Main.panel.add_style_class_name(BIGGNOME_PANEL_CLASS);
         this._bigGnomePanels.add(Main.panel);
+
+        this._bigGnomeDocks ??= new Set();
+        for (const dock of this._findActorsByName(
+            global.stage,
+            'dashtodockContainer'
+        )) {
+            dock.add_style_class_name(BIGGNOME_DOCK_CLASS);
+            this._bigGnomeDocks.add(dock);
+        }
     }
 
     _shellAccentColor() {

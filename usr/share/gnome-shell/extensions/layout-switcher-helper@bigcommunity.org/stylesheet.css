@@ -174,3 +174,42 @@
 #panel.layout-switcher-biggnome-panel .panel-button .app-menu-icon {
     -st-icon-style: symbolic;
 }
+
+/* Keep BigGnome's Dash to Dock compact and distinguish focused apps. */
+#dashtodockContainer.layout-switcher-biggnome-dock.bottom.shrink
+#dash .dash-item-container {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+#dashtodockContainer.layout-switcher-biggnome-dock.bottom.shrink
+#dash .dash-item-container .overview-icon {
+    padding: 4px !important;
+    spacing: 4px !important;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-well-app-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-grid-running-dot {
+    width: 6px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.35);
+    border-color: transparent;
+    border-width: 0;
+}
+
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-well-app.focused .app-well-app-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-well-app.focused .app-grid-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.overview-tile.focused .app-well-app-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.overview-tile.focused .app-grid-running-dot {
+    width: 18px;
+    background-color: -st-accent-color;
+}
