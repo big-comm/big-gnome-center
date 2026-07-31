@@ -187,6 +187,19 @@ def test_search_entry_tracks_light_color_scheme():
     assert "color: #2e2e33" in stylesheet
 
 
+def test_light_menu_styles_the_complete_popup():
+    stylesheet = (EXTENSION_DIR / "stylesheet.css").read_text()
+
+    assert ".community-menu.community-menu-light .popup-menu-content" in stylesheet
+    assert "background-color: #fafafb" in stylesheet
+    assert "border-color: #e6e6eb" in stylesheet
+    assert ".community-menu.community-menu-light .popup-menu-item" in stylesheet
+    assert ".community-menu.community-menu-light .app-item:hover" in stylesheet
+    assert ".community-menu.community-menu-light StButton:active" in stylesheet
+    assert ".popup-separator-menu-item .popup-separator-menu-item-separator" in stylesheet
+    assert ".community-menu.community-menu-light StScrollBar > .vhandle" in stylesheet
+
+
 def test_classic_search_results_are_compact_without_description_tooltips():
     layout = (EXTENSION_DIR / "layouts/appListLayout.js").read_text()
     sections = (EXTENSION_DIR / "sections.js").read_text()

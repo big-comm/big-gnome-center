@@ -198,6 +198,61 @@
     margin: 12px 0 0 0;
 }
 
+.community-menu.community-menu-light {
+    color: #222226;
+}
+
+.community-menu.community-menu-light .popup-menu-content {
+    color: #222226;
+    background-color: #fafafb;
+    border-color: #e6e6eb;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.community-menu.community-menu-light .popup-menu-item,
+.community-menu.community-menu-light .app-item,
+.community-menu.community-menu-light StButton,
+.community-menu.community-menu-light StLabel {
+    color: #222226;
+}
+
+.community-menu.community-menu-light .popup-menu-item:hover,
+.community-menu.community-menu-light .popup-menu-item:focus,
+.community-menu.community-menu-light .popup-menu-item:selected,
+.community-menu.community-menu-light .popup-menu-item:checked,
+.community-menu.community-menu-light .app-item:hover,
+.community-menu.community-menu-light .app-item:focus,
+.community-menu.community-menu-light .app-item:selected,
+.community-menu.community-menu-light StButton:hover,
+.community-menu.community-menu-light StButton:focus,
+.community-menu.community-menu-light StButton:checked {
+    color: #222226;
+    background-color: #dedee3;
+}
+
+.community-menu.community-menu-light .popup-menu-item:active,
+.community-menu.community-menu-light .app-item:active,
+.community-menu.community-menu-light StButton:active {
+    color: #222226;
+    background-color: #d8d8dd;
+}
+
+.community-menu.community-menu-light
+.popup-separator-menu-item .popup-separator-menu-item-separator,
+.community-menu.community-menu-light .classic-sidebar-separator {
+    background-color: rgba(34, 34, 38, 0.15);
+}
+
+.community-menu.community-menu-light StScrollBar > .vhandle,
+.community-menu.community-menu-light StScrollBar > .hhandle {
+    background-color: #b9b9bb;
+}
+
+.community-menu.community-menu-light StScrollBar > .vhandle:hover,
+.community-menu.community-menu-light StScrollBar > .hhandle:hover {
+    background-color: #8e8e91;
+}
+
 .community-menu.community-menu-light .search-entry {
     color: #2e2e33;
     caret-color: #2e2e33;
