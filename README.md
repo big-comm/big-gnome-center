@@ -1,4 +1,4 @@
-<h1 align="center">Community Layout Switcher</h1>
+<h1 align="center">Layout Switcher</h1>
 
 <p align="center">
   A GTK4 and libadwaita appearance manager for GNOME.
