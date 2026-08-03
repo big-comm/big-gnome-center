@@ -1,60 +1,116 @@
 <h1 align="center">Community Layout Switcher</h1>
 
 <p align="center">
-A GTK4 + libadwaita application for switching GNOME desktop layouts, managing shell extensions, fonts, visual effects, and themes.
+  A GTK4 and libadwaita appearance manager for GNOME.
 </p>
 
 <p align="center">
-  <img alt="License"    src="https://img.shields.io/badge/License-MIT%20%2B%20GPL--2.0%2B-green.svg">
-  <img alt="Platform"   src="https://img.shields.io/badge/Platform-Linux-informational.svg">
-  <img alt="Python"     src="https://img.shields.io/badge/Python-3.10%2B-3776ab.svg?logo=python&logoColor=white">
-  <img alt="GTK"        src="https://img.shields.io/badge/GTK-4.0-4a86cf.svg">
-  <img alt="Libadwaita" src="https://img.shields.io/badge/libadwaita-1.x-3584e4.svg">
-  <img alt="GNOME"      src="https://img.shields.io/badge/GNOME-45%2B-4a86cf.svg?logo=gnome&logoColor=white">
-  <img alt="Tests"      src="https://img.shields.io/badge/tests-235%20passing-success.svg">
-  <img alt="i18n"       src="https://img.shields.io/badge/i18n-29%20languages-blueviolet.svg">
+  Switch complete desktop layouts, tune fonts and themes, add visual effects,
+  and manage GNOME Shell extensions from one application.
 </p>
 
----
+<p align="center">
+  <img alt="Application version" src="https://img.shields.io/badge/version-2.16.1-3584e4.svg">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT%20%2B%20GPL--2.0%2B-green.svg">
+  <img alt="Python 3.10 or newer" src="https://img.shields.io/badge/Python-3.10%2B-3776ab.svg?logo=python&logoColor=white">
+  <img alt="GTK 4" src="https://img.shields.io/badge/GTK-4-4a86cf.svg?logo=gnome&logoColor=white">
+  <img alt="GNOME Shell 45 through 50" src="https://img.shields.io/badge/GNOME_Shell-45--50-4a86cf.svg?logo=gnome&logoColor=white">
+  <img alt="294 tests" src="https://img.shields.io/badge/tests-294-success.svg">
+  <img alt="29 translations" src="https://img.shields.io/badge/i18n-29_languages-9141ac.svg">
+</p>
 
-## Overview
-
-Community Layout Switcher is the appearance-management tool for [BigCommunity Linux](https://communitybig.org). It lets users reshape the GNOME desktop — panels, docks, extensions, fonts and themes — without editing dconf or logging out, while staying compatible with the distribution's `comm-gnome-config` sync services.
+Community Layout Switcher is the appearance-management application developed
+for [BigCommunity Linux](https://communitybig.org). It applies curated GNOME
+desktop profiles and brings the related appearance and extension controls into
+a single responsive interface.
 
 ## Features
 
-- **Layouts** — Apply curated desktop layouts (BigGnome, Desk UX, Hybrid, G-Unity, Classic, Minimal) with one click. Automatic pre-apply backup; per-layout user snapshots with a Plasma-style *Resume your changes* or *Apply original* prompt when revisiting a customized layout.
-- **Community Menu** — Bundled GNOME Shell 50 menu used independently from ArcMenu: application list in Classic, application grid in Desk UX, and Mint-style categories in Hybrid.
-- **Fonts** — Interface / document / monospace / legacy title selectors via `Gtk.FontDialog`, plus hinting and antialiasing controls, a searchable list of installed families with live previews, and quick access to Google Fonts.
-- **Themes** — Unified GNOME accent colors with automatic Orchis synchronization for BigGnome and Desk UX, plus independent icon-theme previews and one-click apply.
-- **Effects** — Dedicated page for visual extensions (Desktop Cube, Magic Lamp, Compiz Windows, Desktop Icons NG). Installs prefer `pacman` for stability and fall back to extensions.gnome.org.
-- **Extensions** — Three sub-tabs:
-  - **Featured** — curated set with one-click install/toggle/remove.
-  - **Browse** — full search of [extensions.gnome.org](https://extensions.gnome.org) inside the app, with sort, compatibility filter, screenshots carousel, recent comments and direct install.
-  - **Installed** — every installed extension with toggle, remove, *Update* badge and *Update all* button when new versions are available. A session monitor checks for updates while the app is closed and shows actionable GNOME notifications. Optional auto-update is **opt-in** in the main menu.
-- **Backups** — Every apply creates a timestamped dconf dump. A dedicated dialog lists all backups with restore/delete and a manual-snapshot button.
-- **Sync-aware** — Cooperates with the `dconf-sync-gnome.service` from `comm-gnome-config`: the monitor is paused around each apply, user extensions are suspended to avoid transient error states, and the final state is persisted atomically to `~/.config/dconf/settings.gnome`.
+- **Layouts** — Choose between BigGnome, Desk UX, Hybrid, G-Unity, Classic,
+  and Minimal. Applying a layout creates a dconf backup automatically and can
+  be undone from the success notification.
+- **Per-layout snapshots** — Changes made after applying a layout are saved.
+  When returning to it, choose between resuming the customized state and
+  restoring the bundled original.
+- **Live switching** — The bundled GNOME Shell helper coordinates extension
+  transitions and stylesheet reloads inside the Shell. The selected profile is
+  also written atomically to `~/.config/dconf/settings.gnome` for the next
+  login.
+- **Fonts** — Set interface, document, and monospace fonts; configure hinting,
+  antialiasing, and text scale; search Google Fonts and install a family for
+  the current user.
+- **Themes** — Select one of ten GNOME accent colors and browse, preview,
+  filter, and apply installed icon themes.
+- **Effects** — Install, enable, disable, configure, or remove Desktop Cube,
+  Magic Lamp, and Compiz Windows from visual cards with previews.
+- **Extensions** — Manage featured and installed extensions or search
+  [extensions.gnome.org](https://extensions.gnome.org) without leaving the
+  app. Search results support sorting, GNOME-version compatibility filtering,
+  pagination, screenshots, ratings, recent comments, and direct installation.
+- **Extension updates** — Check user-installed extensions individually or in
+  bulk. A session monitor can notify about updates while the main window is
+  closed; automatic updates remain opt-in.
+- **Backups** — Create, restore, and delete full dconf snapshots from the main
+  menu. The ten newest automatic or manual backups are retained by default.
+- **Community Menu** — A bundled applications-menu extension used by the
+  distribution layouts, independent from ArcMenu.
+- **Localization** — Gettext catalogs are included for 29 languages.
 
 ## Screenshots
 
-> Screenshots go in `docs/screenshots/` and are referenced here.
+<p align="center">
+  <img src="docs/screenshots/layouts.webp" alt="Layouts page with six desktop layouts" width="820">
+  <br>
+  <sub>Six curated layouts with active and modified-state indicators.</sub>
+</p>
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/fonts.webp" alt="Font preferences page"><br>
+      <sub>Font families, rendering, scale, and Google Fonts.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/themes.webp" alt="Theme accent color page"><br>
+      <sub>GNOME accent colors and searchable icon themes.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/effects.webp" alt="Visual effects page"><br>
+      <sub>Visual effects with previews and installation controls.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/extensions.webp" alt="Featured extensions page"><br>
+      <sub>Featured, browsable, and installed extensions.</sub>
+    </td>
+  </tr>
+</table>
 
 ## Requirements
 
-- GNOME Shell **45+**
-- Python **3.10+**
-- PyGObject bindings for **GTK 4** and **libadwaita 1**
-- `dconf`, `gsettings`, `gnome-extensions` (standard on GNOME systems)
+- Linux with GNOME Shell 45–50. The bundled Community Menu currently targets
+  GNOME Shell 50.
+- Python 3.10 or newer.
+- PyGObject with GTK 4, libadwaita 1, and Pango bindings.
+- `dconf`, `gsettings`, `gnome-extensions`, and
+  `glib-compile-schemas`.
+- The GNOME Shell extensions required by each layout. The Arch package declares
+  the complete set in [`pkgbuild/PKGBUILD`](pkgbuild/PKGBUILD).
+- Network access for extensions.gnome.org, extension updates, screenshots, and
+  Google Fonts.
 
 ## Installation
 
-### Arch Linux / BigCommunity
+### BigCommunity or supported Arch repository
 
 ```sh
 sudo pacman -S layout-switcher
 ```
 
-### Build from source (Arch)
+### Build the Arch package
+
+Install `base-devel` and Git first, then run:
 
 ```sh
 git clone https://github.com/big-comm/layout-switcher.git
@@ -62,98 +118,157 @@ cd layout-switcher/pkgbuild
 makepkg -si
 ```
 
-### Manual install (any distro with GTK 4 + libadwaita)
+### Manual system install
+
+This method copies the application files but does not install distro packages.
+Install the requirements and layout extension dependencies first.
 
 ```sh
 git clone https://github.com/big-comm/layout-switcher.git
 cd layout-switcher
-sudo cp -r usr/ /
+sudo cp -a usr/. /usr/
+sudo cp -a etc/. /etc/
+sudo glib-compile-schemas /usr/share/glib-2.0/schemas
 ```
+
+Log out and back in after a manual install so the helper guard and bundled
+GNOME Shell extensions are discovered for the new session.
 
 ## Usage
 
-Launch from the application grid or run `layout-switcher` from a terminal. The sidebar exposes the five sections:
+Open **Community Layout Switcher** from the application grid or run:
 
-```
-Layouts   Fonts   Themes   Effects   Extensions
+```sh
+layout-switcher
 ```
 
-The hamburger menu gives access to **Backups…** (restore or snapshot the dconf state) and **About**.
+The sidebar contains five pages:
+
+- **Layouts** — Apply or resume a desktop profile.
+- **Fonts** — Change font families, rendering, scale, and Google Fonts.
+- **Themes** — Change accent colors and icon themes.
+- **Effects** — Manage the three featured visual-effect extensions.
+- **Extensions** — Use the Featured, Browse, and Installed views.
+
+The main menu provides **Check for updates**, **Auto-update extensions**,
+**Backups…**, and **About**. Press <kbd>Ctrl</kbd>+<kbd>Q</kbd> to quit.
+
+> [!IMPORTANT]
+> Layout files are complete dconf profiles. Review the bundled profiles before
+> adapting the application to another distribution. The app creates a backup
+> before each switch, but dconf settings covered by the selected profile will
+> change.
+
+## User data
+
+| Path | Purpose |
+| --- | --- |
+| `~/.config/big-appearance/settings.json` | Application preferences and active-layout state |
+| `~/.config/big-appearance/backups/` | Full dconf backups |
+| `~/.config/big-appearance/layout-snapshots/` | Customized state saved for each layout |
+| `~/.config/dconf/settings.gnome` | Profile persisted for the next GNOME login |
+| `~/.cache/layout-switcher/` | Extension metadata, screenshots, and Google Fonts catalog cache |
+| `~/.local/share/fonts/layout-switcher/google-fonts/` | Google Fonts installed for the current user |
+
+Set `LAYOUT_SWITCHER_N_KEEP` before starting the app to change the default
+backup retention count of 10.
 
 ## Development
 
+Run directly from a checkout:
+
 ```sh
-# run from the checkout without installing
-python usr/share/layout-switcher/main.py
+python3 usr/share/layout-switcher/main.py
+```
 
-# lint + format
+Install the development tools in your environment, then run the focused
+project checks:
+
+```sh
 ruff check .
-ruff format .
-
-# tests (235 unit tests, no display required)
-python -m pytest tests/ -q
+ruff format --check .
+python3 -m pytest tests/ -q
 ```
 
-### Project layout
+The test suite is display-independent and currently contains 294 tests.
 
-```
+### Project structure
+
+```text
+etc/xdg/autostart/                 Session helper and update monitor startup
+pkgbuild/                          Arch Linux package recipe and install hooks
+tests/                             Service, layout, helper, extension, and asset tests
+usr/bin/                           Application and helper-guard launchers
+usr/share/applications/            Desktop entry
+usr/share/gnome-shell/extensions/  Layout helper and Community Menu extensions
 usr/share/layout-switcher/
-├── main.py                          # Adw.Application entry point
-├── constants.py                     # APP_ID, LAYOUTS, i18n setup
-├── utils.py                         # subprocess + gsettings helpers
-├── backup_manager.py                # timestamped dconf dumps
-├── snapshot_manager.py              # per-layout user snapshots
-├── layout_applier.py                # atomic apply orchestration
-├── extension_manager.py             # install / toggle / remove / update
-├── shell_reloader.py                # D-Bus cascade reload (no logout)
-├── ego_client.py                    # extensions.gnome.org HTTP client
-├── ego_cache.py                     # disk cache (JSON TTL + thumbs LRU)
-├── update_checker.py                # detect & apply EGO updates
-├── theme_manager.py                 # Accent / Orchis / icon theme apply
-├── theme_preview.py                 # folder icon + CSS color extraction
-├── settings_store.py                # JSON settings + GSettings watcher
-└── ui/
-    ├── window.py                    # main window, sidebar, menu
-    ├── page_layouts.py              # layout grid with Resume/Original
-    ├── page_fonts.py                # font selectors + installed list
-    ├── page_themes.py               # Accent colors + icon-theme previews
-    ├── page_effects.py              # featured visual extensions
-    ├── page_extensions.py           # Featured / Browse / Installed
-    ├── ext_browse_view.py           # paginated EGO search + cards
-    ├── ext_detail_view.py           # carousel + comments + actions
-    ├── dialog_backups.py            # backup management dialog
-    ├── widgets.py                   # shared custom widgets
-    └── styles.py                    # APP_CSS
-
-usr/share/locale/                    # .po sources + compiled .mo (28 languages)
-tests/                               # pytest unit tests
-pkgbuild/                            # Arch PKGBUILD
+├── main.py                        Adw.Application entry point
+├── constants.py                   Application metadata and curated resources
+├── layout_applier.py              Live layout-switch orchestration
+├── backup_manager.py              Full dconf backup and restore
+├── snapshot_manager.py            Per-layout customized snapshots
+├── extension_manager.py           Extension lifecycle operations
+├── ego_client.py                  extensions.gnome.org client
+├── ego_cache.py                   Metadata and screenshot cache
+├── update_checker.py              Extension update detection and apply
+├── extension_update_monitor.py    Background checks and notifications
+├── google_fonts.py                User-level Google Fonts installer
+├── theme_manager.py               Accent, icon, and color-scheme integration
+├── helper_client.py               D-Bus client for the Shell helper
+├── layouts/                       Bundled complete dconf profiles
+├── icons/                         Layout preview artwork
+├── effects/                       Visual-effect preview images
+└── ui/                            GTK4/libadwaita pages, dialogs, and widgets
+usr/share/locale/                  PO sources and compiled MO catalogs
 ```
+
+### Layout file format
+
+Layout files are absolute dconf dumps. Generate them in a configured GNOME
+session with:
+
+```sh
+dconf dump / > usr/share/layout-switcher/layouts/<layout-name>.txt
+```
+
+Do not generate them from `/org/gnome/shell/`: a layout can contain settings
+outside that subtree and the loader expects absolute section paths.
 
 ## Translations
 
-User-facing strings are wrapped with `tr()` and extracted to `usr/share/locale/layout-switcher.pot`. The catalog is compiled to `.mo` files for **29 languages**:
+The application ships compiled `layout-switcher` catalogs for:
 
-> bg · cs · da · de · el · en · es · et · fi · fr · he · hr · hu · is · it · ja · ko · nl · no · pl · pt · pt_BR · ro · ru · sk · sv · tr · uk · zh
+> bg · cs · da · de · el · en · es · et · fi · fr · he · hr · hu · is · it
+> · ja · ko · nl · no · pl · pt · pt_BR · ro · ru · sk · sv · tr · uk · zh
 
-### Add or update a translation
+User-facing Python strings use `tr()`. The source template is
+`usr/share/locale/layout-switcher.pot`; locale sources are stored as
+`usr/share/locale/<locale>.po` and compiled into the corresponding
+`LC_MESSAGES` directory.
+
+Example update workflow:
 
 ```sh
-# 1. Regenerate the POT from source
-find usr/share/layout-switcher -name '*.py' | xargs xgettext \
-    --keyword=tr --language=Python --from-code=UTF-8 \
-    --output=usr/share/locale/layout-switcher.pot \
-    --package-name=layout-switcher
+find usr/share/layout-switcher -name '*.py' -print0 \
+  | xargs -0 xgettext --keyword=tr --language=Python --from-code=UTF-8 \
+      --output=usr/share/locale/layout-switcher.pot \
+      --package-name=layout-switcher
 
-# 2. Create/merge a language catalog
-msgmerge --update usr/share/locale/<lang>.po usr/share/locale/layout-switcher.pot
+msgmerge --update usr/share/locale/<locale>.po \
+  usr/share/locale/layout-switcher.pot
 
-# 3. Translate the msgstr entries, then compile
-msgfmt -o usr/share/locale/<lang>/LC_MESSAGES/layout-switcher.mo \
-          usr/share/locale/<lang>.po
+mkdir -p usr/share/locale/<locale>/LC_MESSAGES
+msgfmt --check --output-file=usr/share/locale/<locale>/LC_MESSAGES/layout-switcher.mo \
+  usr/share/locale/<locale>.po
 ```
+
+The bundled Community Menu maintains its own `community-menu` gettext domain
+under its extension directory.
 
 ## License
 
-The layout switcher is [MIT](LICENSE). The bundled Community Menu is a modified
-GPL-2.0-or-later derivative; see its `COPYING` and `UPSTREAM.md` files.
+Community Layout Switcher is distributed under the [MIT License](LICENSE).
+The bundled Community Menu is a modified GPL-2.0-or-later derivative; see its
+[`COPYING`](usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/COPYING)
+and [`UPSTREAM.md`](usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/UPSTREAM.md)
+files. Additional asset licensing is documented under `usr/share/licenses/`.
