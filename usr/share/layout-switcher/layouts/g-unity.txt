@@ -380,15 +380,17 @@ workspace-popup=true
 workspaces-in-app-grid=true
 
 [org/gnome/shell/extensions/kiwi]
+add-username-to-quick-menu=false
 battery-percentage=true
 dock-blur=false
 enable-app-window-buttons=false
-focus-launched-windows=true
+focus-launched-windows=false
 hide-activities-button=false
 hide-minimized-windows=false
 keyboard-indicator=false
 lock-icon=false
 move-calendar-right=true
+move-window-to-new-workspace=false
 overview-wallpaper-background=true
 panel-blur=false
 panel-hover-fullscreen=false

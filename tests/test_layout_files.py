@@ -275,14 +275,16 @@ def test_minimal_disables_only_unwanted_kiwi_behaviors():
     assert kiwi_values["move-window-to-new-workspace"] == "false"
 
 
-def test_g_unity_keeps_kiwi_focus_behavior():
+def test_g_unity_disables_only_unwanted_kiwi_behaviors():
     text = (LAYOUT_DIR / "g-unity.txt").read_text()
     enabled, disabled = _shell_extension_lists(text)
     kiwi_values = _section_key_values(text, "org/gnome/shell/extensions/kiwi")
 
     assert KIWI_UUID in enabled
     assert KIWI_UUID not in disabled
-    assert kiwi_values["focus-launched-windows"] == "true"
+    assert kiwi_values["add-username-to-quick-menu"] == "false"
+    assert kiwi_values["focus-launched-windows"] == "false"
+    assert kiwi_values["move-window-to-new-workspace"] == "false"
 
 
 def test_only_hybrid_ships_arcmenu_settings():
