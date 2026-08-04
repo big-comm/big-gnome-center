@@ -1,0 +1,12 @@
+# Re-apply layout-switcher's per-layout focus control whenever Kiwi is updated.
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = usr/share/gnome-shell/extensions/kiwi@kemma/extension.js
+Target = usr/share/gnome-shell/extensions/kiwi@kemma/schemas/org.gnome.shell.extensions.kiwi.gschema.xml
+
+[Action]
+Description = Re-applying layout-switcher's Kiwi focus policy...
+When = PostTransaction
+Exec = /usr/share/layout-switcher/patches/patch-kiwi-focus.sh

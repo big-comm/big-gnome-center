@@ -678,6 +678,18 @@ class LayoutApplier:
             timeout=10,
         )
 
+        # Kiwi's patched focus policy may have been installed after its JS
+        # module was loaded. A plain disable/enable reuses that cached module,
+        # leaving the old window-demands-attention handler connected. Force a
+        # true module reload when the target layout disables forced focus.
+        kiwi_values = cls._section_key_values(data, "/org/gnome/shell/extensions/kiwi")
+        if (
+            _KIWI_UUID in target_enabled
+            and kiwi_values.get("focus-launched-windows") == "false"
+            and not HelperClient.reload_extension(_KIWI_UUID)
+        ):
+            log.warning("could not reload Kiwi's focus policy; a new login may be required")
+
         # Self-heal: a target extension stuck in ERROR (state 3) won't recover
         # from a plain enable — trulyReload clears the dead module.
         states = ShellReloader.list_extensions_state()

@@ -15,9 +15,9 @@ printMsg() {
     echo -e "${blueDark}[${lightBlue}layout-switcher${blueDark}]${reset} ${cyan}→${reset} ${white}${message}${reset}"
 }
 
-# Apply the bundled downstream patches (currently the blur-my-shell recursion
-# fix). The pacman hook re-applies them whenever the target extension is
-# (re)installed; running them here covers installing/upgrading layout-switcher
+# Apply bundled downstream extension fixes. The related pacman hooks re-apply
+# them whenever the target extension is (re)installed; running them here covers
+# installing/upgrading layout-switcher
 # while the extension is already present. The scripts are idempotent.
 apply_bundled_patches() {
     local patch

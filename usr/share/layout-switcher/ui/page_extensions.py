@@ -29,6 +29,17 @@ from ui.ext_detail_view import ExtDetailView
 from utils import run_cmd
 
 
+def _matches_installed_extension(ext: Dict, query: str) -> bool:
+    """Match an installed extension by name, UUID, or description."""
+    needle = query.strip().casefold()
+    if not needle:
+        return True
+    searchable = "\n".join(
+        str(ext.get(field, "")) for field in ("name", "uuid", "description")
+    ).casefold()
+    return needle in searchable
+
+
 class ExtensionsPage(Gtk.Box):
     """
     Página de Extensões com sub-abas Destaque e Instaladas.
@@ -39,6 +50,8 @@ class ExtensionsPage(Gtk.Box):
         self._pool = pool
         self._toast = toast_cb
         self._ext_sub = "featured"
+        self._installed_exts = []
+        self._installed_query = ""
         # uuid → UpdateInfo. Populated by MainWindow after running the checker.
         self._updates: Dict[str, update_checker.UpdateInfo] = {}
         self._build()
@@ -477,6 +490,20 @@ class ExtensionsPage(Gtk.Box):
     def _build_installed_sub(self) -> Gtk.Widget:
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
 
+        self._installed_search = Gtk.SearchEntry()
+        self._installed_search.set_placeholder_text(tr("Extensions"))
+        self._installed_search.set_margin_start(22)
+        self._installed_search.set_margin_end(22)
+        self._installed_search.set_margin_top(6)
+        self._installed_search.set_margin_bottom(6)
+        self._installed_search.set_hexpand(True)
+        self._installed_search.update_property(
+            [Gtk.AccessibleProperty.LABEL],
+            [tr("Extensions")],
+        )
+        self._installed_search.connect("search-changed", self._on_installed_search_changed)
+        outer.append(self._installed_search)
+
         # Barra superior: contagem + botão abrir GNOME Extensions
         toolbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         toolbar.set_margin_start(22)
@@ -537,14 +564,8 @@ class ExtensionsPage(Gtk.Box):
         run_cmd(["xdg-open", "https://extensions.gnome.org"], timeout=5)
 
     def refresh_installed(self) -> None:
-        # Limpa container
-        child = self._inst_container.get_first_child()
-        while child:
-            nxt = child.get_next_sibling()
-            self._inst_container.remove(child)
-            child = nxt
-
         exts = ExtMgr.list_installed()
+        self._installed_exts = exts
         self._refresh_global_btn()
 
         # update sub-tab label with count
@@ -552,9 +573,27 @@ class ExtensionsPage(Gtk.Box):
         if inst_btn:
             inst_btn.set_label(f"{tr('Installed')} ({len(exts)})")
 
-        if not exts:
+        update_count = sum(1 for ext in exts if ext["uuid"] in self._updates)
+        self._update_all_btn.set_visible(update_count > 0)
+        self._update_all_btn.set_label(
+            f"{tr('Update all')} ({update_count})" if update_count > 1 else tr("Update")
+        )
+        self._render_installed()
+
+    def _on_installed_search_changed(self, entry: Gtk.SearchEntry) -> None:
+        self._installed_query = entry.get_text().strip()
+        self._render_installed()
+
+    def _render_installed(self) -> None:
+        """Render cached installed extensions using the current local filter."""
+        child = self._inst_container.get_first_child()
+        while child:
+            nxt = child.get_next_sibling()
+            self._inst_container.remove(child)
+            child = nxt
+
+        if not self._installed_exts:
             self._inst_count_lbl.set_label("")
-            self._update_all_btn.set_visible(False)
             ph = Adw.StatusPage(
                 title=tr("No extensions installed"),
                 icon_name="application-x-addon-symbolic",
@@ -562,16 +601,28 @@ class ExtensionsPage(Gtk.Box):
             self._inst_container.append(ph)
             return
 
-        enabled_count = sum(1 for e in exts if e["enabled"])
-        update_count = sum(1 for e in exts if e["uuid"] in self._updates)
-        summary = f"{len(exts)} {tr('installed')}  ·  {enabled_count} {tr('enabled')}"
+        exts = [
+            ext
+            for ext in self._installed_exts
+            if _matches_installed_extension(ext, self._installed_query)
+        ]
+        enabled_count = sum(1 for ext in exts if ext["enabled"])
+        count = (
+            f"{len(exts)}/{len(self._installed_exts)}" if self._installed_query else str(len(exts))
+        )
+        update_count = sum(1 for ext in exts if ext["uuid"] in self._updates)
+        summary = f"{count} {tr('installed')}  ·  {enabled_count} {tr('enabled')}"
         if update_count > 0:
             summary += f"  ·  {update_count} {tr('update available')}"
         self._inst_count_lbl.set_label(summary)
-        self._update_all_btn.set_visible(update_count > 0)
-        self._update_all_btn.set_label(
-            f"{tr('Update all')} ({update_count})" if update_count > 1 else tr("Update")
-        )
+
+        if not exts:
+            ph = Adw.StatusPage(
+                title=tr("No results"),
+                icon_name="edit-find-symbolic",
+            )
+            self._inst_container.append(ph)
+            return
 
         # Divide em dois grupos: Habilitadas e Desabilitadas
         enabled_exts = [e for e in exts if e["enabled"]]

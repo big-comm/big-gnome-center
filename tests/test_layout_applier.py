@@ -1745,6 +1745,38 @@ class TestHelperIntegration:
         mock_v7.assert_called_once()
         assert mock_v7.call_args.kwargs["layout_label"] == "G-Unity"
 
+    @patch("layout_applier.ShellReloader.list_extensions_state", return_value={})
+    @patch("layout_applier.HelperClient.reload_extension", return_value=True)
+    @patch("layout_applier.HelperClient.complete_switch", return_value=(True, "steps"))
+    @patch("layout_applier.HelperClient.begin_switch", return_value=(True, ""))
+    @patch("layout_applier.HelperClient.ping_info", return_value={})
+    @patch("layout_applier.LayoutApplier._enabled_extensions", return_value=[])
+    @patch("layout_applier.LayoutApplier._managed_extension_subdirs", return_value=[])
+    @patch("layout_applier.run_cmd", return_value=(True, ""))
+    def test_cleanroom_reloads_kiwi_when_forced_focus_is_disabled(
+        self,
+        _run,
+        _subdirs,
+        _enabled,
+        _ping,
+        _begin,
+        _complete,
+        mock_reload,
+        _states,
+    ):
+        data = (
+            "[org/gnome/shell]\n"
+            "disabled-extensions=[]\n"
+            "enabled-extensions=['kiwi@kemma']\n\n"
+            "[org/gnome/shell/extensions/kiwi]\n"
+            "focus-launched-windows=false\n"
+        )
+
+        ok, _msg = LayoutApplier._apply_via_helper_v7(data)
+
+        assert ok is True
+        mock_reload.assert_called_once_with("kiwi@kemma")
+
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
     @patch("layout_applier.LayoutApplier._reset_orphan_keys")
     @patch("layout_applier.HelperClient.apply_layout")

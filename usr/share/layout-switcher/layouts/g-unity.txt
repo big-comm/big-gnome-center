@@ -383,6 +383,7 @@ workspaces-in-app-grid=true
 battery-percentage=true
 dock-blur=false
 enable-app-window-buttons=false
+focus-launched-windows=true
 hide-activities-button=false
 hide-minimized-windows=false
 keyboard-indicator=false

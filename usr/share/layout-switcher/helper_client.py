@@ -273,7 +273,12 @@ class HelperClient:
         from gi.repository import GLib
 
         out = cls._call("ReloadExtension", GLib.Variant("(s)", (uuid,)), timeout_ms)
-        return out is not None
+        if out is None:
+            return False
+        try:
+            return bool(json.loads(out).get("ok", False))
+        except (ValueError, json.JSONDecodeError):
+            return False
 
     @classmethod
     def apply_layout(

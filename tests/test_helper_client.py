@@ -100,5 +100,15 @@ class TestApplyLayout:
         assert payload["step_ms"] == 200
 
 
+class TestReloadExtension:
+    @patch("helper_client.HelperClient._call", return_value='{"ok":true,"uuid":"kiwi@kemma"}')
+    def test_returns_helper_result(self, _mock):
+        assert HelperClient.reload_extension("kiwi@kemma") is True
+
+    @patch("helper_client.HelperClient._call", return_value='{"ok":false,"error":"busy"}')
+    def test_rejects_helper_error(self, _mock):
+        assert HelperClient.reload_extension("kiwi@kemma") is False
+
+
 def test_helper_uuid_constant():
     assert HELPER_UUID == "layout-switcher-helper@bigcommunity.org"

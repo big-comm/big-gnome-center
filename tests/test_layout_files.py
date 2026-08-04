@@ -24,6 +24,7 @@ ARCMENU_UUID = "arcmenu@arcmenu.com"
 DASH_TO_PANEL_UUID = "dash-to-panel@jderose9.github.com"
 USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
+KIWI_UUID = "kiwi@kemma"
 LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
 COPYOUS_SECTION = "org/gnome/shell/extensions/copyous"
 COMMUNITY_MENU_LAYOUTS = {
@@ -260,6 +261,28 @@ def test_panel_menus_are_disabled_in_shell_native_layouts():
         assert COMMUNITY_MENU_UUID in disabled
         assert ARCMENU_UUID not in enabled
         assert ARCMENU_UUID in disabled
+
+
+def test_minimal_disables_only_unwanted_kiwi_behaviors():
+    text = (LAYOUT_DIR / "minimal.txt").read_text()
+    enabled, disabled = _shell_extension_lists(text)
+    kiwi_values = _section_key_values(text, "org/gnome/shell/extensions/kiwi")
+
+    assert KIWI_UUID in enabled
+    assert KIWI_UUID not in disabled
+    assert kiwi_values["add-username-to-quick-menu"] == "false"
+    assert kiwi_values["focus-launched-windows"] == "false"
+    assert kiwi_values["move-window-to-new-workspace"] == "false"
+
+
+def test_g_unity_keeps_kiwi_focus_behavior():
+    text = (LAYOUT_DIR / "g-unity.txt").read_text()
+    enabled, disabled = _shell_extension_lists(text)
+    kiwi_values = _section_key_values(text, "org/gnome/shell/extensions/kiwi")
+
+    assert KIWI_UUID in enabled
+    assert KIWI_UUID not in disabled
+    assert kiwi_values["focus-launched-windows"] == "true"
 
 
 def test_only_hybrid_ships_arcmenu_settings():
