@@ -1,0 +1,301 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+
+.frosted-glass-shell-surface,
+.frosted-glass-shell-surface.quick-settings,
+.frosted-glass-shell-surface.datemenu-popover,
+.frosted-glass-shell-surface.notification-banner,
+.frosted-glass-shell-surface.notification-banner:hover,
+.frosted-glass-shell-surface.notification-banner:focus,
+.frosted-glass-shell-surface.popup-menu-content,
+.frosted-glass-shell-surface.dash-background {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#panel.frosted-glass-shell-surface {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Light Shell sessions use a pale shared tint and dark foregrounds. The
+ * background blur remains single-pass; these rules only repaint controls. */
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light,
+.frosted-glass-shell-surface.notification-banner.frosted-glass-light,
+.frosted-glass-shell-surface.modal-dialog.frosted-glass-light,
+.frosted-glass-quick-submenu.frosted-glass-light {
+  color: #2e2e33 !important;
+}
+
+.community-menu.community-menu-light
+  .popup-menu-content.frosted-glass-shell-surface.frosted-glass-light {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Inner controls use cheap translucent paint over the shared blur. Avoid
+ * per-control shadows: calendar grids turn those into dozens of offscreen
+ * render targets and severely degrade pointer/frame latency. */
+.frosted-glass-shell-surface.quick-settings .icon-button,
+.frosted-glass-shell-surface.quick-settings .button,
+.frosted-glass-shell-surface.quick-settings .quick-toggle,
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu-button,
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu,
+.frosted-glass-shell-surface.quick-settings .slider-bin {
+  background-color: rgba(30, 31, 38, 0.42) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .icon-button,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .button,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle-menu-button,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle-menu,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .slider-bin,
+.frosted-glass-quick-submenu.frosted-glass-light {
+  background-color: rgba(255, 255, 255, 0.48) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+/* QuickToggleMenu actors live in the Quick Settings overlay, outside the
+ * .quick-settings content subtree. Keep one shared blur and paint only the
+ * submenu material here. */
+.frosted-glass-quick-submenu {
+  background-color: rgba(30, 31, 38, 0.42) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+
+.frosted-glass-shell-surface.quick-settings .icon-button:hover,
+.frosted-glass-shell-surface.quick-settings .button:hover,
+.frosted-glass-shell-surface.quick-settings .quick-toggle:hover,
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu-button:hover,
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu:hover,
+.frosted-glass-shell-surface.quick-settings .slider-bin:hover {
+  background-color: rgba(48, 49, 58, 0.54) !important;
+}
+
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .icon-button:hover,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .button:hover,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle:hover,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle-menu-button:hover,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle-menu:hover,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .slider-bin:hover {
+  background-color: rgba(255, 255, 255, 0.66) !important;
+}
+
+.frosted-glass-shell-surface.quick-settings .quick-toggle:checked,
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu-button:checked,
+.frosted-glass-shell-surface.quick-settings .button:checked,
+.frosted-glass-shell-surface.quick-settings .button.default {
+  background-color: st-transparentize(-st-accent-color, 0.30) !important;
+  border-color: st-transparentize(-st-accent-fg-color, 0.88) !important;
+}
+
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle:checked,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .quick-toggle-menu-button:checked,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .button:checked,
+.frosted-glass-shell-surface.quick-settings.frosted-glass-light .button.default {
+  background-color: st-transparentize(-st-accent-color, 0.30) !important;
+  border-color: st-transparentize(-st-accent-fg-color, 0.88) !important;
+  color: -st-accent-fg-color !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover .calendar-day-heading,
+.frosted-glass-shell-surface.datemenu-popover .calendar-day,
+.frosted-glass-shell-surface.datemenu-popover .calendar-month-label,
+.frosted-glass-shell-surface.datemenu-popover .pager-button,
+.frosted-glass-shell-surface.datemenu-popover .message-list-clear-button,
+.frosted-glass-shell-surface.datemenu-popover .events-button,
+.frosted-glass-shell-surface.datemenu-popover .world-clocks-button,
+.frosted-glass-shell-surface.datemenu-popover .weather-button {
+  background-color: rgba(30, 31, 38, 0.38) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .calendar-day-heading,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .calendar-day,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .calendar-month-label,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .pager-button,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .message-list-clear-button,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .events-button,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .world-clocks-button,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .weather-button {
+  background-color: rgba(255, 255, 255, 0.46) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Notification cards share the date-menu blur. Painting them translucent is
+ * sufficient; another blur effect here would multiply GPU work per card. */
+.frosted-glass-shell-surface.datemenu-popover .message,
+.frosted-glass-shell-surface.datemenu-popover .message:second-in-stack,
+.frosted-glass-shell-surface.datemenu-popover .message:lower-in-stack {
+  background-color: rgba(30, 31, 38, 0.26) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .message,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .message:second-in-stack,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .message:lower-in-stack {
+  background-color: rgba(255, 255, 255, 0.34) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover .calendar-day-heading:hover,
+.frosted-glass-shell-surface.datemenu-popover .calendar-day:hover,
+.frosted-glass-shell-surface.datemenu-popover .calendar-month-label:hover,
+.frosted-glass-shell-surface.datemenu-popover .pager-button:hover,
+.frosted-glass-shell-surface.datemenu-popover .message-list-clear-button:hover,
+.frosted-glass-shell-surface.datemenu-popover .events-button:hover,
+.frosted-glass-shell-surface.datemenu-popover .world-clocks-button:hover,
+.frosted-glass-shell-surface.datemenu-popover .weather-button:hover {
+  background-color: rgba(48, 49, 58, 0.50) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .calendar-day-heading:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .calendar-day:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .calendar-month-label:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .pager-button:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .message-list-clear-button:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .events-button:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .world-clocks-button:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .weather-button:hover {
+  background-color: rgba(255, 255, 255, 0.62) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover .message:hover,
+.frosted-glass-shell-surface.datemenu-popover .message:focus {
+  background-color: rgba(48, 49, 58, 0.38) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .message:hover,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .message:focus {
+  background-color: rgba(255, 255, 255, 0.52) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover .calendar-day.calendar-today {
+  background-color: st-transparentize(-st-accent-color, 0.28) !important;
+  border-color: st-transparentize(-st-accent-fg-color, 0.88) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light
+  .calendar-day.calendar-today {
+  color: -st-accent-fg-color !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover .calendar-day:insensitive,
+.frosted-glass-shell-surface.datemenu-popover .message-list-clear-button:insensitive {
+  background-color: rgba(30, 31, 38, 0.20) !important;
+}
+
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light .calendar-day:insensitive,
+.frosted-glass-shell-surface.datemenu-popover.frosted-glass-light
+  .message-list-clear-button:insensitive {
+  background-color: rgba(255, 255, 255, 0.24) !important;
+}
+
+.frosted-glass-shell-surface.modal-dialog .modal-dialog-button {
+  background-color: rgba(30, 31, 38, 0.42) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+
+.frosted-glass-shell-surface.modal-dialog.frosted-glass-light .modal-dialog-button {
+  background-color: rgba(255, 255, 255, 0.48) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+.frosted-glass-shell-surface.modal-dialog .modal-dialog-button:hover,
+.frosted-glass-shell-surface.modal-dialog .modal-dialog-button:focus {
+  background-color: rgba(48, 49, 58, 0.54) !important;
+}
+
+.frosted-glass-shell-surface.modal-dialog.frosted-glass-light .modal-dialog-button:hover,
+.frosted-glass-shell-surface.modal-dialog.frosted-glass-light .modal-dialog-button:focus {
+  background-color: rgba(255, 255, 255, 0.66) !important;
+}
+
+.frosted-glass-shell-surface.modal-dialog .modal-dialog-button.default,
+.frosted-glass-shell-surface.modal-dialog .modal-dialog-button:checked {
+  background-color: st-transparentize(-st-accent-color, 0.30) !important;
+  border-color: st-transparentize(-st-accent-fg-color, 0.88) !important;
+}
+
+.frosted-glass-shell-surface.modal-dialog.frosted-glass-light .modal-dialog-button.default,
+.frosted-glass-shell-surface.modal-dialog.frosted-glass-light .modal-dialog-button:checked {
+  color: -st-accent-fg-color !important;
+}
+
+.frosted-glass-window {
+  background-color: transparent;
+}
+
+.frosted-glass-overview .workspace-animation {
+  background-color: transparent !important;
+}
+
+/* Overview controls sit above an already blurred wallpaper. Keep their
+ * material translucent instead of adding another blur pass per actor. */
+.frosted-glass-overview .search-entry {
+  color: white !important;
+  background-color: rgba(200, 200, 200, 0.20) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.frosted-glass-overview .search-entry .search-entry-icon {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.frosted-glass-overview .workspace-thumbnail {
+  background-color: rgba(200, 200, 200, 0.20) !important;
+}
+
+/* The overview wallpaper is already blurred once. Folder tiles are a glass
+ * layer over that texture, avoiding one extra background-blur pass per tile. */
+.frosted-glass-overview .overview-tile.app-folder {
+  background-color: rgba(24, 25, 31, 0.28) !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder {
+  background-color: rgba(255, 255, 255, 0.30) !important;
+  color: #2e2e33 !important;
+}
+
+.frosted-glass-overview .overview-tile.app-folder:hover,
+.frosted-glass-overview .overview-tile.app-folder:focus,
+.frosted-glass-overview .overview-tile.app-folder:selected,
+.frosted-glass-overview .overview-tile.app-folder:highlighted {
+  background-color: rgba(44, 46, 55, 0.38) !important;
+}
+
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder:hover,
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder:focus,
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder:selected,
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder:highlighted {
+  background-color: rgba(255, 255, 255, 0.44) !important;
+}
+
+.frosted-glass-overview .overview-tile.app-folder:active,
+.frosted-glass-overview .overview-tile.app-folder:focus:hover,
+.frosted-glass-overview .overview-tile.app-folder:drop {
+  background-color: rgba(52, 54, 64, 0.46) !important;
+}
+
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder:active,
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder:focus:hover,
+.frosted-glass-overview.frosted-glass-light .overview-tile.app-folder:drop {
+  background-color: rgba(255, 255, 255, 0.54) !important;
+}

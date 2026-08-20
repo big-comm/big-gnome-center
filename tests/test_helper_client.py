@@ -3,7 +3,15 @@
 
 from unittest.mock import call, patch
 
-from helper_client import HELPER_UUID, HelperClient
+from helper_client import (
+    BIG_SHOT_UUID,
+    COMMUNITY_MENU_UUID,
+    HELPER_UUID,
+    LEGACY_BIG_SHOT_UUID,
+    LEGACY_COMMUNITY_MENU_UUID,
+    LEGACY_HELPER_UUID,
+    HelperClient,
+)
 
 
 class TestIsAvailable:
@@ -37,6 +45,58 @@ class TestRequiredExtensionLists:
 
         assert enabled == [HELPER_UUID, "alpha@example.org"]
         assert disabled == ["disabled@example.org"]
+
+    def test_retires_legacy_uuid(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [LEGACY_HELPER_UUID, "alpha@example.org"],
+            [HELPER_UUID, LEGACY_HELPER_UUID, "disabled@example.org"],
+        )
+
+        assert enabled == [HELPER_UUID, "alpha@example.org"]
+        assert disabled == ["disabled@example.org"]
+
+    def test_migrates_owned_extension_uuids_without_touching_others(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [LEGACY_COMMUNITY_MENU_UUID, LEGACY_BIG_SHOT_UUID, "user@example.org"],
+            [COMMUNITY_MENU_UUID, "disabled@example.org"],
+        )
+
+        assert enabled == [
+            HELPER_UUID,
+            COMMUNITY_MENU_UUID,
+            BIG_SHOT_UUID,
+            "user@example.org",
+        ]
+        assert disabled == ["disabled@example.org"]
+
+    def test_migrates_disabled_owned_extension_without_enabling_it(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            ["user@example.org"],
+            [LEGACY_COMMUNITY_MENU_UUID, LEGACY_BIG_SHOT_UUID],
+        )
+
+        assert enabled == [HELPER_UUID, "user@example.org"]
+        assert disabled == [COMMUNITY_MENU_UUID, BIG_SHOT_UUID]
+
+
+class TestActiveUuid:
+    @patch(
+        "helper_client.HelperClient.ping_info",
+        return_value={
+            "helper": "layout-switcher",
+            "uuid": HELPER_UUID,
+            "version": 26,
+        },
+    )
+    def test_detects_current_helper(self, _mock_ping):
+        assert HelperClient.active_uuid() == HELPER_UUID
+
+    @patch(
+        "helper_client.HelperClient.ping_info",
+        return_value={"helper": "layout-switcher", "version": 25},
+    )
+    def test_detects_legacy_helper_without_uuid_field(self, _mock_ping):
+        assert HelperClient.active_uuid() == LEGACY_HELPER_UUID
 
 
 class TestEnsureAvailable:
@@ -110,5 +170,35 @@ class TestReloadExtension:
         assert HelperClient.reload_extension("kiwi@kemma") is False
 
 
+class TestNotificationPosition:
+    @patch("helper_client.HelperClient._call")
+    def test_applies_position(self, mock_call):
+        mock_call.return_value = '{"ok":true,"position":"bottom-right"}'
+
+        ok, position = HelperClient.set_notification_position("bottom-right")
+
+        assert ok is True
+        assert position == "bottom-right"
+        assert mock_call.call_args.args[0] == "SetNotificationPosition"
+        assert mock_call.call_args.args[1].unpack()[0] == "bottom-right"
+
+    @patch("helper_client.HelperClient._call")
+    def test_returns_helper_error(self, mock_call):
+        mock_call.return_value = '{"ok":false,"error":"busy"}'
+
+        ok, message = HelperClient.set_notification_position("top-center")
+
+        assert ok is False
+        assert message == "busy"
+
+
 def test_helper_uuid_constant():
-    assert HELPER_UUID == "layout-switcher-helper@bigcommunity.org"
+    assert HELPER_UUID == "layout-switcher-helper@communitybig.org"
+    assert LEGACY_HELPER_UUID == "layout-switcher-helper@bigcommunity.org"
+
+
+def test_owned_extension_uuid_migrations():
+    assert COMMUNITY_MENU_UUID == "community-menu@communitybig.org"
+    assert LEGACY_COMMUNITY_MENU_UUID == "community-menu@bigcommunity.org"
+    assert BIG_SHOT_UUID == "big-shot@communitybig.org"
+    assert LEGACY_BIG_SHOT_UUID == "big-shot@bigcommunity.org"

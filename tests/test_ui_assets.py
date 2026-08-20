@@ -20,9 +20,7 @@ def test_application_icon_has_large_intrinsic_size():
 def test_update_notification_opens_installed_extensions():
     main_source = (ROOT / "usr/share/layout-switcher/main.py").read_text()
     window_source = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
-    extensions_source = (
-        ROOT / "usr/share/layout-switcher/ui/page_extensions.py"
-    ).read_text()
+    extensions_source = (ROOT / "usr/share/layout-switcher/ui/page_extensions.py").read_text()
 
     assert "Gio.ApplicationFlags.HANDLES_COMMAND_LINE" in main_source
     assert '"--extensions-updates"' in main_source
@@ -76,12 +74,22 @@ def test_effect_assets_and_gallery_geometry():
         "layout-effect-lamp-symbolic",
         "layout-effect-wobbly-symbolic",
     ):
-        assert icon in constants
-        icon_source = (
-            ROOT / f"usr/share/icons/hicolor/scalable/actions/{icon}.svg"
-        ).read_text()
+        icon_source = (ROOT / f"usr/share/icons/hicolor/scalable/actions/{icon}.svg").read_text()
         assert "Font Awesome Free 6.7.2" in icon_source
         assert "Icons: CC BY 4.0" in icon_source
+
+    window_source = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
+    assert "layout-effect-cube-symbolic" in constants
+    assert "layout-effect-wobbly-symbolic" in constants
+    assert '("effects", tr("Effects"), "layout-effect-lamp-symbolic")' in window_source
+
+    genie_icon = (
+        ROOT / "usr/share/icons/hicolor/scalable/actions/layout-effect-genie-lamp-symbolic.svg"
+    ).read_text()
+    assert "<title>Genie lamp</title>" in genie_icon
+    assert 'stroke="currentColor"' in genie_icon
+
+    assert '"icon": "layout-effect-genie-lamp-symbolic"' in constants
 
     license_text = (
         ROOT / "usr/share/licenses/layout-switcher/FONT-AWESOME-LICENSE.txt"

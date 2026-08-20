@@ -45,12 +45,7 @@ class ThemeMgr:
     @staticmethod
     def _layout_snapshot_marker() -> Path:
         """Return the marker for the last layout-managed settings snapshot."""
-        return (
-            Path.home()
-            / ".config"
-            / "dconf"
-            / "settings.gnome.layout-switcher.sha256"
-        )
+        return Path.home() / ".config" / "dconf" / "settings.gnome.layout-switcher.sha256"
 
     @staticmethod
     def _invalidate_layout_snapshot() -> None:
@@ -135,17 +130,13 @@ class ThemeMgr:
         Retorna (True, "") ou (False, código_erro).
         """
         if kind == "gtk":
-            ok, msg = gsettings_set(
-                "org.gnome.desktop.interface", "gtk-theme", name
-            )
+            ok, msg = gsettings_set("org.gnome.desktop.interface", "gtk-theme", name)
             if ok:
                 ThemeMgr._invalidate_layout_snapshot()
             return ok, msg
 
         if kind == "icons":
-            ok, msg = gsettings_set(
-                "org.gnome.desktop.interface", "icon-theme", name
-            )
+            ok, msg = gsettings_set("org.gnome.desktop.interface", "icon-theme", name)
             if ok:
                 ThemeMgr._invalidate_layout_snapshot()
             return ok, msg
@@ -170,9 +161,7 @@ class ThemeMgr:
             if not ExtMgr.is_installed(uid):
                 return False, "user-theme-not-installed"
 
-            ok, msg = gsettings_set(
-                "org.gnome.shell.extensions.user-theme", "name", settings_value
-            )
+            ok, msg = gsettings_set("org.gnome.shell.extensions.user-theme", "name", settings_value)
             if not ok:
                 return False, msg
 
@@ -306,13 +295,7 @@ class ThemeMgr:
             user_theme_name = ThemeMgr._string_value(
                 gsettings_get("org.gnome.shell.extensions.user-theme", "name")
             )
-        user_theme_enabled = (
-            _USER_THEME_UUID in enabled and _USER_THEME_UUID not in disabled
-        )
-        light_style_enabled = (
-            _LIGHT_STYLE_UUID in enabled and _LIGHT_STYLE_UUID not in disabled
-        )
-
+        user_theme_enabled = _USER_THEME_UUID in enabled and _USER_THEME_UUID not in disabled
         # Fixed-shell layouts and explicit user overrides are authoritative.
         # Applying "Original" remains responsible for restoring layout defaults.
         if native_shell and (user_theme_enabled or user_theme_name):

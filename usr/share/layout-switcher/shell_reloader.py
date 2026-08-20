@@ -36,7 +36,7 @@ from utils import is_wayland, run_cmd
 _LIVE_EXT_STATES = {1, 8}
 
 _LIST_EXT_STATE_RE = re.compile(
-    r"'([^']+)':\s*\{[^{}]*?'state':\s*<(\d+(?:\.\d+)?)>",
+    r"'uuid':\s*<'([^']+)'>.*?'state':\s*<(\d+(?:\.\d+)?)>",
     re.DOTALL,
 )
 _EXT_INFO_STATE_RE = re.compile(r"'state':\s*<(\d+(?:\.\d+)?)>")

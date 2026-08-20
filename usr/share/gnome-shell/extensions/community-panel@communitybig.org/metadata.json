@@ -1,0 +1,13 @@
+{
+  "extension-id": "community-panel",
+  "uuid": "community-panel@communitybig.org",
+  "name": "Community Panel",
+  "description": "BigCommunity's integrated taskbar and system panel for Classic, Hybrid and Desk UX.",
+  "shell-version": ["50", "51"],
+  "url": "https://github.com/BigCommunity/layout-switcher",
+  "gettext-domain": "dash-to-panel",
+  "version": 73,
+  "fork-version": 1,
+  "upstream-version": 73,
+  "original-authors": ["jderose9", "charlesg99"]
+}

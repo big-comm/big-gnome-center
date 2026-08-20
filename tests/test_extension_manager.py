@@ -42,12 +42,12 @@ class TestEnabledList:
 
     @patch(
         "extension_manager.gsettings_get",
-        return_value="@as ['arcmenu@arcmenu.com', 'dash-to-panel@jderose9.github.com']",
+        return_value="@as ['arcmenu@arcmenu.com', 'community-panel@communitybig.org']",
     )
     def test_at_prefix_with_uuids(self, mock_gs):
         # D5: type-annotated GVariant with real UUIDs parses cleanly.
         result = ExtMgr.enabled_list()
-        assert result == ["arcmenu@arcmenu.com", "dash-to-panel@jderose9.github.com"]
+        assert result == ["arcmenu@arcmenu.com", "community-panel@communitybig.org"]
 
     @patch("extension_manager.gsettings_get", return_value="not a list <garbage>")
     def test_malformed_returns_empty(self, mock_gs):

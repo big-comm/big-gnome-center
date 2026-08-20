@@ -246,58 +246,10 @@ sleep-inactive-ac-type='nothing'
 [org/gnome/shell]
 app-picker-layout=[{'AudioVideo': <{'position': <0>}>, 'Office': <{'position': <1>}>, 'Utilities': <{'position': <2>}>, 'Settings': <{'position': <3>}>, 'Network': <{'position': <4>}>, 'Game': <{'position': <5>}>, 'WebApps': <{'position': <6>}>, 'com.biglinux.calamares-config.desktop': <{'position': <7>}>}]
 command-history=['ajustes', 'r']
-disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com', 'community-menu@bigcommunity.org']
-enabled-extensions=['layout-switcher-helper@bigcommunity.org', 'appindicatorsupport@rgcjonas.gmail.com', 'dash-to-dock@micxgx.gmail.com', 'gsconnect@andyholmes.github.io', 'pamac-updates@manjaro.org', 'blur-my-shell@aunetx', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@bigcommunity.org']
+disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com', 'community-menu@communitybig.org']
+enabled-extensions=['layout-switcher-helper@communitybig.org', 'appindicatorsupport@rgcjonas.gmail.com', 'community-dock@communitybig.org', 'gsconnect@andyholmes.github.io', 'pamac-updates@manjaro.org', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@communitybig.org']
 favorite-apps=['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.gnome.Calculator.desktop', 'org.gnome.TextEditor.desktop', 'org.communitybig.ashyterm.desktop']
 welcome-dialog-last-shown-version='43.2'
-
-[org/gnome/shell/extensions/blur-my-shell]
-settings-version=2
-
-[org/gnome/shell/extensions/blur-my-shell/appfolder]
-brightness=0.59999999999999998
-sigma=30
-
-[org/gnome/shell/extensions/blur-my-shell/applications]
-blur=false
-blur-on-overview=false
-whitelist=@as []
-
-[org/gnome/shell/extensions/blur-my-shell/coverflow-alt-tab]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/dash-to-dock]
-blur=false
-brightness=0.29999999999999999
-override-background=true
-pipeline='pipeline_default_rounded'
-static-blur=true
-style-dash-to-dock=0
-unblur-in-overview=false
-
-[org/gnome/shell/extensions/blur-my-shell/lockscreen]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/overview]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/panel]
-blur=false
-brightness=0.60999999999999999
-override-background=true
-override-background-dynamically=false
-pipeline='pipeline_default'
-sigma=30
-static-blur=true
-style-panel=0
-unblur-in-overview=true
-
-[org/gnome/shell/extensions/blur-my-shell/screenshot]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/window-list]
-brightness=0.59999999999999998
-sigma=30
 
 [org/gnome/shell/extensions/copyous]
 history-length=70
@@ -325,6 +277,7 @@ preferred-monitor=-2
 preferred-monitor-by-connector='primary'
 pressure-threshold=100.0
 require-pressure-to-show=true
+running-indicator-style='DEFAULT'
 scroll-action='switch-workspace'
 show-mounts=false
 transparency-mode='FIXED'

@@ -81,9 +81,10 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Set, Tuple
 
 from constants import tr
-from helper_client import HELPER_UUID, HelperClient
+from helper_client import HELPER_UUID, LEGACY_HELPER_UUID, HelperClient
+from settings_store import Settings
 from shell_reloader import ShellReloader
-from utils import atomic_write_text, run_cmd
+from utils import atomic_write_text, gnome_shell_version, run_cmd
 
 log = logging.getLogger("layout-switcher")
 
@@ -123,24 +124,46 @@ _DTP_MONITOR_KEYED = (
     "panel-lengths",
 )
 _ARCMENU_UUID = "arcmenu@arcmenu.com"
-_COMMUNITY_MENU_UUID = "community-menu@bigcommunity.org"
-_DASH_TO_PANEL_UUID = "dash-to-panel@jderose9.github.com"
-_DASH_TO_DOCK_UUID = "dash-to-dock@micxgx.gmail.com"
+_COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
+_LEGACY_COMMUNITY_MENU_UUID = "community-menu@bigcommunity.org"
+_COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
+_PANEL_UUIDS = (_COMMUNITY_PANEL_UUID,)
+_COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
 _LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 _USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 _KIWI_UUID = "kiwi@kemma"
+_FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
+_GTK4_DING_UUID = "gtk4-ding@smedius.gitlab.com"
+_BLUR_MY_SHELL_UUID = "blur-my-shell@aunetx"
+_LAYOUT_INDEPENDENT_UUIDS = (_FROSTED_GLASS_UUID, _GTK4_DING_UUID)
+_LAYOUT_INDEPENDENT_SETTINGS_PREFIXES = (
+    "/org/communitybig/frosted-glass",
+    "/org/gnome/shell/extensions/gtk4-ding",
+)
+_GNOME50_OVERVIEW_BLUR_LAYOUTS = frozenset({"biggnome", "desk-ux", "g-unity"})
+_COMMUNITY_MENU_LAYOUTS = frozenset({"classic", "desk-ux", "hybrid"})
+_STRUCTURAL_EXTENSION_UUIDS = frozenset(
+    {
+        _ARCMENU_UUID,
+        _COMMUNITY_MENU_UUID,
+        _COMMUNITY_DOCK_UUID,
+        _COMMUNITY_PANEL_UUID,
+        _KIWI_UUID,
+        _LIGHT_STYLE_UUID,
+        _USER_THEME_UUID,
+    }
+)
 # Appearance-owning extensions the in-shell helper force-reloads when they
 # stay enabled across a switch, so they re-read their config and re-theme
 # live (user-theme is intentionally absent — Main.loadTheme re-applies it).
 _HELPER_RELOAD_UUIDS = frozenset(
     {
-        "dash-to-panel@jderose9.github.com",
-        "dash-to-dock@micxgx.gmail.com",
+        "community-panel@communitybig.org",
+        "community-dock@communitybig.org",
         "arcmenu@arcmenu.com",
-        "community-menu@bigcommunity.org",
+        "community-menu@communitybig.org",
         "kiwi@kemma",
         "light-style@gnome-shell-extensions.gcampax.github.com",
-        "blur-my-shell@aunetx",
     }
 )
 # Dock/panel owners whose actor lingers after a plain disable(): when they
@@ -148,32 +171,33 @@ _HELPER_RELOAD_UUIDS = frozenset(
 # destroyed cleanly (no ghost). Passed as the helper's teardown candidate set.
 _HELPER_TEARDOWN_UUIDS = frozenset(
     {
-        "dash-to-dock@micxgx.gmail.com",
-        "dash-to-panel@jderose9.github.com",
+        "community-dock@communitybig.org",
+        "community-panel@communitybig.org",
     }
 )
-# System indicators that must not be toggled across layout switches: their
-# disable() leaves orphan timers firing into disposed objects (pamac-updates
-# re-notifies "updates available" nonstop until relogin). Kept enabled if
-# already live, so the helper never disables them.
+# Extensions that remain live across layout switches. System indicators leave
+# orphan work behind when toggled. Frosted Glass is layout-independent and
+# discovers replacement panel, dock, and menu actors itself.
 _HELPER_PERSIST_UUIDS = frozenset(
     {
         "pamac-updates@manjaro.org",
         "appindicatorsupport@rgcjonas.gmail.com",
         "gsconnect@andyholmes.github.io",
         "drive-menu@gnome-shell-extensions.gcampax.github.com",
+        _FROSTED_GLASS_UUID,
+        _GTK4_DING_UUID,
     }
 )
 # Persisting an extension process does not imply preserving all its settings.
 # GSConnect pairing data must survive layout switches. AppIndicator stays live
 # for stability, but its visual placement remains owned by original layouts.
-_PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect"})
+_PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect", "gtk4-ding"})
 # Extensions that paint the GNOME *shell* stylesheet themselves (the panel,
 # menus). Main.loadTheme() rebuilds the global St theme and clobbers their
 # styling, so they must (re)apply AFTER it. The in-shell helper v3 already
 # sequences this correctly; against an older helper (loadTheme last) the app
 # reloads these once more after the apply so the bar isn't left un-themed
-# (e.g. minimal/g-unity losing kiwi's dark panel). user-theme is excluded — it
+# (e.g. G-Unity losing Kiwi's dark panel). user-theme is excluded — it
 # IS what loadTheme paints, so reloading it is handled separately.
 _HELPER_SHELL_THEME_UUIDS = frozenset(
     {
@@ -192,7 +216,7 @@ _HELPER_CLEANROOM_VERSION = 7
 _LAYOUT_DISPLAY_NAMES = {
     "biggnome": "BigGnome",
     "classic": "Classic",
-    "desk-ux": "Desk-UX",
+    "desk-ux": "Desk UX",
     "g-unity": "G-Unity",
     "hybrid": "Hybrid",
     "minimal": "Minimal",
@@ -205,14 +229,14 @@ _COLOR_SCHEME_KEY = (_INTERFACE_SECTION, "color-scheme")
 # Settings branches owned by layouts from an earlier package version. They
 # remain managed during migration even after their sections leave every dump,
 # otherwise stale live dconf is dumped back into authoritative settings.gnome.
-_LEGACY_MANAGED_EXTENSION_SUBDIRS = frozenset({"arcmenu"})
+_LEGACY_MANAGED_EXTENSION_SUBDIRS = frozenset({"arcmenu", "blur-my-shell"})
 
 # Paths where we're allowed to reset orphan keys (keys present in live
 # dconf but absent from the target layout). Restricted to extension
 # storage: that's where layout differences cause visible damage
-# (e.g. minimal sets blur-my-shell/panel/blur=false; biggnome doesn't
-# mention the key, expecting the default true; without a targeted
-# reset, blur stays off after switching). Other paths (settings-daemon,
+# (e.g. one layout sets an extension key while the next expects its default;
+# without a targeted reset, stale state survives the switch). Other paths
+# (settings-daemon,
 # notification app history, third-party apps) are off-limits — resetting
 # them would lose unrelated user state.
 _ORPHAN_RESET_PREFIXES = ("/org/gnome/shell/extensions/",)
@@ -220,25 +244,26 @@ _FRAGILE_LIVE_LEAVING = frozenset(
     {
         _ARCMENU_UUID,
         _COMMUNITY_MENU_UUID,
-        _DASH_TO_DOCK_UUID,
-        _DASH_TO_PANEL_UUID,
+        _COMMUNITY_DOCK_UUID,
+        _COMMUNITY_PANEL_UUID,
         _KIWI_UUID,
         _LIGHT_STYLE_UUID,
     }
 )
 _FRAGILE_LIVE_ENTERING = frozenset(
     {
-        _DASH_TO_PANEL_UUID,
+        _COMMUNITY_PANEL_UUID,
     }
 )
 _SHELL_MODE_DEPENDENT_ENTERING = (
-    _DASH_TO_DOCK_UUID,
+    _COMMUNITY_DOCK_UUID,
     _KIWI_UUID,
 )
 _EXTENSION_SETTINGS_SUBDIRS = {
     _ARCMENU_UUID: "/org/gnome/shell/extensions/arcmenu/",
     _COMMUNITY_MENU_UUID: "/org/gnome/shell/extensions/community-menu/",
-    _DASH_TO_PANEL_UUID: "/org/gnome/shell/extensions/dash-to-panel/",
+    _COMMUNITY_DOCK_UUID: "/org/gnome/shell/extensions/dash-to-dock/",
+    _COMMUNITY_PANEL_UUID: "/org/gnome/shell/extensions/dash-to-panel/",
     _USER_THEME_UUID: "/org/gnome/shell/extensions/user-theme/",
 }
 
@@ -262,7 +287,7 @@ class LayoutApplier:
     # DBus DisableExtension is synchronous — the extension is fully disabled
     # when the call returns. The gap lets the GLib event loop drain any
     # pending idle callbacks queued by the extension's disable() body before
-    # we move on; some extensions (blur-my-shell, dash-to-dock) need >20ms.
+    # we move on; some dock and panel extensions need more than 20 ms.
     _DISABLE_STEP_SEC = 0.1
     _SETTLE_SEC = 0.5  # final settle after last disable, before dconf load
     _MIN_DUMP_BYTES = 100
@@ -355,27 +380,140 @@ class LayoutApplier:
             log.debug("could not renew settings.gnome mtime: %s", exc)
 
     @classmethod
-    def _inject_helper_uuid(cls, data: str) -> str:
+    def _inject_helper_uuid(
+        cls,
+        data: str,
+        persistent_uuids: Optional[Iterable[str]] = None,
+        active_helper_uuid: str = "",
+    ) -> str:
         """
-        Ensure the in-shell helper extension UUID is in the layout's
-        ``enabled-extensions`` so it is loaded at every login (it owns no UI,
-        so keeping it enabled in every layout is safe) and so the app can
-        always reach it. No-op if already present.
+        Keep the helper enabled first and preserve layout-independent features.
+
+        During an in-place UUID upgrade, retain the loaded legacy helper until
+        logout. The new UUID is already persisted and takes over next login.
         """
+        data = cls._migrate_community_menu_uuid(data)
+        data = cls._retire_blur_my_shell(data)
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
+        independent = set(_LAYOUT_INDEPENDENT_UUIDS)
         enabled = cls._string_list(shell_values.get("enabled-extensions"))
-        if HELPER_UUID in enabled:
-            return data
-        # Prepend: loading FIRST keeps the helper out of every Shell rebase
-        # slice (rebases only re-toggle extensions loaded after the one
-        # being disabled), so no switch step can ever bounce it.
-        enabled.insert(0, HELPER_UUID)
-        return cls._replace_or_add_dconf_key(
+        enabled = [
+            uuid for uuid in enabled if uuid not in {HELPER_UUID, LEGACY_HELPER_UUID} | independent
+        ]
+        persistent = {uuid for uuid in (persistent_uuids or ()) if uuid}
+        for uuid in _LAYOUT_INDEPENDENT_UUIDS:
+            if uuid in persistent and uuid not in enabled:
+                enabled.append(uuid)
+        required = [HELPER_UUID]
+        if active_helper_uuid == LEGACY_HELPER_UUID:
+            required.insert(0, LEGACY_HELPER_UUID)
+        enabled = [*required, *enabled]
+        disabled = cls._string_list(shell_values.get("disabled-extensions"))
+        disabled = [
+            uuid for uuid in disabled if uuid not in {HELPER_UUID, LEGACY_HELPER_UUID} | independent
+        ]
+        data = cls._replace_or_add_dconf_key(
             data,
             "/org/gnome/shell",
             "enabled-extensions",
             cls._quote_string_list(enabled),
         )
+        if "disabled-extensions" not in shell_values:
+            return data
+        return cls._replace_or_add_dconf_key(
+            data,
+            "/org/gnome/shell",
+            "disabled-extensions",
+            cls._quote_string_list(disabled),
+        )
+
+    @classmethod
+    def _migrate_community_menu_uuid(cls, data: str) -> str:
+        """Replace the legacy reversed-domain Community Menu UUID."""
+        shell_values = cls._section_key_values(data, "/org/gnome/shell")
+        if not shell_values:
+            return data
+
+        def migrate(values: List[str]) -> List[str]:
+            migrated: List[str] = []
+            for uuid in values:
+                current = _COMMUNITY_MENU_UUID if uuid == _LEGACY_COMMUNITY_MENU_UUID else uuid
+                if current not in migrated:
+                    migrated.append(current)
+            return migrated
+
+        enabled = migrate(cls._string_list(shell_values.get("enabled-extensions")))
+        disabled = migrate(cls._string_list(shell_values.get("disabled-extensions")))
+        disabled = [uuid for uuid in disabled if uuid not in enabled]
+
+        out = data
+        if "enabled-extensions" in shell_values:
+            out = cls._replace_or_add_dconf_key(
+                out,
+                "/org/gnome/shell",
+                "enabled-extensions",
+                cls._quote_string_list(enabled),
+            )
+        if "disabled-extensions" in shell_values:
+            out = cls._replace_or_add_dconf_key(
+                out,
+                "/org/gnome/shell",
+                "disabled-extensions",
+                cls._quote_string_list(disabled),
+            )
+        return out
+
+    @classmethod
+    def _retire_blur_my_shell(cls, data: str) -> str:
+        """Remove Blur My Shell only from legacy profiles that enable it."""
+        shell_values = cls._section_key_values(data, "/org/gnome/shell")
+        enabled = cls._string_list(shell_values.get("enabled-extensions"))
+        if _BLUR_MY_SHELL_UUID not in enabled:
+            return data
+
+        enabled = [uuid for uuid in enabled if uuid != _BLUR_MY_SHELL_UUID]
+        disabled = [
+            uuid
+            for uuid in cls._string_list(shell_values.get("disabled-extensions"))
+            if uuid != _BLUR_MY_SHELL_UUID
+        ]
+        disabled.append(_BLUR_MY_SHELL_UUID)
+        out = cls._replace_or_add_dconf_key(
+            data,
+            "/org/gnome/shell",
+            "enabled-extensions",
+            cls._quote_string_list(enabled),
+        )
+        return cls._replace_or_add_dconf_key(
+            out,
+            "/org/gnome/shell",
+            "disabled-extensions",
+            cls._quote_string_list(disabled),
+        )
+
+    @classmethod
+    def _validate_structural_extensions(cls, data: str) -> Tuple[bool, str]:
+        """Reject layouts whose panel, dock, or menu cannot run."""
+        shell_values = cls._section_key_values(data, "/org/gnome/shell")
+        target = set(cls._string_list(shell_values.get("enabled-extensions")))
+        required = sorted(target & _STRUCTURAL_EXTENSION_UUIDS)
+        if not required:
+            return True, ""
+
+        states = ShellReloader.list_extensions_state()
+        if not states:
+            return True, ""
+
+        missing = [uuid for uuid in required if uuid not in states]
+        incompatible = [uuid for uuid in required if states.get(uuid) == 4]
+        if missing:
+            return False, "Missing required layout extension: " + ", ".join(missing)
+        if incompatible:
+            return False, (
+                "Required layout extension is incompatible with this GNOME Shell: "
+                + ", ".join(incompatible)
+            )
+        return True, ""
 
     @classmethod
     def _apply_via_helper(cls, data: str) -> Tuple[bool, str]:
@@ -406,9 +544,9 @@ class LayoutApplier:
         target_enabled = cls._string_list(shell_values.get("enabled-extensions"))
 
         # user-theme with an empty name throws on GNOME 50 ("Argument file may
-        # not be null") and lands in ERROR. Layouts that theme the Shell with
-        # kiwi (minimal, g-unity) ship user-theme enabled but nameless — treat
-        # it as disabled so it doesn't error and clobber the Shell style.
+        # not be null") and lands in ERROR. Some layouts ship user-theme
+        # enabled but nameless — treat it as disabled so it doesn't error and
+        # clobber the Shell style.
         ut_values = cls._section_key_values(data, "/org/gnome/shell/extensions/user-theme")
         ut_name = cls._gvariant_string(ut_values.get("name"))
         if _USER_THEME_UUID in target_enabled and not ut_name:
@@ -454,8 +592,8 @@ class LayoutApplier:
 
         # Theme-order workaround for an old helper (v2): it calls Main.loadTheme()
         # AFTER enabling the appearance extensions, so loadTheme wipes the panel
-        # styling kiwi/light-style applied (minimal/g-unity ended up with the
-        # bare default bar instead of kiwi's dark one). Reload those shell-theme
+        # styling kiwi/light-style applied (G-Unity ended up with the bare
+        # default bar instead of Kiwi's dark one). Reload those shell-theme
         # owners once more so their styling lands on top. v3+ sequences loadTheme
         # before the enable step, so this is skipped (no double reload / flicker).
         if HelperClient.helper_version() < _HELPER_THEME_ORDER_FIXED_VERSION:
@@ -575,9 +713,9 @@ class LayoutApplier:
         target_enabled = cls._string_list(shell_values.get("enabled-extensions"))
 
         # user-theme with an empty name throws on GNOME 50 ("Argument file may
-        # not be null") and lands in ERROR. Layouts that theme the Shell with
-        # kiwi (minimal, g-unity) ship user-theme enabled but nameless — treat
-        # it as disabled so it doesn't error and clobber the Shell style.
+        # not be null") and lands in ERROR. Some layouts ship user-theme
+        # enabled but nameless — treat it as disabled so it doesn't error and
+        # clobber the Shell style.
         ut_values = cls._section_key_values(data, "/org/gnome/shell/extensions/user-theme")
         ut_name = cls._gvariant_string(ut_values.get("name"))
         if _USER_THEME_UUID in target_enabled and not ut_name:
@@ -923,6 +1061,145 @@ class LayoutApplier:
         return values
 
     @staticmethod
+    def _dconf_subtree_blocks(text: str, prefix: str) -> List[str]:
+        """Return complete section blocks below one dconf path."""
+        clean_prefix = "/" + prefix.strip("/")
+        blocks: List[str] = []
+        current: List[str] = []
+        selected = False
+
+        for raw in text.splitlines(keepends=True):
+            stripped = raw.strip()
+            if stripped.startswith("[") and stripped.endswith("]"):
+                if selected and current:
+                    blocks.append("".join(current))
+                section = "/" + stripped[1:-1].strip("/")
+                selected = section == clean_prefix or section.startswith(clean_prefix + "/")
+                current = [raw] if selected else []
+                continue
+            if selected:
+                current.append(raw)
+
+        if selected and current:
+            blocks.append("".join(current))
+        return blocks
+
+    @staticmethod
+    def _remove_dconf_subtree(text: str, prefix: str) -> str:
+        """Remove complete section blocks below one dconf path."""
+        clean_prefix = "/" + prefix.strip("/")
+        out: List[str] = []
+        selected = False
+
+        for raw in text.splitlines(keepends=True):
+            stripped = raw.strip()
+            if stripped.startswith("[") and stripped.endswith("]"):
+                section = "/" + stripped[1:-1].strip("/")
+                selected = section == clean_prefix or section.startswith(clean_prefix + "/")
+            if not selected:
+                out.append(raw)
+        return "".join(out)
+
+    @classmethod
+    def _preserve_layout_independent_settings(cls, data: str) -> str:
+        """Keep global feature settings out of layout-owned snapshots."""
+        try:
+            current = SETTINGS_GNOME.read_text(encoding="utf-8")
+        except OSError as exc:
+            log.debug("cannot read current settings for global feature migration: %s", exc)
+            return data
+
+        for prefix in _LAYOUT_INDEPENDENT_SETTINGS_PREFIXES:
+            blocks = cls._dconf_subtree_blocks(current, prefix)
+            data = cls._remove_dconf_subtree(data, prefix).rstrip() + "\n"
+            if blocks:
+                data += "\n" + "\n".join(block.rstrip() for block in blocks) + "\n"
+        return data
+
+    @classmethod
+    def _apply_user_component_overrides(cls, data: str, layout_id: str = "") -> str:
+        """Apply explicit global component choices over a layout snapshot."""
+        prefs = Settings()
+        menu_state = prefs.get("community_menu_enabled")
+        if layout_id and layout_id not in _COMMUNITY_MENU_LAYOUTS:
+            menu_state = False
+        overrides = (
+            (_GTK4_DING_UUID, prefs.get("desktop_icons_enabled")),
+            (_COMMUNITY_MENU_UUID, menu_state),
+        )
+        shell = cls._section_key_values(data, "/org/gnome/shell")
+        enabled = cls._string_list(shell.get("enabled-extensions"))
+        disabled = cls._string_list(shell.get("disabled-extensions"))
+        changed = False
+
+        for uuid, state in overrides:
+            if not isinstance(state, bool):
+                continue
+            enabled = [item for item in enabled if item != uuid]
+            disabled = [item for item in disabled if item != uuid]
+            if state:
+                enabled.append(uuid)
+            else:
+                disabled.append(uuid)
+            changed = True
+
+        if changed:
+            data = cls._replace_or_add_dconf_key(
+                data,
+                "/org/gnome/shell",
+                "enabled-extensions",
+                cls._quote_string_list(enabled),
+            )
+            if "disabled-extensions" in shell:
+                data = cls._replace_or_add_dconf_key(
+                    data,
+                    "/org/gnome/shell",
+                    "disabled-extensions",
+                    cls._quote_string_list(disabled),
+                )
+
+        super_opens_menu = prefs.get("super_key_opens_menu")
+        if isinstance(super_opens_menu, bool):
+            data = cls._replace_or_add_dconf_key(
+                data,
+                "/org/gnome/shell/extensions/community-menu",
+                "super-key-opens-menu",
+                "true" if super_opens_menu else "false",
+            )
+        return data
+
+    @classmethod
+    def _apply_gnome50_overview_default(cls, data: str, layout_id: str) -> str:
+        """Apply the overview-only default owned by original GNOME 50 layouts."""
+        enabled = layout_id in _GNOME50_OVERVIEW_BLUR_LAYOUTS
+        value = "true" if enabled else "false"
+        data = cls._replace_or_add_dconf_key(
+            data,
+            "/org/communitybig/frosted-glass",
+            "enabled",
+            value,
+        )
+        data = cls._replace_or_add_dconf_key(
+            data,
+            "/org/communitybig/frosted-glass",
+            "overview-enabled",
+            value,
+        )
+        if not enabled:
+            return data
+
+        shell = cls._section_key_values(data, "/org/gnome/shell")
+        extensions = cls._string_list(shell.get("enabled-extensions"))
+        if _FROSTED_GLASS_UUID not in extensions:
+            extensions.append(_FROSTED_GLASS_UUID)
+        return cls._replace_or_add_dconf_key(
+            data,
+            "/org/gnome/shell",
+            "enabled-extensions",
+            cls._quote_string_list(extensions),
+        )
+
+    @staticmethod
     def _prefers_dark(values: Dict[Tuple[str, str], str]) -> Optional[bool]:
         """Infer current light/dark preference from live theme keys."""
         color_scheme = LayoutApplier._gvariant_string(
@@ -1168,13 +1445,9 @@ class LayoutApplier:
         Reset keys present in live dconf but absent from ``target_text``,
         restricted to ``_ORPHAN_RESET_PREFIXES`` (extension storage only).
 
-        Why this exists: ``dconf load`` is purely additive — it sets the
-        keys in its input but never clears keys that aren't there. So if
-        the previous layout (e.g. minimal) set
-        ``blur-my-shell/panel/blur=false`` and the new layout (biggnome)
-        doesn't mention that key (expecting the default ``true``), the
-        loaded biggnome inherits minimal's ``false`` and the panel blur
-        stays off.
+        Why this exists: ``dconf load`` is purely additive — it sets keys in
+        its input but never clears keys that are absent. A later layout can
+        otherwise inherit stale extension state from the previous layout.
 
         Restricting resets to ``/org/gnome/shell/extensions/`` avoids
         losing unrelated application/user state. If an extension branch is
@@ -1268,13 +1541,7 @@ class LayoutApplier:
     # throughout (see ``_NO_DISABLE``) so the global ``StTheme`` never
     # reverts to default mid-switch, and other extensions register
     # their stylesheets on top of the live Big-Blue theme.
-    _RELOAD_AFTER_LOAD = (
-        # Keep this list conservative. ReloadExtension calls disable() and
-        # enable() internally. Dash-to-panel and ArcMenu can stay in ERROR,
-        # while Dash to Dock can block the DBus call long enough to delay the
-        # switch. Their live gsettings handlers are enough for layout changes.
-        "blur-my-shell@aunetx",
-    )
+    _RELOAD_AFTER_LOAD = ()
 
     @classmethod
     def _reload_visual_extensions(cls, uuids: Iterable[str]) -> None:
@@ -1301,10 +1568,10 @@ class LayoutApplier:
             time.sleep(cls._DISABLE_STEP_SEC)
 
     @classmethod
-    def _dash_to_panel_live_state(cls) -> Optional[bool]:
-        """Return True/False when Shell reports DTP state, None on DBus failure."""
+    def _dash_to_panel_live_state(cls, panel_uuid: str = _COMMUNITY_PANEL_UUID) -> Optional[bool]:
+        """Return True/False when Shell reports panel state, None on DBus failure."""
         state = ShellReloader.get_extension_state(
-            _DASH_TO_PANEL_UUID,
+            panel_uuid,
             timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
         )
         if state is None:
@@ -1335,7 +1602,11 @@ class LayoutApplier:
         return ok
 
     @classmethod
-    def _restart_dash_to_panel_after_load(cls, desired_uuids: Iterable[str]) -> bool:
+    def _restart_dash_to_panel_after_load(
+        cls,
+        desired_uuids: Iterable[str],
+        panel_uuid: str = _COMMUNITY_PANEL_UUID,
+    ) -> bool:
         """
         Rebuild dash-to-panel after its target settings are fully loaded.
 
@@ -1351,72 +1622,53 @@ class LayoutApplier:
                 continue
             desired.append(uuid)
             seen.add(uuid)
-        if _DASH_TO_PANEL_UUID not in seen:
-            desired.append(_DASH_TO_PANEL_UUID)
+        if panel_uuid not in seen:
+            desired.append(panel_uuid)
 
-        without_dtp = [uuid for uuid in desired if uuid != _DASH_TO_PANEL_UUID]
+        without_dtp = [uuid for uuid in desired if uuid != panel_uuid]
         if not cls._set_enabled_extensions(without_dtp):
             return False
         time.sleep(cls._DISABLE_STEP_SEC)
 
         ok, msg = ShellReloader.enable_extension_dbus(
-            _DASH_TO_PANEL_UUID,
+            panel_uuid,
             enable=True,
             timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
         )
         if not ok:
             log.warning(
                 "post-load EnableExtension failed for %s: %s",
-                _DASH_TO_PANEL_UUID,
+                panel_uuid,
                 msg,
             )
             return False
         time.sleep(cls._DTP_REENABLE_SETTLE_SEC)
 
-        live = cls._dash_to_panel_live_state()
+        live = cls._dash_to_panel_live_state(panel_uuid)
         if live is not False:
             return True
 
-        log.warning("%s did not enter a live state after EnableExtension", _DASH_TO_PANEL_UUID)
+        log.warning("%s did not enter a live state after EnableExtension", panel_uuid)
         if not cls._set_enabled_extensions(desired):
             return False
         time.sleep(cls._DTP_REENABLE_SETTLE_SEC)
 
         ok, msg = ShellReloader.enable_extension_dbus(
-            _DASH_TO_PANEL_UUID,
+            panel_uuid,
             enable=True,
             timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
         )
         if not ok:
             log.warning(
                 "fallback EnableExtension failed for %s: %s",
-                _DASH_TO_PANEL_UUID,
+                panel_uuid,
                 msg,
             )
             return False
         time.sleep(cls._DTP_REENABLE_SETTLE_SEC)
 
-        live = cls._dash_to_panel_live_state()
+        live = cls._dash_to_panel_live_state(panel_uuid)
         return live is not False
-
-    @classmethod
-    def _enable_dash_to_dock_after_load(cls) -> bool:
-        ok, msg = ShellReloader.enable_extension_dbus(
-            _DASH_TO_DOCK_UUID,
-            enable=True,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if not ok:
-            log.warning("post-load EnableExtension failed for %s: %s", _DASH_TO_DOCK_UUID, msg)
-            return False
-        time.sleep(cls._DISABLE_STEP_SEC)
-        state = ShellReloader.get_extension_state(
-            _DASH_TO_DOCK_UUID,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if state is None:
-            return True
-        return state in _LIVE_EXTENSION_STATES
 
     @classmethod
     def _restart_light_style_after_load(cls) -> bool:
@@ -1471,9 +1723,7 @@ class LayoutApplier:
                 continue
 
             time.sleep(
-                cls._DTP_REENABLE_SETTLE_SEC
-                if uuid == _DASH_TO_PANEL_UUID
-                else cls._DISABLE_STEP_SEC
+                cls._DTP_REENABLE_SETTLE_SEC if uuid in _PANEL_UUIDS else cls._DISABLE_STEP_SEC
             )
             state = ShellReloader.get_extension_state(
                 uuid,
@@ -1929,6 +2179,7 @@ class LayoutApplier:
         layouts_dir: Optional[Path] = None,
         icon_from: str = "",
         icon_to: str = "",
+        layout_id: str = "",
     ) -> Tuple[bool, str]:
         """
         Apply ``data`` (a full dconf dump) to live dconf, and atomically
@@ -1991,6 +2242,21 @@ class LayoutApplier:
             detail = f": {helper_info}" if helper_info else ""
             return False, tr("Layout Switcher Helper is required to apply layouts.") + detail
 
+        data = cls._preserve_layout_independent_settings(data)
+        data = cls._inject_helper_uuid(
+            data,
+            before_uuids,
+            active_helper_uuid=HelperClient.active_uuid(),
+        )
+        data = cls._apply_user_component_overrides(data, layout_id=layout_id)
+        if layout_id and gnome_shell_version()[0] == 50:
+            data = cls._apply_gnome50_overview_default(data, layout_id)
+
+        data = cls._retire_blur_my_shell(data)
+        valid, validation_error = cls._validate_structural_extensions(data)
+        if not valid:
+            return False, validation_error
+
         cls._unit_cache = {}
         cls.last_apply_cleanroom = False
 
@@ -2008,11 +2274,7 @@ class LayoutApplier:
             cls._qt_theme_watcher("stop")
 
             if persist:
-                # settings.gnome carries the helper UUID so it loads at every
-                # login (the live orchestration keeps using the original text).
-                ok_persist, info = cls._persist_to_settings_file(
-                    cls._inject_helper_uuid(data)
-                )
+                ok_persist, info = cls._persist_to_settings_file(data)
                 if not ok_persist:
                     log.warning("could not persist settings.gnome: %s", info)
                     return False, f"settings.gnome write failed: {info}"
@@ -2063,7 +2325,7 @@ class LayoutApplier:
             # down to ``@as []``). GNOME Shell processes those changes
             # asynchronously; the later dconf load can then race pending
             # enable/disable work and make singleton-heavy extensions such
-            # as dash-to-dock, Drive Menu and Pamac Updates enter ERROR
+            # as Community Dock, Drive Menu and Pamac Updates enter ERROR
             # ("already initialized" / status indicator conflicts).
             #
             # LEAVING extensions are still disabled before the orphan reset,
@@ -2096,7 +2358,11 @@ class LayoutApplier:
                     "/org/gnome/shell/extensions/user-theme",
                     "name",
                 )
-            target_uses_dtp = _DASH_TO_PANEL_UUID in target_enabled
+            target_panel_uuid = next(
+                (uuid for uuid in _PANEL_UUIDS if uuid in target_enabled),
+                None,
+            )
+            target_uses_dtp = target_panel_uuid is not None
             target_panel_menus = [
                 uuid for uuid in (_COMMUNITY_MENU_UUID, _ARCMENU_UUID) if uuid in target_enabled
             ]
@@ -2116,9 +2382,7 @@ class LayoutApplier:
                 if panel_live_transition
                 else {uuid for uuid in leaving if uuid not in _NO_DISABLE}
             )
-            restart_target_dtp = (
-                _DASH_TO_PANEL_UUID in before_set and _DASH_TO_PANEL_UUID in target_enabled
-            )
+            restart_target_dtp = bool(target_panel_uuid and target_panel_uuid in before_set)
             if restart_target_dtp:
                 # GNOME Shell rebases later extensions when any earlier
                 # extension is disabled. If dash-to-panel stays enabled,
@@ -2126,7 +2390,7 @@ class LayoutApplier:
                 # panelManager still null and leave a ghost panel. Restart
                 # DTP first so later removals cannot rebase it, and so its
                 # own panel actors are rebuilt from complete target settings.
-                disable_batch.add(_DASH_TO_PANEL_UUID)
+                disable_batch.add(target_panel_uuid)
 
             shell_dbus_available = True
             if disable_batch:
@@ -2138,8 +2402,8 @@ class LayoutApplier:
                 )
                 if restart_target_dtp:
                     leaving_order = [
-                        _DASH_TO_PANEL_UUID,
-                        *[u for u in leaving_order if u != _DASH_TO_PANEL_UUID],
+                        target_panel_uuid,
+                        *[u for u in leaving_order if u != target_panel_uuid],
                     ]
                 shell_dbus_available = cls._disable_extensions_in_order(
                     leaving_order,
@@ -2176,7 +2440,7 @@ class LayoutApplier:
             if target_uses_dtp:
                 extension_switch_data = cls._remove_enabled_extension_from_switch_data(
                     extension_switch_data,
-                    _DASH_TO_PANEL_UUID,
+                    target_panel_uuid,
                 )
             for uuid in target_panel_menus_after_dtp:
                 extension_switch_data = cls._remove_enabled_extension_from_switch_data(
@@ -2195,7 +2459,7 @@ class LayoutApplier:
             staged_enabled_order = [
                 uuid
                 for uuid in target_enabled_order
-                if uuid not in {_DASH_TO_PANEL_UUID, *post_dtp_enabled}
+                if uuid not in {target_panel_uuid, *post_dtp_enabled}
             ]
 
             ok, msg = run_cmd(
@@ -2238,7 +2502,7 @@ class LayoutApplier:
                 shell_dbus_available = cls._wait_extension_not_live(uuid) and shell_dbus_available
 
             # Let Shell finish disabling light-style before extensions that
-            # sample panel colors during enable() (Kiwi/Dash-to-Dock) start.
+            # sample panel colors during enable() (Kiwi/Community Dock) start.
             after_uuids = cls._enabled_extensions()
             if post_shell_mode_enabled:
                 progress("Reloading components…")
@@ -2258,7 +2522,7 @@ class LayoutApplier:
             # enable, which is what logout would do — but per-extension,
             # without restarting gnome-shell.
             #
-            # Keep dash-to-panel, ArcMenu, Dash to Dock and Big Shot out.
+            # Keep dash-to-panel, ArcMenu, Community Dock and Big Shot out.
             # Their live gsettings handlers apply layout changes, while
             # ReloadExtension can leave them in Shell ERROR state or block
             # long enough to make the layout switch look broken.
@@ -2278,14 +2542,13 @@ class LayoutApplier:
             dtp_rebuilt = False
             if target_uses_dtp:
                 progress("Reloading components…")
-                dtp_rebuilt = cls._restart_dash_to_panel_after_load(
-                    after_uuids or staged_enabled_order or target_enabled
-                )
+                restart_uuids = after_uuids or staged_enabled_order or target_enabled
+                dtp_rebuilt = cls._restart_dash_to_panel_after_load(restart_uuids)
                 shell_dbus_available = shell_dbus_available and dtp_rebuilt
                 if dtp_rebuilt:
                     after_uuids = cls._enabled_extensions()
                 else:
-                    log.warning("dash-to-panel live rebuild failed; next login will be clean")
+                    log.warning("community-panel live rebuild failed; next login will be clean")
                 time.sleep(cls._DTP_REENABLE_SETTLE_SEC)
 
             if post_dtp_enabled and dtp_rebuilt:
@@ -2383,4 +2646,5 @@ class LayoutApplier:
             layouts_dir=config_path.parent,
             icon_from=icon_from,
             icon_to=icon_to,
+            layout_id=config_path.stem,
         )

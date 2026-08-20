@@ -21,10 +21,12 @@ import update_checker
 from constants import APP_VERSION, ICON_NAME, UPDATE_CHECK_INTERVAL, tr
 from settings_store import GSettingsMonitor, Settings
 from ui.dialog_backups import BackupsDialog
+from ui.page_desktop import DesktopPage
 from ui.page_effects import EffectsPage
 from ui.page_extensions import ExtensionsPage
 from ui.page_fonts import FontsPage
 from ui.page_layouts import LayoutsPage
+from ui.page_panel_dock import PanelDockPage
 from ui.page_themes import ThemesPage
 from ui.styles import APP_CSS
 
@@ -183,13 +185,16 @@ class MainWindow(Adw.ApplicationWindow):
         self._refresh_sources[key] = GLib.timeout_add(delay_ms, fire)
 
     def _on_ext_changed(self) -> None:
-        """Atualiza páginas de extensões/efeitos quando estado muda externamente."""
+        """Refresh extension-backed pages after an external state change."""
         ext_page = self._pages.get("extensions")
         if ext_page is not None:
             ext_page.refresh_installed()
         effects_page = self._pages.get("effects")
         if effects_page is not None:
             effects_page.rebuild()
+        desktop_page = self._pages.get("desktop")
+        if desktop_page is not None:
+            desktop_page.refresh()
 
     def _on_theme_changed(self) -> None:
         """Refresh theme UI only if the page has already been created."""
@@ -275,6 +280,8 @@ class MainWindow(Adw.ApplicationWindow):
             "layouts": lambda: LayoutsPage(self._pool, self._toast),
             "fonts": lambda: FontsPage(self._pool, self._toast),
             "themes": lambda: ThemesPage(self._pool, self._toast),
+            "desktop": lambda: DesktopPage(self._pool, self._toast),
+            "panel-dock": lambda: PanelDockPage(self._pool, self._toast),
             "effects": lambda: EffectsPage(self._pool, self._toast),
             "extensions": lambda: ExtensionsPage(self._pool, self._toast),
         }
@@ -292,6 +299,7 @@ class MainWindow(Adw.ApplicationWindow):
         self._loading_overlay.set_child(self._toast_overlay)
         self._build_loading()
         self.set_content(self._loading_overlay)
+        self.refresh_layout_capabilities()
 
         # Show/hide sidebar toggle button when split view collapses/expands
         self._split_view.connect("notify::collapsed", self._on_split_collapsed)
@@ -394,7 +402,9 @@ class MainWindow(Adw.ApplicationWindow):
             ("layouts", tr("Layouts"), "view-grid-symbolic"),
             ("fonts", tr("Fonts"), "font-x-generic-symbolic"),
             ("themes", tr("Themes"), "applications-graphics-symbolic"),
-            ("effects", tr("Effects"), "view-paged-symbolic"),
+            ("desktop", tr("Desktop"), "video-display-symbolic"),
+            ("panel-dock", tr("Panel and Dock"), "view-more-horizontal-symbolic"),
+            ("effects", tr("Effects"), "layout-effect-lamp-symbolic"),
             ("extensions", tr("Extensions"), "application-x-addon-symbolic"),
         ]
         for key, label, icon in nav_items:
@@ -432,6 +442,17 @@ class MainWindow(Adw.ApplicationWindow):
         row.update_property([Gtk.AccessibleProperty.LABEL], [label])
         return row
 
+    def refresh_layout_capabilities(self) -> None:
+        """Disable navigation for components unused by the active layout."""
+        panel_dock_row = self._nav_rows.get("panel-dock")
+        if panel_dock_row is None:
+            return
+
+        panel_dock_available = Settings().get("active_layout", "") != "Minimal"
+        panel_dock_row.set_sensitive(panel_dock_available)
+        if not panel_dock_available and self._nav.get_selected_row() is panel_dock_row:
+            self._nav.select_row(self._nav_rows["layouts"])
+
     # ── Sidebar toggle (collapsed) ────────────────────────────────────────────
 
     def _on_split_collapsed(self, split_view, _pspec) -> None:
@@ -460,6 +481,12 @@ class MainWindow(Adw.ApplicationWindow):
         elif key == "effects":
             page = self._ensure_page("effects")
             GLib.idle_add(page.rebuild)
+        elif key == "desktop":
+            page = self._ensure_page("desktop")
+            GLib.idle_add(page.refresh)
+        elif key == "panel-dock":
+            page = self._ensure_page("panel-dock")
+            GLib.idle_add(page.refresh)
         else:
             self._ensure_page(key)
         self._stack.set_visible_child_name(key)
@@ -469,6 +496,8 @@ class MainWindow(Adw.ApplicationWindow):
             "layouts": tr("Layouts"),
             "fonts": tr("Fonts"),
             "themes": tr("Themes"),
+            "desktop": tr("Desktop"),
+            "panel-dock": tr("Panel and Dock"),
             "effects": tr("Effects"),
             "extensions": tr("Extensions"),
         }
@@ -491,6 +520,7 @@ class MainWindow(Adw.ApplicationWindow):
 
     def _on_backup_restored(self) -> None:
         """Após um restore, reconstrói páginas para refletir estado."""
+        self.refresh_layout_capabilities()
         layouts_page = self._pages.get("layouts")
         if layouts_page is not None:
             layouts_page.rebuild_grid()
@@ -500,6 +530,9 @@ class MainWindow(Adw.ApplicationWindow):
         effects_page = self._pages.get("effects")
         if effects_page is not None:
             effects_page.rebuild()
+        desktop_page = self._pages.get("desktop")
+        if desktop_page is not None:
+            desktop_page.refresh()
 
     # ── About ─────────────────────────────────────────────────────────────────
 

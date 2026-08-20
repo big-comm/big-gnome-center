@@ -1,0 +1,18 @@
+{
+"shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51"
+],
+"uuid": "community-dock@communitybig.org",
+"name": "Community Dock",
+"description": "BigCommunity's integrated dock for layout-equivalent launching, switching, previews, intellihide, and multi-monitor behavior.",
+"original-author": "micxgx@gmail.com",
+"url": "https://github.com/BigCommunity/layout-switcher",
+"gettext-domain": "dashtodock",
+"version": 1
+}

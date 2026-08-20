@@ -12,26 +12,22 @@ depends=(
     # GNOME Shell extensions used by the bundled layouts
     'gnome-shell-big-shot'
     'gnome-shell-extension-appindicator'
-    'gnome-shell-extension-arc-menu'
-    'gnome-shell-extension-blur-my-shell'
     'gnome-shell-extension-copyous'
-    'gnome-shell-extension-dash-to-dock'
-    'gnome-shell-extension-dash-to-panel'
     'gnome-shell-extension-gsconnect'
     'gnome-shell-extension-gtk4-desktop-icons-ng'
-    'gnome-shell-extension-kiwi-kemma'
     'gnome-shell-extension-legacy-theme-auto-switcher'
     'gnome-shell-extensions'
 )
-#makedepends=('')
+makedepends=('git')
+checkdepends=('python-pytest')
 #optdepends=('')
 conflicts=('gnome-layout-switcher')
 provides=('gnome-layout-switcher')
 replaces=('gnome-layout-switcher')
-pkgver=$(date +%y.%m.%d)
-pkgrel=$(date +%H%M)
+pkgver=26.08.20
+pkgrel=1
 arch=('any')
-license=('MIT' 'GPL-2.0-or-later' 'CC-BY-4.0')
+license=('MIT' 'GPL-2.0-or-later' 'GPL-3.0-or-later' 'CC-BY-4.0')
 url="https://github.com/big-comm/${pkgname}"
 source=("git+${url}.git")
 md5sums=('SKIP')
@@ -57,8 +53,7 @@ build() {
 
 check() {
     cd "${srcdir}/${pkgname}"
-    # Add check/test steps here, if needed
-    # For example: make check
+    python -m pytest -q
 }
 
 package() {
@@ -82,19 +77,46 @@ package() {
         fi
     done
 
+    # Keep one schema source in the extension; expose it to the GTK app.
+    install -Dm644 \
+        "${pkgsrc}/usr/share/gnome-shell/extensions/frosted-glass@communitybig.org/schemas/org.communitybig.frosted-glass.gschema.xml" \
+        "${pkgdir}/usr/share/glib-2.0/schemas/org.communitybig.frosted-glass.gschema.xml"
+    glib-compile-schemas \
+        "${pkgdir}/usr/share/gnome-shell/extensions/frosted-glass@communitybig.org/schemas"
+
+    glib-compile-schemas \
+        "${pkgdir}/usr/share/gnome-shell/extensions/community-dock@communitybig.org/schemas"
+
+    glib-compile-schemas \
+        "${pkgdir}/usr/share/gnome-shell/extensions/community-panel@communitybig.org/schemas"
+
+    local locale
+    while read -r locale; do
+        install -dm755 \
+            "${pkgdir}/usr/share/locale/${locale}/LC_MESSAGES"
+        msgfmt --check --output-file="${pkgdir}/usr/share/locale/${locale}/LC_MESSAGES/community-menu.mo" \
+            "${pkgsrc}/usr/share/gnome-shell/extensions/community-menu@communitybig.org/po/${locale}.po"
+    done < "${pkgsrc}/usr/share/gnome-shell/extensions/community-menu@communitybig.org/po/LINGUAS"
+
     # Install license file if present
     if [ -f "${pkgsrc}/LICENSE" ]; then
         install -Dm644 "${pkgsrc}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
     fi
     install -Dm644 \
-        "${pkgsrc}/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/COPYING" \
+        "${pkgsrc}/usr/share/gnome-shell/extensions/community-menu@communitybig.org/COPYING" \
         "${pkgdir}/usr/share/licenses/${pkgname}/GPL-2.0-or-later.txt"
+    install -Dm644 \
+        "${pkgsrc}/usr/share/gnome-shell/extensions/community-dock@communitybig.org/COPYING" \
+        "${pkgdir}/usr/share/licenses/${pkgname}/community-dock-GPL-2.0.txt"
+    install -Dm644 \
+        "${pkgsrc}/usr/share/gnome-shell/extensions/community-panel@communitybig.org/COPYING" \
+        "${pkgdir}/usr/share/licenses/${pkgname}/community-panel-GPL-2.0.txt"
 
     # Install documentation if present
     if [ -f "${pkgsrc}/README.md" ]; then
         install -Dm644 "${pkgsrc}/README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
     fi
     install -Dm644 \
-        "${pkgsrc}/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/UPSTREAM.md" \
+        "${pkgsrc}/usr/share/gnome-shell/extensions/community-menu@communitybig.org/UPSTREAM.md" \
         "${pkgdir}/usr/share/doc/${pkgname}/community-menu-upstream.md"
 }

@@ -66,9 +66,7 @@ class TestListThemes:
 
 class TestApply:
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
-    def test_apply_removes_layout_snapshot_marker(
-        self, mock_gs, _isolate_layout_snapshot_marker
-    ):
+    def test_apply_removes_layout_snapshot_marker(self, mock_gs, _isolate_layout_snapshot_marker):
         marker = _isolate_layout_snapshot_marker
         marker.write_text("managed\n", encoding="utf-8")
 
@@ -113,15 +111,11 @@ class TestApply:
 
         assert ok is True
         assert msg == ""
-        mock_gs.assert_called_once_with(
-            "org.gnome.shell.extensions.user-theme", "name", "Big-Blue"
-        )
+        mock_gs.assert_called_once_with("org.gnome.shell.extensions.user-theme", "name", "Big-Blue")
         mock_set_enabled.assert_called_once_with(
             "user-theme@gnome-shell-extensions.gcampax.github.com", True
         )
-        mock_reload.assert_called_once_with(
-            "user-theme@gnome-shell-extensions.gcampax.github.com"
-        )
+        mock_reload.assert_called_once_with("user-theme@gnome-shell-extensions.gcampax.github.com")
 
     @patch("theme_manager.ThemeMgr._reload_shell_user_theme")
     @patch("theme_manager.ExtMgr.set_enabled")
@@ -187,9 +181,7 @@ class TestApply:
 
         assert ok is True
         assert msg == ""
-        mock_gs.assert_called_once_with(
-            "org.gnome.shell.extensions.user-theme", "name", "''"
-        )
+        mock_gs.assert_called_once_with("org.gnome.shell.extensions.user-theme", "name", "''")
         mock_reload.assert_not_called()
 
     def test_apply_unknown_kind(self):
@@ -258,10 +250,7 @@ class TestAccentColor:
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
     @patch(
         "theme_manager.gsettings_get",
-        return_value=(
-            "['dash-to-dock@micxgx.gmail.com', "
-            "'blur-my-shell@aunetx']"
-        ),
+        return_value=("['dash-to-dock@micxgx.gmail.com', 'blur-my-shell@aunetx']"),
     )
     def test_installed_default_treats_biggnome_as_native_shell(
         self,
@@ -290,8 +279,8 @@ class TestAccentColor:
         "theme_manager.gsettings_get",
         return_value=(
             "['light-style@gnome-shell-extensions.gcampax.github.com', "
-            "'dash-to-panel@jderose9.github.com', "
-            "'community-menu@bigcommunity.org']"
+            "'community-panel@communitybig.org', "
+            "'community-menu@communitybig.org']"
         ),
     )
     def test_installed_classic_ignores_stale_orchis_theme(
@@ -317,8 +306,8 @@ class TestAccentColor:
     @patch(
         "theme_manager.gsettings_get",
         return_value=(
-            "['dash-to-panel@jderose9.github.com', "
-            "'community-menu@bigcommunity.org', "
+            "['community-panel@communitybig.org', "
+            "'community-menu@communitybig.org', "
             "'blur-my-shell@aunetx', "
             "'drive-menu@gnome-shell-extensions.gcampax.github.com']"
         ),

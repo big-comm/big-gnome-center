@@ -247,68 +247,19 @@ sleep-inactive-ac-type='nothing'
 app-picker-layout=[{'AudioVideo': <{'position': <0>}>, 'Office': <{'position': <1>}>, 'Utilities': <{'position': <2>}>, 'Settings': <{'position': <3>}>, 'Network': <{'position': <4>}>, 'Game': <{'position': <5>}>, 'WebApps': <{'position': <6>}>}]
 command-history=['ajustes', 'r']
 disable-user-extensions=false
-disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'dash-to-dock@micxgx.gmail.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com']
-enabled-extensions=['layout-switcher-helper@bigcommunity.org', 'gsconnect@andyholmes.github.io', 'pamac-updates@manjaro.org', 'blur-my-shell@aunetx', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@bigcommunity.org', 'dash-to-panel@jderose9.github.com', 'community-menu@bigcommunity.org', 'appindicatorsupport@rgcjonas.gmail.com']
+disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com']
+enabled-extensions=['layout-switcher-helper@communitybig.org', 'gsconnect@andyholmes.github.io', 'pamac-updates@manjaro.org', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@communitybig.org', 'community-panel@communitybig.org', 'community-menu@communitybig.org', 'appindicatorsupport@rgcjonas.gmail.com']
 favorite-apps=['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.communitybig.ashyterm.desktop', 'org.gnome.TextEditor.desktop']
 welcome-dialog-last-shown-version='43.2'
 
 [org/gnome/shell/extensions/community-menu]
+desktop-layout='Desk UX'
 layout='APP_GRID'
 
-[org/gnome/shell/extensions/blur-my-shell]
-rounded-blur-found=false
-settings-version=2
-
-[org/gnome/shell/extensions/blur-my-shell/appfolder]
-brightness=0.59999999999999998
-sigma=30
-
-[org/gnome/shell/extensions/blur-my-shell/applications]
-blur=false
-blur-on-overview=false
-whitelist=@as []
-
-[org/gnome/shell/extensions/blur-my-shell/coverflow-alt-tab]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/dash-to-dock]
-blur=false
-brightness=0.29999999999999999
-override-background=true
-pipeline='pipeline_default_rounded'
-static-blur=true
-style-dash-to-dock=0
-unblur-in-overview=false
-
-[org/gnome/shell/extensions/blur-my-shell/lockscreen]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/overview]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/panel]
-blur=false
-brightness=0.60999999999999999
-override-background=true
-override-background-dynamically=false
-pipeline='pipeline_default'
-sigma=30
-static-blur=true
-style-panel=0
-unblur-in-overview=true
-
-[org/gnome/shell/extensions/blur-my-shell/screenshot]
-pipeline='pipeline_default'
-
-[org/gnome/shell/extensions/blur-my-shell/window-list]
-brightness=0.59999999999999998
-sigma=30
-
 [org/gnome/shell/extensions/copyous]
-database-backend='sqlite'
 history-length=70
 open-clipboard-dialog-shortcut=['<Super>v']
-swap-copy-shortcut=true
+paste-on-copy=false
 
 [org/gnome/shell/extensions/dash-to-dock]
 always-center-icons=false

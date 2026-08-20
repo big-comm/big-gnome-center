@@ -1,0 +1,9 @@
+{
+  "uuid": "frosted-glass@communitybig.org",
+  "name": "Frosted Glass",
+  "description": "Controlled frosted-glass effects for windows, panels, docks and menus.",
+  "settings-schema": "org.communitybig.frosted-glass",
+  "shell-version": ["50", "51"],
+  "version": 1,
+  "url": "https://github.com/big-comm/layout-switcher"
+}

@@ -3,7 +3,6 @@
 
 # Color definitions for status messages
 blueDark="\e[1;38;5;33m"     # Bold dark blue
-mediumBlue="\e[1;38;5;32m"   # Bold medium blue
 lightBlue="\e[1;38;5;39m"    # Bold light blue
 cyan="\e[1;38;5;45m"         # Bold cyan
 white="\e[1;97m"             # Bold white
@@ -15,24 +14,34 @@ printMsg() {
     echo -e "${blueDark}[${lightBlue}layout-switcher${blueDark}]${reset} ${cyan}→${reset} ${white}${message}${reset}"
 }
 
-# Apply bundled downstream extension fixes. The related pacman hooks re-apply
-# them whenever the target extension is (re)installed; running them here covers
-# installing/upgrading layout-switcher
-# while the extension is already present. The scripts are idempotent.
-apply_bundled_patches() {
-    local patch
-    for patch in /usr/share/layout-switcher/patches/*.sh; do
-        [ -x "$patch" ] || continue
-        "$patch" || printMsg "warning: ${patch##*/} failed"
-    done
+# The UUID changed in 2026. Pacman removes package-owned legacy files during
+# upgrade; this also retires copies left by older development packages.
+retire_legacy_helper() {
+    local legacy_dir="/usr/share/gnome-shell/extensions/layout-switcher-helper@bigcommunity.org"
+    if [ -d "$legacy_dir" ]; then
+        rm -rf -- "$legacy_dir"
+        printMsg "retired legacy Layout Switcher helper UUID"
+    fi
+}
+
+# The first bundled Community Menu release used the reversed project domain.
+# Remove stale development copies so only the corrected UUID is discoverable.
+retire_legacy_community_menu() {
+    local legacy_dir="/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org"
+    if [ -d "$legacy_dir" ]; then
+        rm -rf -- "$legacy_dir"
+        printMsg "retired legacy Community Menu UUID"
+    fi
 }
 
 post_install() {
-    apply_bundled_patches
+    retire_legacy_helper
+    retire_legacy_community_menu
 }
 
 post_upgrade() {
-    apply_bundled_patches
+    retire_legacy_helper
+    retire_legacy_community_menu
 }
 
 # Function executed before package installation

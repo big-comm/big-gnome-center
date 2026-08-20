@@ -24,6 +24,7 @@ from gi.repository import Adw, GLib, Gtk
 from constants import EFFECT_EXTENSIONS, tr
 from extension_manager import ExtMgr
 from shell_reloader import ShellReloader
+from ui.frosted_glass import FrostedGlassControls, is_frosted_glass_supported
 from utils import run_cmd
 
 _PREVIEW_DIR = Path(__file__).resolve().parent.parent / "effects"
@@ -42,19 +43,25 @@ class EffectsPage(Gtk.Box):
     # ── UI raiz ──────────────────────────────────────────────────────────────
 
     def _build(self) -> None:
-        intro = Gtk.Label(
-            label=tr("Visual effects for your GNOME desktop"),
-        )
-        intro.add_css_class("dim-label")
-        intro.set_halign(Gtk.Align.START)
-        intro.set_margin_start(26)
-        intro.set_margin_top(4)
-        intro.set_margin_bottom(12)
-        self.append(intro)
-
         sc = Gtk.ScrolledWindow()
         sc.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         sc.set_vexpand(True)
+
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=22)
+        content.set_margin_start(22)
+        content.set_margin_end(22)
+        content.set_margin_top(8)
+        content.set_margin_bottom(22)
+
+        if is_frosted_glass_supported():
+            content.append(FrostedGlassControls(self._pool, self._toast))
+
+        intro = Gtk.Label(
+            label=tr("Other visual effects"),
+        )
+        intro.add_css_class("title-3")
+        intro.set_halign(Gtk.Align.START)
+        content.append(intro)
 
         self._flow = Gtk.FlowBox()
         self._flow.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -62,13 +69,11 @@ class EffectsPage(Gtk.Box):
         self._flow.set_min_children_per_line(2)
         self._flow.set_row_spacing(12)
         self._flow.set_column_spacing(12)
-        self._flow.set_margin_start(22)
-        self._flow.set_margin_end(22)
-        self._flow.set_margin_bottom(22)
         self._flow.set_homogeneous(True)
 
         self.rebuild()
-        sc.set_child(self._flow)
+        content.append(self._flow)
+        sc.set_child(content)
         self.append(sc)
 
     # ── Build cards ──────────────────────────────────────────────────────────

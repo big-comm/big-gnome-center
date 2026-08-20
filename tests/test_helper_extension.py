@@ -5,7 +5,7 @@ from pathlib import Path
 
 HELPER = (
     Path(__file__).resolve().parents[1]
-    / "usr/share/gnome-shell/extensions/layout-switcher-helper@bigcommunity.org/extension.js"
+    / "usr/share/gnome-shell/extensions/layout-switcher-helper@communitybig.org/extension.js"
 )
 HELPER_STYLESHEET = HELPER.with_name("stylesheet.css")
 
@@ -16,22 +16,22 @@ def test_live_color_switch_empties_shell_rebase_slices():
     assert source.index("_moveExtensionLast(mgr, uuid)") < source.index(
         "mgr.disableExtension(uuid)"
     )
-    assert source.index("_moveExtensionLast(mgr, DTP_UUID)") < source.index(
-        "mgr.disableExtension(DTP_UUID)"
+    assert source.index("_moveExtensionLast(mgr, livePanelUuid)") < source.index(
+        "mgr.disableExtension(livePanelUuid)"
     )
     assert "const CLASSIC_MENU_LAYOUT = 1" in source
     assert "const HYBRID_MENU_LAYOUT = 4" in source
-    assert "const ARCMENU_UUID = 'arcmenu@arcmenu.com'" in source
-    assert "const ARCMENU_HYBRID_LAYOUT = 'enterprise'" in source
-    assert "COMMUNITY_LIGHT_ICON_LAYOUTS = new Set([CLASSIC_MENU_LAYOUT, HYBRID_MENU_LAYOUT])" in source
+    assert "const ARCMENU_UUID" not in source
+    assert "ARCMENU_HYBRID_LAYOUT" not in source
+    assert "COMMUNITY_LIGHT_ICON_LAYOUTS" not in source
     assert "? 'bigicons-papient-dark'" in source
     assert "? 'bigicons-papient-light'" in source
     assert "const DESK_UX_MENU_LAYOUT = 3" in source
-    assert "const nativeShell = communityLayout === CLASSIC_MENU_LAYOUT" in source
-    assert "communityLayout === HYBRID_MENU_LAYOUT || hybridArcMenu" in source
-    assert "explicitLightIcons = hybridArcMenu" in source
-    assert "(!live.has(COMMUNITY_MENU_UUID) && !hybridArcMenu)" in source
-    assert "communityLayout === DESK_UX_MENU_LAYOUT" in source
+    assert "const nativeShell = this._activeLayoutLabel === 'Classic'" in source
+    assert "this._activeLayoutLabel === 'Hybrid';" in source
+    assert "hybridArcMenu" not in source
+    assert "!live.has(COMMUNITY_MENU_UUID)" in source
+    assert "this._activeLayoutLabel === 'Desk UX'" in source
     assert "this._onColorSchemeChanged(false)" in source
     assert "const managedNativeState = nativeShell" in source
     assert "const manageShell = reconcileShell && managedNativeState" in source
@@ -44,13 +44,13 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 41" in source
+    assert "const HELPER_BUILD = 58" in source
     assert "get_strv('enabled-extensions')" in source
-    assert "_extensionWillRun(DTP_UUID)" in source
+    assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
     assert "layout === CLASSIC_MENU_LAYOUT" in source
     assert "layout === DESK_UX_MENU_LAYOUT" in source
-    assert "ARCMENU_HYBRID_LAYOUT" in source
+    assert "layout === HYBRID_MENU_LAYOUT" in source
     assert "Main.panel.statusArea.quickSettings?._system" in source
     assert "indicator?._systemItem?.powerToggle" in source
     assert "!powerToggle.visible" in source
@@ -83,7 +83,7 @@ def test_hybrid_light_panel_keeps_overview_icon_contrast():
     assert "_syncLightOverviewPanelClass()" in source
     assert "_clearLightOverviewPanelClass()" in source
     assert "get_string('color-scheme') === 'prefer-dark'" in source
-    assert "settings.get_string('menu-layout') !== ARCMENU_HYBRID_LAYOUT" in source
+    assert "this._activeLayoutLabel !== 'Hybrid'" in source
     assert "global.dashToPanel?.panels" in source
     assert "layout-switcher-light-overview-panel:overview" in stylesheet
     assert "color: #222226" in stylesheet
@@ -93,14 +93,19 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 41" in source
+    assert "const HELPER_BUILD = 58" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
-    assert "settings.get_enum('layout') === CLASSIC_MENU_LAYOUT" in source
-    assert "ARCMENU_HYBRID_LAYOUT" in source
+    assert "const classicLayout = this._activeLayoutLabel === 'Classic'" in source
+    assert "const deskUxLayout = this._activeLayoutLabel === 'Desk UX'" in source
+    assert "const hybridLayout = this._activeLayoutLabel === 'Hybrid'" in source
+    assert "const nativeAccentLayout = classicLayout || deskUxLayout || hybridLayout" in source
+    assert "const accentIndicatorLayout = deskUxLayout || hybridLayout" in source
     assert "'changed::accent-color'" in source
     assert "_syncClassicFocusHighlight()" in source
+    assert "lookup(COMMUNITY_PANEL_UUID)?.stateObj" in source
+    assert "panelExtension?.getSettings?.(" in source
     assert "get_string('focus-highlight-color')" in source
     assert "set_string('focus-highlight-color', accent)" in source
     assert "layout-switcher-accent-probe" in stylesheet
@@ -108,11 +113,22 @@ def test_native_shell_running_indicators_follow_shell_accent():
     assert "background-color: -st-accent-color" in stylesheet
 
 
+def test_icon_theme_change_refreshes_appindicator_cache():
+    source = HELPER.read_text()
+
+    assert "const APPINDICATOR_UUID = 'appindicatorsupport@rgcjonas.gmail.com'" in source
+    assert "iconThemeChanged = true" in source
+    assert "await this._refreshIconThemeConsumers()" in source
+    assert "rescan_icon_theme?.()" in source
+    assert "await this._reloadOne(mgr, APPINDICATOR_UUID)" in source
+
+
 def test_biggnome_uses_helper_owned_floating_panel():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "DASH_TO_DOCK_UUID" in source
+    assert "COMMUNITY_DOCK_UUID" in source
+    assert "dash-to-dock@micxgx.gmail.com" not in source
     assert "BIGGNOME_PANEL_CLASS" in source
     assert "_syncBigGnomePanelClass()" in source
     assert "_clearBigGnomePanelClass()" in source
@@ -120,6 +136,70 @@ def test_biggnome_uses_helper_owned_floating_panel():
     assert "#panel.layout-switcher-biggnome-panel" in stylesheet
     assert "background-color: rgba(0, 0, 0, 0.65)" in stylesheet
     assert "border-radius: 9999px" in stylesheet
+
+
+def test_minimal_uses_helper_owned_rectangular_panel():
+    source = HELPER.read_text()
+    stylesheet = HELPER_STYLESHEET.read_text()
+
+    assert "MINIMAL_PANEL_CLASS" in source
+    assert "_syncMinimalPanelClass()" in source
+    assert "_clearMinimalPanelClass()" in source
+    assert "#panel.layout-switcher-minimal-panel" in stylesheet
+    assert "background-color: rgba(0, 0, 0, 0.65)" in stylesheet
+    assert "border-radius: 0" in stylesheet
+
+
+def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
+    source = HELPER.read_text()
+    stylesheet = HELPER_STYLESHEET.read_text()
+
+    assert "GUNITY_PANEL_CLASS" in source
+    assert "GUNITY_DOCK_CLASS" in source
+    assert "_syncGUnitySurfaceClasses()" in source
+    assert "_setupGUnityShell()" in source
+    assert "active_layout" in source
+    assert "#panel.layout-switcher-g-unity-panel" in stylesheet
+    assert "#dashtodockContainer.layout-switcher-g-unity-dock" in stylesheet
+    assert "border: none" in stylesheet
+    assert "width: 340px" in stylesheet
+    assert "max-width: 340px" in stylesheet
+    assert "messageList.x_align = Clutter.ActorAlign.FILL" in source
+    assert "messageList.x_expand = true" in source
+    assert "layout-switcher-g-unity-quick-settings" in stylesheet
+    assert "min-height: 3em" in stylesheet
+    assert ".message-list.layout-switcher-g-unity-notifications" in stylesheet
+    assert ".message-view:ltr" in stylesheet
+    assert "margin-right: 0" in stylesheet
+    assert "_syncGUnityNotificationIndicator" in source
+    assert "notification-added" in source
+    assert "notification-removed" in source
+    assert "background-color: #ff3b30" in stylesheet
+    assert "width: 8" in source
+    assert "height: 8" in source
+    assert "y_align: Clutter.ActorAlign.CENTER" in source
+    assert ".dash-background" in stylesheet
+    assert "background-color: transparent" in stylesheet
+    assert "#panel.layout-switcher-g-unity-panel .panel-button" in stylesheet
+    assert "-natural-hpadding: 8px" in stylesheet
+    assert "Gjs_ui_dateMenu_DateMenuButton.panel-button" in stylesheet
+    assert "_setupGUnityDndAction" in source
+    assert "notifications-disabled-symbolic" in source
+    assert "dndToggle.hide()" in source
+
+
+def test_g_unity_shell_is_restored_before_extensions_are_disabled():
+    source = HELPER.read_text()
+    begin_switch = source.split("async _beginSwitch(payload) {", 1)[1]
+    begin_switch = begin_switch.split("CompleteSwitchAsync", 1)[0]
+
+    assert "this._isGUnityActive() && req.label !== 'G-Unity'" in begin_switch
+    assert begin_switch.index("this._teardownGUnityShell();") < begin_switch.index(
+        "for (const uuid of teardown)"
+    )
+    assert begin_switch.index("this._clearGUnitySurfaceClasses();") < begin_switch.index(
+        "for (const uuid of teardown)"
+    )
 
 
 def test_biggnome_uses_compact_accent_aware_dock():
@@ -139,20 +219,22 @@ def test_biggnome_uses_compact_accent_aware_dock():
     assert "background-color: -st-accent-color" in stylesheet
 
 
-def test_hybrid_focused_indicator_is_twenty_percent_shorter():
+def test_accent_indicators_preserve_layout_specific_sizes():
     source = HELPER.read_text()
 
     assert "const HYBRID_INDICATOR_SCALE = 0.8" in source
     assert "_waitDashToPanelReady" in source
     assert "panel?.taskbar?._box" in source
-    assert "if (target.has(DTP_UUID))" in source
+    assert "const targetPanelUuid = PANEL_UUIDS.find(uuid => target.has(uuid))" in source
     assert "await this._waitDashToPanelReady()" in source
     assert "_syncHybridFocusedIndicators()" in source
     assert "_teardownHybridFocusedIndicators()" in source
     assert "actor.has_style_class_name?.('dtp-dots-container')" in source
     assert "indicator.set_pivot_point(0.5, 0.5)" in source
     assert "for (const [index, indicator] of indicators.entries())" in source
-    assert "indicator.set_scale(HYBRID_INDICATOR_SCALE, 1)" in source
+    assert "const scale = this._activeLayoutLabel === 'Hybrid'" in source
+    assert "? HYBRID_INDICATOR_SCALE" in source
+    assert "indicator.set_scale(scale, 1)" in source
     assert "new Clutter.DesaturateEffect({factor: 1})" in source
     assert "_watchHybridTaskbarTree(taskbarBox)" in source
     assert "'child-added', (_parent, child)" in source
@@ -161,3 +243,35 @@ def test_hybrid_focused_indicator_is_twenty_percent_shorter():
     assert "'child-removed', (_container, indicator)" in source
     assert "for (const container of this._hybridIndicatorContainers" in source
     assert "for (const actor of this._hybridTaskbarActors" in source
+
+
+def test_notification_positions_are_owned_by_the_shell_helper():
+    source = HELPER.read_text()
+
+    for layout, position in (
+        ("Classic", "bottom-right"),
+        ("Hybrid", "bottom-right"),
+        ("Desk UX", "bottom-right"),
+        ("Minimal", "top-center"),
+        ("BigGnome", "top-center"),
+        ("G-Unity", "top-right"),
+    ):
+        assert f"['{layout}', '{position}']" in source
+
+    for position in (
+        "top-left",
+        "top-center",
+        "top-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right",
+    ):
+        assert f"['{position}'," in source
+
+    assert '<method name="SetNotificationPosition">' in source
+    assert "Main.messageTray?._bannerBin" in source
+    assert "bannerBin.set_x_align(xAlign)" in source
+    assert "bannerBin.set_y_align(yAlign)" in source
+    assert "this._syncNotificationPosition();" in source
+    assert "this._restoreNotificationPosition();" in source
+    assert "notification_positions" in source

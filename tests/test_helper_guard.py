@@ -4,10 +4,7 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-AUTOSTART = (
-    ROOT
-    / "etc/xdg/autostart/org.communitybig.layout-switcher-helper-guard.desktop"
-)
+AUTOSTART = ROOT / "etc/xdg/autostart/org.communitybig.layout-switcher-helper-guard.desktop"
 
 
 def test_guard_autostart_uses_modern_gnome_session_path():
@@ -28,10 +25,49 @@ def test_guard_launcher_is_executable():
 
 def test_guard_starts_background_extension_update_monitor():
     source = (ROOT / "usr/share/layout-switcher/helper_guard.py").read_text()
-    desktop = (
-        ROOT / "usr/share/applications/org.communitybig.layout-switcher.desktop"
-    ).read_text()
+    desktop = (ROOT / "usr/share/applications/org.communitybig.layout-switcher.desktop").read_text()
 
     assert "ExtensionUpdateMonitor" in source
     assert "self._update_monitor.start()" in source
     assert "X-GNOME-UsesNotifications=true" in desktop
+
+
+def test_guard_migrates_owned_extension_uuids_at_session_start():
+    client = (ROOT / "usr/share/layout-switcher/helper_client.py").read_text()
+
+    assert "LEGACY_COMMUNITY_MENU_UUID" in client
+    assert "LEGACY_BIG_SHOT_UUID" in client
+    assert "_UUID_MIGRATIONS" in client
+    assert "required_extension_lists(enabled, disabled)" in client
+
+
+def test_package_upgrade_retires_legacy_helper_directory():
+    install_script = (ROOT / "pkgbuild/pkgbuild.install").read_text()
+
+    assert (
+        "/usr/share/gnome-shell/extensions/layout-switcher-helper@bigcommunity.org"
+    ) in install_script
+    assert "retire_legacy_helper" in install_script
+    assert "post_install()" in install_script
+    assert "post_upgrade()" in install_script
+
+
+def test_only_current_helper_directory_is_shipped():
+    extensions = ROOT / "usr/share/gnome-shell/extensions"
+
+    assert (extensions / "layout-switcher-helper@communitybig.org").is_dir()
+    assert not (extensions / "layout-switcher-helper@bigcommunity.org").exists()
+
+
+def test_package_upgrade_retires_legacy_community_menu_directory():
+    install_script = (ROOT / "pkgbuild/pkgbuild.install").read_text()
+
+    assert ("/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org") in install_script
+    assert "retire_legacy_community_menu" in install_script
+
+
+def test_only_current_community_menu_directory_is_shipped():
+    extensions = ROOT / "usr/share/gnome-shell/extensions"
+
+    assert (extensions / "community-menu@communitybig.org").is_dir()
+    assert not (extensions / "community-menu@bigcommunity.org").exists()

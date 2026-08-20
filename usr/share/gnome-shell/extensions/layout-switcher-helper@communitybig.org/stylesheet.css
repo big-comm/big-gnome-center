@@ -1,0 +1,343 @@
+/* Keep symbolic panel items readable on Hybrid's light panel in Overview. */
+#panel.dashtopanelMainPanel.layout-switcher-light-overview-panel:overview
+.panel-button {
+    color: #222226;
+}
+
+#panel.dashtopanelMainPanel.layout-switcher-light-overview-panel:overview
+.panel-button#panelActivities .workspace-dot {
+    background-color: #222226;
+}
+
+#panel.dashtopanelMainPanel.layout-switcher-light-overview-panel:overview
+.panel-button.screen-recording-indicator,
+#panel.dashtopanelMainPanel.layout-switcher-light-overview-panel:overview
+.panel-button.screen-sharing-indicator {
+    color: #fafafb;
+}
+
+/* Native-shell layouts follow GNOME's active accent. */
+.layout-switcher-accent-probe {
+    background-color: -st-accent-color;
+}
+
+/* Minimal keeps the native full-width panel geometry without Kiwi. */
+#panel.layout-switcher-minimal-panel {
+    background-color: rgba(0, 0, 0, 0.65);
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    border-radius: 0;
+}
+
+#panel.layout-switcher-minimal-panel .panel-corner {
+    -panel-corner-radius: 0;
+    -panel-corner-background-color: rgba(0, 0, 0, 0.65);
+    -panel-corner-border-width: 0;
+    -panel-corner-border-color: transparent;
+    -panel-corner-opacity: 1;
+}
+
+/* G-Unity joins its top panel and left dock into one borderless frame. */
+#panel.layout-switcher-g-unity-panel {
+    background-color: rgba(0, 0, 0, 0.65);
+    background-image: none;
+    border: none;
+    border-width: 0;
+    border-color: transparent;
+    box-shadow: none;
+    margin: 0;
+    border-radius: 0;
+}
+
+#panel.layout-switcher-g-unity-panel .panel-corner {
+    -panel-corner-radius: 0;
+    -panel-corner-background-color: rgba(0, 0, 0, 0.65);
+    -panel-corner-border-width: 0;
+    -panel-corner-border-color: transparent;
+    -panel-corner-opacity: 1;
+}
+
+/* Match Kiwi's compact status area without keeping Kiwi as a dependency. */
+#panel.layout-switcher-g-unity-panel .panel-button {
+    -natural-hpadding: 8px;
+    -minimum-hpadding: 4px;
+}
+
+#panel.layout-switcher-g-unity-panel
+.panel-button .system-status-icon {
+    icon-size: 16px;
+    padding: 4px;
+    margin: 0;
+}
+
+#panel.layout-switcher-g-unity-panel
+Gjs_ui_panel_QuickSettings.panel-button .system-status-icon {
+    margin: 0 2px;
+}
+
+#panel.layout-switcher-g-unity-panel
+Gjs_ui_dateMenu_DateMenuButton.panel-button {
+    -natural-hpadding: 0;
+    -minimum-hpadding: 0;
+}
+
+#panel.layout-switcher-g-unity-panel
+Gjs_ui_dateMenu_DateMenuButton StLabel {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#panel.layout-switcher-g-unity-panel
+.layout-switcher-g-unity-window-title-box {
+    spacing: 6px;
+}
+
+#panel.layout-switcher-g-unity-panel
+.layout-switcher-g-unity-window-title {
+    -natural-hpadding: 8px;
+    -minimum-hpadding: 8px;
+}
+
+.layout-switcher-g-unity-notification-indicator {
+    background-color: #ff3b30;
+    border-radius: 999px;
+    min-width: 8px;
+    min-height: 8px;
+    width: 8px;
+    height: 8px;
+    margin: 0 2px;
+}
+
+.message-list.layout-switcher-g-unity-notifications,
+.message-list.layout-switcher-g-unity-notifications:ltr,
+.message-list.layout-switcher-g-unity-notifications:rtl {
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    width: 340px;
+    max-width: 340px;
+}
+
+.message-list.layout-switcher-g-unity-notifications .message-view:ltr {
+    margin-right: 0;
+}
+
+.message-list.layout-switcher-g-unity-notifications .message-view:rtl {
+    margin-left: 0;
+}
+
+/* GNOME 51 increased the default toggle height. G-Unity keeps the compact
+ * system-menu proportions used by the layout while retaining native widgets. */
+.layout-switcher-g-unity-quick-settings .quick-toggle,
+.layout-switcher-g-unity-quick-settings .quick-toggle-has-menu {
+    min-height: 3em;
+}
+
+#dashtodockContainer.layout-switcher-g-unity-dock,
+#dashtodockContainer.layout-switcher-g-unity-dock #dash,
+#dashtodockContainer.layout-switcher-g-unity-dock #dashtodockDashContainer,
+#dashtodockContainer.layout-switcher-g-unity-dock .dash-background {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-width: 0;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+#panel.dashtopanelMainPanel.layout-switcher-native-accent-panel
+.app-grid-running-dot {
+    background-color: -st-accent-color;
+}
+
+/* BigGnome floating top bar without a user Shell theme. */
+#panel.layout-switcher-biggnome-panel {
+    font-weight: bold;
+    font-feature-settings: "tnum";
+    padding: 0 !important;
+    transition-duration: 250ms;
+    height: 34px;
+    border: none;
+    box-shadow: none;
+    background-color: rgba(0, 0, 0, 0.65);
+    margin: 2px;
+    border-radius: 9999px;
+}
+
+#panel.layout-switcher-biggnome-panel.unlock-screen,
+#panel.layout-switcher-biggnome-panel.login-screen,
+#panel.layout-switcher-biggnome-panel:overview {
+    background-color: transparent;
+}
+
+#panel.layout-switcher-biggnome-panel.unlock-screen .panel-corner,
+#panel.layout-switcher-biggnome-panel.login-screen .panel-corner,
+#panel.layout-switcher-biggnome-panel:overview .panel-corner {
+    -panel-corner-opacity: 0;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-corner {
+    -panel-corner-radius: 0;
+    -panel-corner-background-color: rgba(33, 33, 33, 0.65);
+    -panel-corner-border-width: 0;
+    -panel-corner-border-color: transparent;
+    -panel-corner-opacity: 1;
+    transition-duration: 250ms;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button#panelActivities {
+    -natural-hpadding: 10px;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button#panelActivities StBoxLayout {
+    spacing: 4px;
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button#panelActivities .workspace-dot {
+    border-radius: 9999px;
+    min-width: 8px;
+    min-height: 8px;
+    background-color: white;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button {
+    font-weight: bold;
+    color: white;
+    -natural-hpadding: 9px;
+    -minimum-hpadding: 9px;
+    transition-duration: 150ms;
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    margin: 0;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button.clock-display {
+    -natural-hpadding: 0 !important;
+    -minimum-hpadding: 0 !important;
+    padding: 0 !important;
+    spacing: 0 !important;
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button.clock-display .clock-display-box {
+    spacing: 0;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button.clock-display .clock {
+    border-radius: 9999px;
+    padding: 0 8px !important;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button:hover {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1000px rgba(255, 255, 255, 0.12);
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button:hover.clock-display {
+    box-shadow: none;
+    background-color: transparent;
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button:hover.clock-display .clock {
+    box-shadow: inset 0 0 0 1000px rgba(255, 255, 255, 0.12);
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button:active,
+#panel.layout-switcher-biggnome-panel .panel-button:overview,
+#panel.layout-switcher-biggnome-panel .panel-button:focus,
+#panel.layout-switcher-biggnome-panel .panel-button:checked {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1000px rgba(255, 255, 255, 0.3);
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button:active.clock-display,
+#panel.layout-switcher-biggnome-panel .panel-button:overview.clock-display,
+#panel.layout-switcher-biggnome-panel .panel-button:focus.clock-display,
+#panel.layout-switcher-biggnome-panel .panel-button:checked.clock-display {
+    box-shadow: none;
+    background-color: transparent;
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button:active.clock-display .clock,
+#panel.layout-switcher-biggnome-panel
+.panel-button:overview.clock-display .clock,
+#panel.layout-switcher-biggnome-panel
+.panel-button:focus.clock-display .clock,
+#panel.layout-switcher-biggnome-panel
+.panel-button:checked.clock-display .clock {
+    box-shadow: inset 0 0 0 1000px rgba(255, 255, 255, 0.3);
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button .system-status-icon {
+    icon-size: 16px;
+    padding: 4px;
+    margin: 0;
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button .appindicator-trayicons-box {
+    margin: 0 4px;
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button .panel-status-menu-box {
+    spacing: 4px;
+    padding: 4px;
+    margin: 0;
+}
+
+#panel.layout-switcher-biggnome-panel
+.panel-button .panel-status-menu-box .system-status-icon {
+    padding: 0;
+}
+
+#panel.layout-switcher-biggnome-panel .panel-button .app-menu-icon {
+    -st-icon-style: symbolic;
+}
+
+/* Keep BigGnome's Community Dock compact and distinguish focused apps. */
+#dashtodockContainer.layout-switcher-biggnome-dock.bottom.shrink
+#dash .dash-item-container {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+#dashtodockContainer.layout-switcher-biggnome-dock.bottom.shrink
+#dash .dash-item-container .overview-icon {
+    padding: 4px !important;
+    spacing: 4px !important;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-well-app-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-grid-running-dot {
+    width: 6px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.35);
+    border-color: transparent;
+    border-width: 0;
+}
+
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-well-app.focused .app-well-app-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.app-well-app.focused .app-grid-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.overview-tile.focused .app-well-app-running-dot,
+#dashtodockContainer.layout-switcher-biggnome-dock
+.overview-tile.focused .app-grid-running-dot {
+    width: 18px;
+    background-color: -st-accent-color;
+}

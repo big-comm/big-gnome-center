@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.communitybig.panel-and-dock" path="/org/communitybig/panel-and-dock/">
+    <key name="panel-opacity" type="u">
+      <range min="0" max="100"/>
+      <default>65</default>
+      <summary>Panel background opacity</summary>
+    </key>
+    <key name="panel-visibility" type="s">
+      <choices>
+        <choice value="always-visible"/>
+        <choice value="always-hidden"/>
+        <choice value="intelligent"/>
+      </choices>
+      <default>'always-visible'</default>
+      <summary>Panel visibility mode</summary>
+    </key>
+    <key name="indicator-style" type="s">
+      <choices>
+        <choice value="dot"/>
+        <choice value="hybrid"/>
+        <choice value="desk-ux"/>
+      </choices>
+      <default>'dot'</default>
+      <summary>Running application indicator style</summary>
+    </key>
+  </schema>
+</schemalist>

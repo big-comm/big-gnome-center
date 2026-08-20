@@ -3,11 +3,11 @@
 helper_client.py — D-Bus client for the in-shell layout-switcher-helper.
 
 The companion GNOME Shell extension
-``layout-switcher-helper@bigcommunity.org`` performs the live layout switch
+``layout-switcher-helper@communitybig.org`` performs the live layout switch
 from INSIDE gnome-shell (enable/disable/reload via ``Main.extensionManager``
 + ``Main.loadTheme``, sequenced on the shell's main loop). Doing it in-shell
 avoids the cross-process race that hangs gnome-shell on heavy transitions and
-lets appearance-owning extensions (dash-to-panel, arcmenu, kiwi, light-style)
+lets appearance-owning extensions (dash-to-panel, community-menu, kiwi, light-style)
 re-apply their theme without a logout — neither of which is possible from an
 external process on GNOME 45+ (the D-Bus ReloadExtension was deprecated).
 
@@ -32,7 +32,18 @@ from constants import tr
 
 log = logging.getLogger("layout-switcher")
 
-HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
+HELPER_UUID = "layout-switcher-helper@communitybig.org"
+LEGACY_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
+COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
+LEGACY_COMMUNITY_MENU_UUID = "community-menu@bigcommunity.org"
+BIG_SHOT_UUID = "big-shot@communitybig.org"
+LEGACY_BIG_SHOT_UUID = "big-shot@bigcommunity.org"
+
+_UUID_MIGRATIONS = {
+    LEGACY_HELPER_UUID: HELPER_UUID,
+    LEGACY_COMMUNITY_MENU_UUID: COMMUNITY_MENU_UUID,
+    LEGACY_BIG_SHOT_UUID: BIG_SHOT_UUID,
+}
 
 _DEST = "org.gnome.Shell"
 _PATH = "/org/bigcommunity/LayoutSwitcherHelper"
@@ -98,10 +109,24 @@ class HelperClient:
         enabled: Iterable[str],
         disabled: Iterable[str],
     ) -> Tuple[list[str], list[str]]:
-        """Return Shell extension lists with the required helper enabled first."""
+        """Migrate owned UUIDs and keep the required helper enabled first."""
+
+        def migrate(values: Iterable[str]) -> list[str]:
+            migrated: list[str] = []
+            for uuid in values:
+                current = _UUID_MIGRATIONS.get(uuid, uuid)
+                if current and current not in migrated:
+                    migrated.append(current)
+            return migrated
+
+        enabled_migrated = migrate(enabled)
+        disabled_migrated = migrate(disabled)
         enabled_out = [HELPER_UUID]
-        enabled_out.extend(uuid for uuid in enabled if uuid and uuid != HELPER_UUID)
-        disabled_out = [uuid for uuid in disabled if uuid and uuid != HELPER_UUID]
+        enabled_out.extend(uuid for uuid in enabled_migrated if uuid != HELPER_UUID)
+        enabled_set = set(enabled_out)
+        disabled_out = [
+            uuid for uuid in disabled_migrated if uuid != HELPER_UUID and uuid not in enabled_set
+        ]
         return enabled_out, disabled_out
 
     @classmethod
@@ -175,6 +200,17 @@ class HelperClient:
             return json.loads(out)
         except (ValueError, json.JSONDecodeError):
             return {}
+
+    @classmethod
+    def active_uuid(cls, timeout_ms: int = 6000) -> str:
+        """Return the running helper UUID, including pre-migration sessions."""
+        info = cls.ping_info(timeout_ms)
+        uuid = info.get("uuid", "")
+        if uuid in {HELPER_UUID, LEGACY_HELPER_UUID}:
+            return uuid
+        if info.get("helper") == "layout-switcher":
+            return LEGACY_HELPER_UUID
+        return ""
 
     @classmethod
     def begin_switch(
@@ -263,6 +299,30 @@ class HelperClient:
             return bool(json.loads(out).get("ok", False))
         except (ValueError, json.JSONDecodeError):
             return False
+
+    @classmethod
+    def set_notification_position(
+        cls,
+        position: str,
+        timeout_ms: int = 6000,
+    ) -> Tuple[bool, str]:
+        """Apply a notification banner position through the Shell helper."""
+        from gi.repository import GLib
+
+        out = cls._call(
+            "SetNotificationPosition",
+            GLib.Variant("(s)", (position,)),
+            timeout_ms,
+        )
+        if out is None:
+            return False, "helper SetNotificationPosition call failed"
+        try:
+            result = json.loads(out)
+        except (ValueError, json.JSONDecodeError):
+            return False, f"helper SetNotificationPosition bad reply: {out}"
+        if not result.get("ok", False):
+            return False, result.get("error", "helper reported failure")
+        return True, result.get("position", position)
 
     @classmethod
     def reload_extension(cls, uuid: str, timeout_ms: int = 20000) -> bool:

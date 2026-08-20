@@ -147,9 +147,7 @@ class ExtensionUpdateMonitor:
         from gi.repository import GLib
 
         self._notifier.start()
-        self._source_ids.append(
-            GLib.timeout_add_seconds(_LOGIN_CHECK_DELAY, self._initial_check)
-        )
+        self._source_ids.append(GLib.timeout_add_seconds(_LOGIN_CHECK_DELAY, self._initial_check))
         self._source_ids.append(
             GLib.timeout_add_seconds(UPDATE_CHECK_INTERVAL, self._periodic_check)
         )
@@ -175,9 +173,7 @@ class ExtensionUpdateMonitor:
 
     def _check_if_due(self) -> None:
         settings = self._settings_factory()
-        if (
-            update_checker.time_since_last_check(settings) >= UPDATE_CHECK_INTERVAL
-        ):
+        if update_checker.time_since_last_check(settings) >= UPDATE_CHECK_INTERVAL:
             self._queue_check()
 
     def _queue_check(self) -> None:
@@ -207,10 +203,7 @@ class ExtensionUpdateMonitor:
 
     @staticmethod
     def _signature(updates: Dict[str, update_checker.UpdateInfo]) -> str:
-        return "|".join(
-            f"{uuid}:{updates[uuid].latest_version}"
-            for uuid in sorted(updates)
-        )
+        return "|".join(f"{uuid}:{updates[uuid].latest_version}" for uuid in sorted(updates))
 
     @staticmethod
     def _display_names(updates: Dict[str, update_checker.UpdateInfo]) -> str:
@@ -236,9 +229,7 @@ class ExtensionUpdateMonitor:
 
         notification_id = self._notifier.notify(
             tr("Extension updates available"),
-            tr("Available updates: {names}").format(
-                names=self._display_names(updates)
-            ),
+            tr("Available updates: {names}").format(names=self._display_names(updates)),
             [
                 ("default", tr("View updates")),
                 ("view", tr("View updates")),
@@ -277,9 +268,7 @@ class ExtensionUpdateMonitor:
             return
         self._applying = True
         future = self._executor.submit(self._apply_func, list(updates.values()))
-        future.add_done_callback(
-            lambda done: self._dispatch_apply_result(done, updates)
-        )
+        future.add_done_callback(lambda done: self._dispatch_apply_result(done, updates))
 
     def _dispatch_apply_result(self, future, requested: Dict) -> None:
         from gi.repository import GLib
@@ -304,9 +293,7 @@ class ExtensionUpdateMonitor:
 
         self._notifier.notify(
             tr("Extension updates installed"),
-            tr("Updated: {names}").format(
-                names=self._display_names(succeeded)
-            ),
+            tr("Updated: {names}").format(names=self._display_names(succeeded)),
             [
                 ("default", tr("View extensions")),
                 ("view", tr("View extensions")),
@@ -318,17 +305,9 @@ class ExtensionUpdateMonitor:
     def _notify_apply_failure(self, succeeded: Dict, failed: Dict) -> None:
         body_parts = []
         if succeeded:
-            body_parts.append(
-                tr("Updated: {names}").format(
-                    names=self._display_names(succeeded)
-                )
-            )
+            body_parts.append(tr("Updated: {names}").format(names=self._display_names(succeeded)))
         if failed:
-            body_parts.append(
-                tr("Failed: {names}").format(
-                    names=self._display_names(failed)
-                )
-            )
+            body_parts.append(tr("Failed: {names}").format(names=self._display_names(failed)))
         self._notifier.notify(
             tr("Some extension updates failed"),
             "\n".join(body_parts),

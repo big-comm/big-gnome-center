@@ -1,0 +1,23 @@
+# Community Panel upstream
+
+Community Panel is the bundled Layout Switcher fork of Dash to Panel 73.
+
+- Upstream: https://github.com/home-sweet-gnome/dash-to-panel
+- Baseline: Arch/Manjaro package `gnome-shell-extension-dash-to-panel` 73-1
+- Upstream UUID: `dash-to-panel@jderose9.github.com`
+- Fork UUID: `community-panel@communitybig.org`
+- License: GPL-2.0-or-later
+- Original authors: Jason DeRose and Charles Gagnon
+
+The fork initially preserves upstream runtime files and the inherited
+`org.gnome.shell.extensions.dash-to-panel` settings schema. This keeps the
+Classic, Hybrid, and Desk UX profiles byte-for-byte compatible at the settings
+level while the external extension remains available as migration rollback.
+
+Local runtime changes:
+
+- Desk UX indicators use the same fixed geometry as Community Dock: 8 x 3 px
+  when unfocused and 18 x 3 px when focused.
+
+GNOME 50 is the live acceptance target. GNOME 51 is declared for the later
+compatibility phase and still requires a live smoke test before release.

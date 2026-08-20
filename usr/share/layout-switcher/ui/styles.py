@@ -109,6 +109,200 @@ APP_CSS = """
     box-shadow: 0 0 8px alpha(@success_color, 0.55);
 }
 
+/* ── Community Menu style chooser ───────────────────────────────────── */
+.menu-style-grid > flowboxchild {
+    background: none;
+    outline: none;
+    box-shadow: none;
+}
+.menu-style-card {
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid alpha(@card_fg_color, 0.12);
+    background-color: alpha(@card_bg_color, 0.54);
+    box-shadow: none;
+}
+.menu-style-card:hover {
+    border-color: alpha(@accent_color, 0.48);
+    background-color: alpha(@card_bg_color, 0.82);
+}
+.menu-style-card:checked {
+    border-color: @accent_color;
+    background-color: alpha(@accent_bg_color, 0.13);
+    box-shadow: inset 0 0 0 1px @accent_color;
+}
+.menu-style-preview-stage {
+    border-radius: 8px;
+    background-color: #17171c;
+    border: 1px solid alpha(white, 0.08);
+}
+.menu-style-preview {
+    padding: 5px;
+    border-radius: 7px;
+    background-color: #27272d;
+    border: 1px solid alpha(white, 0.10);
+    box-shadow: 0 2px 5px alpha(black, 0.35);
+}
+.menu-style-preview-classic {
+    border-radius: 7px 7px 3px 3px;
+}
+.menu-style-preview-desk-ux {
+    border-radius: 7px;
+}
+.menu-style-preview-hybrid {
+    border-radius: 7px 7px 3px 3px;
+}
+.menu-style-search {
+    border-radius: 5px;
+    background-color: alpha(white, 0.22);
+}
+.menu-style-rail,
+.menu-style-categories {
+    padding: 3px;
+    border-radius: 4px;
+    background-color: alpha(white, 0.10);
+}
+.menu-style-rail-item {
+    border-radius: 50%;
+    background-color: alpha(#3584e4, 0.88);
+}
+.menu-style-category-line {
+    border-radius: 2px;
+    background-color: alpha(white, 0.34);
+}
+.menu-style-app {
+    border-radius: 3px;
+    background-color: alpha(#3584e4, 0.82);
+}
+.menu-style-user {
+    border-radius: 3px;
+    background-color: alpha(white, 0.36);
+}
+.menu-style-footer {
+    padding-top: 3px;
+    border-top: 1px solid alpha(white, 0.13);
+}
+.menu-style-actions {
+    padding: 2px;
+}
+.menu-style-action {
+    border-radius: 50%;
+    background-color: alpha(white, 0.58);
+}
+.menu-style-divider {
+    background-color: alpha(white, 0.18);
+}
+.menu-style-default {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background-color: alpha(@accent_bg_color, 0.50);
+    color: @accent_fg_color;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* ── Notification position chooser ──────────────────────────────────── */
+.notification-position-grid > flowboxchild {
+    background: none;
+    outline: none;
+    box-shadow: none;
+}
+.notification-position-card {
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid alpha(@card_fg_color, 0.12);
+    background-color: alpha(@card_bg_color, 0.54);
+    box-shadow: none;
+}
+.notification-position-card:hover {
+    border-color: alpha(@accent_color, 0.48);
+    background-color: alpha(@card_bg_color, 0.82);
+}
+.notification-position-card:checked {
+    border-color: @accent_color;
+    background-color: alpha(@accent_bg_color, 0.13);
+    box-shadow: inset 0 0 0 1px @accent_color;
+}
+.notification-position-preview {
+    border-radius: 8px;
+    background-color: #17171c;
+    border: 1px solid alpha(white, 0.08);
+}
+.notification-position-desktop {
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #27272d;
+    border: 1px solid alpha(white, 0.10);
+}
+.notification-position-panel {
+    min-height: 4px;
+    margin: 6px;
+    border-radius: 3px;
+    background-color: alpha(white, 0.22);
+}
+.notification-position-banner {
+    border-radius: 5px;
+    background-color: alpha(@accent_bg_color, 0.88);
+    border: 1px solid alpha(@accent_fg_color, 0.30);
+    box-shadow: 0 2px 5px alpha(black, 0.35);
+}
+
+/* ── Community Dock running indicator chooser ──────────────────────── */
+.indicator-style-grid > flowboxchild {
+    background: none;
+    outline: none;
+    box-shadow: none;
+}
+.indicator-style-card {
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid alpha(@card_fg_color, 0.12);
+    background-color: alpha(@card_bg_color, 0.54);
+    box-shadow: none;
+}
+.indicator-style-card:hover {
+    border-color: alpha(@accent_color, 0.48);
+    background-color: alpha(@card_bg_color, 0.82);
+}
+.indicator-style-card:checked {
+    border-color: @accent_color;
+    background-color: alpha(@accent_bg_color, 0.13);
+    box-shadow: inset 0 0 0 1px @accent_color;
+}
+.indicator-style-preview {
+    padding: 6px;
+    border-radius: 8px;
+    background-color: #17171c;
+    border: 1px solid alpha(white, 0.08);
+}
+.indicator-preview-icon {
+    border-radius: 7px;
+    background-color: #5e606a;
+    border: 1px solid alpha(white, 0.12);
+}
+.indicator-preview-mark {
+    min-height: 3px;
+    border-radius: 999px;
+    background-color: alpha(#b8bac2, 0.70);
+}
+.indicator-preview-active {
+    background-color: @accent_bg_color;
+}
+.indicator-preview-dot {
+    min-width: 6px;
+    min-height: 6px;
+}
+.indicator-preview-hybrid {
+    min-width: 20px;
+    min-height: 4px;
+}
+.indicator-preview-desk-ux.indicator-preview-inactive {
+    min-width: 8px;
+}
+.indicator-preview-desk-ux.indicator-preview-active {
+    min-width: 20px;
+}
+
 /* ── Extension cards em destaque ─────────────────────────────────────── */
 .ext-card {
     outline: 1px solid alpha(@card_fg_color, 0.12);

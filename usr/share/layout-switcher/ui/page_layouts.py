@@ -389,6 +389,8 @@ class LayoutsPage(Gtk.Box):
             prev = self._active_layout
             self._active_layout = name
             self._prefs.set("active_layout", name)
+            if hasattr(root, "refresh_layout_capabilities"):
+                root.refresh_layout_capabilities()
             self._set_status(f"{name} {tr('applied')}", "ok-col")
             self.rebuild_grid()
             overlay = getattr(root, "_toast_overlay", None)
@@ -482,6 +484,8 @@ class LayoutsPage(Gtk.Box):
         self._active_layout = prev_name
         if prev_name:
             self._prefs.set("active_layout", prev_name)
+        if hasattr(root, "refresh_layout_capabilities"):
+            root.refresh_layout_capabilities()
         self._set_status(tr("Layout restored"), "ok-col")
         self.rebuild_grid()
         self._toast(tr("Previous layout restored"))

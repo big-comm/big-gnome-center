@@ -30,6 +30,7 @@ def test_atomic_write_text_supports_concurrent_writers(tmp_path):
     assert dest.read_text() in payloads
     assert not list(tmp_path.glob(".settings.gnome.*.tmp"))
 
+
 # ── run_cmd ───────────────────────────────────────────────────────────────────
 
 
@@ -162,6 +163,12 @@ class TestGnomeShellVersion:
     def test_major_only(self, mock_run):
         major, minor = gnome_shell_version()
         assert major == 45
+        assert minor == 0
+
+    @patch("utils.run_cmd", return_value=(True, "GNOME Shell 51.beta"))
+    def test_beta_version(self, mock_run):
+        major, minor = gnome_shell_version()
+        assert major == 51
         assert minor == 0
 
     @patch("utils.run_cmd", return_value=(False, ""))

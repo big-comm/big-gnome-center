@@ -16,6 +16,7 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 
 import logging
 import os
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -190,13 +191,11 @@ def gnome_shell_version() -> Tuple[int, int]:
     """
     ok, out = run_cmd(["gnome-shell", "--version"])
     if ok and out:
-        parts = out.split()
-        if len(parts) >= 3:
-            try:
-                nums = parts[-1].split(".")
-                return int(nums[0]), int(nums[1]) if len(nums) > 1 else 0
-            except (ValueError, IndexError):
-                pass
+        match = re.search(r"(\d+)(?:\.(\d+))?", out)
+        if match:
+            major = int(match.group(1))
+            minor = int(match.group(2)) if match.group(2) else 0
+            return major, minor
     return 0, 0
 
 

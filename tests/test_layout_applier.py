@@ -27,12 +27,115 @@ def required_helper_available():
         patch("layout_applier.HelperClient.ensure_available", return_value=(True, "")),
         patch("layout_applier.HelperClient.helper_version", return_value=0),
         patch("layout_applier.HelperClient._call", return_value=None),
+        patch("layout_applier.gnome_shell_version", return_value=(50, 4)),
         patch("shell_reloader.run_cmd", return_value=(False, "test isolation")),
     ):
         yield
 
 
 class TestLayoutApplier:
+    def test_user_component_overrides_are_global_and_explicit(self):
+        class FakeSettings:
+            values = {
+                "desktop_icons_enabled": True,
+                "community_menu_enabled": False,
+                "super_key_opens_menu": False,
+            }
+
+            def get(self, key, default=None):
+                return self.values.get(key, default)
+
+        data = """\
+[org/gnome/shell]
+enabled-extensions=['community-menu@communitybig.org']
+disabled-extensions=['gtk4-ding@smedius.gitlab.com']
+
+[org/gnome/shell/extensions/community-menu]
+layout='MINT'
+"""
+        with patch("layout_applier.Settings", FakeSettings):
+            out = LayoutApplier._apply_user_component_overrides(data)
+
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+        disabled = LayoutApplier._string_list(shell["disabled-extensions"])
+        assert "gtk4-ding@smedius.gitlab.com" in enabled
+        assert "community-menu@communitybig.org" not in enabled
+        assert "gtk4-ding@smedius.gitlab.com" not in disabled
+        assert "community-menu@communitybig.org" in disabled
+        menu = LayoutApplier._section_key_values(
+            out,
+            "/org/gnome/shell/extensions/community-menu",
+        )
+        assert menu["super-key-opens-menu"] == "false"
+
+    def test_absent_component_preferences_keep_layout_defaults(self):
+        class FakeSettings:
+            def get(self, key, default=None):
+                return default
+
+        data = """\
+[org/gnome/shell]
+enabled-extensions=['community-menu@communitybig.org']
+"""
+        with patch("layout_applier.Settings", FakeSettings):
+            out = LayoutApplier._apply_user_component_overrides(data)
+
+        assert out == data
+
+    @pytest.mark.parametrize("layout_id", ["biggnome", "minimal", "g-unity"])
+    def test_native_menu_layouts_reject_global_community_menu_override(self, layout_id):
+        class FakeSettings:
+            values = {
+                "community_menu_enabled": True,
+                "super_key_opens_menu": True,
+            }
+
+            def get(self, key, default=None):
+                return self.values.get(key, default)
+
+        data = """\
+[org/gnome/shell]
+enabled-extensions=['community-menu@communitybig.org', 'stay@ext']
+disabled-extensions=[]
+"""
+        with patch("layout_applier.Settings", FakeSettings):
+            out = LayoutApplier._apply_user_component_overrides(
+                data,
+                layout_id=layout_id,
+            )
+
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+        disabled = LayoutApplier._string_list(shell["disabled-extensions"])
+        assert "community-menu@communitybig.org" not in enabled
+        assert "community-menu@communitybig.org" in disabled
+
+    @pytest.mark.parametrize("layout_id", ["classic", "desk-ux", "hybrid"])
+    def test_community_menu_layouts_accept_global_menu_override(self, layout_id):
+        class FakeSettings:
+            values = {"community_menu_enabled": True}
+
+            def get(self, key, default=None):
+                return self.values.get(key, default)
+
+        data = """\
+[org/gnome/shell]
+enabled-extensions=['stay@ext']
+disabled-extensions=['community-menu@communitybig.org']
+"""
+        with patch("layout_applier.Settings", FakeSettings):
+            out = LayoutApplier._apply_user_component_overrides(
+                data,
+                layout_id=layout_id,
+            )
+
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+        disabled = LayoutApplier._string_list(shell["disabled-extensions"])
+        assert "community-menu@communitybig.org" in enabled
+        assert "community-menu@communitybig.org" not in disabled
+
     @patch("layout_applier.time.sleep")
     @patch(
         "layout_applier.LayoutApplier._preserve_user_color_scheme",
@@ -73,11 +176,12 @@ class TestLayoutApplier:
 
         # 1 mutter gdbus probe + 5 dconf reads (dtp fallback) + 1 read
         # enabled-extensions (before) + stop watcher + dconf dump scan +
-        # load + 1 read enabled-extensions (after) + start watcher = 12.
+        # staged Shell load + main load + 1 read enabled-extensions (after) +
+        # start watcher = 13.
         # (The light-mode icon/label adjusts early-return: this layout text
         # carries no icon-theme / dash-to-panel label keys.)
         calls = [c.args[0] for c in mock_run.call_args_list]
-        assert mock_run.call_count == 12, "\n".join(map(str, calls))
+        assert mock_run.call_count == 13, "\n".join(map(str, calls))
         # 1: gdbus probe to mutter for monitor IDs
         assert calls[0][0] == "gdbus"
         assert "Mutter.DisplayConfig" in calls[0][4]
@@ -88,13 +192,14 @@ class TestLayoutApplier:
         assert calls[6] == ["dconf", "read", "/org/gnome/shell/enabled-extensions"]
         # 8: stop Qt theme watcher
         assert calls[7][:3] == ["systemctl", "--user", "stop"]
-        # 9-10: orphan scan + layout load
+        # 9-11: orphan scan + staged Shell load + main layout load
         assert calls[8] == ["dconf", "dump", "/"]
         assert calls[9] == ["dconf", "load", "/"]
-        # 11: enabled-extensions after
-        assert calls[10] == ["dconf", "read", "/org/gnome/shell/enabled-extensions"]
-        # 12: start Qt theme watcher
-        assert calls[11][:3] == ["systemctl", "--user", "start"]
+        assert calls[10] == ["dconf", "load", "/"]
+        # 12: enabled-extensions after
+        assert calls[11] == ["dconf", "read", "/org/gnome/shell/enabled-extensions"]
+        # 13: start Qt theme watcher
+        assert calls[12][:3] == ["systemctl", "--user", "start"]
         mock_preserve_theme.assert_called_once()
         mock_persist.assert_called_once()
         mock_reload_visual.assert_not_called()
@@ -134,9 +239,10 @@ class TestLayoutApplier:
         ok, _ = LayoutApplier.apply(layout)
         assert ok is True
         # 1 gdbus mutter probe + 5 dtp dconf reads + 1 enabled-ext read
-        # (before) + dconf dump scan + load + 1 enabled-ext read (after) = 10.
+        # (before) + dconf dump scan + staged Shell load + main load + 1
+        # enabled-ext read (after) = 11.
         # No systemctl stop/start (watcher ausente), no per-UUID disables.
-        assert mock_run.call_count == 10
+        assert mock_run.call_count == 11
         # 1st: gdbus mutter probe
         assert mock_run.call_args_list[0].args[0][0] == "gdbus"
         # 2nd-6th: reads de dash-to-panel
@@ -147,11 +253,12 @@ class TestLayoutApplier:
             "read",
             "/org/gnome/shell/enabled-extensions",
         ]
-        # 8th-9th: orphan scan + layout load
+        # 8th-10th: orphan scan + staged Shell load + main layout load
         assert mock_run.call_args_list[7].args[0] == ["dconf", "dump", "/"]
         assert mock_run.call_args_list[8].args[0] == ["dconf", "load", "/"]
-        # 10th: enabled-extensions after
-        assert mock_run.call_args_list[9].args[0] == [
+        assert mock_run.call_args_list[9].args[0] == ["dconf", "load", "/"]
+        # 11th: enabled-extensions after
+        assert mock_run.call_args_list[10].args[0] == [
             "dconf",
             "read",
             "/org/gnome/shell/enabled-extensions",
@@ -311,11 +418,11 @@ class TestLayoutApplier:
         before = [
             "older@ext",
             "arcmenu@arcmenu.com",
-            "dash-to-panel@jderose9.github.com",
+            "community-panel@communitybig.org",
             "copyous@boerdereinar.dev",
         ]
         leaving = {
-            "dash-to-panel@jderose9.github.com",
+            "community-panel@communitybig.org",
             "arcmenu@arcmenu.com",
             "unknown@ext",
         }
@@ -323,7 +430,7 @@ class TestLayoutApplier:
         ordered = LayoutApplier._leaving_extensions_in_disable_order(before, leaving)
 
         assert ordered == [
-            "dash-to-panel@jderose9.github.com",
+            "community-panel@communitybig.org",
             "arcmenu@arcmenu.com",
             "unknown@ext",
         ]
@@ -333,7 +440,7 @@ class TestLayoutApplier:
         data = (
             "[org/gnome/shell]\n"
             "favorite-apps=['a.desktop']\n"
-            "enabled-extensions=['dash-to-panel@jderose9.github.com']\n"
+            "enabled-extensions=['community-panel@communitybig.org']\n"
             "disabled-extensions=['dash-to-dock@micxgx.gmail.com']\n"
             "\n"
             "[org/gnome/shell/extensions/dash-to-panel]\n"
@@ -349,7 +456,7 @@ class TestLayoutApplier:
         assert switch_data == (
             "[org/gnome/shell]\n"
             "disabled-extensions=['dash-to-dock@micxgx.gmail.com']\n"
-            "enabled-extensions=['dash-to-panel@jderose9.github.com']\n"
+            "enabled-extensions=['community-panel@communitybig.org']\n"
         )
 
     def test_replace_existing_dconf_key_does_not_append_duplicate_section(self):
@@ -385,7 +492,7 @@ class TestLayoutApplier:
             "\n"
             "[org/gnome/shell]\n"
             f"disabled-extensions=['{user_theme}']\n"
-            f"enabled-extensions=['{light_style}', 'dash-to-panel@jderose9.github.com']\n"
+            f"enabled-extensions=['{light_style}', 'community-panel@communitybig.org']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
             "name=''\n"
@@ -636,26 +743,6 @@ class TestLayoutApplier:
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.ShellReloader.reload_extension", return_value=True)
-    def test_reload_visual_extensions_uses_reload_timeout(
-        self,
-        mock_reload,
-        mock_sleep,
-    ):
-        """Visual reloads get enough time for heavy Shell extensions."""
-        LayoutApplier._reload_visual_extensions(
-            ["dash-to-dock@micxgx.gmail.com", "blur-my-shell@aunetx"]
-        )
-
-        assert mock_reload.call_count == 1
-        assert mock_sleep.call_count == 1
-        assert mock_reload.call_args.args[0] == "blur-my-shell@aunetx"
-        assert all(
-            call.kwargs["timeout"] == LayoutApplier._SHELL_RELOAD_TIMEOUT_SEC
-            for call in mock_reload.call_args_list
-        )
-
-    @patch("layout_applier.time.sleep")
-    @patch("layout_applier.ShellReloader.reload_extension", return_value=True)
     def test_reload_visual_extensions_skips_fragile_or_slow_extensions(
         self,
         mock_reload,
@@ -665,7 +752,7 @@ class TestLayoutApplier:
         LayoutApplier._reload_visual_extensions(
             [
                 "arcmenu@arcmenu.com",
-                "dash-to-panel@jderose9.github.com",
+                "community-panel@communitybig.org",
                 "dash-to-dock@micxgx.gmail.com",
                 "big-shot@bigcommunity.org",
             ]
@@ -708,7 +795,10 @@ class TestLayoutApplier:
         assert mock_run.call_args_list[0].args[0] == ["dconf", "load", "/"]
         assert mock_run.call_args_list[0].kwargs["stdin_text"] == "[org/gnome/shell]\n"
         assert mock_run.call_args_list[1].args[0] == ["dconf", "load", "/"]
-        assert "enabled-extensions=['stay@ext']" in mock_run.call_args_list[1].kwargs["stdin_text"]
+        assert (
+            "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
+            in mock_run.call_args_list[1].kwargs["stdin_text"]
+        )
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._restart_dash_to_panel_after_load")
@@ -717,7 +807,7 @@ class TestLayoutApplier:
         "layout_applier.LayoutApplier._enabled_extensions",
         return_value=[
             "stay@ext",
-            "dash-to-panel@jderose9.github.com",
+            "community-panel@communitybig.org",
         ],
     )
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
@@ -740,25 +830,25 @@ class TestLayoutApplier:
         """Protect staying dash-to-panel from Shell rebase during removals."""
         data = (
             "[org/gnome/shell]\n"
-            "enabled-extensions=['stay@ext', 'dash-to-panel@jderose9.github.com']\n"
+            "enabled-extensions=['stay@ext', 'community-panel@communitybig.org']\n"
         )
 
         ok, _ = LayoutApplier.load_dconf_safely(
             data,
             before_uuids=[
                 "leave@ext",
-                "dash-to-panel@jderose9.github.com",
+                "community-panel@communitybig.org",
                 "stay@ext",
             ],
         )
 
         assert ok is True
         assert mock_disable.call_args.args[0] == [
-            "dash-to-panel@jderose9.github.com",
+            "community-panel@communitybig.org",
             "leave@ext",
         ]
         assert mock_disable.call_args.kwargs == {"sort": False}
-        mock_restart_dtp.assert_called_once_with(["stay@ext", "dash-to-panel@jderose9.github.com"])
+        mock_restart_dtp.assert_called_once_with(["stay@ext", "community-panel@communitybig.org"])
         mock_sleep.assert_any_call(LayoutApplier._SETTLE_SEC)
 
     @patch("layout_applier.time.sleep")
@@ -766,7 +856,7 @@ class TestLayoutApplier:
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch(
         "layout_applier.LayoutApplier._enabled_extensions",
-        return_value=["dash-to-panel@jderose9.github.com"],
+        return_value=["community-panel@communitybig.org"],
     )
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
     @patch("layout_applier.LayoutApplier._reset_orphan_keys")
@@ -786,19 +876,19 @@ class TestLayoutApplier:
         mock_sleep,
     ):
         """Reapplying a DTP layout must rebuild DTP panel actors."""
-        data = "[org/gnome/shell]\nenabled-extensions=['dash-to-panel@jderose9.github.com']\n"
+        data = "[org/gnome/shell]\nenabled-extensions=['community-panel@communitybig.org']\n"
 
         ok, _ = LayoutApplier.load_dconf_safely(
             data,
-            before_uuids=["dash-to-panel@jderose9.github.com"],
+            before_uuids=["community-panel@communitybig.org"],
         )
 
         assert ok is True
         assert mock_disable.call_args.args[0] == [
-            "dash-to-panel@jderose9.github.com",
+            "community-panel@communitybig.org",
         ]
         assert mock_disable.call_args.kwargs == {"sort": False}
-        mock_restart_dtp.assert_called_once_with(["dash-to-panel@jderose9.github.com"])
+        mock_restart_dtp.assert_called_once_with(["community-panel@communitybig.org"])
         mock_sleep.assert_any_call(LayoutApplier._SETTLE_SEC)
 
     @patch("layout_applier.time.sleep")
@@ -807,7 +897,7 @@ class TestLayoutApplier:
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch(
         "layout_applier.LayoutApplier._enabled_extensions",
-        return_value=["dash-to-panel@jderose9.github.com"],
+        return_value=["community-panel@communitybig.org"],
     )
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order")
     @patch("layout_applier.LayoutApplier._reset_orphan_keys")
@@ -828,13 +918,13 @@ class TestLayoutApplier:
         mock_sleep,
     ):
         """DTP is rebuilt after its target settings are loaded."""
-        data = "[org/gnome/shell]\nenabled-extensions=['dash-to-panel@jderose9.github.com']\n"
+        data = "[org/gnome/shell]\nenabled-extensions=['community-panel@communitybig.org']\n"
 
         ok, _ = LayoutApplier.load_dconf_safely(data, before_uuids=[])
 
         assert ok is True
         mock_disable_batch.assert_not_called()
-        mock_restart_dtp.assert_called_once_with(["dash-to-panel@jderose9.github.com"])
+        mock_restart_dtp.assert_called_once_with(["community-panel@communitybig.org"])
         mock_enable_after_load.assert_not_called()
 
     @patch("layout_applier.time.sleep")
@@ -883,7 +973,10 @@ class TestLayoutApplier:
         assert mock_run.call_count == 2
         assert "enabled-extensions" not in mock_run.call_args_list[0].kwargs["stdin_text"]
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert f"enabled-extensions=['{user_theme}', 'stay@ext']" in switch_data
+        assert (
+            "enabled-extensions=['layout-switcher-helper@communitybig.org', "
+            f"'{user_theme}', 'stay@ext']"
+        ) in switch_data
         mock_enable_user_theme.assert_not_called()
 
     @patch("layout_applier.time.sleep")
@@ -928,7 +1021,10 @@ class TestLayoutApplier:
         assert mock_disable.call_args.args[0] == ["leave@ext"]
         assert mock_disable.call_args.kwargs == {"sort": False}
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert "enabled-extensions=['stay@ext']" in switch_data
+        assert (
+            "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
+            in switch_data
+        )
         assert (
             f"'{user_theme}'"
             not in LayoutApplier._section_key_values(
@@ -1006,8 +1102,8 @@ class TestLayoutApplier:
         "layout_applier.LayoutApplier._enabled_extensions",
         side_effect=[
             ["stay@ext"],
-            ["stay@ext", "dash-to-panel@jderose9.github.com"],
-            ["stay@ext", "dash-to-panel@jderose9.github.com", "arcmenu@arcmenu.com"],
+            ["stay@ext", "community-panel@communitybig.org"],
+            ["stay@ext", "community-panel@communitybig.org", "arcmenu@arcmenu.com"],
         ],
     )
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
@@ -1031,7 +1127,7 @@ class TestLayoutApplier:
     ):
         """New DTP starts first; ArcMenu starts after the DTP panel exists."""
         arcmenu = "arcmenu@arcmenu.com"
-        dash_to_panel = "dash-to-panel@jderose9.github.com"
+        dash_to_panel = "community-panel@communitybig.org"
         data = (
             "[org/gnome/shell]\n"
             "disabled-extensions=[]\n"
@@ -1043,7 +1139,10 @@ class TestLayoutApplier:
         assert ok is True
         mock_disable.assert_not_called()
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert "enabled-extensions=['stay@ext']" in switch_data
+        assert (
+            "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
+            in switch_data
+        )
         assert f"'{arcmenu}'" not in switch_data
         assert f"'{dash_to_panel}'" not in switch_data
         mock_restart_dtp.assert_called_once_with(["stay@ext"])
@@ -1061,7 +1160,7 @@ class TestLayoutApplier:
             [
                 "stay@ext",
                 "light-style@gnome-shell-extensions.gcampax.github.com",
-                "dash-to-panel@jderose9.github.com",
+                "community-panel@communitybig.org",
             ],
         ],
     )
@@ -1086,7 +1185,7 @@ class TestLayoutApplier:
     ):
         """Light DTP layouts start DTP after light-style is already active."""
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
-        dash_to_panel = "dash-to-panel@jderose9.github.com"
+        dash_to_panel = "community-panel@communitybig.org"
         data = (
             "[org/gnome/shell]\n"
             "disabled-extensions=[]\n"
@@ -1124,7 +1223,7 @@ class TestLayoutApplier:
     ):
         """Target panel extensions are required even after secondary DBus timeouts."""
         arcmenu = "arcmenu@arcmenu.com"
-        dash_to_panel = "dash-to-panel@jderose9.github.com"
+        dash_to_panel = "community-panel@communitybig.org"
         data = (
             "[org/gnome/shell]\n"
             "disabled-extensions=[]\n"
@@ -1138,7 +1237,9 @@ class TestLayoutApplier:
 
         assert ok is True
         mock_disable.assert_not_called()
-        mock_restart_dtp.assert_called_once_with(["stay@ext"])
+        mock_restart_dtp.assert_called_once_with(
+            ["layout-switcher-helper@communitybig.org", "stay@ext"]
+        )
         mock_enable_after_load.assert_called_once_with([arcmenu])
 
     @patch("layout_applier.time.sleep")
@@ -1155,13 +1256,13 @@ class TestLayoutApplier:
     ):
         """One extension timeout must not skip the next target extension."""
         ok = LayoutApplier._enable_extensions_after_load(
-            ["arcmenu@arcmenu.com", "dash-to-panel@jderose9.github.com"]
+            ["arcmenu@arcmenu.com", "community-panel@communitybig.org"]
         )
 
         assert ok is False
         assert [call.args[0] for call in mock_enable.call_args_list] == [
             "arcmenu@arcmenu.com",
-            "dash-to-panel@jderose9.github.com",
+            "community-panel@communitybig.org",
         ]
 
     @patch("layout_applier.time.sleep")
@@ -1187,7 +1288,7 @@ class TestLayoutApplier:
     ):
         """Leaving DTP is torn down before the final Shell extension list."""
         arcmenu = "arcmenu@arcmenu.com"
-        dash_to_panel = "dash-to-panel@jderose9.github.com"
+        dash_to_panel = "community-panel@communitybig.org"
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         data = (
             "[org/gnome/shell]\n"
@@ -1203,7 +1304,7 @@ class TestLayoutApplier:
         assert ok is True
         mock_disable.assert_called_once_with(
             [
-                "dash-to-panel@jderose9.github.com",
+                "community-panel@communitybig.org",
                 "arcmenu@arcmenu.com",
                 "light-style@gnome-shell-extensions.gcampax.github.com",
             ],
@@ -1225,7 +1326,7 @@ class TestLayoutApplier:
             ["stay@ext"],
             [
                 "stay@ext",
-                "dash-to-dock@micxgx.gmail.com",
+                "community-dock@communitybig.org",
                 "kiwi@kemma",
             ],
         ],
@@ -1248,16 +1349,16 @@ class TestLayoutApplier:
         _wait_not_live,
         _sleep,
     ):
-        """Classic -> G-Unity starts Kiwi/DTD after light-style is disabled."""
+        """Classic -> G-Unity starts Kiwi/Community Dock after light-style leaves."""
         arcmenu = "arcmenu@arcmenu.com"
-        dash_to_panel = "dash-to-panel@jderose9.github.com"
-        dash_to_dock = "dash-to-dock@micxgx.gmail.com"
+        dash_to_panel = "community-panel@communitybig.org"
+        community_dock = "community-dock@communitybig.org"
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         kiwi = "kiwi@kemma"
         data = (
             "[org/gnome/shell]\n"
             f"disabled-extensions=['{arcmenu}', '{dash_to_panel}', '{light_style}']\n"
-            f"enabled-extensions=['{dash_to_dock}', '{kiwi}', 'stay@ext']\n"
+            f"enabled-extensions=['{community_dock}', '{kiwi}', 'stay@ext']\n"
         )
 
         ok, _ = LayoutApplier.load_dconf_safely(
@@ -1268,17 +1369,17 @@ class TestLayoutApplier:
         assert ok is True
         mock_disable.assert_called_once_with(
             [
-                "dash-to-panel@jderose9.github.com",
+                "community-panel@communitybig.org",
                 "arcmenu@arcmenu.com",
                 "light-style@gnome-shell-extensions.gcampax.github.com",
             ],
             sort=False,
         )
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert f"'{dash_to_dock}'" not in switch_data
+        assert f"'{community_dock}'" not in switch_data
         assert f"'{kiwi}'" not in switch_data
         assert f"'{light_style}'" in switch_data
-        mock_enable_after_load.assert_called_once_with([dash_to_dock, kiwi])
+        mock_enable_after_load.assert_called_once_with([community_dock, kiwi])
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._enable_user_theme_after_load", return_value=True)
@@ -1356,12 +1457,12 @@ class TestLayoutApplier:
         _sleep,
     ):
         """Leaving G-Unity for a light layout must drop dark Shell helpers."""
-        dash_to_dock = "dash-to-dock@micxgx.gmail.com"
+        community_dock = "community-dock@communitybig.org"
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
             "[org/gnome/shell]\n"
-            f"disabled-extensions=['{user_theme}', '{dash_to_dock}']\n"
+            f"disabled-extensions=['{user_theme}', '{community_dock}']\n"
             f"enabled-extensions=['{light_style}']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
@@ -1370,11 +1471,11 @@ class TestLayoutApplier:
 
         ok, _ = LayoutApplier.load_dconf_safely(
             data,
-            before_uuids=[user_theme, dash_to_dock],
+            before_uuids=[user_theme, community_dock],
         )
 
         assert ok is True
-        mock_disable.assert_called_once_with([dash_to_dock], sort=False)
+        mock_disable.assert_called_once_with([community_dock], sort=False)
         settings_data = mock_run.call_args_list[0].kwargs["stdin_text"]
         assert "name='Big-Blue'" not in settings_data
         assert mock_reset.call_args.kwargs["skip_subdirs"] == {
@@ -1401,13 +1502,13 @@ class TestLayoutApplier:
     ):
         """Remove DTP from enabled-extensions before enabling a disabled shell state."""
         ok = LayoutApplier._restart_dash_to_panel_after_load(
-            ["stay@ext", "dash-to-panel@jderose9.github.com"]
+            ["stay@ext", "community-panel@communitybig.org"]
         )
 
         assert ok is True
         assert [call.args[0] for call in mock_set_enabled.call_args_list] == [
             ["stay@ext"],
-            ["stay@ext", "dash-to-panel@jderose9.github.com"],
+            ["stay@ext", "community-panel@communitybig.org"],
         ]
         assert mock_enable.call_count == 2
 
@@ -1560,6 +1661,9 @@ class TestRewriteDtpKeysInText:
 
 
 class TestCuratedLayoutFiles:
+    def test_desk_ux_helper_label_uses_canonical_spelling(self):
+        assert LayoutApplier._layout_display_label("desk-ux") == "Desk UX"
+
     def test_desk_ux_dtp_position_and_size_are_explicit(self):
         """Desk UX must not depend on inherited DTP defaults."""
         text = Path("usr/share/layout-switcher/layouts/desk-ux.txt").read_text(encoding="utf-8")
@@ -1583,17 +1687,38 @@ class TestCuratedLayoutFiles:
 
 class TestShellReloader:
     @patch("shell_reloader.run_cmd")
+    def test_list_extensions_state_handles_nested_metadata(self, mock_run):
+        from shell_reloader import ShellReloader
+
+        mock_run.return_value = (
+            True,
+            "({'arcmenu@arcmenu.com': {"
+            "'uuid': <'arcmenu@arcmenu.com'>, "
+            "'donations': <{'paypal': <'azaech'>}>, "
+            "'state': <6.0>, 'enabled': <false>}, "
+            "'community-panel@communitybig.org': {"
+            "'uuid': <'community-panel@communitybig.org'>, "
+            "'donations': <{'paypal': <'charlesg99'>}>, "
+            "'state': <1.0>, 'enabled': <true>}},)",
+        )
+
+        assert ShellReloader.list_extensions_state() == {
+            "arcmenu@arcmenu.com": 6,
+            "community-panel@communitybig.org": 1,
+        }
+
+    @patch("shell_reloader.run_cmd")
     def test_get_extension_state_handles_nested_metadata(self, mock_run):
         from shell_reloader import ShellReloader
 
         mock_run.return_value = (
             True,
-            "({'uuid': <'dash-to-panel@jderose9.github.com'>, "
+            "({'uuid': <'community-panel@communitybig.org'>, "
             "'donations': <{'paypal': <'charlesg99'>}>, "
             "'state': <1.0>, 'enabled': <true>},)",
         )
 
-        assert ShellReloader.get_extension_state("dash-to-panel@jderose9.github.com") == 1
+        assert ShellReloader.get_extension_state("community-panel@communitybig.org") == 1
 
     @patch("shell_reloader.run_cmd", return_value=(True, ""))
     @patch("shell_reloader.is_wayland", return_value=True)
@@ -1682,7 +1807,7 @@ class TestHelperIntegration:
         assert "arcmenu" in subdirs
         assert "appindicator" in subdirs
         assert "gsconnect" not in subdirs
-        assert "gtk4-ding" in subdirs
+        assert "gtk4-ding" not in subdirs
 
     def test_inject_helper_uuid_adds(self):
         from helper_client import HELPER_UUID
@@ -1697,6 +1822,184 @@ class TestHelperIntegration:
         data = f"[org/gnome/shell]\nenabled-extensions=['{HELPER_UUID}']\n"
         out = LayoutApplier._inject_helper_uuid(data)
         assert out.count(HELPER_UUID) == 1
+
+    def test_inject_helper_uuid_migrates_legacy_community_menu_uuid(self):
+        from helper_client import HELPER_UUID
+
+        legacy = "community-menu@bigcommunity.org"
+        current = "community-menu@communitybig.org"
+        data = (
+            "[org/gnome/shell]\n"
+            f"enabled-extensions=['{legacy}', '{current}', 'stay@ext']\n"
+            f"disabled-extensions=['{legacy}', 'disabled@ext']\n"
+        )
+
+        out = LayoutApplier._inject_helper_uuid(data)
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+
+        assert LayoutApplier._string_list(shell["enabled-extensions"]) == [
+            HELPER_UUID,
+            current,
+            "stay@ext",
+        ]
+        assert LayoutApplier._string_list(shell["disabled-extensions"]) == [
+            "disabled@ext",
+        ]
+        assert legacy not in out
+
+    def test_inject_helper_uuid_retires_legacy_from_saved_lists(self):
+        from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
+
+        data = (
+            "[org/gnome/shell]\n"
+            f"enabled-extensions=['{LEGACY_HELPER_UUID}', 'stay@ext']\n"
+            f"disabled-extensions=['{HELPER_UUID}', '{LEGACY_HELPER_UUID}']\n"
+        )
+        out = LayoutApplier._inject_helper_uuid(data)
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+
+        assert LayoutApplier._string_list(shell["enabled-extensions"]) == [
+            HELPER_UUID,
+            "stay@ext",
+        ]
+        assert LayoutApplier._string_list(shell["disabled-extensions"]) == []
+
+    def test_inject_helper_uuid_keeps_loaded_legacy_until_logout(self):
+        from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
+
+        data = (
+            "[org/gnome/shell]\n"
+            "enabled-extensions=['stay@ext']\n"
+            f"disabled-extensions=['{LEGACY_HELPER_UUID}']\n"
+        )
+        out = LayoutApplier._inject_helper_uuid(
+            data,
+            active_helper_uuid=LEGACY_HELPER_UUID,
+        )
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+
+        assert LayoutApplier._string_list(shell["enabled-extensions"]) == [
+            LEGACY_HELPER_UUID,
+            HELPER_UUID,
+            "stay@ext",
+        ]
+        assert LayoutApplier._string_list(shell["disabled-extensions"]) == []
+
+    def test_inject_helper_uuid_preserves_active_frosted_glass(self):
+        from helper_client import HELPER_UUID
+
+        frosted = "frosted-glass@communitybig.org"
+        data = "[org/gnome/shell]\nenabled-extensions=['kiwi@kemma']\n"
+        out = LayoutApplier._inject_helper_uuid(data, [frosted])
+        enabled = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        values = LayoutApplier._string_list(enabled["enabled-extensions"])
+
+        assert values[0] == HELPER_UUID
+        assert frosted in values
+
+    def test_inject_helper_uuid_preserves_active_desktop_icons(self):
+        from helper_client import HELPER_UUID
+
+        desktop_icons = "gtk4-ding@smedius.gitlab.com"
+        data = "[org/gnome/shell]\nenabled-extensions=['kiwi@kemma']\n"
+        out = LayoutApplier._inject_helper_uuid(data, [desktop_icons])
+        enabled = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        values = LayoutApplier._string_list(enabled["enabled-extensions"])
+
+        assert values[0] == HELPER_UUID
+        assert desktop_icons in values
+
+    def test_inject_helper_uuid_keeps_desktop_icons_disabled_from_old_snapshot(self):
+        desktop_icons = "gtk4-ding@smedius.gitlab.com"
+        data = (
+            "[org/gnome/shell]\n"
+            f"enabled-extensions=['{desktop_icons}', 'stay@ext']\n"
+            f"disabled-extensions=['{desktop_icons}']\n"
+        )
+
+        out = LayoutApplier._inject_helper_uuid(data, [])
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+
+        assert desktop_icons not in LayoutApplier._string_list(shell["enabled-extensions"])
+        assert desktop_icons not in LayoutApplier._string_list(shell["disabled-extensions"])
+
+    def test_preserves_global_feature_settings_over_old_snapshot(self, tmp_path):
+        current = tmp_path / "settings.gnome"
+        current.write_text(
+            "[org/communitybig/frosted-glass]\n"
+            "blur-strength=0.75\n\n"
+            "[org/gnome/shell/extensions/gtk4-ding]\n"
+            "icon-size='large'\n\n"
+            "[org/gnome/desktop/interface]\n"
+            "color-scheme='prefer-dark'\n"
+        )
+        snapshot = (
+            "[org/communitybig/frosted-glass]\n"
+            "blur-strength=0.25\n\n"
+            "[org/gnome/shell/extensions/gtk4-ding]\n"
+            "icon-size='tiny'\n\n"
+            "[org/gnome/desktop/interface]\n"
+            "color-scheme='default'\n"
+        )
+
+        with patch("layout_applier.SETTINGS_GNOME", current):
+            out = LayoutApplier._preserve_layout_independent_settings(snapshot)
+
+        assert "blur-strength=0.75" in out
+        assert "blur-strength=0.25" not in out
+        assert "icon-size='large'" in out
+        assert "icon-size='tiny'" not in out
+        assert "color-scheme='default'" in out
+
+    @pytest.mark.parametrize(
+        ("layout_id", "expected"),
+        [
+            ("biggnome", True),
+            ("desk-ux", True),
+            ("g-unity", True),
+            ("classic", False),
+            ("hybrid", False),
+            ("minimal", False),
+        ],
+    )
+    def test_gnome50_overview_default_is_owned_by_three_original_layouts(self, layout_id, expected):
+        data = "[org/gnome/shell]\nenabled-extensions=['stay@ext']\n"
+
+        out = LayoutApplier._apply_gnome50_overview_default(data, layout_id)
+        glass = LayoutApplier._section_key_values(out, "/org/communitybig/frosted-glass")
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+
+        value = "true" if expected else "false"
+        assert glass["enabled"] == value
+        assert glass["overview-enabled"] == value
+        assert ("frosted-glass@communitybig.org" in enabled) is expected
+
+    def test_inject_helper_uuid_retires_blur_my_shell(self):
+        blur_my_shell = "blur-my-shell@aunetx"
+        data = (
+            "[org/gnome/shell]\n"
+            f"enabled-extensions=['kiwi@kemma', '{blur_my_shell}']\n"
+            "disabled-extensions=[]\n"
+        )
+
+        out = LayoutApplier._inject_helper_uuid(data)
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+
+        assert blur_my_shell not in LayoutApplier._string_list(shell["enabled-extensions"])
+        assert blur_my_shell in LayoutApplier._string_list(shell["disabled-extensions"])
+
+    @patch(
+        "layout_applier.ShellReloader.list_extensions_state",
+        return_value={"community-panel@communitybig.org": 4},
+    )
+    def test_rejects_outdated_structural_extension(self, _states):
+        data = "[org/gnome/shell]\nenabled-extensions=['community-panel@communitybig.org']\n"
+
+        ok, msg = LayoutApplier._validate_structural_extensions(data)
+
+        assert ok is False
+        assert "incompatible" in msg
 
     @patch(
         "layout_applier.HelperClient.ensure_available",

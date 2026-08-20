@@ -48,7 +48,7 @@ tr = gettext.translation(_DOMAIN, _LOCALE_DIR, fallback=True).gettext  # purpose
 
 # ── Aplicação ─────────────────────────────────────────────────────────────────
 APP_ID = "org.communitybig.layout-switcher"
-APP_VERSION = "2.17.1"
+APP_VERSION = "2.18.0"
 APP_LICENSE = "MIT"
 APP_NAME = "Community Layout Switcher"
 ICON_NAME = "layout-switcher"  # SVG em icons/layout-switcher.svg
@@ -162,7 +162,7 @@ FEATURED_EXTENSIONS: List[Dict] = [
         "uuid": "compiz-alike-magic-lamp-effect@hermes83.github.com",
         "ego_id": 3740,
         "pkg": "gnome-shell-extension-compiz-alike-magic-lamp-effect",
-        "icon": "layout-effect-lamp-symbolic",
+        "icon": "layout-effect-genie-lamp-symbolic",
         "author": "hermes83",
         "has_settings": False,
         "preview": "lamp",
@@ -177,16 +177,6 @@ FEATURED_EXTENSIONS: List[Dict] = [
         "author": "hermes83",
         "has_settings": False,
         "preview": "wobbly",
-    },
-    {
-        "name": tr("Desktop Icons NG"),
-        "description": tr("Files and folders on your desktop"),
-        "uuid": "ding@rastersoft.com",
-        "ego_id": 2087,
-        "pkg": "gnome-shell-extension-desktop-icons-ng",
-        "icon": "user-desktop-symbolic",
-        "author": "Rastersoft",
-        "has_settings": True,
     },
 ]
 

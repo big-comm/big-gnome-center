@@ -5,7 +5,8 @@ import ast
 import json
 from pathlib import Path
 
-LAYOUT_DIR = Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/layouts"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+LAYOUT_DIR = REPO_ROOT / "usr/share/layout-switcher/layouts"
 MONITOR_KEYED_DTP_KEYS = {
     "panel-anchors",
     "panel-element-positions",
@@ -19,17 +20,27 @@ MACHINE_MONITOR_IDS = {
     "HDMI-1",
     "unknown-unknown",
 }
-COMMUNITY_MENU_UUID = "community-menu@bigcommunity.org"
+COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
 ARCMENU_UUID = "arcmenu@arcmenu.com"
-DASH_TO_PANEL_UUID = "dash-to-panel@jderose9.github.com"
+COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
 USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 KIWI_UUID = "kiwi@kemma"
-LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
+GTK4_DING_UUID = "gtk4-ding@smedius.gitlab.com"
+LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@communitybig.org"
+LEGACY_LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
+BIG_SHOT_UUID = "big-shot@communitybig.org"
+LEGACY_BIG_SHOT_UUID = "big-shot@bigcommunity.org"
 COPYOUS_SECTION = "org/gnome/shell/extensions/copyous"
 COMMUNITY_MENU_LAYOUTS = {
     "classic.txt": "APPS_ONLY",
     "desk-ux.txt": "APP_GRID",
+    "hybrid.txt": "MINT",
+}
+COMMUNITY_MENU_DESKTOP_LAYOUTS = {
+    "classic.txt": "Classic",
+    "desk-ux.txt": "Desk UX",
+    "hybrid.txt": "Hybrid",
 }
 NO_PANEL_MENU_LAYOUTS = {"biggnome.txt", "g-unity.txt", "minimal.txt"}
 
@@ -92,12 +103,46 @@ def test_layout_switcher_helper_is_always_first_and_enabled():
         assert enabled[0] == LAYOUT_SWITCHER_HELPER_UUID
         assert enabled.count(LAYOUT_SWITCHER_HELPER_UUID) == 1
         assert LAYOUT_SWITCHER_HELPER_UUID not in disabled
+        assert LEGACY_LAYOUT_SWITCHER_HELPER_UUID not in enabled
 
 
-def test_clipboard_shortcut_is_super_v_in_every_layout():
+def test_layouts_use_current_big_shot_and_do_not_require_kiwi():
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        enabled, disabled = _shell_extension_lists(layout_file.read_text())
+        assert BIG_SHOT_UUID in enabled
+        assert LEGACY_BIG_SHOT_UUID not in enabled
+        assert KIWI_UUID not in enabled
+
+
+def test_package_does_not_patch_external_kiwi_installations():
+    assert not (REPO_ROOT / "usr/share/layout-switcher/patches/patch-kiwi-focus.sh").exists()
+    assert not (REPO_ROOT / "usr/share/libalpm/hooks/zz-layout-switcher-kiwi.hook").exists()
+
+
+def test_desktop_icons_are_a_global_preference_not_owned_by_layouts():
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        text = layout_file.read_text()
+        enabled, disabled = _shell_extension_lists(text)
+
+        assert GTK4_DING_UUID not in enabled
+        assert GTK4_DING_UUID not in disabled
+        assert "[org/gnome/shell/extensions/gtk4-ding]" not in text
+
+
+def test_copyous_settings_match_biggnome_in_every_layout():
+    reference = _section_key_values(
+        (LAYOUT_DIR / "biggnome.txt").read_text(),
+        COPYOUS_SECTION,
+    )
+
+    assert reference == {
+        "history-length": "70",
+        "open-clipboard-dialog-shortcut": "['<Super>v']",
+        "paste-on-copy": "false",
+    }
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         values = _section_key_values(layout_file.read_text(), COPYOUS_SECTION)
-        assert values["open-clipboard-dialog-shortcut"] == "['<Super>v']"
+        assert values == reference, f"{layout_file.name} differs from BigGnome"
 
 
 def test_original_layouts_reset_accent_to_blue():
@@ -137,13 +182,16 @@ def test_community_menu_layout_mapping_and_panel_order():
         )
         interface_values = _section_key_values(text, "org/gnome/desktop/interface")
 
-        assert menu_values == {"layout": f"'{menu_layout}'"}
+        assert menu_values == {
+            "desktop-layout": f"'{COMMUNITY_MENU_DESKTOP_LAYOUTS[filename]}'",
+            "layout": f"'{menu_layout}'",
+        }
         assert dtp_values["hide-overview-on-startup"] == "true"
         assert COMMUNITY_MENU_UUID in enabled
         assert COMMUNITY_MENU_UUID not in disabled
         assert ARCMENU_UUID not in enabled
         assert ARCMENU_UUID in disabled
-        assert enabled.index(DASH_TO_PANEL_UUID) < enabled.index(COMMUNITY_MENU_UUID)
+        assert enabled.index(COMMUNITY_PANEL_UUID) < enabled.index(COMMUNITY_MENU_UUID)
         if filename == "classic.txt":
             assert dtp_values["leftbox-padding"] == "3"
             assert dtp_values["dot-color-override"] == "false"
@@ -170,13 +218,12 @@ def test_community_menu_layout_mapping_and_panel_order():
             assert dtp_values["highlight-appicon-hover"] == "false"
 
 
-
-def test_hybrid_uses_enterprise_arcmenu_and_compact_panel():
+def test_hybrid_uses_community_menu_and_compact_panel():
     text = (LAYOUT_DIR / "hybrid.txt").read_text()
     enabled, disabled = _shell_extension_lists(text)
     menu_values = _section_key_values(
         text,
-        "org/gnome/shell/extensions/arcmenu",
+        "org/gnome/shell/extensions/community-menu",
     )
     dtp_values = _section_key_values(
         text,
@@ -185,21 +232,15 @@ def test_hybrid_uses_enterprise_arcmenu_and_compact_panel():
     shell_values = _section_key_values(text, "org/gnome/shell")
     interface_values = _section_key_values(text, "org/gnome/desktop/interface")
 
-    assert ARCMENU_UUID in enabled
-    assert ARCMENU_UUID not in disabled
-    assert COMMUNITY_MENU_UUID not in enabled
-    assert COMMUNITY_MENU_UUID in disabled
-    assert enabled.index(DASH_TO_PANEL_UUID) < enabled.index(ARCMENU_UUID)
-    assert menu_values["menu-layout"] == "'enterprise'"
-    assert menu_values["menu-height"] == "630"
-    assert menu_values["menu-width-adjustment"] == "325"
-    assert menu_values["left-panel-width"] == "290"
-    assert menu_values["menu-button-icon-size"] == "38"
-    assert menu_values["menu-button-icon"] == (
-        "'/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/"
-        "community-menu.svg'"
-    )
-    assert menu_values["override-menu-theme"] == "false"
+    assert COMMUNITY_MENU_UUID in enabled
+    assert COMMUNITY_MENU_UUID not in disabled
+    assert ARCMENU_UUID not in enabled
+    assert ARCMENU_UUID in disabled
+    assert enabled.index(COMMUNITY_PANEL_UUID) < enabled.index(COMMUNITY_MENU_UUID)
+    assert menu_values == {
+        "desktop-layout": "'Hybrid'",
+        "layout": "'MINT'",
+    }
     assert interface_values["icon-theme"] == "'bigicons-papient-light'"
     assert USER_THEME_UUID not in enabled
     assert USER_THEME_UUID in disabled
@@ -215,18 +256,13 @@ def test_hybrid_uses_enterprise_arcmenu_and_compact_panel():
     assert dtp_values["leftbox-padding"] == "0"
     assert "'org.communitybig.ashyterm.desktop'" in shell_values["favorite-apps"]
     assert dtp_values["animate-appicon-hover-animation-type"] == "'SIMPLE'"
-    assert "'SIMPLE': uint32 220" in dtp_values[
-        "animate-appicon-hover-animation-duration"
-    ]
-    assert "'SIMPLE': 0.080000000000000002" in dtp_values[
-        "animate-appicon-hover-animation-travel"
-    ]
+    assert "'SIMPLE': uint32 220" in dtp_values["animate-appicon-hover-animation-duration"]
+    assert "'SIMPLE': 0.080000000000000002" in dtp_values["animate-appicon-hover-animation-travel"]
 
 
 def test_normal_layout_switch_uses_only_shell_curtain():
     source = (
-        Path(__file__).resolve().parents[1]
-        / "usr/share/layout-switcher/ui/page_layouts.py"
+        Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/ui/page_layouts.py"
     ).read_text()
     apply_source = source.split("    def _apply(", 1)[1].split("    def _done(", 1)[0]
 
@@ -263,34 +299,27 @@ def test_panel_menus_are_disabled_in_shell_native_layouts():
         assert ARCMENU_UUID in disabled
 
 
-def test_minimal_disables_only_unwanted_kiwi_behaviors():
+def test_minimal_does_not_use_kiwi():
     text = (LAYOUT_DIR / "minimal.txt").read_text()
     enabled, disabled = _shell_extension_lists(text)
     kiwi_values = _section_key_values(text, "org/gnome/shell/extensions/kiwi")
 
-    assert KIWI_UUID in enabled
-    assert KIWI_UUID not in disabled
-    assert kiwi_values["add-username-to-quick-menu"] == "false"
-    assert kiwi_values["focus-launched-windows"] == "false"
-    assert kiwi_values["move-window-to-new-workspace"] == "false"
+    assert KIWI_UUID not in enabled
+    assert KIWI_UUID in disabled
+    assert kiwi_values == {}
 
 
-def test_g_unity_disables_only_unwanted_kiwi_behaviors():
+def test_g_unity_does_not_use_kiwi():
     text = (LAYOUT_DIR / "g-unity.txt").read_text()
     enabled, disabled = _shell_extension_lists(text)
     kiwi_values = _section_key_values(text, "org/gnome/shell/extensions/kiwi")
 
-    assert KIWI_UUID in enabled
-    assert KIWI_UUID not in disabled
-    assert kiwi_values["add-username-to-quick-menu"] == "false"
-    assert kiwi_values["focus-launched-windows"] == "false"
-    assert kiwi_values["move-window-to-new-workspace"] == "false"
+    assert KIWI_UUID not in enabled
+    assert KIWI_UUID in disabled
+    assert kiwi_values == {}
 
 
-def test_only_hybrid_ships_arcmenu_settings():
+def test_no_layout_ships_arcmenu_settings():
     section = "[org/gnome/shell/extensions/arcmenu]"
     for layout_file in LAYOUT_DIR.glob("*.txt"):
-        if layout_file.name == "hybrid.txt":
-            assert section in layout_file.read_text()
-        else:
-            assert section not in layout_file.read_text()
+        assert section not in layout_file.read_text()
