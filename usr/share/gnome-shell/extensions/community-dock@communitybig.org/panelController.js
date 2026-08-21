@@ -22,6 +22,13 @@ export class PanelController {
         this._originalVisible = this._panelBox.visible;
         this._originalReactive = this._panel.reactive;
         this._originalTrackHover = this._panel.track_hover;
+        const trackedIndex = Main.layoutManager._findActor(this._panelBox);
+        this._panelActorData = trackedIndex >= 0
+            ? Main.layoutManager._trackedActors[trackedIndex]
+            : null;
+        this._originalAffectsStruts = this._panelActorData?.affectsStruts;
+        this._originalTrackFullscreen = this._panelActorData?.trackFullscreen;
+        this._overlayMode = null;
         this._signals = [];
         this._windowSignals = [];
         this._focusWindow = null;
@@ -96,6 +103,11 @@ export class PanelController {
         this._panel.set_style(this._originalStyle);
         this._panel.reactive = this._originalReactive;
         this._panel.track_hover = this._originalTrackHover;
+        if (this._panelActorData) {
+            this._panelActorData.affectsStruts = this._originalAffectsStruts;
+            this._panelActorData.trackFullscreen = this._originalTrackFullscreen;
+            Main.layoutManager._queueUpdateRegions();
+        }
         if (this._originalVisible)
             this._panelBox.show();
         else
@@ -164,6 +176,7 @@ export class PanelController {
             const mode = VALID_VISIBILITY.has(configured)
                 ? configured
                 : 'always-visible';
+            this._applyPanelTracking(mode);
             let visible = mode === 'always-visible' || this._pointerReveal;
             if (mode === 'always-hidden')
                 visible = this._inOverview || this._pointerReveal;
@@ -180,6 +193,21 @@ export class PanelController {
         }
     }
 
+    _applyPanelTracking(mode) {
+        const overlayMode = mode !== 'always-visible';
+        if (!this._panelActorData || this._overlayMode === overlayMode)
+            return;
+
+        this._overlayMode = overlayMode;
+        this._panelActorData.affectsStruts = overlayMode
+            ? false
+            : this._originalAffectsStruts;
+        this._panelActorData.trackFullscreen = overlayMode
+            ? false
+            : this._originalTrackFullscreen;
+        Main.layoutManager._queueUpdateRegions();
+    }
+
     _positionRevealZone() {
         const monitor = Main.layoutManager.primaryMonitor;
         if (!monitor)
@@ -192,9 +220,11 @@ export class PanelController {
         this._cancelHide();
         this._hideTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
             this._hideTimeout = 0;
-            if (!this._panel.hover) {
+            if (!this._panel.hover && !this._panelInteractionActive()) {
                 this._pointerReveal = false;
                 this._applyVisibility();
+            } else if (!this._panel.hover) {
+                this._queueHide();
             }
             return GLib.SOURCE_REMOVE;
         });
@@ -207,6 +237,21 @@ export class PanelController {
         this._hideTimeout = 0;
     }
 
+    _panelInteractionActive() {
+        const manager = this._panel.menuManager;
+        const menu = manager?.activeMenu ?? manager?._activeMenu;
+        if (menu?.isOpen || menu?.actor?.visible)
+            return true;
+
+        const grabActor = global.stage.get_grab_actor();
+        const sourceActor = grabActor?._sourceActor ?? grabActor;
+        return Boolean(sourceActor &&
+            (sourceActor === Main.layoutManager.dummyCursor ||
+             this._panel.contains(sourceActor) ||
+             menu?.actor?.contains(sourceActor) ||
+             this._panel.statusArea.quickSettings?.menu.actor.contains(sourceActor)));
+    }
+
     _focusWindowTouchesPanel() {
         const window = this._focusWindow;
         const monitor = Main.layoutManager.primaryMonitor;
@@ -217,9 +262,16 @@ export class PanelController {
 
         const rect = window.get_frame_rect();
         const panelHeight = Math.max(1, this._panel.height, this._panelBox.height);
+        const workArea = Main.layoutManager.getWorkAreaForMonitor(
+            Main.layoutManager.primaryIndex);
+        const panelBoundary = Math.max(
+            monitor.y + panelHeight,
+            workArea?.y ?? monitor.y);
+        const touchesTop = window.maximized_vertically || window.fullscreen ||
+            rect.y <= panelBoundary;
         return rect.x < monitor.x + monitor.width &&
             rect.x + rect.width > monitor.x &&
-            rect.y < monitor.y + panelHeight &&
+            touchesTop &&
             rect.y + rect.height > monitor.y;
     }
 }
