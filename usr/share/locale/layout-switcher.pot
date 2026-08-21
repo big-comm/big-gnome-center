@@ -148,10 +148,6 @@ msgstr ""
 msgid "Desktop"
 msgstr ""
 
-#: usr/share/layout-switcher/ui/desktop_icons.py:29
-msgid "This setting is shared by every layout."
-msgstr ""
-
 #: usr/share/layout-switcher/ui/desktop_icons.py:32
 #: usr/share/layout-switcher/ui/desktop_icons.py:51
 msgid "Desktop icons"

@@ -1,7 +1,7 @@
 # PLANNING.md — Layout Switcher Roadmap
 
 Última revisão: 2026-04-21
-Versão atual: **2.4.1**
+Versão atual: **2.18.0**
 
 ## Status geral
 
@@ -41,8 +41,8 @@ ShellReloader.reload_all()
 
 ### Outras melhorias fechadas
 - **L09** — Copyright `© 2022–2026` em `window.py`
-- **Versão consistente** — `APP_VERSION = "2.4.1"` (constants.py) =
-  `version = "2.4.1"` (pyproject.toml)
+- **Versão consistente** — `APP_VERSION = "2.18.0"` (constants.py) =
+  `version = "2.18.0"` (pyproject.toml)
 - **H08 / diagnóstico** — `find_file()` agora loga (DEBUG) todos os caminhos
   testados quando não encontra o arquivo — facilita diagnosticar layout/ícone
   ausente em produção.

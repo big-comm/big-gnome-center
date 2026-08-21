@@ -4,13 +4,15 @@ msgstr ""
 "Project-Id-Version: layout-switcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-20 15:41-0300\n"
-"PO-Revision-Date: 2026-04-22 14:40\n"
+"PO-Revision-Date: 2026-08-20 22:27-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Portuguese (Brazil) <pt-BR@li.org>\n"
 "Language: pt-BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: LangForge\n"
 
 #: usr/share/layout-switcher/constants.py:149
 msgid "Desktop Cube"
@@ -55,7 +57,8 @@ msgstr "Layout estilo Unity com dock à esquerda e barra superior"
 
 #: usr/share/layout-switcher/constants.py:227
 msgid "Traditional desktop with taskbar and system tray"
-msgstr "Área de trabalho tradicional com barra de tarefas e bandeja do sistema"
+msgstr ""
+"Área de trabalho tradicional com barra de tarefas e bandeja do sistema"
 
 #: usr/share/layout-switcher/constants.py:234
 msgid "Near-vanilla GNOME with minimal distro tweaks"
@@ -144,10 +147,6 @@ msgstr "Necessário para trocar layouts"
 msgid "Desktop"
 msgstr "Área de trabalho"
 
-#: usr/share/layout-switcher/ui/desktop_icons.py:29
-msgid "This setting is shared by every layout."
-msgstr "Esta configuração é compartilhada por todos os layouts."
-
 #: usr/share/layout-switcher/ui/desktop_icons.py:32
 #: usr/share/layout-switcher/ui/desktop_icons.py:51
 msgid "Desktop icons"
@@ -197,7 +196,8 @@ msgstr "Nenhum backup ainda"
 
 #: usr/share/layout-switcher/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
-msgstr "Um backup é criado automaticamente toda vez que você aplica um layout."
+msgstr ""
+"Um backup é criado automaticamente toda vez que você aplica um layout."
 
 #: usr/share/layout-switcher/ui/dialog_backups.py:149
 msgid "Latest"
@@ -1068,7 +1068,8 @@ msgstr "Atualizar da v{old} para a v{new}"
 
 #: usr/share/layout-switcher/ui/page_extensions.py:795
 msgid ""
-"This extension cannot be removed here because it was installed by the system."
+"This extension cannot be removed here because it was installed by the "
+"system."
 msgstr ""
 "Esta extensão não pode ser removida por aqui porque foi instalada pelo "
 "sistema."
@@ -1715,92 +1716,3 @@ msgstr "Atualização automática ativada"
 #: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update disabled"
 msgstr "Atualização automática desativada"
-
-#~ msgid "Components"
-#~ msgstr "Componentes"
-
-#~ msgid "These settings are shared by every layout."
-#~ msgstr "Estas configurações são compartilhadas por todos os layouts."
-
-#~ msgid "Visual effects for your GNOME desktop"
-#~ msgstr "Efeitos visuais para seu desktop GNOME"
-
-#~ msgid "This layout is already active"
-#~ msgstr "Este layout já está ativo"
-
-#~ msgid "system"
-#~ msgstr "sistema"
-
-#~ msgid "System fonts"
-#~ msgstr "Fontes do sistema"
-
-#~ msgid "Fonts used by the GNOME interface"
-#~ msgstr "Fontes usadas pela interface GNOME"
-
-#~ msgid "Window titles (legacy)"
-#~ msgstr "Títulos de janela (legado)"
-
-#~ msgid "Choose…"
-#~ msgstr "Escolher…"
-
-#~ msgid "Appearance"
-#~ msgstr "Aparência"
-
-#~ msgid "How fonts are rendered on screen"
-#~ msgstr "Como as fontes são renderizadas na tela"
-
-#~ msgid "Antialiasing"
-#~ msgstr "Antialiasing"
-
-#~ msgid "Grayscale"
-#~ msgstr "Escala de cinza"
-
-#~ msgid "Subpixel (RGBA)"
-#~ msgstr "Subpixel (RGBA)"
-
-#~ msgid "Installed fonts"
-#~ msgstr "Fontes instaladas"
-
-#~ msgid "Browse font families installed on your system"
-#~ msgstr "Navegar pelas famílias de fontes instaladas no seu sistema"
-
-#~ msgid "No fonts match your search"
-#~ msgstr "Nenhuma fonte corresponde à sua busca"
-
-#~ msgid "(refine search to see more)"
-#~ msgstr "(refine a busca para ver mais)"
-
-#~ msgid "fonts"
-#~ msgstr "fontes"
-
-#~ msgid "The quick brown fox jumps over the lazy dog 0123"
-#~ msgstr "Um pequeno jabuti xereta viu dez cegonhas felizes 0123"
-
-#~ msgid "Install more fonts"
-#~ msgstr "Instalar mais fontes"
-
-#~ msgid "Opens fonts.google.com in your browser"
-#~ msgstr "Abre fonts.google.com no seu navegador"
-
-#~ msgid "How to install"
-#~ msgstr "Como instalar"
-
-#~ msgid ""
-#~ "Place .ttf/.otf files in ~/.local/share/fonts/ then run 'fc-cache -f -v' "
-#~ "and refresh this list."
-#~ msgstr ""
-#~ "Coloque arquivos .ttf/.otf em ~/.local/share/fonts/ e depois execute 'fc-"
-#~ "cache -f -v' e atualize esta lista."
-
-#~ msgid "theme"
-#~ msgstr "tema"
-
-#~ msgid "Click a layout to apply"
-#~ msgstr "Clique em um layout para aplicar"
-
-#~ msgid ""
-#~ "Marked layouts contain your saved customizations — click to resume them "
-#~ "or apply the original."
-#~ msgstr ""
-#~ "Layouts com marca contêm suas personalizações salvas — clique para retomá-"
-#~ "las ou aplicar o original."

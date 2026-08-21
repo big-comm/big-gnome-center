@@ -9,25 +9,20 @@ from gi.repository import Adw, GLib, Gtk
 
 from constants import tr
 from extension_manager import ExtMgr
-from settings_store import Settings
 
 GTK4_DING_UUID = "gtk4-ding@smedius.gitlab.com"
 
 
 class DesktopIconsControls(Gtk.Box):
-    """Toggle GTK4-DING without making its state layout-owned."""
+    """Toggle GTK4-DING for the active layout."""
 
     def __init__(self, pool, toast_cb) -> None:
         super().__init__(orientation=Gtk.Orientation.VERTICAL)
         self._pool = pool
         self._toast = toast_cb
-        self._prefs = Settings()
         self._syncing = False
 
-        group = Adw.PreferencesGroup(
-            title=tr("Desktop"),
-            description=tr("This setting is shared by every layout."),
-        )
+        group = Adw.PreferencesGroup(title=tr("Desktop"))
         self._row = Adw.ActionRow(
             title=tr("Desktop icons"),
             subtitle=tr("Show files and folders on the desktop"),
@@ -89,7 +84,6 @@ class DesktopIconsControls(Gtk.Box):
 
     def _finish_toggle(self, ok: bool, message: str, enable: bool) -> bool:
         if ok:
-            self._prefs.set("desktop_icons_enabled", enable)
             self.refresh()
             self._toast(tr("Desktop icons enabled") if enable else tr("Desktop icons disabled"))
         else:

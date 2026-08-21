@@ -133,7 +133,7 @@ export default class FrostedGlassExtension extends Extension {
             radius: Math.max(0, strength * 1.6),
             brightness: lightMode ? 1.0 : 0.9,
             opacity: Math.round(255 * opacityPercent / 100),
-            tintOpacity: 0.08 + 0.52 * opacityPercent / 100,
+            tintOpacity: 0.60 * opacityPercent / 100,
             lightMode,
             appLightMode,
             mode,

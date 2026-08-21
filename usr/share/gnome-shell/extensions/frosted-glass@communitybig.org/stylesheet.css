@@ -260,6 +260,86 @@
   background-color: rgba(200, 200, 200, 0.20) !important;
 }
 
+/* Search providers and focused app results must reveal the shared blurred
+ * backdrop instead of repainting the GNOME theme's opaque search material. */
+.frosted-glass-overview .search-section-content {
+  color: white !important;
+  background-color: rgba(24, 25, 31, 0.28) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.frosted-glass-overview.frosted-glass-light .search-section-content {
+  color: #2e2e33 !important;
+  background-color: rgba(255, 255, 255, 0.30) !important;
+}
+
+.frosted-glass-overview .overview-tile:hover,
+.frosted-glass-overview .grid-search-result:hover,
+.frosted-glass-overview .list-search-result:hover,
+.frosted-glass-overview .search-provider-icon:hover {
+  background-color: rgba(38, 40, 48, 0.34) !important;
+}
+
+.frosted-glass-overview .overview-tile:focus,
+.frosted-glass-overview .overview-tile:highlighted,
+.frosted-glass-overview .overview-tile:selected,
+.frosted-glass-overview .overview-tile:checked,
+.frosted-glass-overview .grid-search-result:focus,
+.frosted-glass-overview .grid-search-result:highlighted,
+.frosted-glass-overview .grid-search-result:selected,
+.frosted-glass-overview .grid-search-result:checked,
+.frosted-glass-overview .list-search-result:focus,
+.frosted-glass-overview .list-search-result:highlighted,
+.frosted-glass-overview .list-search-result:selected,
+.frosted-glass-overview .list-search-result:checked,
+.frosted-glass-overview .search-provider-icon:focus,
+.frosted-glass-overview .search-provider-icon:highlighted,
+.frosted-glass-overview .search-provider-icon:selected,
+.frosted-glass-overview .search-provider-icon:checked {
+  background-color: rgba(44, 46, 55, 0.38) !important;
+}
+
+.frosted-glass-overview .overview-tile:active,
+.frosted-glass-overview .grid-search-result:active,
+.frosted-glass-overview .list-search-result:active,
+.frosted-glass-overview .search-provider-icon:active {
+  background-color: rgba(52, 54, 64, 0.46) !important;
+}
+
+.frosted-glass-overview.frosted-glass-light .overview-tile:hover,
+.frosted-glass-overview.frosted-glass-light .grid-search-result:hover,
+.frosted-glass-overview.frosted-glass-light .list-search-result:hover,
+.frosted-glass-overview.frosted-glass-light .search-provider-icon:hover {
+  background-color: rgba(255, 255, 255, 0.36) !important;
+}
+
+.frosted-glass-overview.frosted-glass-light .overview-tile:focus,
+.frosted-glass-overview.frosted-glass-light .overview-tile:highlighted,
+.frosted-glass-overview.frosted-glass-light .overview-tile:selected,
+.frosted-glass-overview.frosted-glass-light .overview-tile:checked,
+.frosted-glass-overview.frosted-glass-light .grid-search-result:focus,
+.frosted-glass-overview.frosted-glass-light .grid-search-result:highlighted,
+.frosted-glass-overview.frosted-glass-light .grid-search-result:selected,
+.frosted-glass-overview.frosted-glass-light .grid-search-result:checked,
+.frosted-glass-overview.frosted-glass-light .list-search-result:focus,
+.frosted-glass-overview.frosted-glass-light .list-search-result:highlighted,
+.frosted-glass-overview.frosted-glass-light .list-search-result:selected,
+.frosted-glass-overview.frosted-glass-light .list-search-result:checked,
+.frosted-glass-overview.frosted-glass-light .search-provider-icon:focus,
+.frosted-glass-overview.frosted-glass-light .search-provider-icon:highlighted,
+.frosted-glass-overview.frosted-glass-light .search-provider-icon:selected,
+.frosted-glass-overview.frosted-glass-light .search-provider-icon:checked {
+  background-color: rgba(255, 255, 255, 0.44) !important;
+}
+
+.frosted-glass-overview.frosted-glass-light .overview-tile:active,
+.frosted-glass-overview.frosted-glass-light .grid-search-result:active,
+.frosted-glass-overview.frosted-glass-light .list-search-result:active,
+.frosted-glass-overview.frosted-glass-light .search-provider-icon:active {
+  background-color: rgba(255, 255, 255, 0.54) !important;
+}
+
 /* The overview wallpaper is already blurred once. Folder tiles are a glass
  * layer over that texture, avoiding one extra background-blur pass per tile. */
 .frosted-glass-overview .overview-tile.app-folder {

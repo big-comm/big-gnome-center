@@ -288,8 +288,7 @@ class FrostedGlassControls(Gtk.Box):
         low_label = Gtk.Label(label=low)
         low_label.add_css_class("caption")
         box.append(low_label)
-        minimum = 10 if key == "glass-opacity" else 0
-        scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, minimum, 100, 1)
+        scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 1)
         scale.set_value(self._settings.get_int(key))
         scale.set_draw_value(False)
         scale.set_size_request(220, -1)

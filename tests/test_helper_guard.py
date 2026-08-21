@@ -34,11 +34,23 @@ def test_guard_starts_background_extension_update_monitor():
 
 def test_guard_migrates_owned_extension_uuids_at_session_start():
     client = (ROOT / "usr/share/layout-switcher/helper_client.py").read_text()
+    guard = (ROOT / "usr/share/layout-switcher/helper_guard.py").read_text()
 
     assert "LEGACY_COMMUNITY_MENU_UUID" in client
     assert "LEGACY_BIG_SHOT_UUID" in client
-    assert "_UUID_MIGRATIONS" in client
-    assert "required_extension_lists(enabled, disabled)" in client
+    assert "LEGACY_DASH_TO_DOCK_UUID" in client
+    assert "LEGACY_DASH_TO_PANEL_UUID" in client
+    assert "LAYOUT_COMPONENT_UUID_MIGRATIONS" in client
+    assert "required_helper_lists(enabled, disabled)" in client
+    assert "_migrate_initial_session" in guard
+    assert "HelperClient.ensure_available()" in guard
+    assert "HelperClient.apply_layout(" in guard
+    assert "reload=reload_uuids" in guard
+    assert "LEGACY_DASH_TO_PANEL_UUID" in guard
+    assert "available_uuids=HelperClient.installed_extension_uuids()" in guard
+    assert "_migrate_arcmenu_icon_path" in guard
+    assert "HelperClient.migrate_component_asset_path(current)" in guard
+    assert "HelperClient.reload_extension(_ARCMENU_UUID)" in guard
 
 
 def test_package_upgrade_retires_legacy_helper_directory():

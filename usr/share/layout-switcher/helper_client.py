@@ -38,11 +38,25 @@ COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
 LEGACY_COMMUNITY_MENU_UUID = "community-menu@bigcommunity.org"
 BIG_SHOT_UUID = "big-shot@communitybig.org"
 LEGACY_BIG_SHOT_UUID = "big-shot@bigcommunity.org"
+COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
+LEGACY_DASH_TO_DOCK_UUID = "dash-to-dock@micxgx.gmail.com"
+COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
+LEGACY_DASH_TO_PANEL_UUID = "dash-to-panel@jderose9.github.com"
+ARCMENU_UUID = "arcmenu@arcmenu.com"
 
-_UUID_MIGRATIONS = {
+_LEGACY_COMMUNITY_MENU_DIR = (
+    "/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/"
+)
+_COMMUNITY_MENU_DIR = (
+    "/usr/share/gnome-shell/extensions/community-menu@communitybig.org/"
+)
+
+LAYOUT_COMPONENT_UUID_MIGRATIONS = {
     LEGACY_HELPER_UUID: HELPER_UUID,
     LEGACY_COMMUNITY_MENU_UUID: COMMUNITY_MENU_UUID,
     LEGACY_BIG_SHOT_UUID: BIG_SHOT_UUID,
+    LEGACY_DASH_TO_DOCK_UUID: COMMUNITY_DOCK_UUID,
+    LEGACY_DASH_TO_PANEL_UUID: COMMUNITY_PANEL_UUID,
 }
 
 _DEST = "org.gnome.Shell"
@@ -53,6 +67,12 @@ _HELPER_DIRS = (
     Path.home() / ".local" / "share" / "gnome-shell" / "extensions" / HELPER_UUID,
     Path("/usr/share/gnome-shell/extensions") / HELPER_UUID,
     Path("/usr/local/share/gnome-shell/extensions") / HELPER_UUID,
+)
+
+_EXTENSION_DIRS = (
+    Path.home() / ".local" / "share" / "gnome-shell" / "extensions",
+    Path("/usr/share/gnome-shell/extensions"),
+    Path("/usr/local/share/gnome-shell/extensions"),
 )
 
 
@@ -108,19 +128,32 @@ class HelperClient:
     def required_extension_lists(
         enabled: Iterable[str],
         disabled: Iterable[str],
+        available_uuids: Optional[Iterable[str]] = None,
     ) -> Tuple[list[str], list[str]]:
-        """Migrate owned UUIDs and keep the required helper enabled first."""
+        """Migrate installed components and keep the helper enabled first."""
+
+        available = set(available_uuids) if available_uuids is not None else None
 
         def migrate(values: Iterable[str]) -> list[str]:
             migrated: list[str] = []
             for uuid in values:
-                current = _UUID_MIGRATIONS.get(uuid, uuid)
+                current = HelperClient.resolve_component_uuid(uuid, available)
                 if current and current not in migrated:
                     migrated.append(current)
             return migrated
 
         enabled_migrated = migrate(enabled)
         disabled_migrated = migrate(disabled)
+        if COMMUNITY_PANEL_UUID in enabled_migrated:
+            panel_index = enabled_migrated.index(COMMUNITY_PANEL_UUID)
+            menu_indexes = [
+                enabled_migrated.index(uuid)
+                for uuid in (ARCMENU_UUID, COMMUNITY_MENU_UUID)
+                if uuid in enabled_migrated
+            ]
+            if menu_indexes and panel_index > min(menu_indexes):
+                enabled_migrated.pop(panel_index)
+                enabled_migrated.insert(min(menu_indexes), COMMUNITY_PANEL_UUID)
         enabled_out = [HELPER_UUID]
         enabled_out.extend(uuid for uuid in enabled_migrated if uuid != HELPER_UUID)
         enabled_set = set(enabled_out)
@@ -129,9 +162,66 @@ class HelperClient:
         ]
         return enabled_out, disabled_out
 
+    @staticmethod
+    def required_helper_lists(
+        enabled: Iterable[str],
+        disabled: Iterable[str],
+    ) -> Tuple[list[str], list[str]]:
+        """Replace only the helper UUID; leave live layout components intact."""
+        enabled_out = [HELPER_UUID]
+        enabled_out.extend(
+            uuid
+            for uuid in enabled
+            if uuid not in {HELPER_UUID, LEGACY_HELPER_UUID} and uuid not in enabled_out
+        )
+        enabled_set = set(enabled_out)
+        disabled_out = [
+            uuid
+            for uuid in disabled
+            if uuid not in {HELPER_UUID, LEGACY_HELPER_UUID} and uuid not in enabled_set
+        ]
+        return enabled_out, disabled_out
+
+    @staticmethod
+    def resolve_component_uuid(
+        uuid: str,
+        available_uuids: Optional[set[str]] = None,
+    ) -> str:
+        """Resolve one component UUID without selecting an uninstalled replacement."""
+        target = LAYOUT_COMPONENT_UUID_MIGRATIONS.get(uuid, uuid)
+        if available_uuids is None:
+            return target
+        if target != uuid and target not in available_uuids:
+            return uuid
+        if (
+            uuid == BIG_SHOT_UUID
+            and BIG_SHOT_UUID not in available_uuids
+            and LEGACY_BIG_SHOT_UUID in available_uuids
+        ):
+            return LEGACY_BIG_SHOT_UUID
+        return target
+
+    @staticmethod
+    def installed_extension_uuids() -> set[str]:
+        """Return extension UUID directories visible to the current user."""
+        installed: set[str] = set()
+        for root in _EXTENSION_DIRS:
+            try:
+                installed.update(path.name for path in root.iterdir() if path.is_dir())
+            except OSError:
+                continue
+        return installed
+
+    @staticmethod
+    def migrate_component_asset_path(path: str) -> str:
+        """Rewrite persisted paths that point into retired component UUIDs."""
+        if path.startswith(_LEGACY_COMMUNITY_MENU_DIR):
+            return _COMMUNITY_MENU_DIR + path.removeprefix(_LEGACY_COMMUNITY_MENU_DIR)
+        return path
+
     @classmethod
     def ensure_enabled(cls) -> Tuple[bool, bool, str]:
-        """Repair GNOME's extension lists without touching optional extensions."""
+        """Enable only the helper; component migration is sequenced separately."""
         if not any(path.is_dir() for path in _HELPER_DIRS):
             return False, False, tr("The required layout helper is not installed.")
 
@@ -141,7 +231,7 @@ class HelperClient:
             settings = Gio.Settings.new("org.gnome.shell")
             enabled = list(settings.get_strv("enabled-extensions"))
             disabled = list(settings.get_strv("disabled-extensions"))
-            enabled_out, disabled_out = cls.required_extension_lists(enabled, disabled)
+            enabled_out, disabled_out = cls.required_helper_lists(enabled, disabled)
             changed = enabled != enabled_out or disabled != disabled_out
             if disabled != disabled_out:
                 settings.set_strv("disabled-extensions", disabled_out)

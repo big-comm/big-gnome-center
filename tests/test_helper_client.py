@@ -4,11 +4,16 @@
 from unittest.mock import call, patch
 
 from helper_client import (
+    ARCMENU_UUID,
     BIG_SHOT_UUID,
+    COMMUNITY_DOCK_UUID,
     COMMUNITY_MENU_UUID,
+    COMMUNITY_PANEL_UUID,
     HELPER_UUID,
     LEGACY_BIG_SHOT_UUID,
     LEGACY_COMMUNITY_MENU_UUID,
+    LEGACY_DASH_TO_DOCK_UUID,
+    LEGACY_DASH_TO_PANEL_UUID,
     LEGACY_HELPER_UUID,
     HelperClient,
 )
@@ -77,6 +82,86 @@ class TestRequiredExtensionLists:
 
         assert enabled == [HELPER_UUID, "user@example.org"]
         assert disabled == [COMMUNITY_MENU_UUID, BIG_SHOT_UUID]
+
+    def test_migrates_external_layout_components_to_bundled_replacements(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [LEGACY_DASH_TO_DOCK_UUID, "user@example.org"],
+            [LEGACY_DASH_TO_PANEL_UUID],
+        )
+
+        assert enabled == [HELPER_UUID, COMMUNITY_DOCK_UUID, "user@example.org"]
+        assert disabled == [COMMUNITY_PANEL_UUID]
+
+    def test_helper_only_repair_preserves_live_legacy_components(self):
+        enabled, disabled = HelperClient.required_helper_lists(
+            [LEGACY_HELPER_UUID, LEGACY_DASH_TO_PANEL_UUID, "arcmenu@arcmenu.com"],
+            [COMMUNITY_PANEL_UUID],
+        )
+
+        assert enabled == [
+            HELPER_UUID,
+            LEGACY_DASH_TO_PANEL_UUID,
+            "arcmenu@arcmenu.com",
+        ]
+        assert disabled == [COMMUNITY_PANEL_UUID]
+
+    def test_keeps_legacy_big_shot_when_replacement_is_not_installed(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [LEGACY_BIG_SHOT_UUID],
+            [],
+            available_uuids={HELPER_UUID, LEGACY_BIG_SHOT_UUID},
+        )
+
+        assert enabled == [HELPER_UUID, LEGACY_BIG_SHOT_UUID]
+        assert disabled == []
+
+    def test_falls_back_from_new_big_shot_to_installed_legacy_uuid(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [BIG_SHOT_UUID],
+            [],
+            available_uuids={HELPER_UUID, LEGACY_BIG_SHOT_UUID},
+        )
+
+        assert enabled == [HELPER_UUID, LEGACY_BIG_SHOT_UUID]
+        assert disabled == []
+
+    def test_migrates_panel_only_when_bundled_replacement_is_installed(self):
+        enabled, _disabled = HelperClient.required_extension_lists(
+            [LEGACY_DASH_TO_PANEL_UUID],
+            [],
+            available_uuids={HELPER_UUID, COMMUNITY_PANEL_UUID},
+        )
+
+        assert enabled == [HELPER_UUID, COMMUNITY_PANEL_UUID]
+
+    def test_places_migrated_panel_before_arc_menu(self):
+        enabled, _disabled = HelperClient.required_extension_lists(
+            [ARCMENU_UUID, LEGACY_DASH_TO_PANEL_UUID],
+            [],
+            available_uuids={HELPER_UUID, COMMUNITY_PANEL_UUID, ARCMENU_UUID},
+        )
+
+        assert enabled == [HELPER_UUID, COMMUNITY_PANEL_UUID, ARCMENU_UUID]
+
+
+class TestComponentAssetMigration:
+    def test_rewrites_legacy_community_menu_icon_path(self):
+        legacy = (
+            "/usr/share/gnome-shell/extensions/"
+            "community-menu@bigcommunity.org/community-menu.svg"
+        )
+
+        migrated = HelperClient.migrate_component_asset_path(legacy)
+
+        assert migrated == (
+            "/usr/share/gnome-shell/extensions/"
+            "community-menu@communitybig.org/community-menu.svg"
+        )
+
+    def test_preserves_unrelated_custom_icon_path(self):
+        path = "/home/user/.local/share/icons/custom.svg"
+
+        assert HelperClient.migrate_component_asset_path(path) == path
 
 
 class TestActiveUuid:
@@ -202,3 +287,7 @@ def test_owned_extension_uuid_migrations():
     assert LEGACY_COMMUNITY_MENU_UUID == "community-menu@bigcommunity.org"
     assert BIG_SHOT_UUID == "big-shot@communitybig.org"
     assert LEGACY_BIG_SHOT_UUID == "big-shot@bigcommunity.org"
+    assert COMMUNITY_DOCK_UUID == "community-dock@communitybig.org"
+    assert LEGACY_DASH_TO_DOCK_UUID == "dash-to-dock@micxgx.gmail.com"
+    assert COMMUNITY_PANEL_UUID == "community-panel@communitybig.org"
+    assert LEGACY_DASH_TO_PANEL_UUID == "dash-to-panel@jderose9.github.com"

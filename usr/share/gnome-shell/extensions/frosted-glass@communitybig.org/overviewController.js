@@ -79,6 +79,10 @@ export class OverviewController {
             });
             tint.set_size(monitor.width, monitor.height);
             actor.add_child(tint);
+            actor.connect('child-added', (container, child) => {
+                if (child !== tint && tint.get_parent() === container)
+                    container.set_child_above_sibling(tint, null);
+            });
             actor._frostedGlass = {effect, tint};
             this._group.add_child(actor);
             this._managers.push(manager);
@@ -96,6 +100,7 @@ export class OverviewController {
                 continue;
             record.effect.radius = Math.max(0, Math.round(config.radius * scale));
             record.effect.brightness = config.brightness;
+            actor.set_child_above_sibling(record.tint, null);
             const tintColor = config.lightMode ? '247, 248, 252' : '28, 28, 34';
             record.tint.set_style(
                 `background-color: rgba(${tintColor}, ${config.tintOpacity.toFixed(3)});`

@@ -40,11 +40,11 @@
     </key>
     <key name="blur-strength" type="i">
       <range min="0" max="100"/>
-      <default>35</default>
+      <default>23</default>
       <summary>Blur strength</summary>
     </key>
     <key name="glass-opacity" type="i">
-      <range min="10" max="100"/>
+      <range min="0" max="100"/>
       <default>82</default>
       <summary>Material opacity</summary>
     </key>

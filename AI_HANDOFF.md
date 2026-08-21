@@ -33,6 +33,7 @@ checked locally, and only then copied to the target VM for live validation.
 | Target | SSH | Priority | State |
 |---|---|---:|---|
 | GNOME 50 | `tales@192.168.128.230` | Active | Current validation target |
+| GNOME 50 clean migration | `tales@192.168.128.206` | Verified | Stable Hybrid upgraded in place; automatic migration accepted |
 | GNOME 51 | `tales@192.168.128.114` | Deferred | Revisit on/after 2026-09-15 |
 
 Credentials are supplied out of band by the user and intentionally omitted here.
@@ -73,6 +74,112 @@ history but are stale in several areas. This file defines the current priority
 and operational checklist. Verify old architectural claims against current code.
 
 ## Active task checklist
+
+### Clean GNOME 50 package migration
+
+- [x] Record the pre-upgrade baseline: GNOME Shell 50.4 and package
+  `26.08.04-1821` from `community-stable`.
+- [x] Confirm the published testing package is older than the current worktree.
+- [x] Build a local `26.08.20-1` package from the current worktree.
+- [x] Pass the PKGBUILD check phase: `436 passed`.
+- [x] Verify critical package hashes against the worktree.
+- [x] Upgrade through `pacman -U`; do not deploy loose source files.
+- [x] Confirm new bundled extension directories, schemas, and migration autostart.
+- [x] Confirm obsolete helper and Community Menu directories are absent.
+- [x] Log out and back in to exercise the automatic UUID migration.
+- [x] Confirm the new helper, Community Menu, and Community Panel can become active.
+- [x] Upgrade an untouched legacy Hybrid session without manually applying a layout.
+- [x] Preserve legacy Big Shot when the replacement UUID is not installed.
+- [x] Preserve ArcMenu and migrate its custom icon path to the current UUID.
+- [ ] Confirm the untouched first BigGnome desktop has a working task component.
+- [ ] Confirm only Classic and Hybrid enable desktop icons by default.
+- [ ] Exercise all six layouts and record visual acceptance.
+
+The pre-login Shell process still reports the legacy enabled UUIDs. This is the
+expected control state: GNOME Shell caches extension discovery, and the session
+autostart guard performs user-setting migration on the next login. Do not run
+the guard manually before the first-login test.
+
+Post-login findings:
+
+- Helper build 58, Community Menu, and Community Panel are active after applying
+  Hybrid. BigGnome intentionally does not enable Community Menu.
+- The installed `gnome-shell-big-shot 26.07.25-1540` still provides only
+  `big-shot@bigcommunity.org`. Migration selected the unavailable
+  `big-shot@communitybig.org`, and helper activation was rejected. Add an
+  availability-aware fallback or align the dependency package before release.
+- Community Dock cleanup touched an already disposed actor while switching from
+  BigGnome. The switch completed, but helper actor tracking needs a lifecycle
+  guard.
+- Copyous emitted missing `highlight.min.js` and undefined-settings errors from
+  the user's local extension copy. This is external to Layout Switcher.
+
+Second-pass reset:
+
+- Downgraded `.206` back to stable `26.08.04-1821` with the repository package.
+- Restored the exact legacy Hybrid extension lists: old helper, GTK4 DING,
+  AppIndicator, old Big Shot, Copyous, legacy theme switcher, GSConnect,
+  Light Style, Dash to Panel, and ArcMenu.
+- The next login must confirm the old Hybrid baseline. Apply Hybrid once in the
+  old application before reinstalling the local current package.
+- Old Hybrid baseline was confirmed active: legacy helper, Dash to Panel,
+  ArcMenu (`enterprise`), GTK4 DING, and legacy Big Shot.
+- Reinstalled local `26.08.20-1` through `pacman -U`. The legacy enabled list
+  remains untouched before logout, and all new bundled extension directories
+  are present. At that checkpoint no layout was applied before the post-upgrade
+  login migration.
+
+Final clean migration result:
+
+- Repeated from stable `26.08.04-1821` with the exact legacy Hybrid lists and
+  icon path, then installed the rebuilt `26.08.20-1` package through pacman.
+- First login completed without opening Layout Switcher. Helper build 59
+  detached ArcMenu, replaced Dash to Panel with Community Panel, then restored
+  ArcMenu after the new panel was live.
+- The persisted ArcMenu icon path moved from the retired
+  `community-menu@bigcommunity.org` directory to
+  `community-menu@communitybig.org`; the button and menu are visible.
+- Availability-aware migration kept `big-shot@bigcommunity.org` active because
+  `big-shot@communitybig.org` is not installed.
+- Final states: current helper, Community Panel, ArcMenu, and legacy Big Shot
+  ACTIVE; legacy Dash to Panel INACTIVE; Community Menu INITIALIZED because
+  legacy Hybrid continues using ArcMenu.
+- Final helper reply: protocol 7, build 59, idle. The migrated lists and icon
+  path are present in both live dconf and `settings.gnome`.
+- Package check passed all 445 tests. Final test package SHA-256:
+  `830e5d7eb833b4cfd11be3f9759bea86cd16cb59b71bf5ccbd1415bdce0c35c9`.
+- Remaining journal errors are external: the user-local Copyous installation
+  lacks `highlight.min.js`; portal/Mesa warnings come from the VM session.
+
+### Frosted Glass overview polish (GNOME 50)
+
+- [x] Set the clean-install blur-strength default to 23%.
+- [x] Make material opacity cover the real 0-100 range.
+- [x] Keep the overview tint above backgrounds recreated by GNOME Shell.
+- [x] Make search provider cards and focused results translucent.
+- [x] Cover GNOME 50 `overview-tile` focus and checked app states.
+- [x] Compile and deploy both extension-local and system schema copies.
+- [x] Verify the five deployed source hashes against the local repository.
+- [x] Pass the full local suite: `436 passed`.
+- [ ] Reload the GNOME 50 session and complete visual acceptance.
+
+GNOME 50 deployment notes:
+
+- Opacity is supported on GNOME 50; it is not a GNOME 51-only control.
+- The ineffective 0% value came from an opaque Shell search theme plus a tint
+  actor that could fall behind a recreated wallpaper actor.
+- The package intentionally installs the same Frosted Glass schema in the
+  extension directory and `/usr/share/glib-2.0/schemas/`; both must be compiled.
+- Current deployed hashes: `extension.js`
+  `dc63744dda48d4778fb9a13a1b3e8aa18c59d5dc1eb64279087d642dceee3181`,
+  `overviewController.js`
+  `92b278a533f7c051f91a1862f92c94a02fa15153f84f876f164a2cd47f69abf5`,
+  `stylesheet.css`
+  `2f49740a30e7cda3d9d8b629b4e616366e1fa2513244ab9fccbdd3888e16490a`,
+  schema XML
+  `b966c87cc331f7b58d0aef3bcf482aead08ecbcfcf87247d37cd5fed6828bd8e`,
+  and `ui/frosted_glass.py`
+  `b003be1386e69d0508821550cef71ee53c237ecef531aa1ececf2baa676acfc2`.
 
 ### Native panel and dock replacement roadmap
 
@@ -963,3 +1070,24 @@ Append one entry per completed change:
   or the generated package will not contain the current `dev-talesam` work.
 - GNOME 51: metadata and syntax contracts pass, but live GNOME 51 validation
   remains deferred. GNOME 50 is the visually accepted release target.
+
+### 2026-08-20 — Upgrade migration and locale completion
+
+- Upgrade migration now replaces enabled legacy Dash to Dock and Dash to Panel
+  UUIDs with the bundled Community Dock and Community Panel UUIDs. Installed
+  legacy packages remain untouched. Clean-upgrade validation is still pending.
+- Desktop icon activation is layout-owned. Classic and Hybrid enable GTK4-DING;
+  BigGnome, Desk UX, G-Unity, and Minimal disable it. Detailed icon settings
+  remain preserved across layouts.
+- The Layout Switcher template matches all 373 current source messages. All 29
+  catalogs contain 373 translated messages with no fuzzy, untranslated, or
+  obsolete entries. One LangForge newline-token artifact in Greek was fixed.
+- All 29 `layout-switcher.mo` catalogs were rebuilt in their existing locale
+  destinations. Placeholder, gettext syntax, and hardcoded-string checks pass.
+- Validation: 435 tests passed. Ruff check/format and diff checks pass.
+- GNOME 50 login-loop incident was unrelated to this package. GNOME Shell
+  aborted XWayland because `/tmp/.X11-unix` was owned by `gdm-greeter`; restoring
+  `root:root` and mode `1777` restored login.
+- Next: test an upgrade from the previous testing package on a clean GNOME 50
+  installation. Confirm the menu remains available at first login and verify
+  the six desktop-icon defaults before publishing another package.

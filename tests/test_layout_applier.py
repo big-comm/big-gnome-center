@@ -34,7 +34,22 @@ def required_helper_available():
 
 
 class TestLayoutApplier:
-    def test_user_component_overrides_are_global_and_explicit(self):
+    def test_layout_big_shot_falls_back_to_installed_legacy_uuid(self):
+        data = """\
+[org/gnome/shell]
+enabled-extensions=['big-shot@communitybig.org']
+disabled-extensions=[]
+"""
+
+        migrated = LayoutApplier._migrate_layout_component_uuids(
+            data,
+            available_uuids={"big-shot@bigcommunity.org"},
+        )
+
+        assert "enabled-extensions=['big-shot@bigcommunity.org']" in migrated
+        assert "big-shot@communitybig.org" not in migrated
+
+    def test_menu_component_overrides_are_global_and_explicit(self):
         class FakeSettings:
             values = {
                 "desktop_icons_enabled": True,
@@ -59,9 +74,9 @@ layout='MINT'
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
-        assert "gtk4-ding@smedius.gitlab.com" in enabled
+        assert "gtk4-ding@smedius.gitlab.com" not in enabled
         assert "community-menu@communitybig.org" not in enabled
-        assert "gtk4-ding@smedius.gitlab.com" not in disabled
+        assert "gtk4-ding@smedius.gitlab.com" in disabled
         assert "community-menu@communitybig.org" in disabled
         menu = LayoutApplier._section_key_values(
             out,
@@ -760,6 +775,10 @@ disabled-extensions=['community-menu@communitybig.org']
 
         mock_reload.assert_not_called()
 
+    @patch(
+        "layout_applier.LayoutApplier._preserve_layout_independent_settings",
+        side_effect=lambda data: data,
+    )
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch("layout_applier.LayoutApplier._enabled_extensions", return_value={"after@ext"})
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=False)
@@ -776,6 +795,7 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_disable,
         _enabled,
         mock_reload,
+        _preserve,
     ):
         """Once Shell DBus times out repeatedly, finish via dconf without more DBus."""
         data = "[org/gnome/shell]\nenabled-extensions=['stay@ext']\n"
@@ -1847,6 +1867,28 @@ class TestHelperIntegration:
         ]
         assert legacy not in out
 
+    @pytest.mark.parametrize(
+        ("legacy", "current"),
+        [
+            ("dash-to-dock@micxgx.gmail.com", "community-dock@communitybig.org"),
+            ("dash-to-panel@jderose9.github.com", "community-panel@communitybig.org"),
+            ("big-shot@bigcommunity.org", "big-shot@communitybig.org"),
+        ],
+    )
+    def test_inject_helper_uuid_migrates_saved_layout_components(self, legacy, current):
+        data = (
+            "[org/gnome/shell]\n"
+            f"enabled-extensions=['{legacy}', 'stay@ext']\n"
+            "disabled-extensions=[]\n"
+        )
+
+        out = LayoutApplier._inject_helper_uuid(data)
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+
+        assert current in enabled
+        assert legacy not in out
+
     def test_inject_helper_uuid_retires_legacy_from_saved_lists(self):
         from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
 
@@ -1897,19 +1939,25 @@ class TestHelperIntegration:
         assert values[0] == HELPER_UUID
         assert frosted in values
 
-    def test_inject_helper_uuid_preserves_active_desktop_icons(self):
+    def test_inject_helper_uuid_does_not_override_desktop_icon_layout_default(self):
         from helper_client import HELPER_UUID
 
         desktop_icons = "gtk4-ding@smedius.gitlab.com"
-        data = "[org/gnome/shell]\nenabled-extensions=['kiwi@kemma']\n"
+        data = (
+            "[org/gnome/shell]\n"
+            "enabled-extensions=['kiwi@kemma']\n"
+            f"disabled-extensions=['{desktop_icons}']\n"
+        )
         out = LayoutApplier._inject_helper_uuid(data, [desktop_icons])
-        enabled = LayoutApplier._section_key_values(out, "/org/gnome/shell")
-        values = LayoutApplier._string_list(enabled["enabled-extensions"])
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+        disabled = LayoutApplier._string_list(shell["disabled-extensions"])
 
-        assert values[0] == HELPER_UUID
-        assert desktop_icons in values
+        assert enabled[0] == HELPER_UUID
+        assert desktop_icons not in enabled
+        assert desktop_icons in disabled
 
-    def test_inject_helper_uuid_keeps_desktop_icons_disabled_from_old_snapshot(self):
+    def test_inject_helper_uuid_resolves_duplicate_desktop_icon_state(self):
         desktop_icons = "gtk4-ding@smedius.gitlab.com"
         data = (
             "[org/gnome/shell]\n"
@@ -1920,7 +1968,7 @@ class TestHelperIntegration:
         out = LayoutApplier._inject_helper_uuid(data, [])
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
 
-        assert desktop_icons not in LayoutApplier._string_list(shell["enabled-extensions"])
+        assert desktop_icons in LayoutApplier._string_list(shell["enabled-extensions"])
         assert desktop_icons not in LayoutApplier._string_list(shell["disabled-extensions"])
 
     def test_preserves_global_feature_settings_over_old_snapshot(self, tmp_path):

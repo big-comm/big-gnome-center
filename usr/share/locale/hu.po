@@ -3,119 +3,113 @@ msgid ""
 msgstr ""
 "Project-Id-Version: layout-switcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-30 19:34-0300\n"
-"PO-Revision-Date: 2026-04-22 14:36\n"
+"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"PO-Revision-Date: 2026-08-20 22:22-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:136
+#: usr/share/layout-switcher/constants.py:149
 msgid "Desktop Cube"
 msgstr "Desktop Cube"
 
-#: usr/share/layout-switcher/constants.py:137
+#: usr/share/layout-switcher/constants.py:150
 msgid "Rotate workspaces on a 3D cube"
 msgstr "Munkaterületek forgatása 3D kockán"
 
-#: usr/share/layout-switcher/constants.py:147
+#: usr/share/layout-switcher/constants.py:160
 msgid "Magic Lamp"
 msgstr "Magic Lamp"
 
-#: usr/share/layout-switcher/constants.py:148
+#: usr/share/layout-switcher/constants.py:161
 msgid "Genie effect when minimizing windows"
 msgstr "Dzsinn effekt ablakok kicsinyítésekor"
 
-#: usr/share/layout-switcher/constants.py:158
+#: usr/share/layout-switcher/constants.py:171
 msgid "Compiz Windows"
 msgstr "Compiz Windows"
 
-#: usr/share/layout-switcher/constants.py:159
+#: usr/share/layout-switcher/constants.py:172
 msgid "Wobbly windows and extra animations"
 msgstr "Hullámzó ablakok és extra animációk"
 
-#: usr/share/layout-switcher/constants.py:169
-msgid "Desktop Icons NG"
-msgstr "Desktop Icons NG"
-
-#: usr/share/layout-switcher/constants.py:170
-msgid "Files and folders on your desktop"
-msgstr "Fájlok és mappák az asztalon"
-
-#: usr/share/layout-switcher/constants.py:196
+#: usr/share/layout-switcher/constants.py:199
 msgid "Default Big Gnome layout"
 msgstr "Alapértelmezett Big Gnome elrendezés"
 
-#: usr/share/layout-switcher/constants.py:203
+#: usr/share/layout-switcher/constants.py:206
 msgid "Clean and contemporary desktop"
 msgstr "Tiszta és modern asztal"
 
-#: usr/share/layout-switcher/constants.py:210
+#: usr/share/layout-switcher/constants.py:213
 msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
 msgstr "Középre igazított dokk-tálca, Windows 11 / Deepin / Pop!_OS stílus"
 
-#: usr/share/layout-switcher/constants.py:217
+#: usr/share/layout-switcher/constants.py:220
 msgid "Unity-style layout with left dock and top bar"
 msgstr "Unity-stílusú elrendezés bal oldali dokkal és felső sávval"
 
-#: usr/share/layout-switcher/constants.py:224
+#: usr/share/layout-switcher/constants.py:227
 msgid "Traditional desktop with taskbar and system tray"
 msgstr "Hagyományos asztal tálcával és rendszer tálcával"
 
-#: usr/share/layout-switcher/constants.py:231
+#: usr/share/layout-switcher/constants.py:234
 msgid "Near-vanilla GNOME with minimal distro tweaks"
 msgstr "Közel natív GNOME minimális disztribúciós módosításokkal"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:63
+#: usr/share/layout-switcher/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "Biztonsági mentések"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:78
+#: usr/share/layout-switcher/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "Biztonsági mentés készítése most"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:80
+#: usr/share/layout-switcher/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "Pillanatkép a jelenlegi dconf beállításokról"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:93
+#: usr/share/layout-switcher/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "Még nincs biztonsági mentés"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:95
+#: usr/share/layout-switcher/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr ""
 "Minden alkalommal, amikor alkalmazol egy elrendezést, automatikusan készül "
 "egy biztonsági mentés."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:148
+#: usr/share/layout-switcher/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "Legfrissebb"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:153
+#: usr/share/layout-switcher/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "Biztonsági mentés visszaállítása"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:161
+#: usr/share/layout-switcher/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "Biztonsági mentés törlése"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:184
+#: usr/share/layout-switcher/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "Biztonsági mentés elkészült"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:187
-#: usr/share/layout-switcher/ui/page_layouts.py:255
+#: usr/share/layout-switcher/ui/dialog_backups.py:188
+#: usr/share/layout-switcher/ui/page_layouts.py:265
 msgid "Backup failed"
 msgstr "Biztonsági mentés sikertelen"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:192
+#: usr/share/layout-switcher/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "Visszaállítod ezt a biztonsági mentést?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:194
+#: usr/share/layout-switcher/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
@@ -124,45 +118,44 @@ msgstr ""
 "kattintson a folytatáshoz vagy az eredeti alkalmazásához.Minden jelenlegi "
 "dconf beállítás felülíródik a {ts} időpontban készült pillanatképpel."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:197
-#: usr/share/layout-switcher/ui/dialog_backups.py:230
-#: usr/share/layout-switcher/ui/page_effects.py:274
-#: usr/share/layout-switcher/ui/page_effects.py:318
-#: usr/share/layout-switcher/ui/page_extensions.py:384
-#: usr/share/layout-switcher/ui/page_extensions.py:427
-#: usr/share/layout-switcher/ui/page_extensions.py:834
+#: usr/share/layout-switcher/ui/dialog_backups.py:198
+#: usr/share/layout-switcher/ui/dialog_backups.py:231
+#: usr/share/layout-switcher/ui/page_effects.py:293
+#: usr/share/layout-switcher/ui/page_effects.py:337
+#: usr/share/layout-switcher/ui/page_extensions.py:402
+#: usr/share/layout-switcher/ui/page_extensions.py:445
+#: usr/share/layout-switcher/ui/page_extensions.py:905
 #: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:231
-#: usr/share/layout-switcher/ui/page_layouts.py:243
-#: usr/share/layout-switcher/ui/page_themes.py:423
+#: usr/share/layout-switcher/ui/page_layouts.py:241
+#: usr/share/layout-switcher/ui/page_layouts.py:253
 msgid "Cancel"
 msgstr "Mégse"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
+#: usr/share/layout-switcher/ui/dialog_backups.py:199
 msgid "Restore"
 msgstr "Visszaállítás"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:218
+#: usr/share/layout-switcher/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "Biztonsági mentés visszaállítva"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:222
+#: usr/share/layout-switcher/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "Visszaállítás sikertelen"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:227
+#: usr/share/layout-switcher/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "Törli ezt a biztonsági mentést?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
+#: usr/share/layout-switcher/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "Törlés"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:251
+#: usr/share/layout-switcher/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "Biztonsági mentés törölve"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:254
+#: usr/share/layout-switcher/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "Törlés sikertelen"
 
@@ -212,6 +205,7 @@ msgid "Loading…"
 msgstr "Betöltés…"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:166
+#: usr/share/layout-switcher/ui/page_extensions.py:621
 msgid "No results"
 msgstr "Nincs találat"
 
@@ -244,7 +238,6 @@ msgid "Next page"
 msgstr "Következő oldal"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:238
-#: usr/share/layout-switcher/ui/page_themes.py:130
 msgid "Shell"
 msgstr "Shell"
 
@@ -255,8 +248,8 @@ msgstr "{p}. oldal / {t}"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:345
 #: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:165
-#: usr/share/layout-switcher/ui/page_extensions.py:262
+#: usr/share/layout-switcher/ui/page_effects.py:184
+#: usr/share/layout-switcher/ui/page_extensions.py:280
 #, python-brace-format
 msgid "by {author}"
 msgstr "készítette: {author}"
@@ -270,8 +263,8 @@ msgid "View extension details"
 msgstr "Bővítmény részleteinek megtekintése"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:65
-#: usr/share/layout-switcher/ui/page_extensions.py:548
+#: usr/share/layout-switcher/ui/page_extensions.py:83
+#: usr/share/layout-switcher/ui/page_extensions.py:574
 #: usr/share/layout-switcher/ui/page_fonts.py:487
 #: usr/share/layout-switcher/ui/page_fonts.py:529
 msgid "Installed"
@@ -280,10 +273,10 @@ msgstr "Telepítve"
 #: usr/share/layout-switcher/ui/ext_browse_view.py:375
 #: usr/share/layout-switcher/ui/ext_detail_view.py:64
 #: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:219
-#: usr/share/layout-switcher/ui/page_effects.py:275
-#: usr/share/layout-switcher/ui/page_extensions.py:323
-#: usr/share/layout-switcher/ui/page_extensions.py:385
+#: usr/share/layout-switcher/ui/page_effects.py:238
+#: usr/share/layout-switcher/ui/page_effects.py:294
+#: usr/share/layout-switcher/ui/page_extensions.py:341
+#: usr/share/layout-switcher/ui/page_extensions.py:403
 #: usr/share/layout-switcher/ui/page_fonts.py:490
 #: usr/share/layout-switcher/ui/page_fonts.py:493
 #: usr/share/layout-switcher/ui/page_fonts.py:534
@@ -292,8 +285,8 @@ msgstr "Telepítés"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:412
 #: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:296
-#: usr/share/layout-switcher/ui/page_extensions.py:405
+#: usr/share/layout-switcher/ui/page_effects.py:315
+#: usr/share/layout-switcher/ui/page_extensions.py:423
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr ""
@@ -301,8 +294,8 @@ msgstr ""
 "használatához."
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:411
+#: usr/share/layout-switcher/ui/page_effects.py:321
+#: usr/share/layout-switcher/ui/page_extensions.py:429
 msgid "Install failed"
 msgstr "A telepítés sikertelen"
 
@@ -348,8 +341,8 @@ msgid "Homepage"
 msgstr "Honlap"
 
 #: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:236
-#: usr/share/layout-switcher/ui/page_extensions.py:340
+#: usr/share/layout-switcher/ui/page_effects.py:255
+#: usr/share/layout-switcher/ui/page_extensions.py:358
 msgid "View on GNOME Extensions"
 msgstr "Megtekintés a GNOME Extensions oldalon"
 
@@ -359,9 +352,9 @@ msgid "License: {lic}"
 msgstr "Licenc: {lic}"
 
 #: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:568
-#: usr/share/layout-switcher/ui/page_extensions.py:655
-#: usr/share/layout-switcher/ui/page_extensions.py:666
+#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/layout-switcher/ui/page_extensions.py:719
+#: usr/share/layout-switcher/ui/page_extensions.py:730
 msgid "Update"
 msgstr "Frissítés"
 
@@ -382,239 +375,237 @@ msgstr "{name} frissítve"
 msgid "Operation failed"
 msgstr "A művelet sikertelen"
 
-#: usr/share/layout-switcher/ui/page_effects.py:44
-msgid "Visual effects for your GNOME desktop"
-msgstr "Vizuális effektek a GNOME asztalához"
-
-#: usr/share/layout-switcher/ui/page_effects.py:107
-#: usr/share/layout-switcher/ui/page_extensions.py:207
+#: usr/share/layout-switcher/ui/page_effects.py:114
+#: usr/share/layout-switcher/ui/page_extensions.py:225
 msgid "System extension"
 msgstr "Rendszerbővítmény"
 
-#: usr/share/layout-switcher/ui/page_effects.py:124
+#: usr/share/layout-switcher/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name} (engedélyezve)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:126
+#: usr/share/layout-switcher/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name} (letiltva)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:128
+#: usr/share/layout-switcher/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (nincs telepítve)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:176
-#: usr/share/layout-switcher/ui/page_extensions.py:277
+#: usr/share/layout-switcher/ui/page_effects.py:195
+#: usr/share/layout-switcher/ui/page_extensions.py:295
 msgid "On"
 msgstr "Be"
 
-#: usr/share/layout-switcher/ui/page_effects.py:176
-#: usr/share/layout-switcher/ui/page_extensions.py:277
+#: usr/share/layout-switcher/ui/page_effects.py:195
+#: usr/share/layout-switcher/ui/page_extensions.py:295
 msgid "Off"
 msgstr "Ki"
 
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:285
-#: usr/share/layout-switcher/ui/page_extensions.py:694
+#: usr/share/layout-switcher/ui/page_effects.py:203
+#: usr/share/layout-switcher/ui/page_extensions.py:303
+#: usr/share/layout-switcher/ui/page_extensions.py:763
 msgid "Toggle"
 msgstr "Kapcsoló"
 
-#: usr/share/layout-switcher/ui/page_effects.py:192
-#: usr/share/layout-switcher/ui/page_effects.py:196
-#: usr/share/layout-switcher/ui/page_effects.py:319
-#: usr/share/layout-switcher/ui/page_extensions.py:295
-#: usr/share/layout-switcher/ui/page_extensions.py:299
-#: usr/share/layout-switcher/ui/page_extensions.py:428
-#: usr/share/layout-switcher/ui/page_extensions.py:730
-#: usr/share/layout-switcher/ui/page_extensions.py:731
+#: usr/share/layout-switcher/ui/page_effects.py:211
+#: usr/share/layout-switcher/ui/page_effects.py:215
+#: usr/share/layout-switcher/ui/page_effects.py:338
+#: usr/share/layout-switcher/ui/page_extensions.py:313
+#: usr/share/layout-switcher/ui/page_extensions.py:317
+#: usr/share/layout-switcher/ui/page_extensions.py:446
+#: usr/share/layout-switcher/ui/page_extensions.py:801
+#: usr/share/layout-switcher/ui/page_extensions.py:802
 msgid "Remove"
 msgstr "Eltávolítás"
 
-#: usr/share/layout-switcher/ui/page_effects.py:204
-#: usr/share/layout-switcher/ui/page_extensions.py:307
-#: usr/share/layout-switcher/ui/page_extensions.py:680
-#: usr/share/layout-switcher/ui/page_extensions.py:684
+#: usr/share/layout-switcher/ui/page_effects.py:223
+#: usr/share/layout-switcher/ui/page_extensions.py:325
+#: usr/share/layout-switcher/ui/page_extensions.py:744
+#: usr/share/layout-switcher/ui/page_extensions.py:748
 msgid "Settings"
 msgstr "Beállítások"
 
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_extensions.py:235
-#: usr/share/layout-switcher/ui/page_extensions.py:319
+#: usr/share/layout-switcher/ui/page_effects.py:234
+#: usr/share/layout-switcher/ui/page_extensions.py:253
+#: usr/share/layout-switcher/ui/page_extensions.py:337
 msgid "Not installed"
 msgstr "Nincs telepítve"
 
-#: usr/share/layout-switcher/ui/page_effects.py:260
-#: usr/share/layout-switcher/ui/page_extensions.py:231
-#: usr/share/layout-switcher/ui/page_extensions.py:370
-#: usr/share/layout-switcher/ui/page_extensions.py:562
+#: usr/share/layout-switcher/ui/page_effects.py:279
+#: usr/share/layout-switcher/ui/page_extensions.py:249
+#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/layout-switcher/ui/page_extensions.py:614
 msgid "enabled"
 msgstr "engedélyezve"
 
-#: usr/share/layout-switcher/ui/page_effects.py:260
-#: usr/share/layout-switcher/ui/page_extensions.py:233
-#: usr/share/layout-switcher/ui/page_extensions.py:370
+#: usr/share/layout-switcher/ui/page_effects.py:279
+#: usr/share/layout-switcher/ui/page_extensions.py:251
+#: usr/share/layout-switcher/ui/page_extensions.py:388
 msgid "disabled"
 msgstr "letiltva"
 
-#: usr/share/layout-switcher/ui/page_effects.py:264
-#: usr/share/layout-switcher/ui/page_extensions.py:374
-#: usr/share/layout-switcher/ui/page_extensions.py:707
-#: usr/share/layout-switcher/ui/page_extensions.py:858
-#: usr/share/layout-switcher/ui/page_layouts.py:395
-#: usr/share/layout-switcher/ui/page_layouts.py:438
-#: usr/share/layout-switcher/ui/page_themes.py:413
+#: usr/share/layout-switcher/ui/page_effects.py:283
+#: usr/share/layout-switcher/ui/page_extensions.py:392
+#: usr/share/layout-switcher/ui/page_extensions.py:777
+#: usr/share/layout-switcher/ui/page_extensions.py:929
+#: usr/share/layout-switcher/ui/page_layouts.py:429
+#: usr/share/layout-switcher/ui/page_layouts.py:473
+#: usr/share/layout-switcher/ui/page_themes.py:332
+#: usr/share/layout-switcher/ui/page_themes.py:343
 msgid "Error"
 msgstr "Hiba"
 
-#: usr/share/layout-switcher/ui/page_effects.py:271
+#: usr/share/layout-switcher/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "Effekt telepítése?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:272
-#: usr/share/layout-switcher/ui/page_extensions.py:382
+#: usr/share/layout-switcher/ui/page_effects.py:291
+#: usr/share/layout-switcher/ui/page_extensions.py:400
 msgid "Will try to install automatically."
 msgstr "Megpróbálja automatikusan telepíteni."
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:391
+#: usr/share/layout-switcher/ui/page_effects.py:302
+#: usr/share/layout-switcher/ui/page_extensions.py:409
 #: usr/share/layout-switcher/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "Telepítés…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:311
-#: usr/share/layout-switcher/ui/page_extensions.py:420
+#: usr/share/layout-switcher/ui/page_effects.py:330
+#: usr/share/layout-switcher/ui/page_extensions.py:438
 msgid "System extension — cannot remove"
 msgstr "Rendszerbővítmény — nem távolítható el"
 
-#: usr/share/layout-switcher/ui/page_effects.py:315
+#: usr/share/layout-switcher/ui/page_effects.py:334
 msgid "Remove effect?"
 msgstr "Effekt eltávolítása?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:316
-#: usr/share/layout-switcher/ui/page_extensions.py:425
+#: usr/share/layout-switcher/ui/page_effects.py:335
+#: usr/share/layout-switcher/ui/page_extensions.py:443
 msgid "This cannot be undone."
 msgstr "Ez nem vonható vissza."
 
-#: usr/share/layout-switcher/ui/page_effects.py:331
-#: usr/share/layout-switcher/ui/page_extensions.py:440
+#: usr/share/layout-switcher/ui/page_effects.py:350
+#: usr/share/layout-switcher/ui/page_extensions.py:458
 msgid "removed"
 msgstr "eltávolítva"
 
-#: usr/share/layout-switcher/ui/page_effects.py:333
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/layout-switcher/ui/page_effects.py:352
+#: usr/share/layout-switcher/ui/page_extensions.py:460
 msgid "Remove failed"
 msgstr "Az eltávolítás sikertelen"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:63
+#: usr/share/layout-switcher/ui/page_extensions.py:81
 msgid "Featured"
 msgstr "Kiemelt"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-#: usr/share/layout-switcher/ui/page_extensions.py:113
+#: usr/share/layout-switcher/ui/page_extensions.py:82
+#: usr/share/layout-switcher/ui/page_extensions.py:131
 msgid "Browse"
 msgstr "Tallózás"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:219
+#: usr/share/layout-switcher/ui/page_extensions.py:237
 msgid "Update available"
 msgstr "Frissítés érhető el"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:381
+#: usr/share/layout-switcher/ui/page_extensions.py:399
 msgid "Install extension?"
 msgstr "Kiterjesztés telepítése?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:424
+#: usr/share/layout-switcher/ui/page_extensions.py:442
 msgid "Remove extension?"
 msgstr "Kiterjesztés eltávolítása?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:490
-#: usr/share/layout-switcher/ui/page_extensions.py:568
+#: usr/share/layout-switcher/extension_update_monitor.py:245
+#: usr/share/layout-switcher/ui/page_extensions.py:522
+#: usr/share/layout-switcher/ui/page_extensions.py:579
 msgid "Update all"
 msgstr "Összes frissítése"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:498
+#: usr/share/layout-switcher/ui/page_extensions.py:530
 msgid "Open GNOME Extensions"
 msgstr "GNOME Kiterjesztések megnyitása"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:554
+#: usr/share/layout-switcher/ui/page_extensions.py:598
 msgid "No extensions installed"
 msgstr "Nincsenek telepített kiterjesztések"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:562
+#: usr/share/layout-switcher/ui/page_extensions.py:614
 msgid "installed"
 msgstr "telepítve"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:564
+#: usr/share/layout-switcher/ui/page_extensions.py:616
 msgid "update available"
 msgstr "frissítés érhető el"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:576
+#: usr/share/layout-switcher/ui/page_extensions.py:632
 msgid "Enabled"
 msgstr "Engedélyezve"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:577
+#: usr/share/layout-switcher/ui/page_extensions.py:633
 msgid "Disabled"
 msgstr "Letiltva"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:660
+#: usr/share/layout-switcher/ui/page_extensions.py:724
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "Frissítés v{old} verzióról v{new} verzióra"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/layout-switcher/ui/page_extensions.py:795
 msgid ""
 "This extension cannot be removed here because it was installed by the "
 "system."
 msgstr ""
 "Ez a kiegészítő nem távolítható el innen, mert a rendszer telepítette."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:772
+#: usr/share/layout-switcher/ui/page_extensions.py:843
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} frissítve v{ver} verzióra"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:777
+#: usr/share/layout-switcher/ui/page_extensions.py:848
 #: usr/share/layout-switcher/ui/page_fonts.py:147
 #: usr/share/layout-switcher/ui/page_fonts.py:216
 #: usr/share/layout-switcher/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "Frissítés sikertelen"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:801
+#: usr/share/layout-switcher/ui/page_extensions.py:872
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "{n} bővítmények frissítve"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:806
+#: usr/share/layout-switcher/ui/page_extensions.py:877
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "Frissítve {n}/{t}; sikertelen: {f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:817
-#: usr/share/layout-switcher/ui/page_extensions.py:835
+#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/layout-switcher/ui/page_extensions.py:906
 msgid "Disable All"
 msgstr "Mindet letiltás"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:817
+#: usr/share/layout-switcher/ui/page_extensions.py:888
 msgid "Enable All"
 msgstr "Az összes engedélyezése"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:831
+#: usr/share/layout-switcher/ui/page_extensions.py:902
 msgid "Disable all extensions?"
 msgstr "Az összes kiterjesztés letiltása?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:832
+#: usr/share/layout-switcher/ui/page_extensions.py:903
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr ""
 "Az összes kiterjesztés le lesz tiltva. Később újra engedélyezheti őket."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:852
+#: usr/share/layout-switcher/ui/page_extensions.py:923
 msgid "All extensions disabled"
 msgstr "Az összes kiterjesztés letiltva"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:852
+#: usr/share/layout-switcher/ui/page_extensions.py:923
 msgid "All extensions enabled"
 msgstr "Az összes kiterjesztés engedélyezve"
 
@@ -835,31 +826,26 @@ msgstr "Összetevők újratöltése…"
 msgid "Layout status"
 msgstr "Elrendezés állapota"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:141
+#: usr/share/layout-switcher/ui/page_layouts.py:152
 msgid "Contains your saved customizations"
 msgstr "Tartalmazza a mentett testreszabásaidat"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:145
+#: usr/share/layout-switcher/ui/page_layouts.py:156
 msgid "Modified"
 msgstr "Módosítva"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:159
-#: usr/share/layout-switcher/ui/page_layouts.py:206
-#: usr/share/layout-switcher/ui/page_themes.py:306
-#: usr/share/layout-switcher/ui/page_themes.py:360
+#: usr/share/layout-switcher/ui/page_layouts.py:170
+#: usr/share/layout-switcher/ui/page_layouts.py:219
+#: usr/share/layout-switcher/ui/page_themes.py:318
 msgid "Active"
 msgstr "Aktív"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:177
-#: usr/share/layout-switcher/ui/page_layouts.py:204
+#: usr/share/layout-switcher/ui/page_layouts.py:190
+#: usr/share/layout-switcher/ui/page_layouts.py:217
 msgid "Coming soon"
 msgstr "Hamarosan"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:215
-msgid "This layout is already active"
-msgstr "Ez az elrendezés már aktív"
-
-#: usr/share/layout-switcher/ui/page_layouts.py:227
+#: usr/share/layout-switcher/ui/page_layouts.py:237
 msgid ""
 "You have previously modified this layout. Apply the original system default "
 "or resume your changes?"
@@ -867,15 +853,15 @@ msgstr ""
 "Korábban már módosította ezt az elrendezést. Alkalmazza az eredeti rendszer-"
 "alapértelmezést, vagy folytatja a módosításait?"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:232
+#: usr/share/layout-switcher/ui/page_layouts.py:242
 msgid "Resume my changes"
 msgstr "Módosításaim folytatása"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:233
+#: usr/share/layout-switcher/ui/page_layouts.py:243
 msgid "Apply original"
 msgstr "Eredeti alkalmazása"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:239
+#: usr/share/layout-switcher/ui/page_layouts.py:249
 msgid ""
 "Apply this layout? A backup of your current configuration will be created "
 "automatically."
@@ -883,284 +869,856 @@ msgstr ""
 "Alkalmazod ezt az elrendezést? A jelenlegi konfigurációd automatikusan "
 "mentésre kerül."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:244
+#: usr/share/layout-switcher/ui/page_layouts.py:254
 msgid "Apply"
 msgstr "Alkalmaz"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:274
-#: usr/share/layout-switcher/ui/page_layouts.py:276
+#: usr/share/layout-switcher/ui/page_layouts.py:295
 msgid "Applying"
 msgstr "Alkalmazás"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:307
+#: usr/share/layout-switcher/ui/page_layouts.py:325
 msgid "Snapshot not found"
 msgstr "Pillanatkép nem található"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:329
+#: usr/share/layout-switcher/ui/page_layouts.py:353
 msgid "Layout file not found"
 msgstr "Elrendezés fájl nem található"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:358
-#: usr/share/layout-switcher/ui/page_layouts.py:366
-#: usr/share/layout-switcher/ui/page_layouts.py:375
+#: usr/share/layout-switcher/ui/page_layouts.py:392
+#: usr/share/layout-switcher/ui/page_layouts.py:400
+#: usr/share/layout-switcher/ui/page_layouts.py:409
 msgid "applied"
 msgstr "alkalmazva"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:368
+#: usr/share/layout-switcher/ui/page_layouts.py:402
 msgid "Undo"
 msgstr "Visszavonás"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:385
+#: usr/share/layout-switcher/ui/page_layouts.py:419
 msgid "Restart the session for the 100% clean state"
 msgstr "Indítsa újra a munkamenetet a teljesen tiszta állapothoz"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:388
+#: usr/share/layout-switcher/ui/page_layouts.py:422
 msgid "Restart now"
 msgstr "Újraindítás most"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:412
+#: usr/share/layout-switcher/ui/page_layouts.py:446
 msgid "Cannot restart session"
 msgstr "A munkamenet nem indítható újra"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
-#: usr/share/layout-switcher/ui/page_layouts.py:421
+#: usr/share/layout-switcher/ui/page_layouts.py:453
+#: usr/share/layout-switcher/ui/page_layouts.py:455
 msgid "Restoring previous layout…"
 msgstr "Előző elrendezés visszaállítása…"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:449
+#: usr/share/layout-switcher/ui/page_layouts.py:485
 msgid "Layout restored"
 msgstr "Elrendezés visszaállítva"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:451
+#: usr/share/layout-switcher/ui/page_layouts.py:487
 msgid "Previous layout restored"
 msgstr "Előző elrendezés visszaállítva"
 
-#: usr/share/layout-switcher/ui/page_themes.py:94
+#: usr/share/layout-switcher/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "Témák szűrése…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "GTK"
-msgstr "GTK"
-
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "Applications"
-msgstr "Alkalmazások"
-
-#: usr/share/layout-switcher/ui/page_themes.py:130
+#: usr/share/layout-switcher/ui/page_themes.py:109
 msgid "Icons"
 msgstr "Ikonok"
 
-#: usr/share/layout-switcher/ui/page_themes.py:210
+#: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Nincs találat téma"
 
-#: usr/share/layout-switcher/ui/page_themes.py:211
+#: usr/share/layout-switcher/ui/page_themes.py:241
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "Telepíts témákat a ~/.themes vagy /usr/share/themes könyvtárba"
 
-#: usr/share/layout-switcher/ui/page_themes.py:218
+#: usr/share/layout-switcher/ui/page_themes.py:247
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "{n} téma érhető el"
 
-#: usr/share/layout-switcher/ui/page_themes.py:304
-#: usr/share/layout-switcher/ui/page_themes.py:358
+#: usr/share/layout-switcher/ui/page_themes.py:316
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} téma"
 
-#: usr/share/layout-switcher/ui/page_themes.py:420
-msgid "User Themes required"
-msgstr "Felhasználói témák szükségesek"
-
-#: usr/share/layout-switcher/ui/page_themes.py:421
-msgid "Install and enable the User Themes extension to apply shell themes."
-msgstr ""
-"Telepítse és engedélyezze a User Themes kiterjesztést a shell témák "
-"alkalmazásához."
-
-#: usr/share/layout-switcher/ui/page_themes.py:424
-msgid "Open Extensions Page"
-msgstr "Bővítmények oldal megnyitása"
-
-#: usr/share/layout-switcher/ui/window.py:66
-#: usr/share/layout-switcher/ui/window.py:323
+#: usr/share/layout-switcher/ui/window.py:71
+#: usr/share/layout-switcher/ui/window.py:377
 msgid "Layout Switcher"
 msgstr "Layout Switcher"
 
-#: usr/share/layout-switcher/ui/window.py:190
-#: usr/share/layout-switcher/ui/window.py:191
+#: usr/share/layout-switcher/ui/window.py:229
+#: usr/share/layout-switcher/ui/window.py:230
 msgid "Show Sidebar"
 msgstr "Oldalsáv megjelenítése"
 
-#: usr/share/layout-switcher/ui/window.py:197
-#: usr/share/layout-switcher/ui/window.py:347
-#: usr/share/layout-switcher/ui/window.py:422
+#: usr/share/layout-switcher/ui/window.py:236
+#: usr/share/layout-switcher/ui/window.py:401
+#: usr/share/layout-switcher/ui/window.py:484
 msgid "Layouts"
 msgstr "Elrendezések"
 
-#: usr/share/layout-switcher/ui/window.py:203
+#: usr/share/layout-switcher/ui/window.py:242
 msgid "Menu"
 msgstr "Menü"
 
-#: usr/share/layout-switcher/ui/window.py:204
+#: usr/share/layout-switcher/ui/window.py:243
 msgid "Main menu"
 msgstr "Főmenü"
 
-#: usr/share/layout-switcher/ui/window.py:208
+#: usr/share/layout-switcher/ui/window.py:247
 msgid "Check for updates"
 msgstr "Frissítések keresése"
 
-#: usr/share/layout-switcher/ui/window.py:209
+#: usr/share/layout-switcher/ui/window.py:248
 msgid "Auto-update extensions"
 msgstr "Kiterjesztések automatikus frissítése"
 
-#: usr/share/layout-switcher/ui/window.py:211
+#: usr/share/layout-switcher/ui/window.py:250
 msgid "Backups…"
 msgstr "Biztonsági mentések…"
 
-#: usr/share/layout-switcher/ui/window.py:212
+#: usr/share/layout-switcher/ui/window.py:251
 msgid "About"
 msgstr "Névjegy"
 
-#: usr/share/layout-switcher/ui/window.py:221
+#: usr/share/layout-switcher/ui/window.py:260
 msgid "Welcome! Choose a desktop layout below to get started."
 msgstr ""
 "Üdvözöljük! Válasszon egy asztali elrendezést az alábbiakból a kezdéshez."
 
-#: usr/share/layout-switcher/ui/window.py:222
+#: usr/share/layout-switcher/ui/window.py:261
 msgid "Got it"
 msgstr "Értettem"
 
-#: usr/share/layout-switcher/ui/window.py:348
-#: usr/share/layout-switcher/ui/window.py:423
+#: usr/share/layout-switcher/ui/window.py:402
+#: usr/share/layout-switcher/ui/window.py:485
 msgid "Fonts"
 msgstr "Betűtípusok"
 
-#: usr/share/layout-switcher/ui/window.py:349
-#: usr/share/layout-switcher/ui/window.py:424
+#: usr/share/layout-switcher/ui/window.py:403
+#: usr/share/layout-switcher/ui/window.py:486
 msgid "Themes"
 msgstr "Témák"
 
-#: usr/share/layout-switcher/ui/window.py:350
-#: usr/share/layout-switcher/ui/window.py:425
+#: usr/share/layout-switcher/ui/window.py:406
+#: usr/share/layout-switcher/ui/window.py:489
 msgid "Effects"
 msgstr "Effektek"
 
-#: usr/share/layout-switcher/ui/window.py:351
-#: usr/share/layout-switcher/ui/window.py:426
+#: usr/share/layout-switcher/ui/page_extensions.py:494
+#: usr/share/layout-switcher/ui/page_extensions.py:502
+#: usr/share/layout-switcher/ui/window.py:407
+#: usr/share/layout-switcher/ui/window.py:490
 msgid "Extensions"
 msgstr "Kiterjesztések"
 
-#: usr/share/layout-switcher/ui/window.py:461
+#: usr/share/layout-switcher/ui/window.py:528
 msgid "Community Layout Switcher"
 msgstr "Community Layout Switcher"
 
-#: usr/share/layout-switcher/ui/window.py:466
+#: usr/share/layout-switcher/ui/window.py:533
 msgid "Layouts, effects and themes for your GNOME desktop."
 msgstr "Elrendezések, effektek és témák a GNOME asztalodhoz."
 
-#: usr/share/layout-switcher/ui/window.py:512
+#: usr/share/layout-switcher/ui/window.py:599
 msgid "Applying…"
 msgstr "Alkalmazás…"
 
-#: usr/share/layout-switcher/ui/window.py:585
+#: usr/share/layout-switcher/ui/window.py:706
 msgid "All extensions up to date"
 msgstr "Minden kiterjesztés naprakész"
 
-#: usr/share/layout-switcher/ui/window.py:600
+#: usr/share/layout-switcher/ui/window.py:721
 #, python-brace-format
 msgid "Auto-updated {n} extensions"
 msgstr "{n} automatikusan frissített kiterjesztés"
 
-#: usr/share/layout-switcher/ui/window.py:605
+#: usr/share/layout-switcher/ui/window.py:726
 #, python-brace-format
 msgid "{n} update(s) available"
 msgstr "{n} frissítés(ek) érhető(ek) el"
 
-#: usr/share/layout-switcher/ui/window.py:612
+#: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update enabled"
 msgstr "Automatikus frissítés engedélyezve"
 
-#: usr/share/layout-switcher/ui/window.py:612
+#: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update disabled"
 msgstr "Automatikus frissítés letiltva"
 
-#~ msgid "System fonts"
-#~ msgstr "Rendszerbetűtípusok"
+#: usr/share/layout-switcher/extension_update_monitor.py:238
+msgid "Extension updates available"
+msgstr "Kiegészítőfrissítések érhetők el"
 
-#~ msgid "Fonts used by the GNOME interface"
-#~ msgstr "A GNOME felület által használt betűtípusok"
+#: usr/share/layout-switcher/extension_update_monitor.py:239
+#, python-brace-format
+msgid "Available updates: {names}"
+msgstr "Elérhető frissítések: {names}"
 
-#~ msgid "Window titles (legacy)"
-#~ msgstr "Ablakcímek (régi)"
+#: usr/share/layout-switcher/extension_update_monitor.py:243
+#: usr/share/layout-switcher/extension_update_monitor.py:244
+#: usr/share/layout-switcher/extension_update_monitor.py:336
+#: usr/share/layout-switcher/extension_update_monitor.py:337
+msgid "View updates"
+msgstr "Frissítések megtekintése"
 
-#~ msgid "Choose…"
-#~ msgstr "Válasszon…"
+#: usr/share/layout-switcher/extension_update_monitor.py:306
+msgid "Extension updates installed"
+msgstr "Kiegészítőfrissítések telepítve"
 
-#~ msgid "Appearance"
-#~ msgstr "Megjelenés"
+#: usr/share/layout-switcher/extension_update_monitor.py:307
+#: usr/share/layout-switcher/extension_update_monitor.py:322
+#, python-brace-format
+msgid "Updated: {names}"
+msgstr "Frissítve: {names}"
 
-#~ msgid "How fonts are rendered on screen"
-#~ msgstr "Hogyan jelenjenek meg a betűk a képernyőn"
+#: usr/share/layout-switcher/extension_update_monitor.py:311
+#: usr/share/layout-switcher/extension_update_monitor.py:312
+msgid "View extensions"
+msgstr "Kiegészítők megtekintése"
 
-#~ msgid "Antialiasing"
-#~ msgstr "Élsimítás"
+#: usr/share/layout-switcher/extension_update_monitor.py:328
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Sikertelen: {names}"
 
-#~ msgid "Grayscale"
-#~ msgstr "Szürkeárnyalatos"
+#: usr/share/layout-switcher/extension_update_monitor.py:333
+msgid "Some extension updates failed"
+msgstr "Néhány kiegészítőfrissítés sikertelen volt"
 
-#~ msgid "Subpixel (RGBA)"
-#~ msgstr "Alpixeles (RGBA)"
+#: usr/share/layout-switcher/extension_update_monitor.py:338
+msgid "Try again"
+msgstr "Újrapróbálkozás"
 
-#~ msgid "Installed fonts"
-#~ msgstr "Telepített betűtípusok"
+#: usr/share/layout-switcher/helper_client.py:113
+msgid "The required layout helper is not installed."
+msgstr "A szükséges elrendezés-segéd nincs telepítve."
 
-#~ msgid "Browse font families installed on your system"
-#~ msgstr "Böngésszen a rendszerére telepített betűcsaládok között"
+#: usr/share/layout-switcher/helper_client.py:152
+msgid "The required layout helper did not start."
+msgstr "A szükséges elrendezés-segéd nem indult el."
 
-#~ msgid "No fonts match your search"
-#~ msgstr "Egyetlen betűtípus sem felel meg a keresésnek"
+#: usr/share/layout-switcher/helper_guard.py:78
+msgid "Layout helper restored"
+msgstr "Elrendezés-segéd helyreállítva"
 
-#~ msgid "(refine search to see more)"
-#~ msgstr "(szűkítse a keresést a több találathoz)"
+#: usr/share/layout-switcher/helper_guard.py:79
+msgid "The required layout helper was re-enabled automatically."
+msgstr ""
+"A szükséges elrendezés-segéd automatikusan újra engedélyezésre került."
 
-#~ msgid "fonts"
-#~ msgstr "betűtípus"
+#: usr/share/layout-switcher/layout_applier.py:2254
+msgid "Layout Switcher Helper is required to apply layouts."
+msgstr "Az elrendezések alkalmazásához a Layout Switcher Helper szükséges."
 
-#~ msgid "The quick brown fox jumps over the lazy dog 0123"
-#~ msgstr ""
-#~ "Jó foxim és don Quijote húszwattos lámpánál ülve egy bűvös cipőt készít 0123"
+#: usr/share/layout-switcher/shell_reloader.py:280
+#: usr/share/layout-switcher/ui/page_extensions.py:704
+#: usr/share/layout-switcher/ui/page_extensions.py:760
+#: usr/share/layout-switcher/ui/page_extensions.py:761
+msgid "Required for layout switching"
+msgstr "Az elrendezésváltáshoz szükséges"
 
-#~ msgid "Install more fonts"
-#~ msgstr "Több betűtípus telepítése"
+#: usr/share/layout-switcher/ui/desktop_icons.py:28
+#: usr/share/layout-switcher/ui/window.py:404
+#: usr/share/layout-switcher/ui/window.py:487
+msgid "Desktop"
+msgstr "Asztal"
 
-#~ msgid "Opens fonts.google.com in your browser"
-#~ msgstr "Megnyitja a fonts.google.com oldalt a böngészőben"
+#: usr/share/layout-switcher/ui/desktop_icons.py:32
+#: usr/share/layout-switcher/ui/desktop_icons.py:51
+msgid "Desktop icons"
+msgstr "Asztali ikonok"
 
-#~ msgid "How to install"
-#~ msgstr "Telepítési útmutató"
+#: usr/share/layout-switcher/ui/desktop_icons.py:33
+#: usr/share/layout-switcher/ui/desktop_icons.py:72
+msgid "Show files and folders on the desktop"
+msgstr "Fájlok és mappák megjelenítése az asztalon"
 
-#~ msgid ""
-#~ "Place .ttf/.otf files in ~/.local/share/fonts/ then run 'fc-cache -f -v' and"
-#~ " refresh this list."
-#~ msgstr ""
-#~ "Helyezze a .ttf/.otf fájlokat a ~/.local/share/fonts/ mappába, majd futtassa"
-#~ " a 'fc-cache -f -v' parancsot, és frissítse ezt a listát."
+#: usr/share/layout-switcher/ui/desktop_icons.py:39
+msgid "Desktop icon settings"
+msgstr "Asztali ikonok beállításai"
 
-#~ msgid "system"
-#~ msgstr "rendszer"
+#: usr/share/layout-switcher/ui/desktop_icons.py:74
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "A GTK4 Desktop Icons NG nincs telepítve"
 
-#~ msgid "theme"
-#~ msgstr "téma"
+#: usr/share/layout-switcher/ui/desktop_icons.py:95
+msgid "Desktop icons enabled"
+msgstr "Asztali ikonok engedélyezve"
 
-#~ msgid "Click a layout to apply"
-#~ msgstr "Kattints egy elrendezésre az alkalmazáshoz"
+#: usr/share/layout-switcher/ui/desktop_icons.py:97
+msgid "Desktop icons disabled"
+msgstr "Asztali ikonok letiltva"
 
-#~ msgid ""
-#~ "Marked layouts contain your saved customizations — click to resume them or "
-#~ "apply the original."
-#~ msgstr ""
-#~ "A megjelölt elrendezések tartalmazzák a mentett testreszabásokat — "
-#~ "kattintson a folytatáshoz vagy az eredeti alkalmazásához."
+#: usr/share/layout-switcher/ui/desktop_icons.py:102
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "Az asztali ikonok módosítása nem sikerült: {message}"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:60
+msgid "Overview blur"
+msgstr "Áttekintés elmosása"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:60
+msgid "Frosted glass"
+msgstr "Matt üveg"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:67
+msgid "Blur for the workspace and application overview"
+msgstr "Elmosás a munkaterületek és az alkalmazás-áttekintés nézetéhez"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:69
+msgid "Unified blur for windows and GNOME Shell surfaces"
+msgstr "Egységes elmosás az ablakokhoz és a GNOME Shell felületeihez"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:79
+msgid "unknown"
+msgstr "ismeretlen"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:82
+#, python-brace-format
+msgid ""
+"Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
+msgstr ""
+"Az áttekintés elmosásához GNOME 50 vagy újabb szükséges. Ez az asztal GNOME "
+"{version}."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:89
+msgid ""
+"Install or update Layout Switcher to make Frosted Glass settings available."
+msgstr ""
+"Telepítse vagy frissítse a Layout Switcher-t, hogy a Matt üveg beállítások "
+"elérhetővé váljanak."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:110
+msgid "Enable overview blur"
+msgstr "Áttekintés elmosásának engedélyezése"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:111
+#: usr/share/layout-switcher/ui/frosted_glass.py:190
+msgid "Workspace and application overview"
+msgstr "Munkaterület- és alkalmazásáttekintés"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:122
+#: usr/share/layout-switcher/ui/frosted_glass.py:206
+msgid "Material"
+msgstr "Anyag"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "Blur strength"
+msgstr "Elmosás erőssége"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "Less"
+msgstr "Gyengébb"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "More"
+msgstr "Erősebb"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+msgid "Material opacity"
+msgstr "Anyag átlátszósága"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/layout-switcher/ui/page_panel_dock.py:199
+msgid "Transparent"
+msgstr "Átlátszó"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/layout-switcher/ui/page_panel_dock.py:212
+msgid "Opaque"
+msgstr "Átlátszatlan"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:137
+#: usr/share/layout-switcher/ui/frosted_glass.py:196
+#: usr/share/layout-switcher/ui/frosted_glass.py:198
+msgid "Not available in this session"
+msgstr "Nem érhető el ebben a munkamenetben"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:147
+msgid "Enable frosted glass"
+msgstr "Hommályos üveg engedélyezése"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:148
+msgid "Apply the material without changing the active desktop layout"
+msgstr "Az anyag alkalmazása az aktív asztali elrendezés módosítása nélkül"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:160
+msgid "Surfaces"
+msgstr "Felületek"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:161
+msgid "Choose independently where the material is applied."
+msgstr ""
+"Válassza ki egymástól függetlenül, hogy hol legyen az anyag alkalmazva."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:164
+msgid "Windows"
+msgstr "Ablakok"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:164
+msgid "GTK, Qt and other application windows"
+msgstr "GTK, Qt és más alkalmazásablakok"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:165
+#: usr/share/layout-switcher/ui/page_panel_dock.py:74
+msgid "Panel"
+msgstr "Panel"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:165
+msgid "GNOME panel and Community Panel"
+msgstr "GNOME panel és közösségi panel"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:166
+#: usr/share/layout-switcher/ui/page_panel_dock.py:55
+#: usr/share/layout-switcher/ui/page_panel_dock.py:254
+#: usr/share/layout-switcher/ui/page_panel_dock.py:257
+msgid "Dock"
+msgstr "Dock"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:166
+msgid "Community Dock surfaces"
+msgstr "Közösségi Dock felületek"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:169
+msgid "Layout menus"
+msgstr "Elrendezés-menük"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:170
+msgid "Application menus used by Classic, Hybrid and Desk-UX"
+msgstr "A Classic, Hybrid és Desk-UX által használt alkalmazásmenük"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:174
+msgid "Quick Settings"
+msgstr "Gyorsbeállítások"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:175
+msgid "System settings menu in the panel"
+msgstr "Rendszerbeállítások menü a panelban"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:179
+msgid "Calendar and notifications"
+msgstr "Naptár és értesítések"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:180
+msgid "Date, calendar and notification menu in the panel"
+msgstr "Dátum, naptár és értesítési menü a panelban"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:184
+msgid "System dialogs"
+msgstr "Rendszerpárbeszédablakok"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:185
+msgid "Power, restart and other GNOME Shell dialogs"
+msgstr "Energia, újraindítás és más GNOME Shell párbeszédablakok"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:189
+msgid "Overview"
+msgstr "Áttekintés"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:209
+msgid "Rendering mode"
+msgstr "Megjelenítési mód"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:210
+msgid "Automatic balances visual quality and power usage"
+msgstr ""
+"Az Automatikus egyensúlyt teremt a vizuális minőség és az energiafogyasztás "
+"között"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Automatic"
+msgstr "Automatikus"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Dynamic"
+msgstr "Dinamikus"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Static"
+msgstr "Statikus"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:228
+msgid "Behavior"
+msgstr "Viselkedés"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:229
+msgid "Application identifiers can be separated by commas."
+msgstr "Az alkalmazásazonosítók vesszővel elválaszthatók."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:231
+msgid "Application exceptions"
+msgstr "Alkalmazáskivételek"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+msgid "Keep blur"
+msgstr "Elmosás megtartása"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+msgid "Make opaque"
+msgstr "Átlátszatlanná tétel"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Disable blur"
+msgstr "Elmosás letiltása"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:239
+msgid "Maximized windows"
+msgstr "Maximalizált ablakok"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:242
+msgid "Fullscreen windows"
+msgstr "Teljes képernyős ablakok"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:246
+msgid "Power saving"
+msgstr "Energiatakarékosság"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:247
+msgid "Used on battery and with the power-saver profile"
+msgstr "Akkumulátoros üzemmódban és az energiatakarékos profilban használatos"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Keep selected mode"
+msgstr "Kiválasztott mód megtartása"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Use static blur"
+msgstr "Statikus elmosás használata"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:334
+msgid "Frosted glass enabled"
+msgstr "Opálüveg engedélyezve"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:339
+#, python-brace-format
+msgid "Could not enable Frosted Glass: {message}"
+msgstr "Az Opálüveg nem engedélyezhető: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "Felső közép"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "Alsó közép"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "Jobb felső"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "Bal felső"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "Bal alsó"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "Jobb alsó"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "Értesítések helye"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "Válaszd ki, hol jelenjenek meg az értesítési sávok."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "Értesítések megjelenítése它: {position}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:143
+#: usr/share/layout-switcher/ui/page_desktop.py:287
+msgid "Default"
+msgstr "Alapértelmezett"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:194
+#: usr/share/layout-switcher/ui/page_desktop.py:199
+#: usr/share/layout-switcher/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "Alkalmazásmenü"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "Elérhető a Classic, Desk-UX és Hybrid elrendezésekhez."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:200
+#: usr/share/layout-switcher/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "Közösségi menü használata alkalmazásmenüként"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "Menüstílus"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "Válassza ki a Közösségi menü megjelenését."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Super billentyű"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "Válassza ki, mi történjen a Super megnyomásakor"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "Menü megnyitása"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "Áttekintés megnyitása"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "A(z) {name} menüstílus használata"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "A Közösségi menü nincs telepítve"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "{position} értesítési pozíció alkalmazva"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "Az értesítési pozíció módosítása nem sikerült: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "Értesítési előnézet"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "Az értesítések itt jelennek meg."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "Alkalmazásmenü engedélyezve"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "Alkalmazásmenü letiltva"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "Nem sikerült módosítani az alkalmazásmenüt: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "{name} menüstílus alkalmazva"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "Nem sikerült módosítani a menüstílust: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "A Super billentyű megnyitja az alkalmazásmenüt"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "A Super billentyű megnyitja az áttekintést"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "Nem sikerült módosítani a Super billentyűt: {message}"
+
+#: usr/share/layout-switcher/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "Egyéb vizuális effektek"
+
+#: usr/share/layout-switcher/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "{name} effekt előnézete"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:20
+msgid "Always visible"
+msgstr "Mindig látható"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:21
+msgid "Always hidden (show at edge)"
+msgstr "Mindig rejtett (mutatás a szélénél)"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:22
+msgid "Intelligent hiding"
+msgstr "Intelligens elrejtés"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:25
+msgid "Dot"
+msgstr "Pont"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:26
+msgid "Hybrid line"
+msgstr "Hibrid vonal"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:27
+msgid "Desk UX line"
+msgstr "Desk UX vonal"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:56
+#: usr/share/layout-switcher/ui/page_panel_dock.py:259
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "A Community Dock megjelenésének és láthatóságának beállítása."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:62
+msgid "Dock transparency"
+msgstr "Dokk átlátszósága"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:65
+msgid "Dock visibility"
+msgstr "Dokk láthatósága"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:75
+#: usr/share/layout-switcher/ui/page_panel_dock.py:271
+msgid "Configure the system panel appearance and visibility."
+msgstr "Rendszerpanel megjelenésének és láthatóságának beállítása."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:81
+msgid "Panel transparency"
+msgstr "Panel átlátszósága"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:84
+msgid "Panel visibility"
+msgstr "Panel láthatósága"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:101
+msgid "Running app indicator"
+msgstr "Futó alkalmazás jelzője"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:105
+msgid "Choose the mark shown below running applications."
+msgstr "Válassza ki a futó alkalmazások alatt megjelenő jelet."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:142
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "A {style} jelző használata"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:222
+msgid "Choose how this component behaves on the desktop."
+msgstr "Válassza ki, hogyan viselkedjen ez az összetevő az asztalon."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:251
+msgid "Taskbar"
+msgstr "Tálca"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:252
+msgid "Configure running application indicators."
+msgstr "Futó alkalmazások jelzőinek beállítása."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:255
+msgid "Available when Community Dock is active."
+msgstr "Elérhető, ha a Community Dock aktív."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:263
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "Elérhető, ha a Community Dock vagy a Community Panel aktív."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:267
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "Community Panel megjelenésének és láthatóságának beállítása."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:321
+msgid "Dock visibility updated"
+msgstr "Dokk láthatósága frissítve"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:328
+msgid "Panel visibility updated"
+msgstr "Panel láthatósága frissítve"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:338
+msgid "Indicator style updated"
+msgstr "Jelző stílusa frissítve"
+
+#: usr/share/layout-switcher/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Kék"
+
+#: usr/share/layout-switcher/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Türkiz"
+
+#: usr/share/layout-switcher/ui/page_themes.py:22
+msgid "Green"
+msgstr "Zöld"
+
+#: usr/share/layout-switcher/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Sárga"
+
+#: usr/share/layout-switcher/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Narancssárga"
+
+#: usr/share/layout-switcher/ui/page_themes.py:25
+msgid "Red"
+msgstr "Piros"
+
+#: usr/share/layout-switcher/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Rózsaszín"
+
+#: usr/share/layout-switcher/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Lila"
+
+#: usr/share/layout-switcher/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Palaszürke"
+
+#: usr/share/layout-switcher/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/layout-switcher/ui/page_themes.py:108
+msgid "Colors"
+msgstr "Színek"
+
+#: usr/share/layout-switcher/ui/page_themes.py:165
+msgid "Accent color"
+msgstr "Kiemelő szín"
+
+#: usr/share/layout-switcher/ui/page_themes.py:174
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr ""
+"Válassza ki a gombokhoz, kijelölésekhez és kiemelésekhez használt színt."
+
+#: usr/share/layout-switcher/ui/page_themes.py:207
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color} kiemelési szín"
+
+#: usr/share/layout-switcher/ui/window.py:405
+#: usr/share/layout-switcher/ui/window.py:488
+msgid "Panel and Dock"
+msgstr "Panel és Dokk"

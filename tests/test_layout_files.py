@@ -119,13 +119,18 @@ def test_package_does_not_patch_external_kiwi_installations():
     assert not (REPO_ROOT / "usr/share/libalpm/hooks/zz-layout-switcher-kiwi.hook").exists()
 
 
-def test_desktop_icons_are_a_global_preference_not_owned_by_layouts():
+def test_desktop_icon_activation_defaults_are_owned_by_layouts():
+    enabled_by_default = {"classic.txt", "hybrid.txt"}
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         text = layout_file.read_text()
         enabled, disabled = _shell_extension_lists(text)
 
-        assert GTK4_DING_UUID not in enabled
-        assert GTK4_DING_UUID not in disabled
+        if layout_file.name in enabled_by_default:
+            assert GTK4_DING_UUID in enabled
+            assert GTK4_DING_UUID not in disabled
+        else:
+            assert GTK4_DING_UUID not in enabled
+            assert GTK4_DING_UUID in disabled
         assert "[org/gnome/shell/extensions/gtk4-ding]" not in text
 
 

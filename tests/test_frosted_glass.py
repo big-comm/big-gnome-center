@@ -67,6 +67,15 @@ def test_schema_covers_requested_surfaces_and_rules():
     } <= keys
 
 
+def test_overview_material_defaults_and_range():
+    schema = ET.parse(SCHEMA).getroot().find("schema")
+    keys = {node.attrib["name"]: node for node in schema.findall("key")}
+
+    assert keys["blur-strength"].findtext("default") == "23"
+    assert keys["glass-opacity"].findtext("default") == "82"
+    assert keys["glass-opacity"].find("range").attrib == {"min": "0", "max": "100"}
+
+
 def test_automatic_mode_uses_live_background_blur():
     extension = (EXTENSION / "extension.js").read_text()
 
@@ -321,6 +330,7 @@ def test_glass_material_tracks_light_and_dark_color_scheme():
     assert "Main.extensionManager.lookup(COMMUNITY_MENU_UUID)?.state" in extension
     assert "lightMode = appLightMode && communityMenuActive" in extension
     assert "brightness: lightMode ? 1.0 : 0.9" in extension
+    assert "tintOpacity: 0.60 * opacityPercent / 100" in extension
     assert "const LIGHT_STYLE_CLASS = 'frosted-glass-light'" in surface
     assert "config.lightMode ? '247, 248, 252'" in surface
     assert "config.lightMode ? '247, 248, 252'" in overview
@@ -386,10 +396,18 @@ def test_overview_folder_tiles_reuse_the_blurred_backdrop():
 
 
 def test_overview_controls_reuse_the_blurred_backdrop():
+    controller = (EXTENSION / "overviewController.js").read_text()
     stylesheet = (EXTENSION / "stylesheet.css").read_text()
 
+    assert "container.set_child_above_sibling(tint, null)" in controller
+    assert "actor.set_child_above_sibling(record.tint, null)" in controller
     assert ".frosted-glass-overview .search-entry" in stylesheet
     assert ".frosted-glass-overview .workspace-thumbnail" in stylesheet
+    assert ".frosted-glass-overview .search-section-content" in stylesheet
+    assert ".frosted-glass-overview .overview-tile:focus" in stylesheet
+    assert ".frosted-glass-overview .overview-tile:checked" in stylesheet
+    assert ".frosted-glass-overview .grid-search-result:focus" in stylesheet
+    assert "background-color: rgba(24, 25, 31, 0.28) !important" in stylesheet
     assert "background-color: rgba(200, 200, 200, 0.20) !important" in stylesheet
     assert "border-color: transparent !important" in stylesheet
     assert "box-shadow: none !important" in stylesheet

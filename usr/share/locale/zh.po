@@ -3,161 +3,154 @@ msgid ""
 msgstr ""
 "Project-Id-Version: layout-switcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-30 19:34-0300\n"
-"PO-Revision-Date: 2026-04-22 14:44\n"
+"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"PO-Revision-Date: 2026-08-20 22:33-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Chinese <zh@li.org>\n"
 "Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:136
+#: usr/share/layout-switcher/constants.py:149
 msgid "Desktop Cube"
 msgstr "桌面立方体"
 
-#: usr/share/layout-switcher/constants.py:137
+#: usr/share/layout-switcher/constants.py:150
 msgid "Rotate workspaces on a 3D cube"
 msgstr "在3D立方体上旋转工作区"
 
-#: usr/share/layout-switcher/constants.py:147
+#: usr/share/layout-switcher/constants.py:160
 msgid "Magic Lamp"
 msgstr "魔法灯"
 
-#: usr/share/layout-switcher/constants.py:148
+#: usr/share/layout-switcher/constants.py:161
 msgid "Genie effect when minimizing windows"
 msgstr "最小化窗口时的精灵效果"
 
-#: usr/share/layout-switcher/constants.py:158
+#: usr/share/layout-switcher/constants.py:171
 msgid "Compiz Windows"
 msgstr "Compiz窗口"
 
-#: usr/share/layout-switcher/constants.py:159
+#: usr/share/layout-switcher/constants.py:172
 msgid "Wobbly windows and extra animations"
 msgstr "弹性窗口与额外动画"
 
-#: usr/share/layout-switcher/constants.py:169
-msgid "Desktop Icons NG"
-msgstr "桌面图标NG"
-
-#: usr/share/layout-switcher/constants.py:170
-msgid "Files and folders on your desktop"
-msgstr "桌面上的文件和文件夹"
-
-#: usr/share/layout-switcher/constants.py:196
+#: usr/share/layout-switcher/constants.py:199
 msgid "Default Big Gnome layout"
 msgstr "默认 Big Gnome 布局"
 
-#: usr/share/layout-switcher/constants.py:203
+#: usr/share/layout-switcher/constants.py:206
 msgid "Clean and contemporary desktop"
 msgstr "简洁现代的桌面"
 
-#: usr/share/layout-switcher/constants.py:210
+#: usr/share/layout-switcher/constants.py:213
 msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
 msgstr "居中停靠任务栏，Windows 11 / Deepin / Pop!_OS 风格"
 
-#: usr/share/layout-switcher/constants.py:217
+#: usr/share/layout-switcher/constants.py:220
 msgid "Unity-style layout with left dock and top bar"
 msgstr "Unity 风格布局，左侧停靠栏和顶部栏"
 
-#: usr/share/layout-switcher/constants.py:224
+#: usr/share/layout-switcher/constants.py:227
 msgid "Traditional desktop with taskbar and system tray"
 msgstr "传统桌面，带任务栏和系统托盘"
 
-#: usr/share/layout-switcher/constants.py:231
+#: usr/share/layout-switcher/constants.py:234
 msgid "Near-vanilla GNOME with minimal distro tweaks"
 msgstr "接近原生 GNOME，带最小发行版调整"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:63
+#: usr/share/layout-switcher/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "备份"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:78
+#: usr/share/layout-switcher/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "立即创建备份"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:80
+#: usr/share/layout-switcher/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "快照当前 dconf 设置"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:93
+#: usr/share/layout-switcher/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "还没有备份"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:95
+#: usr/share/layout-switcher/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr "每次应用布局时都会自动创建备份。"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:148
+#: usr/share/layout-switcher/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "最新"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:153
+#: usr/share/layout-switcher/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "恢复此备份"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:161
+#: usr/share/layout-switcher/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "删除此备份"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:184
+#: usr/share/layout-switcher/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "备份已创建"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:187
-#: usr/share/layout-switcher/ui/page_layouts.py:255
+#: usr/share/layout-switcher/ui/dialog_backups.py:188
+#: usr/share/layout-switcher/ui/page_layouts.py:265
 msgid "Backup failed"
 msgstr "备份失败"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:192
+#: usr/share/layout-switcher/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "要恢复此备份吗？"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:194
+#: usr/share/layout-switcher/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
 msgstr "所有当前的 dconf 设置都将被 {ts} 的快照覆盖。"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:197
-#: usr/share/layout-switcher/ui/dialog_backups.py:230
-#: usr/share/layout-switcher/ui/page_effects.py:274
-#: usr/share/layout-switcher/ui/page_effects.py:318
-#: usr/share/layout-switcher/ui/page_extensions.py:384
-#: usr/share/layout-switcher/ui/page_extensions.py:427
-#: usr/share/layout-switcher/ui/page_extensions.py:834
+#: usr/share/layout-switcher/ui/dialog_backups.py:198
+#: usr/share/layout-switcher/ui/dialog_backups.py:231
+#: usr/share/layout-switcher/ui/page_effects.py:293
+#: usr/share/layout-switcher/ui/page_effects.py:337
+#: usr/share/layout-switcher/ui/page_extensions.py:402
+#: usr/share/layout-switcher/ui/page_extensions.py:445
+#: usr/share/layout-switcher/ui/page_extensions.py:905
 #: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:231
-#: usr/share/layout-switcher/ui/page_layouts.py:243
-#: usr/share/layout-switcher/ui/page_themes.py:423
+#: usr/share/layout-switcher/ui/page_layouts.py:241
+#: usr/share/layout-switcher/ui/page_layouts.py:253
 msgid "Cancel"
 msgstr "取消"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
+#: usr/share/layout-switcher/ui/dialog_backups.py:199
 msgid "Restore"
 msgstr "恢复"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:218
+#: usr/share/layout-switcher/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "备份已恢复"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:222
+#: usr/share/layout-switcher/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "恢复失败"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:227
+#: usr/share/layout-switcher/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "删除此备份？"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
+#: usr/share/layout-switcher/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "删除"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:251
+#: usr/share/layout-switcher/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "备份已删除"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:254
+#: usr/share/layout-switcher/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "删除失败"
 
@@ -207,6 +200,7 @@ msgid "Loading…"
 msgstr "加载中…"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:166
+#: usr/share/layout-switcher/ui/page_extensions.py:621
 msgid "No results"
 msgstr "无结果"
 
@@ -239,7 +233,6 @@ msgid "Next page"
 msgstr "下一页"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:238
-#: usr/share/layout-switcher/ui/page_themes.py:130
 msgid "Shell"
 msgstr "Shell"
 
@@ -250,8 +243,8 @@ msgstr "第 {p} 页，共 {t} 页"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:345
 #: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:165
-#: usr/share/layout-switcher/ui/page_extensions.py:262
+#: usr/share/layout-switcher/ui/page_effects.py:184
+#: usr/share/layout-switcher/ui/page_extensions.py:280
 #, python-brace-format
 msgid "by {author}"
 msgstr "由 {author}"
@@ -265,8 +258,8 @@ msgid "View extension details"
 msgstr "查看扩展详情"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:65
-#: usr/share/layout-switcher/ui/page_extensions.py:548
+#: usr/share/layout-switcher/ui/page_extensions.py:83
+#: usr/share/layout-switcher/ui/page_extensions.py:574
 #: usr/share/layout-switcher/ui/page_fonts.py:487
 #: usr/share/layout-switcher/ui/page_fonts.py:529
 msgid "Installed"
@@ -275,10 +268,10 @@ msgstr "已安装"
 #: usr/share/layout-switcher/ui/ext_browse_view.py:375
 #: usr/share/layout-switcher/ui/ext_detail_view.py:64
 #: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:219
-#: usr/share/layout-switcher/ui/page_effects.py:275
-#: usr/share/layout-switcher/ui/page_extensions.py:323
-#: usr/share/layout-switcher/ui/page_extensions.py:385
+#: usr/share/layout-switcher/ui/page_effects.py:238
+#: usr/share/layout-switcher/ui/page_effects.py:294
+#: usr/share/layout-switcher/ui/page_extensions.py:341
+#: usr/share/layout-switcher/ui/page_extensions.py:403
 #: usr/share/layout-switcher/ui/page_fonts.py:490
 #: usr/share/layout-switcher/ui/page_fonts.py:493
 #: usr/share/layout-switcher/ui/page_fonts.py:534
@@ -287,15 +280,15 @@ msgstr "安装"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:412
 #: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:296
-#: usr/share/layout-switcher/ui/page_extensions.py:405
+#: usr/share/layout-switcher/ui/page_effects.py:315
+#: usr/share/layout-switcher/ui/page_extensions.py:423
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr "{name} 已安装并启用。重启会话以使用它。"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:411
+#: usr/share/layout-switcher/ui/page_effects.py:321
+#: usr/share/layout-switcher/ui/page_extensions.py:429
 msgid "Install failed"
 msgstr "安装失败"
 
@@ -341,8 +334,8 @@ msgid "Homepage"
 msgstr "主页"
 
 #: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:236
-#: usr/share/layout-switcher/ui/page_extensions.py:340
+#: usr/share/layout-switcher/ui/page_effects.py:255
+#: usr/share/layout-switcher/ui/page_extensions.py:358
 msgid "View on GNOME Extensions"
 msgstr "在 GNOME 扩展网站查看"
 
@@ -352,9 +345,9 @@ msgid "License: {lic}"
 msgstr "许可证：{lic}"
 
 #: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:568
-#: usr/share/layout-switcher/ui/page_extensions.py:655
-#: usr/share/layout-switcher/ui/page_extensions.py:666
+#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/layout-switcher/ui/page_extensions.py:719
+#: usr/share/layout-switcher/ui/page_extensions.py:730
 msgid "Update"
 msgstr "更新"
 
@@ -375,237 +368,235 @@ msgstr "{name} 已更新"
 msgid "Operation failed"
 msgstr "操作失败"
 
-#: usr/share/layout-switcher/ui/page_effects.py:44
-msgid "Visual effects for your GNOME desktop"
-msgstr "为您的 GNOME 桌面提供视觉效果"
-
-#: usr/share/layout-switcher/ui/page_effects.py:107
-#: usr/share/layout-switcher/ui/page_extensions.py:207
+#: usr/share/layout-switcher/ui/page_effects.py:114
+#: usr/share/layout-switcher/ui/page_extensions.py:225
 msgid "System extension"
 msgstr "系统扩展"
 
-#: usr/share/layout-switcher/ui/page_effects.py:124
+#: usr/share/layout-switcher/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name}（已启用）"
 
-#: usr/share/layout-switcher/ui/page_effects.py:126
+#: usr/share/layout-switcher/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name}（已禁用）"
 
-#: usr/share/layout-switcher/ui/page_effects.py:128
+#: usr/share/layout-switcher/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name}（未安装）"
 
-#: usr/share/layout-switcher/ui/page_effects.py:176
-#: usr/share/layout-switcher/ui/page_extensions.py:277
+#: usr/share/layout-switcher/ui/page_effects.py:195
+#: usr/share/layout-switcher/ui/page_extensions.py:295
 msgid "On"
 msgstr "开启"
 
-#: usr/share/layout-switcher/ui/page_effects.py:176
-#: usr/share/layout-switcher/ui/page_extensions.py:277
+#: usr/share/layout-switcher/ui/page_effects.py:195
+#: usr/share/layout-switcher/ui/page_extensions.py:295
 msgid "Off"
 msgstr "关闭"
 
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:285
-#: usr/share/layout-switcher/ui/page_extensions.py:694
+#: usr/share/layout-switcher/ui/page_effects.py:203
+#: usr/share/layout-switcher/ui/page_extensions.py:303
+#: usr/share/layout-switcher/ui/page_extensions.py:763
 msgid "Toggle"
 msgstr "切换"
 
-#: usr/share/layout-switcher/ui/page_effects.py:192
-#: usr/share/layout-switcher/ui/page_effects.py:196
-#: usr/share/layout-switcher/ui/page_effects.py:319
-#: usr/share/layout-switcher/ui/page_extensions.py:295
-#: usr/share/layout-switcher/ui/page_extensions.py:299
-#: usr/share/layout-switcher/ui/page_extensions.py:428
-#: usr/share/layout-switcher/ui/page_extensions.py:730
-#: usr/share/layout-switcher/ui/page_extensions.py:731
+#: usr/share/layout-switcher/ui/page_effects.py:211
+#: usr/share/layout-switcher/ui/page_effects.py:215
+#: usr/share/layout-switcher/ui/page_effects.py:338
+#: usr/share/layout-switcher/ui/page_extensions.py:313
+#: usr/share/layout-switcher/ui/page_extensions.py:317
+#: usr/share/layout-switcher/ui/page_extensions.py:446
+#: usr/share/layout-switcher/ui/page_extensions.py:801
+#: usr/share/layout-switcher/ui/page_extensions.py:802
 msgid "Remove"
 msgstr "移除"
 
-#: usr/share/layout-switcher/ui/page_effects.py:204
-#: usr/share/layout-switcher/ui/page_extensions.py:307
-#: usr/share/layout-switcher/ui/page_extensions.py:680
-#: usr/share/layout-switcher/ui/page_extensions.py:684
+#: usr/share/layout-switcher/ui/page_effects.py:223
+#: usr/share/layout-switcher/ui/page_extensions.py:325
+#: usr/share/layout-switcher/ui/page_extensions.py:744
+#: usr/share/layout-switcher/ui/page_extensions.py:748
 msgid "Settings"
 msgstr "设置"
 
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_extensions.py:235
-#: usr/share/layout-switcher/ui/page_extensions.py:319
+#: usr/share/layout-switcher/ui/page_effects.py:234
+#: usr/share/layout-switcher/ui/page_extensions.py:253
+#: usr/share/layout-switcher/ui/page_extensions.py:337
 msgid "Not installed"
 msgstr "未安装"
 
-#: usr/share/layout-switcher/ui/page_effects.py:260
-#: usr/share/layout-switcher/ui/page_extensions.py:231
-#: usr/share/layout-switcher/ui/page_extensions.py:370
-#: usr/share/layout-switcher/ui/page_extensions.py:562
+#: usr/share/layout-switcher/ui/page_effects.py:279
+#: usr/share/layout-switcher/ui/page_extensions.py:249
+#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/layout-switcher/ui/page_extensions.py:614
 msgid "enabled"
 msgstr "已启用"
 
-#: usr/share/layout-switcher/ui/page_effects.py:260
-#: usr/share/layout-switcher/ui/page_extensions.py:233
-#: usr/share/layout-switcher/ui/page_extensions.py:370
+#: usr/share/layout-switcher/ui/page_effects.py:279
+#: usr/share/layout-switcher/ui/page_extensions.py:251
+#: usr/share/layout-switcher/ui/page_extensions.py:388
 msgid "disabled"
 msgstr "已禁用"
 
-#: usr/share/layout-switcher/ui/page_effects.py:264
-#: usr/share/layout-switcher/ui/page_extensions.py:374
-#: usr/share/layout-switcher/ui/page_extensions.py:707
-#: usr/share/layout-switcher/ui/page_extensions.py:858
-#: usr/share/layout-switcher/ui/page_layouts.py:395
-#: usr/share/layout-switcher/ui/page_layouts.py:438
-#: usr/share/layout-switcher/ui/page_themes.py:413
+#: usr/share/layout-switcher/ui/page_effects.py:283
+#: usr/share/layout-switcher/ui/page_extensions.py:392
+#: usr/share/layout-switcher/ui/page_extensions.py:777
+#: usr/share/layout-switcher/ui/page_extensions.py:929
+#: usr/share/layout-switcher/ui/page_layouts.py:429
+#: usr/share/layout-switcher/ui/page_layouts.py:473
+#: usr/share/layout-switcher/ui/page_themes.py:332
+#: usr/share/layout-switcher/ui/page_themes.py:343
 msgid "Error"
 msgstr "错误"
 
-#: usr/share/layout-switcher/ui/page_effects.py:271
+#: usr/share/layout-switcher/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "安装效果？"
 
-#: usr/share/layout-switcher/ui/page_effects.py:272
-#: usr/share/layout-switcher/ui/page_extensions.py:382
+#: usr/share/layout-switcher/ui/page_effects.py:291
+#: usr/share/layout-switcher/ui/page_extensions.py:400
 msgid "Will try to install automatically."
 msgstr "将尝试自动安装。"
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:391
+#: usr/share/layout-switcher/ui/page_effects.py:302
+#: usr/share/layout-switcher/ui/page_extensions.py:409
 #: usr/share/layout-switcher/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "正在安装…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:311
-#: usr/share/layout-switcher/ui/page_extensions.py:420
+#: usr/share/layout-switcher/ui/page_effects.py:330
+#: usr/share/layout-switcher/ui/page_extensions.py:438
 msgid "System extension — cannot remove"
 msgstr "系统扩展 — 无法移除"
 
-#: usr/share/layout-switcher/ui/page_effects.py:315
+#: usr/share/layout-switcher/ui/page_effects.py:334
 msgid "Remove effect?"
 msgstr "移除效果？"
 
-#: usr/share/layout-switcher/ui/page_effects.py:316
-#: usr/share/layout-switcher/ui/page_extensions.py:425
+#: usr/share/layout-switcher/ui/page_effects.py:335
+#: usr/share/layout-switcher/ui/page_extensions.py:443
 msgid "This cannot be undone."
 msgstr "此操作无法撤销。"
 
-#: usr/share/layout-switcher/ui/page_effects.py:331
-#: usr/share/layout-switcher/ui/page_extensions.py:440
+#: usr/share/layout-switcher/ui/page_effects.py:350
+#: usr/share/layout-switcher/ui/page_extensions.py:458
 msgid "removed"
 msgstr "已移除"
 
-#: usr/share/layout-switcher/ui/page_effects.py:333
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/layout-switcher/ui/page_effects.py:352
+#: usr/share/layout-switcher/ui/page_extensions.py:460
 msgid "Remove failed"
 msgstr "移除失败"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:63
+#: usr/share/layout-switcher/ui/page_extensions.py:81
 msgid "Featured"
 msgstr "精选"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-#: usr/share/layout-switcher/ui/page_extensions.py:113
+#: usr/share/layout-switcher/ui/page_extensions.py:82
+#: usr/share/layout-switcher/ui/page_extensions.py:131
 msgid "Browse"
 msgstr "浏览"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:219
+#: usr/share/layout-switcher/ui/page_extensions.py:237
 msgid "Update available"
 msgstr "有可用更新"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:381
+#: usr/share/layout-switcher/ui/page_extensions.py:399
 msgid "Install extension?"
 msgstr "安装扩展？"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:424
+#: usr/share/layout-switcher/ui/page_extensions.py:442
 msgid "Remove extension?"
 msgstr "移除扩展？"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:490
-#: usr/share/layout-switcher/ui/page_extensions.py:568
+#: usr/share/layout-switcher/extension_update_monitor.py:245
+#: usr/share/layout-switcher/ui/page_extensions.py:522
+#: usr/share/layout-switcher/ui/page_extensions.py:579
 msgid "Update all"
 msgstr "全部更新"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:498
+#: usr/share/layout-switcher/ui/page_extensions.py:530
 msgid "Open GNOME Extensions"
 msgstr "打开 GNOME 扩展"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:554
+#: usr/share/layout-switcher/ui/page_extensions.py:598
 msgid "No extensions installed"
 msgstr "未安装任何扩展"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:562
+#: usr/share/layout-switcher/ui/page_extensions.py:614
 msgid "installed"
 msgstr "已安装"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:564
+#: usr/share/layout-switcher/ui/page_extensions.py:616
 msgid "update available"
 msgstr "有可用更新"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:576
+#: usr/share/layout-switcher/ui/page_extensions.py:632
 msgid "Enabled"
 msgstr "已启用"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:577
+#: usr/share/layout-switcher/ui/page_extensions.py:633
 msgid "Disabled"
 msgstr "已禁用"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:660
+#: usr/share/layout-switcher/ui/page_extensions.py:724
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "从 v{old} 更新至 v{new}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/layout-switcher/ui/page_extensions.py:795
 msgid ""
 "This extension cannot be removed here because it was installed by the "
 "system."
 msgstr "此扩展程序无法在此处移除，因为它由系统安装。"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:772
+#: usr/share/layout-switcher/ui/page_extensions.py:843
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} 已更新至 v{ver}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:777
+#: usr/share/layout-switcher/ui/page_extensions.py:848
 #: usr/share/layout-switcher/ui/page_fonts.py:147
 #: usr/share/layout-switcher/ui/page_fonts.py:216
 #: usr/share/layout-switcher/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "更新失败"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:801
+#: usr/share/layout-switcher/ui/page_extensions.py:872
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "已更新 {n} 个扩展"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:806
+#: usr/share/layout-switcher/ui/page_extensions.py:877
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "已更新 {n}/{t}；失败：{f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:817
-#: usr/share/layout-switcher/ui/page_extensions.py:835
+#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/layout-switcher/ui/page_extensions.py:906
 msgid "Disable All"
 msgstr "全部禁用"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:817
+#: usr/share/layout-switcher/ui/page_extensions.py:888
 msgid "Enable All"
 msgstr "启用全部"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:831
+#: usr/share/layout-switcher/ui/page_extensions.py:902
 msgid "Disable all extensions?"
 msgstr "要禁用所有扩展吗？"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:832
+#: usr/share/layout-switcher/ui/page_extensions.py:903
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr "所有扩展将被禁用。您可以稍后重新启用它们。"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:852
+#: usr/share/layout-switcher/ui/page_extensions.py:923
 msgid "All extensions disabled"
 msgstr "所有扩展已禁用"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:852
+#: usr/share/layout-switcher/ui/page_extensions.py:923
 msgid "All extensions enabled"
 msgstr "所有扩展已启用"
 
@@ -823,320 +814,885 @@ msgstr "正在重新加载组件…"
 msgid "Layout status"
 msgstr "布局状态"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:141
+#: usr/share/layout-switcher/ui/page_layouts.py:152
 msgid "Contains your saved customizations"
 msgstr "包含您保存的自定义设置"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:145
+#: usr/share/layout-switcher/ui/page_layouts.py:156
 msgid "Modified"
 msgstr "已修改"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:159
-#: usr/share/layout-switcher/ui/page_layouts.py:206
-#: usr/share/layout-switcher/ui/page_themes.py:306
-#: usr/share/layout-switcher/ui/page_themes.py:360
+#: usr/share/layout-switcher/ui/page_layouts.py:170
+#: usr/share/layout-switcher/ui/page_layouts.py:219
+#: usr/share/layout-switcher/ui/page_themes.py:318
 msgid "Active"
 msgstr "活跃"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:177
-#: usr/share/layout-switcher/ui/page_layouts.py:204
+#: usr/share/layout-switcher/ui/page_layouts.py:190
+#: usr/share/layout-switcher/ui/page_layouts.py:217
 msgid "Coming soon"
 msgstr "即将推出"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:215
-msgid "This layout is already active"
-msgstr "此布局已处于激活状态"
-
-#: usr/share/layout-switcher/ui/page_layouts.py:227
+#: usr/share/layout-switcher/ui/page_layouts.py:237
 msgid ""
 "You have previously modified this layout. Apply the original system default "
 "or resume your changes?"
 msgstr "你之前修改过此布局。要应用原始系统默认设置，还是继续使用你的更改？"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:232
+#: usr/share/layout-switcher/ui/page_layouts.py:242
 msgid "Resume my changes"
 msgstr "继续我的更改"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:233
+#: usr/share/layout-switcher/ui/page_layouts.py:243
 msgid "Apply original"
 msgstr "应用原始设置"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:239
+#: usr/share/layout-switcher/ui/page_layouts.py:249
 msgid ""
 "Apply this layout? A backup of your current configuration will be created "
 "automatically."
 msgstr "应用此布局？系统会自动创建当前配置的备份。"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:244
+#: usr/share/layout-switcher/ui/page_layouts.py:254
 msgid "Apply"
 msgstr "应用"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:274
-#: usr/share/layout-switcher/ui/page_layouts.py:276
+#: usr/share/layout-switcher/ui/page_layouts.py:295
 msgid "Applying"
 msgstr "应用中"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:307
+#: usr/share/layout-switcher/ui/page_layouts.py:325
 msgid "Snapshot not found"
 msgstr "快照未找到"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:329
+#: usr/share/layout-switcher/ui/page_layouts.py:353
 msgid "Layout file not found"
 msgstr "布局文件未找到"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:358
-#: usr/share/layout-switcher/ui/page_layouts.py:366
-#: usr/share/layout-switcher/ui/page_layouts.py:375
+#: usr/share/layout-switcher/ui/page_layouts.py:392
+#: usr/share/layout-switcher/ui/page_layouts.py:400
+#: usr/share/layout-switcher/ui/page_layouts.py:409
 msgid "applied"
 msgstr "已应用"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:368
+#: usr/share/layout-switcher/ui/page_layouts.py:402
 msgid "Undo"
 msgstr "撤销"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:385
+#: usr/share/layout-switcher/ui/page_layouts.py:419
 msgid "Restart the session for the 100% clean state"
 msgstr "重新启动会话以获得完全干净的状态"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:388
+#: usr/share/layout-switcher/ui/page_layouts.py:422
 msgid "Restart now"
 msgstr "立即重新启动"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:412
+#: usr/share/layout-switcher/ui/page_layouts.py:446
 msgid "Cannot restart session"
 msgstr "无法重新启动会话"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
-#: usr/share/layout-switcher/ui/page_layouts.py:421
+#: usr/share/layout-switcher/ui/page_layouts.py:453
+#: usr/share/layout-switcher/ui/page_layouts.py:455
 msgid "Restoring previous layout…"
 msgstr "正在恢复上一个布局…"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:449
+#: usr/share/layout-switcher/ui/page_layouts.py:485
 msgid "Layout restored"
 msgstr "布局已恢复"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:451
+#: usr/share/layout-switcher/ui/page_layouts.py:487
 msgid "Previous layout restored"
 msgstr "已恢复上一个布局"
 
-#: usr/share/layout-switcher/ui/page_themes.py:94
+#: usr/share/layout-switcher/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "筛选主题…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "GTK"
-msgstr "GTK"
-
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "Applications"
-msgstr "应用程序"
-
-#: usr/share/layout-switcher/ui/page_themes.py:130
+#: usr/share/layout-switcher/ui/page_themes.py:109
 msgid "Icons"
 msgstr "图标"
 
-#: usr/share/layout-switcher/ui/page_themes.py:210
+#: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "未找到主题"
 
-#: usr/share/layout-switcher/ui/page_themes.py:211
+#: usr/share/layout-switcher/ui/page_themes.py:241
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "将主题安装到 ~/.themes 或 /usr/share/themes"
 
-#: usr/share/layout-switcher/ui/page_themes.py:218
+#: usr/share/layout-switcher/ui/page_themes.py:247
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "{n} 个可用主题"
 
-#: usr/share/layout-switcher/ui/page_themes.py:304
-#: usr/share/layout-switcher/ui/page_themes.py:358
+#: usr/share/layout-switcher/ui/page_themes.py:316
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} 个主题"
 
-#: usr/share/layout-switcher/ui/page_themes.py:420
-msgid "User Themes required"
-msgstr "需要启用用户主题"
-
-#: usr/share/layout-switcher/ui/page_themes.py:421
-msgid "Install and enable the User Themes extension to apply shell themes."
-msgstr "安装并启用 User Themes 扩展以应用 shell 主题。"
-
-#: usr/share/layout-switcher/ui/page_themes.py:424
-msgid "Open Extensions Page"
-msgstr "打开扩展页面"
-
-#: usr/share/layout-switcher/ui/window.py:66
-#: usr/share/layout-switcher/ui/window.py:323
+#: usr/share/layout-switcher/ui/window.py:71
+#: usr/share/layout-switcher/ui/window.py:377
 msgid "Layout Switcher"
 msgstr "Layout Switcher"
 
-#: usr/share/layout-switcher/ui/window.py:190
-#: usr/share/layout-switcher/ui/window.py:191
+#: usr/share/layout-switcher/ui/window.py:229
+#: usr/share/layout-switcher/ui/window.py:230
 msgid "Show Sidebar"
 msgstr "显示侧边栏"
 
-#: usr/share/layout-switcher/ui/window.py:197
-#: usr/share/layout-switcher/ui/window.py:347
-#: usr/share/layout-switcher/ui/window.py:422
+#: usr/share/layout-switcher/ui/window.py:236
+#: usr/share/layout-switcher/ui/window.py:401
+#: usr/share/layout-switcher/ui/window.py:484
 msgid "Layouts"
 msgstr "布局"
 
-#: usr/share/layout-switcher/ui/window.py:203
+#: usr/share/layout-switcher/ui/window.py:242
 msgid "Menu"
 msgstr "菜单"
 
-#: usr/share/layout-switcher/ui/window.py:204
+#: usr/share/layout-switcher/ui/window.py:243
 msgid "Main menu"
 msgstr "主菜单"
 
-#: usr/share/layout-switcher/ui/window.py:208
+#: usr/share/layout-switcher/ui/window.py:247
 msgid "Check for updates"
 msgstr "检查更新"
 
-#: usr/share/layout-switcher/ui/window.py:209
+#: usr/share/layout-switcher/ui/window.py:248
 msgid "Auto-update extensions"
 msgstr "自动更新扩展"
 
-#: usr/share/layout-switcher/ui/window.py:211
+#: usr/share/layout-switcher/ui/window.py:250
 msgid "Backups…"
 msgstr "备份…"
 
-#: usr/share/layout-switcher/ui/window.py:212
+#: usr/share/layout-switcher/ui/window.py:251
 msgid "About"
 msgstr "关于"
 
-#: usr/share/layout-switcher/ui/window.py:221
+#: usr/share/layout-switcher/ui/window.py:260
 msgid "Welcome! Choose a desktop layout below to get started."
 msgstr "欢迎！请选择下面的桌面布局开始使用。"
 
-#: usr/share/layout-switcher/ui/window.py:222
+#: usr/share/layout-switcher/ui/window.py:261
 msgid "Got it"
 msgstr "明白了"
 
-#: usr/share/layout-switcher/ui/window.py:348
-#: usr/share/layout-switcher/ui/window.py:423
+#: usr/share/layout-switcher/ui/window.py:402
+#: usr/share/layout-switcher/ui/window.py:485
 msgid "Fonts"
 msgstr "字体"
 
-#: usr/share/layout-switcher/ui/window.py:349
-#: usr/share/layout-switcher/ui/window.py:424
+#: usr/share/layout-switcher/ui/window.py:403
+#: usr/share/layout-switcher/ui/window.py:486
 msgid "Themes"
 msgstr "主题"
 
-#: usr/share/layout-switcher/ui/window.py:350
-#: usr/share/layout-switcher/ui/window.py:425
+#: usr/share/layout-switcher/ui/window.py:406
+#: usr/share/layout-switcher/ui/window.py:489
 msgid "Effects"
 msgstr "效果"
 
-#: usr/share/layout-switcher/ui/window.py:351
-#: usr/share/layout-switcher/ui/window.py:426
+#: usr/share/layout-switcher/ui/page_extensions.py:494
+#: usr/share/layout-switcher/ui/page_extensions.py:502
+#: usr/share/layout-switcher/ui/window.py:407
+#: usr/share/layout-switcher/ui/window.py:490
 msgid "Extensions"
 msgstr "扩展"
 
-#: usr/share/layout-switcher/ui/window.py:461
+#: usr/share/layout-switcher/ui/window.py:528
 msgid "Community Layout Switcher"
 msgstr "Community Layout Switcher"
 
-#: usr/share/layout-switcher/ui/window.py:466
+#: usr/share/layout-switcher/ui/window.py:533
 msgid "Layouts, effects and themes for your GNOME desktop."
 msgstr "为您的 GNOME 桌面提供布局、效果和主题。"
 
-#: usr/share/layout-switcher/ui/window.py:512
+#: usr/share/layout-switcher/ui/window.py:599
 msgid "Applying…"
 msgstr "应用中…"
 
-#: usr/share/layout-switcher/ui/window.py:585
+#: usr/share/layout-switcher/ui/window.py:706
 msgid "All extensions up to date"
 msgstr "所有扩展已是最新"
 
-#: usr/share/layout-switcher/ui/window.py:600
+#: usr/share/layout-switcher/ui/window.py:721
 #, python-brace-format
 msgid "Auto-updated {n} extensions"
 msgstr "已自动更新 {n} 个扩展"
 
-#: usr/share/layout-switcher/ui/window.py:605
+#: usr/share/layout-switcher/ui/window.py:726
 #, python-brace-format
 msgid "{n} update(s) available"
 msgstr "{n} 个可用更新"
 
-#: usr/share/layout-switcher/ui/window.py:612
+#: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update enabled"
 msgstr "已启用自动更新"
 
-#: usr/share/layout-switcher/ui/window.py:612
+#: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update disabled"
 msgstr "已禁用自动更新"
 
-#~ msgid "System fonts"
-#~ msgstr "系统字体"
+#: usr/share/layout-switcher/extension_update_monitor.py:238
+msgid "Extension updates available"
+msgstr "扩展更新可用"
 
-#~ msgid "Fonts used by the GNOME interface"
-#~ msgstr "GNOME 界面使用的字体"
+#: usr/share/layout-switcher/extension_update_monitor.py:239
+#, python-brace-format
+msgid "Available updates: {names}"
+msgstr "可用更新：{names}"
 
-#~ msgid "Window titles (legacy)"
-#~ msgstr "窗口标题（传统）"
+#: usr/share/layout-switcher/extension_update_monitor.py:243
+#: usr/share/layout-switcher/extension_update_monitor.py:244
+#: usr/share/layout-switcher/extension_update_monitor.py:336
+#: usr/share/layout-switcher/extension_update_monitor.py:337
+msgid "View updates"
+msgstr "查看更新"
 
-#~ msgid "Choose…"
-#~ msgstr "选择…"
+#: usr/share/layout-switcher/extension_update_monitor.py:306
+msgid "Extension updates installed"
+msgstr "扩展更新已安装"
 
-#~ msgid "Appearance"
-#~ msgstr "外观"
+#: usr/share/layout-switcher/extension_update_monitor.py:307
+#: usr/share/layout-switcher/extension_update_monitor.py:322
+#, python-brace-format
+msgid "Updated: {names}"
+msgstr "已更新：{names}"
 
-#~ msgid "How fonts are rendered on screen"
-#~ msgstr "字体在屏幕上的渲染方式"
+#: usr/share/layout-switcher/extension_update_monitor.py:311
+#: usr/share/layout-switcher/extension_update_monitor.py:312
+msgid "View extensions"
+msgstr "查看扩展"
 
-#~ msgid "Antialiasing"
-#~ msgstr "抗锯齿"
+#: usr/share/layout-switcher/extension_update_monitor.py:328
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "失败：{names}"
 
-#~ msgid "Grayscale"
-#~ msgstr "灰度"
+#: usr/share/layout-switcher/extension_update_monitor.py:333
+msgid "Some extension updates failed"
+msgstr "部分扩展更新失败"
 
-#~ msgid "Subpixel (RGBA)"
-#~ msgstr "次像素（RGBA）"
+#: usr/share/layout-switcher/extension_update_monitor.py:338
+msgid "Try again"
+msgstr "重试"
 
-#~ msgid "Installed fonts"
-#~ msgstr "已安装字体"
+#: usr/share/layout-switcher/helper_client.py:113
+msgid "The required layout helper is not installed."
+msgstr "所需的布局助手未安装。"
 
-#~ msgid "Browse font families installed on your system"
-#~ msgstr "浏览系统中已安装的字体系列"
+#: usr/share/layout-switcher/helper_client.py:152
+msgid "The required layout helper did not start."
+msgstr "所需的布局助手未能启动。"
 
-#~ msgid "No fonts match your search"
-#~ msgstr "没有字体符合您的搜索条件"
+#: usr/share/layout-switcher/helper_guard.py:78
+msgid "Layout helper restored"
+msgstr "布局助手已恢复"
 
-#~ msgid "(refine search to see more)"
-#~ msgstr "（缩小搜索范围以查看更多）"
+#: usr/share/layout-switcher/helper_guard.py:79
+msgid "The required layout helper was re-enabled automatically."
+msgstr "所需的布局助手已自动重新启用。"
 
-#~ msgid "fonts"
-#~ msgstr "字体"
+#: usr/share/layout-switcher/layout_applier.py:2254
+msgid "Layout Switcher Helper is required to apply layouts."
+msgstr "应用布局需要 Layout Switcher Helper。"
 
-#~ msgid "The quick brown fox jumps over the lazy dog 0123"
-#~ msgstr "视野无限广,大家看得见,品玩世界精彩 0123"
+#: usr/share/layout-switcher/shell_reloader.py:280
+#: usr/share/layout-switcher/ui/page_extensions.py:704
+#: usr/share/layout-switcher/ui/page_extensions.py:760
+#: usr/share/layout-switcher/ui/page_extensions.py:761
+msgid "Required for layout switching"
+msgstr "布局切换所必需"
 
-#~ msgid "Install more fonts"
-#~ msgstr "安装更多字体"
+#: usr/share/layout-switcher/ui/desktop_icons.py:28
+#: usr/share/layout-switcher/ui/window.py:404
+#: usr/share/layout-switcher/ui/window.py:487
+msgid "Desktop"
+msgstr "桌面"
 
-#~ msgid "Opens fonts.google.com in your browser"
-#~ msgstr "在浏览器中打开 fonts.google.com"
+#: usr/share/layout-switcher/ui/desktop_icons.py:32
+#: usr/share/layout-switcher/ui/desktop_icons.py:51
+msgid "Desktop icons"
+msgstr "桌面图标"
 
-#~ msgid "How to install"
-#~ msgstr "安装方法"
+#: usr/share/layout-switcher/ui/desktop_icons.py:33
+#: usr/share/layout-switcher/ui/desktop_icons.py:72
+msgid "Show files and folders on the desktop"
+msgstr "在桌面上显示文件和文件夹"
 
-#~ msgid ""
-#~ "Place .ttf/.otf files in ~/.local/share/fonts/ then run 'fc-cache -f -v' and"
-#~ " refresh this list."
-#~ msgstr "将 .ttf/.otf 文件放入 ~/.local/share/fonts/，然后运行 'fc-cache -f -v' 并刷新此列表。"
+#: usr/share/layout-switcher/ui/desktop_icons.py:39
+msgid "Desktop icon settings"
+msgstr "桌面图标设置"
 
-#~ msgid "system"
-#~ msgstr "系统"
+#: usr/share/layout-switcher/ui/desktop_icons.py:74
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "未安装 GTK4 Desktop Icons NG"
 
-#~ msgid "theme"
-#~ msgstr "主题"
+#: usr/share/layout-switcher/ui/desktop_icons.py:95
+msgid "Desktop icons enabled"
+msgstr "桌面图标已启用"
 
-#~ msgid "Click a layout to apply"
-#~ msgstr "点击布局以应用"
+#: usr/share/layout-switcher/ui/desktop_icons.py:97
+msgid "Desktop icons disabled"
+msgstr "桌面图标已禁用"
 
-#~ msgid ""
-#~ "Marked layouts contain your saved customizations — click to resume them or "
-#~ "apply the original."
-#~ msgstr "标记的布局包含您保存的自定义设置 — 点击以恢复或应用原始设置。"
+#: usr/share/layout-switcher/ui/desktop_icons.py:102
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "无法更改桌面图标：{message}"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:60
+msgid "Overview blur"
+msgstr "概览模糊"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:60
+msgid "Frosted glass"
+msgstr "磨砂玻璃"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:67
+msgid "Blur for the workspace and application overview"
+msgstr "为工作区和应用程序概览添加模糊效果"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:69
+msgid "Unified blur for windows and GNOME Shell surfaces"
+msgstr "为窗口和 GNOME Shell 表面提供统一样式的模糊效果"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:79
+msgid "unknown"
+msgstr "未知"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:82
+#, python-brace-format
+msgid ""
+"Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
+msgstr "概览模糊需要 GNOME 50 或更高版本。此桌面为 GNOME {version}。"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:89
+msgid ""
+"Install or update Layout Switcher to make Frosted Glass settings available."
+msgstr "安装或更新 Layout Switcher 以启用磨砂玻璃设置。"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:110
+msgid "Enable overview blur"
+msgstr "启用概览模糊"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:111
+#: usr/share/layout-switcher/ui/frosted_glass.py:190
+msgid "Workspace and application overview"
+msgstr "工作区和应用程序概览"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:122
+#: usr/share/layout-switcher/ui/frosted_glass.py:206
+msgid "Material"
+msgstr "材质"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "Blur strength"
+msgstr "模糊强度"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "Less"
+msgstr "较弱"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "More"
+msgstr "较强"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+msgid "Material opacity"
+msgstr "材质不透明度"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/layout-switcher/ui/page_panel_dock.py:199
+msgid "Transparent"
+msgstr "透明"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/layout-switcher/ui/page_panel_dock.py:212
+msgid "Opaque"
+msgstr "不透明"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:137
+#: usr/share/layout-switcher/ui/frosted_glass.py:196
+#: usr/share/layout-switcher/ui/frosted_glass.py:198
+msgid "Not available in this session"
+msgstr "此会话中不可用"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:147
+msgid "Enable frosted glass"
+msgstr "启用磨砂玻璃"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:148
+msgid "Apply the material without changing the active desktop layout"
+msgstr "应用材质而不更改当前桌面布局"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:160
+msgid "Surfaces"
+msgstr "表面"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:161
+msgid "Choose independently where the material is applied."
+msgstr "独立选择材质的应用位置。"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:164
+msgid "Windows"
+msgstr "窗口"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:164
+msgid "GTK, Qt and other application windows"
+msgstr "GTK、Qt 等应用程序窗口"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:165
+#: usr/share/layout-switcher/ui/page_panel_dock.py:74
+msgid "Panel"
+msgstr "面板"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:165
+msgid "GNOME panel and Community Panel"
+msgstr "GNOME 面板和社区面板"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:166
+#: usr/share/layout-switcher/ui/page_panel_dock.py:55
+#: usr/share/layout-switcher/ui/page_panel_dock.py:254
+#: usr/share/layout-switcher/ui/page_panel_dock.py:257
+msgid "Dock"
+msgstr "Dock"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:166
+msgid "Community Dock surfaces"
+msgstr "社区 Dock 界面"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:169
+msgid "Layout menus"
+msgstr "布局菜单"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:170
+msgid "Application menus used by Classic, Hybrid and Desk-UX"
+msgstr "Classic、Hybrid 和 Desk-UX 使用的应用程序菜单"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:174
+msgid "Quick Settings"
+msgstr "快速设置"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:175
+msgid "System settings menu in the panel"
+msgstr "面板中的系统设置菜单"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:179
+msgid "Calendar and notifications"
+msgstr "日历和通知"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:180
+msgid "Date, calendar and notification menu in the panel"
+msgstr "面板中的日期、日历和通知菜单"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:184
+msgid "System dialogs"
+msgstr "系统对话框"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:185
+msgid "Power, restart and other GNOME Shell dialogs"
+msgstr "电源、重启和其他 GNOME Shell 对话框"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:189
+msgid "Overview"
+msgstr "概览"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:209
+msgid "Rendering mode"
+msgstr "渲染模式"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:210
+msgid "Automatic balances visual quality and power usage"
+msgstr "自动平衡视觉效果与功耗"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Automatic"
+msgstr "自动"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Dynamic"
+msgstr "动态"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Static"
+msgstr "静态"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:228
+msgid "Behavior"
+msgstr "行为"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:229
+msgid "Application identifiers can be separated by commas."
+msgstr "应用程序标识符可以用逗号分隔。"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:231
+msgid "Application exceptions"
+msgstr "应用程序例外"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+msgid "Keep blur"
+msgstr "保持模糊"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+msgid "Make opaque"
+msgstr "设为不透明"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Disable blur"
+msgstr "禁用模糊"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:239
+msgid "Maximized windows"
+msgstr "最大化的窗口"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:242
+msgid "Fullscreen windows"
+msgstr "全屏窗口"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:246
+msgid "Power saving"
+msgstr "省电"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:247
+msgid "Used on battery and with the power-saver profile"
+msgstr "在使用电池和省电模式时启用"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Keep selected mode"
+msgstr "保持所选模式"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Use static blur"
+msgstr "使用静态模糊"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:334
+msgid "Frosted glass enabled"
+msgstr "毛玻璃效果已启用"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:339
+#, python-brace-format
+msgid "Could not enable Frosted Glass: {message}"
+msgstr "无法启用毛玻璃效果：{message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "顶部居中"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "底部居中"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "右上角"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "左上角"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "左下角"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "右下角"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "通知位置"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "选择通知横幅出现的位置。"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "在{position}显示通知"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:143
+#: usr/share/layout-switcher/ui/page_desktop.py:287
+msgid "Default"
+msgstr "默认"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:194
+#: usr/share/layout-switcher/ui/page_desktop.py:199
+#: usr/share/layout-switcher/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "应用菜单"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "适用于经典、Desk-UX 和混合布局。"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:200
+#: usr/share/layout-switcher/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "使用 Community Menu 作为应用程序菜单"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "菜单样式"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "选择 Community Menu 的外观。"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Super 键"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "选择按下 Super 键时的操作"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "打开菜单"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "打开概览"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "使用 {name} 菜单样式"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "未安装 Community Menu"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "{position} 通知位置已应用"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "无法更改通知位置：{message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "通知预览"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "通知将显示在此处。"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "应用程序菜单已启用"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "应用程序菜单已禁用"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "无法更改应用程序菜单：{message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "{name} 菜单样式已应用"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "无法更改菜单样式：{message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "按下 Super 键打开应用程序菜单"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "按下 Super 键打开概览"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "无法更改 Super 键功能：{message}"
+
+#: usr/share/layout-switcher/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "其他视觉效果"
+
+#: usr/share/layout-switcher/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "{name} 效果预览"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:20
+msgid "Always visible"
+msgstr "始终可见"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:21
+msgid "Always hidden (show at edge)"
+msgstr "始终隐藏（在边缘显示）"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:22
+msgid "Intelligent hiding"
+msgstr "智能隐藏"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:25
+msgid "Dot"
+msgstr "圆点"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:26
+msgid "Hybrid line"
+msgstr "混合线条"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:27
+msgid "Desk UX line"
+msgstr "桌面体验线条"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:56
+#: usr/share/layout-switcher/ui/page_panel_dock.py:259
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "配置社区 Dock 的外观和可见性。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:62
+msgid "Dock transparency"
+msgstr "Dock 透明度"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:65
+msgid "Dock visibility"
+msgstr "Dock 可见性"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:75
+#: usr/share/layout-switcher/ui/page_panel_dock.py:271
+msgid "Configure the system panel appearance and visibility."
+msgstr "配置系统面板的外观和可见性。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:81
+msgid "Panel transparency"
+msgstr "面板透明度"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:84
+msgid "Panel visibility"
+msgstr "面板可见性"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:101
+msgid "Running app indicator"
+msgstr "运行应用指示器"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:105
+msgid "Choose the mark shown below running applications."
+msgstr "选择运行中应用下方显示的标记。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:142
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "使用 {style} 指示器"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:222
+msgid "Choose how this component behaves on the desktop."
+msgstr "选择此组件在桌面上的行为方式。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:251
+msgid "Taskbar"
+msgstr "任务栏"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:252
+msgid "Configure running application indicators."
+msgstr "配置运行应用指示器。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:255
+msgid "Available when Community Dock is active."
+msgstr "启用社区 Dock 时可用。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:263
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "启用社区 Dock 或社区面板时可用。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:267
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "配置社区面板的外观和可见性。"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:321
+msgid "Dock visibility updated"
+msgstr "Dock 可见性已更新"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:328
+msgid "Panel visibility updated"
+msgstr "面板可见性已更新"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:338
+msgid "Indicator style updated"
+msgstr "指示器样式已更新"
+
+#: usr/share/layout-switcher/ui/page_themes.py:20
+msgid "Blue"
+msgstr "蓝色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:21
+msgid "Teal"
+msgstr "青色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:22
+msgid "Green"
+msgstr "绿色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "黄色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:24
+msgid "Orange"
+msgstr "橙色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:25
+msgid "Red"
+msgstr "红色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:26
+msgid "Pink"
+msgstr "粉色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:27
+msgid "Purple"
+msgstr "紫色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:28
+msgid "Slate"
+msgstr "石板灰"
+
+#: usr/share/layout-switcher/ui/page_themes.py:29
+msgid "Maia"
+msgstr "玛雅绿"
+
+#: usr/share/layout-switcher/ui/page_themes.py:108
+msgid "Colors"
+msgstr "颜色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:165
+msgid "Accent color"
+msgstr "强调色"
+
+#: usr/share/layout-switcher/ui/page_themes.py:174
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "选择用于按钮、选定项和突出显示的颜色。"
+
+#: usr/share/layout-switcher/ui/page_themes.py:207
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color}强调色"
+
+#: usr/share/layout-switcher/ui/window.py:405
+#: usr/share/layout-switcher/ui/window.py:488
+msgid "Panel and Dock"
+msgstr "面板和停靠栏"

@@ -114,7 +114,7 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 58;
+const HELPER_BUILD = 59;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -2245,7 +2245,22 @@ export default class LayoutSwitcherHelper extends Extension {
 
         const live = this._liveUuids(mgr);
 
-        // 1. Disable extensions leaving the layout. Reverse so later-loaded go
+        // 1. Detach staying menu extensions before their host panel changes.
+        //    Reload targets are enabled again in target order at step 4.
+        for (const uuid of order) {
+            if (reload.has(uuid) && live.has(uuid) && target.has(uuid)) {
+                try {
+                    mgr.disableExtension(uuid);
+                    await this._waitState(mgr, uuid, s => this._isDown(s));
+                    steps.push(`reload-off ${uuid}`);
+                } catch (e) {
+                    steps.push(`reload-off ${uuid} ERR ${e}`);
+                }
+                await this._sleep(stepMs);
+            }
+        }
+
+        // 2. Disable extensions leaving the layout. Reverse so later-loaded go
         //    first (fewer of the Shell's internal "rebase" cycles). Extensions
         //    in `teardown` (dock/panel owners) get a reload first so their
         //    actor is fresh and disable() destroys it cleanly instead of
@@ -2265,21 +2280,6 @@ export default class LayoutSwitcherHelper extends Extension {
                 steps.push(`disable ${uuid} ERR ${e}`);
             }
             await this._sleep(stepMs);
-        }
-
-        // 2. Disable the staying-but-reload set so step 4 re-enables them and
-        //    their enable() re-reads the (already loaded) dconf appearance.
-        for (const uuid of order) {
-            if (reload.has(uuid) && live.has(uuid) && target.has(uuid)) {
-                try {
-                    mgr.disableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isDown(s));
-                    steps.push(`reload-off ${uuid}`);
-                } catch (e) {
-                    steps.push(`reload-off ${uuid} ERR ${e}`);
-                }
-                await this._sleep(stepMs);
-            }
         }
 
         // 3. Reload the base shell stylesheet *before* re-enabling the

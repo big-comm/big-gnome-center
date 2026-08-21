@@ -81,7 +81,12 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Set, Tuple
 
 from constants import tr
-from helper_client import HELPER_UUID, LEGACY_HELPER_UUID, HelperClient
+from helper_client import (
+    HELPER_UUID,
+    LAYOUT_COMPONENT_UUID_MIGRATIONS,
+    LEGACY_HELPER_UUID,
+    HelperClient,
+)
 from settings_store import Settings
 from shell_reloader import ShellReloader
 from utils import atomic_write_text, gnome_shell_version, run_cmd
@@ -125,7 +130,6 @@ _DTP_MONITOR_KEYED = (
 )
 _ARCMENU_UUID = "arcmenu@arcmenu.com"
 _COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
-_LEGACY_COMMUNITY_MENU_UUID = "community-menu@bigcommunity.org"
 _COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
 _PANEL_UUIDS = (_COMMUNITY_PANEL_UUID,)
 _COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
@@ -135,7 +139,7 @@ _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
 _GTK4_DING_UUID = "gtk4-ding@smedius.gitlab.com"
 _BLUR_MY_SHELL_UUID = "blur-my-shell@aunetx"
-_LAYOUT_INDEPENDENT_UUIDS = (_FROSTED_GLASS_UUID, _GTK4_DING_UUID)
+_LAYOUT_INDEPENDENT_UUIDS = (_FROSTED_GLASS_UUID,)
 _LAYOUT_INDEPENDENT_SETTINGS_PREFIXES = (
     "/org/communitybig/frosted-glass",
     "/org/gnome/shell/extensions/gtk4-ding",
@@ -185,7 +189,6 @@ _HELPER_PERSIST_UUIDS = frozenset(
         "gsconnect@andyholmes.github.io",
         "drive-menu@gnome-shell-extensions.gcampax.github.com",
         _FROSTED_GLASS_UUID,
-        _GTK4_DING_UUID,
     }
 )
 # Persisting an extension process does not imply preserving all its settings.
@@ -392,7 +395,10 @@ class LayoutApplier:
         During an in-place UUID upgrade, retain the loaded legacy helper until
         logout. The new UUID is already persisted and takes over next login.
         """
-        data = cls._migrate_community_menu_uuid(data)
+        data = cls._migrate_layout_component_uuids(
+            data,
+            available_uuids=HelperClient.installed_extension_uuids(),
+        )
         data = cls._retire_blur_my_shell(data)
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
         independent = set(_LAYOUT_INDEPENDENT_UUIDS)
@@ -412,6 +418,8 @@ class LayoutApplier:
         disabled = [
             uuid for uuid in disabled if uuid not in {HELPER_UUID, LEGACY_HELPER_UUID} | independent
         ]
+        enabled_set = set(enabled)
+        disabled = [uuid for uuid in disabled if uuid not in enabled_set]
         data = cls._replace_or_add_dconf_key(
             data,
             "/org/gnome/shell",
@@ -428,16 +436,22 @@ class LayoutApplier:
         )
 
     @classmethod
-    def _migrate_community_menu_uuid(cls, data: str) -> str:
-        """Replace the legacy reversed-domain Community Menu UUID."""
+    def _migrate_layout_component_uuids(
+        cls,
+        data: str,
+        available_uuids: Optional[Iterable[str]] = None,
+    ) -> str:
+        """Replace legacy component UUIDs in bundled and saved layouts."""
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
         if not shell_values:
             return data
 
+        available = set(available_uuids) if available_uuids is not None else None
+
         def migrate(values: List[str]) -> List[str]:
             migrated: List[str] = []
             for uuid in values:
-                current = _COMMUNITY_MENU_UUID if uuid == _LEGACY_COMMUNITY_MENU_UUID else uuid
+                current = HelperClient.resolve_component_uuid(uuid, available)
                 if current not in migrated:
                     migrated.append(current)
             return migrated
@@ -1118,15 +1132,12 @@ class LayoutApplier:
 
     @classmethod
     def _apply_user_component_overrides(cls, data: str, layout_id: str = "") -> str:
-        """Apply explicit global component choices over a layout snapshot."""
+        """Apply explicit global menu choices over a layout snapshot."""
         prefs = Settings()
         menu_state = prefs.get("community_menu_enabled")
         if layout_id and layout_id not in _COMMUNITY_MENU_LAYOUTS:
             menu_state = False
-        overrides = (
-            (_GTK4_DING_UUID, prefs.get("desktop_icons_enabled")),
-            (_COMMUNITY_MENU_UUID, menu_state),
-        )
+        overrides = ((_COMMUNITY_MENU_UUID, menu_state),)
         shell = cls._section_key_values(data, "/org/gnome/shell")
         enabled = cls._string_list(shell.get("enabled-extensions"))
         disabled = cls._string_list(shell.get("disabled-extensions"))

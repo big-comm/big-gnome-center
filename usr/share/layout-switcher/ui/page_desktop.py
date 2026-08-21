@@ -47,7 +47,7 @@ NOTIFICATION_POSITION_VALUES = {value for value, _label in NOTIFICATION_POSITION
 
 
 class DesktopPage(Gtk.Box):
-    """Configure desktop components without making them layout-owned."""
+    """Configure desktop components and layout-aware defaults."""
 
     def __init__(self, pool, toast_cb) -> None:
         super().__init__(orientation=Gtk.Orientation.VERTICAL)

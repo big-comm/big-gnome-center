@@ -3,119 +3,113 @@ msgid ""
 msgstr ""
 "Project-Id-Version: layout-switcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-30 19:34-0300\n"
-"PO-Revision-Date: 2026-04-22 14:41\n"
+"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"PO-Revision-Date: 2026-08-20 22:29-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
+"X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:136
+#: usr/share/layout-switcher/constants.py:149
 msgid "Desktop Cube"
 msgstr "Desktop Cube"
 
-#: usr/share/layout-switcher/constants.py:137
+#: usr/share/layout-switcher/constants.py:150
 msgid "Rotate workspaces on a 3D cube"
 msgstr "Rotează spațiile de lucru pe un cub 3D"
 
-#: usr/share/layout-switcher/constants.py:147
+#: usr/share/layout-switcher/constants.py:160
 msgid "Magic Lamp"
 msgstr "Magic Lamp"
 
-#: usr/share/layout-switcher/constants.py:148
+#: usr/share/layout-switcher/constants.py:161
 msgid "Genie effect when minimizing windows"
 msgstr "Efectul de geniu la minimizarea ferestrelor"
 
-#: usr/share/layout-switcher/constants.py:158
+#: usr/share/layout-switcher/constants.py:171
 msgid "Compiz Windows"
 msgstr "Compiz Windows"
 
-#: usr/share/layout-switcher/constants.py:159
+#: usr/share/layout-switcher/constants.py:172
 msgid "Wobbly windows and extra animations"
 msgstr "Ferestre elastice și animații suplimentare"
 
-#: usr/share/layout-switcher/constants.py:169
-msgid "Desktop Icons NG"
-msgstr "Desktop Icons NG"
-
-#: usr/share/layout-switcher/constants.py:170
-msgid "Files and folders on your desktop"
-msgstr "Fișiere și dosare pe desktop"
-
-#: usr/share/layout-switcher/constants.py:196
+#: usr/share/layout-switcher/constants.py:199
 msgid "Default Big Gnome layout"
 msgstr "Layout-ul implicit Big Gnome"
 
-#: usr/share/layout-switcher/constants.py:203
+#: usr/share/layout-switcher/constants.py:206
 msgid "Clean and contemporary desktop"
 msgstr "Desktop curat și contemporan"
 
-#: usr/share/layout-switcher/constants.py:210
+#: usr/share/layout-switcher/constants.py:213
 msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
 msgstr "Dock-bara centrată, stil Windows 11 / Deepin / Pop!_OS"
 
-#: usr/share/layout-switcher/constants.py:217
+#: usr/share/layout-switcher/constants.py:220
 msgid "Unity-style layout with left dock and top bar"
 msgstr "Layout în stil Unity cu dock în stânga și bara de sus"
 
-#: usr/share/layout-switcher/constants.py:224
+#: usr/share/layout-switcher/constants.py:227
 msgid "Traditional desktop with taskbar and system tray"
 msgstr "Desktop tradițional cu bara de activități și tava de sistem"
 
-#: usr/share/layout-switcher/constants.py:231
+#: usr/share/layout-switcher/constants.py:234
 msgid "Near-vanilla GNOME with minimal distro tweaks"
 msgstr "GNOME aproape vanilla cu ajustări minime de distribuție"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:63
+#: usr/share/layout-switcher/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "Copii de rezervă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:78
+#: usr/share/layout-switcher/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "Creează copie de rezervă acum"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:80
+#: usr/share/layout-switcher/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "Instantaneu al setărilor dconf curente"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:93
+#: usr/share/layout-switcher/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "Nu există copii de rezervă încă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:95
+#: usr/share/layout-switcher/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr ""
 "O copie de rezervă este creată automat de fiecare dată când aplici un "
 "layout."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:148
+#: usr/share/layout-switcher/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "Cele mai recente"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:153
+#: usr/share/layout-switcher/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "Restaurează această copie de rezervă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:161
+#: usr/share/layout-switcher/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "Șterge această copie de rezervă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:184
+#: usr/share/layout-switcher/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "Copia de rezervă a fost creată"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:187
-#: usr/share/layout-switcher/ui/page_layouts.py:255
+#: usr/share/layout-switcher/ui/dialog_backups.py:188
+#: usr/share/layout-switcher/ui/page_layouts.py:265
 msgid "Backup failed"
 msgstr "Crearea copiei de rezervă a eșuat"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:192
+#: usr/share/layout-switcher/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "Restaurezi această copie de rezervă?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:194
+#: usr/share/layout-switcher/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
@@ -124,45 +118,44 @@ msgstr ""
 "relua sau pentru a aplica originalul.Toate setările dconf curente vor fi "
 "suprascrise cu instantaneul din {ts}."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:197
-#: usr/share/layout-switcher/ui/dialog_backups.py:230
-#: usr/share/layout-switcher/ui/page_effects.py:274
-#: usr/share/layout-switcher/ui/page_effects.py:318
-#: usr/share/layout-switcher/ui/page_extensions.py:384
-#: usr/share/layout-switcher/ui/page_extensions.py:427
-#: usr/share/layout-switcher/ui/page_extensions.py:834
+#: usr/share/layout-switcher/ui/dialog_backups.py:198
+#: usr/share/layout-switcher/ui/dialog_backups.py:231
+#: usr/share/layout-switcher/ui/page_effects.py:293
+#: usr/share/layout-switcher/ui/page_effects.py:337
+#: usr/share/layout-switcher/ui/page_extensions.py:402
+#: usr/share/layout-switcher/ui/page_extensions.py:445
+#: usr/share/layout-switcher/ui/page_extensions.py:905
 #: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:231
-#: usr/share/layout-switcher/ui/page_layouts.py:243
-#: usr/share/layout-switcher/ui/page_themes.py:423
+#: usr/share/layout-switcher/ui/page_layouts.py:241
+#: usr/share/layout-switcher/ui/page_layouts.py:253
 msgid "Cancel"
 msgstr "Anulează"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
+#: usr/share/layout-switcher/ui/dialog_backups.py:199
 msgid "Restore"
 msgstr "Restaurează"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:218
+#: usr/share/layout-switcher/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "Copia de rezervă a fost restaurată"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:222
+#: usr/share/layout-switcher/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "Restaurare eșuată"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:227
+#: usr/share/layout-switcher/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "Șterge această copie de rezervă?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
+#: usr/share/layout-switcher/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "Șterge"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:251
+#: usr/share/layout-switcher/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "Copia de rezervă a fost ștearsă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:254
+#: usr/share/layout-switcher/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "Ștergerea a eșuat"
 
@@ -212,6 +205,7 @@ msgid "Loading…"
 msgstr "Se încarcă…"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:166
+#: usr/share/layout-switcher/ui/page_extensions.py:621
 msgid "No results"
 msgstr "Niciun rezultat"
 
@@ -244,7 +238,6 @@ msgid "Next page"
 msgstr "Pagina următoare"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:238
-#: usr/share/layout-switcher/ui/page_themes.py:130
 msgid "Shell"
 msgstr "Shell"
 
@@ -255,8 +248,8 @@ msgstr "Pagina {p} din {t}"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:345
 #: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:165
-#: usr/share/layout-switcher/ui/page_extensions.py:262
+#: usr/share/layout-switcher/ui/page_effects.py:184
+#: usr/share/layout-switcher/ui/page_extensions.py:280
 #, python-brace-format
 msgid "by {author}"
 msgstr "de {author}"
@@ -270,8 +263,8 @@ msgid "View extension details"
 msgstr "Vezi detaliile extensiei"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:65
-#: usr/share/layout-switcher/ui/page_extensions.py:548
+#: usr/share/layout-switcher/ui/page_extensions.py:83
+#: usr/share/layout-switcher/ui/page_extensions.py:574
 #: usr/share/layout-switcher/ui/page_fonts.py:487
 #: usr/share/layout-switcher/ui/page_fonts.py:529
 msgid "Installed"
@@ -280,10 +273,10 @@ msgstr "Instalate"
 #: usr/share/layout-switcher/ui/ext_browse_view.py:375
 #: usr/share/layout-switcher/ui/ext_detail_view.py:64
 #: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:219
-#: usr/share/layout-switcher/ui/page_effects.py:275
-#: usr/share/layout-switcher/ui/page_extensions.py:323
-#: usr/share/layout-switcher/ui/page_extensions.py:385
+#: usr/share/layout-switcher/ui/page_effects.py:238
+#: usr/share/layout-switcher/ui/page_effects.py:294
+#: usr/share/layout-switcher/ui/page_extensions.py:341
+#: usr/share/layout-switcher/ui/page_extensions.py:403
 #: usr/share/layout-switcher/ui/page_fonts.py:490
 #: usr/share/layout-switcher/ui/page_fonts.py:493
 #: usr/share/layout-switcher/ui/page_fonts.py:534
@@ -292,15 +285,15 @@ msgstr "Instalează"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:412
 #: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:296
-#: usr/share/layout-switcher/ui/page_extensions.py:405
+#: usr/share/layout-switcher/ui/page_effects.py:315
+#: usr/share/layout-switcher/ui/page_extensions.py:423
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr "{name} instalată și activată. Repornește sesiunea pentru a o folosi."
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:411
+#: usr/share/layout-switcher/ui/page_effects.py:321
+#: usr/share/layout-switcher/ui/page_extensions.py:429
 msgid "Install failed"
 msgstr "Instalarea a eșuat"
 
@@ -346,8 +339,8 @@ msgid "Homepage"
 msgstr "Pagina de pornire"
 
 #: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:236
-#: usr/share/layout-switcher/ui/page_extensions.py:340
+#: usr/share/layout-switcher/ui/page_effects.py:255
+#: usr/share/layout-switcher/ui/page_extensions.py:358
 msgid "View on GNOME Extensions"
 msgstr "Vezi pe GNOME Extensions"
 
@@ -357,9 +350,9 @@ msgid "License: {lic}"
 msgstr "Licență: {lic}"
 
 #: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:568
-#: usr/share/layout-switcher/ui/page_extensions.py:655
-#: usr/share/layout-switcher/ui/page_extensions.py:666
+#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/layout-switcher/ui/page_extensions.py:719
+#: usr/share/layout-switcher/ui/page_extensions.py:730
 msgid "Update"
 msgstr "Actualizează"
 
@@ -380,188 +373,186 @@ msgstr "{name} actualizată"
 msgid "Operation failed"
 msgstr "Operația a eșuat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:44
-msgid "Visual effects for your GNOME desktop"
-msgstr "Efecte vizuale pentru desktopul tău GNOME"
-
-#: usr/share/layout-switcher/ui/page_effects.py:107
-#: usr/share/layout-switcher/ui/page_extensions.py:207
+#: usr/share/layout-switcher/ui/page_effects.py:114
+#: usr/share/layout-switcher/ui/page_extensions.py:225
 msgid "System extension"
 msgstr "Extensie de sistem"
 
-#: usr/share/layout-switcher/ui/page_effects.py:124
+#: usr/share/layout-switcher/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name} (activată)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:126
+#: usr/share/layout-switcher/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name} (dezactivată)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:128
+#: usr/share/layout-switcher/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (neinstalată)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:176
-#: usr/share/layout-switcher/ui/page_extensions.py:277
+#: usr/share/layout-switcher/ui/page_effects.py:195
+#: usr/share/layout-switcher/ui/page_extensions.py:295
 msgid "On"
 msgstr "Pornit"
 
-#: usr/share/layout-switcher/ui/page_effects.py:176
-#: usr/share/layout-switcher/ui/page_extensions.py:277
+#: usr/share/layout-switcher/ui/page_effects.py:195
+#: usr/share/layout-switcher/ui/page_extensions.py:295
 msgid "Off"
 msgstr "Oprit"
 
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:285
-#: usr/share/layout-switcher/ui/page_extensions.py:694
+#: usr/share/layout-switcher/ui/page_effects.py:203
+#: usr/share/layout-switcher/ui/page_extensions.py:303
+#: usr/share/layout-switcher/ui/page_extensions.py:763
 msgid "Toggle"
 msgstr "Comută"
 
-#: usr/share/layout-switcher/ui/page_effects.py:192
-#: usr/share/layout-switcher/ui/page_effects.py:196
-#: usr/share/layout-switcher/ui/page_effects.py:319
-#: usr/share/layout-switcher/ui/page_extensions.py:295
-#: usr/share/layout-switcher/ui/page_extensions.py:299
-#: usr/share/layout-switcher/ui/page_extensions.py:428
-#: usr/share/layout-switcher/ui/page_extensions.py:730
-#: usr/share/layout-switcher/ui/page_extensions.py:731
+#: usr/share/layout-switcher/ui/page_effects.py:211
+#: usr/share/layout-switcher/ui/page_effects.py:215
+#: usr/share/layout-switcher/ui/page_effects.py:338
+#: usr/share/layout-switcher/ui/page_extensions.py:313
+#: usr/share/layout-switcher/ui/page_extensions.py:317
+#: usr/share/layout-switcher/ui/page_extensions.py:446
+#: usr/share/layout-switcher/ui/page_extensions.py:801
+#: usr/share/layout-switcher/ui/page_extensions.py:802
 msgid "Remove"
 msgstr "Elimină"
 
-#: usr/share/layout-switcher/ui/page_effects.py:204
-#: usr/share/layout-switcher/ui/page_extensions.py:307
-#: usr/share/layout-switcher/ui/page_extensions.py:680
-#: usr/share/layout-switcher/ui/page_extensions.py:684
+#: usr/share/layout-switcher/ui/page_effects.py:223
+#: usr/share/layout-switcher/ui/page_extensions.py:325
+#: usr/share/layout-switcher/ui/page_extensions.py:744
+#: usr/share/layout-switcher/ui/page_extensions.py:748
 msgid "Settings"
 msgstr "Setări"
 
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_extensions.py:235
-#: usr/share/layout-switcher/ui/page_extensions.py:319
+#: usr/share/layout-switcher/ui/page_effects.py:234
+#: usr/share/layout-switcher/ui/page_extensions.py:253
+#: usr/share/layout-switcher/ui/page_extensions.py:337
 msgid "Not installed"
 msgstr "Neinstalat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:260
-#: usr/share/layout-switcher/ui/page_extensions.py:231
-#: usr/share/layout-switcher/ui/page_extensions.py:370
-#: usr/share/layout-switcher/ui/page_extensions.py:562
+#: usr/share/layout-switcher/ui/page_effects.py:279
+#: usr/share/layout-switcher/ui/page_extensions.py:249
+#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/layout-switcher/ui/page_extensions.py:614
 msgid "enabled"
 msgstr "activat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:260
-#: usr/share/layout-switcher/ui/page_extensions.py:233
-#: usr/share/layout-switcher/ui/page_extensions.py:370
+#: usr/share/layout-switcher/ui/page_effects.py:279
+#: usr/share/layout-switcher/ui/page_extensions.py:251
+#: usr/share/layout-switcher/ui/page_extensions.py:388
 msgid "disabled"
 msgstr "dezactivat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:264
-#: usr/share/layout-switcher/ui/page_extensions.py:374
-#: usr/share/layout-switcher/ui/page_extensions.py:707
-#: usr/share/layout-switcher/ui/page_extensions.py:858
-#: usr/share/layout-switcher/ui/page_layouts.py:395
-#: usr/share/layout-switcher/ui/page_layouts.py:438
-#: usr/share/layout-switcher/ui/page_themes.py:413
+#: usr/share/layout-switcher/ui/page_effects.py:283
+#: usr/share/layout-switcher/ui/page_extensions.py:392
+#: usr/share/layout-switcher/ui/page_extensions.py:777
+#: usr/share/layout-switcher/ui/page_extensions.py:929
+#: usr/share/layout-switcher/ui/page_layouts.py:429
+#: usr/share/layout-switcher/ui/page_layouts.py:473
+#: usr/share/layout-switcher/ui/page_themes.py:332
+#: usr/share/layout-switcher/ui/page_themes.py:343
 msgid "Error"
 msgstr "Eroare"
 
-#: usr/share/layout-switcher/ui/page_effects.py:271
+#: usr/share/layout-switcher/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "Să instalez efectul?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:272
-#: usr/share/layout-switcher/ui/page_extensions.py:382
+#: usr/share/layout-switcher/ui/page_effects.py:291
+#: usr/share/layout-switcher/ui/page_extensions.py:400
 msgid "Will try to install automatically."
 msgstr "Se va încerca instalarea automată."
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:391
+#: usr/share/layout-switcher/ui/page_effects.py:302
+#: usr/share/layout-switcher/ui/page_extensions.py:409
 #: usr/share/layout-switcher/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "Se instalează…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:311
-#: usr/share/layout-switcher/ui/page_extensions.py:420
+#: usr/share/layout-switcher/ui/page_effects.py:330
+#: usr/share/layout-switcher/ui/page_extensions.py:438
 msgid "System extension — cannot remove"
 msgstr "Extensie de sistem — nu poate fi eliminată"
 
-#: usr/share/layout-switcher/ui/page_effects.py:315
+#: usr/share/layout-switcher/ui/page_effects.py:334
 msgid "Remove effect?"
 msgstr "Să elimin efectul?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:316
-#: usr/share/layout-switcher/ui/page_extensions.py:425
+#: usr/share/layout-switcher/ui/page_effects.py:335
+#: usr/share/layout-switcher/ui/page_extensions.py:443
 msgid "This cannot be undone."
 msgstr "Aceasta nu poate fi anulată."
 
-#: usr/share/layout-switcher/ui/page_effects.py:331
-#: usr/share/layout-switcher/ui/page_extensions.py:440
+#: usr/share/layout-switcher/ui/page_effects.py:350
+#: usr/share/layout-switcher/ui/page_extensions.py:458
 msgid "removed"
 msgstr "eliminat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:333
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/layout-switcher/ui/page_effects.py:352
+#: usr/share/layout-switcher/ui/page_extensions.py:460
 msgid "Remove failed"
 msgstr "Eliminarea a eșuat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:63
+#: usr/share/layout-switcher/ui/page_extensions.py:81
 msgid "Featured"
 msgstr "Recomandate"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-#: usr/share/layout-switcher/ui/page_extensions.py:113
+#: usr/share/layout-switcher/ui/page_extensions.py:82
+#: usr/share/layout-switcher/ui/page_extensions.py:131
 msgid "Browse"
 msgstr "Răsfoiește"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:219
+#: usr/share/layout-switcher/ui/page_extensions.py:237
 msgid "Update available"
 msgstr "Actualizare disponibilă"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:381
+#: usr/share/layout-switcher/ui/page_extensions.py:399
 msgid "Install extension?"
 msgstr "Instalezi extensia?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:424
+#: usr/share/layout-switcher/ui/page_extensions.py:442
 msgid "Remove extension?"
 msgstr "Ștergi extensia?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:490
-#: usr/share/layout-switcher/ui/page_extensions.py:568
+#: usr/share/layout-switcher/extension_update_monitor.py:245
+#: usr/share/layout-switcher/ui/page_extensions.py:522
+#: usr/share/layout-switcher/ui/page_extensions.py:579
 msgid "Update all"
 msgstr "Actualizează tot"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:498
+#: usr/share/layout-switcher/ui/page_extensions.py:530
 msgid "Open GNOME Extensions"
 msgstr "Deschide GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:554
+#: usr/share/layout-switcher/ui/page_extensions.py:598
 msgid "No extensions installed"
 msgstr "Nicio extensie instalată"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:562
+#: usr/share/layout-switcher/ui/page_extensions.py:614
 msgid "installed"
 msgstr "instalat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:564
+#: usr/share/layout-switcher/ui/page_extensions.py:616
 msgid "update available"
 msgstr "actualizare disponibilă"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:576
+#: usr/share/layout-switcher/ui/page_extensions.py:632
 msgid "Enabled"
 msgstr "Activat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:577
+#: usr/share/layout-switcher/ui/page_extensions.py:633
 msgid "Disabled"
 msgstr "Dezactivat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:660
+#: usr/share/layout-switcher/ui/page_extensions.py:724
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "Actualizare de la v{old} la v{new}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/layout-switcher/ui/page_extensions.py:795
 msgid ""
 "This extension cannot be removed here because it was installed by the "
 "system."
@@ -569,50 +560,50 @@ msgstr ""
 "Această extensie nu poate fi eliminată de aici deoarece a fost instalată de "
 "sistem."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:772
+#: usr/share/layout-switcher/ui/page_extensions.py:843
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} actualizat la v{ver}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:777
+#: usr/share/layout-switcher/ui/page_extensions.py:848
 #: usr/share/layout-switcher/ui/page_fonts.py:147
 #: usr/share/layout-switcher/ui/page_fonts.py:216
 #: usr/share/layout-switcher/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "Actualizare eșuată"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:801
+#: usr/share/layout-switcher/ui/page_extensions.py:872
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "{n} extensii actualizate"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:806
+#: usr/share/layout-switcher/ui/page_extensions.py:877
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "Actualizat {n}/{t}; eșuat: {f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:817
-#: usr/share/layout-switcher/ui/page_extensions.py:835
+#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/layout-switcher/ui/page_extensions.py:906
 msgid "Disable All"
 msgstr "Dezactivează tot"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:817
+#: usr/share/layout-switcher/ui/page_extensions.py:888
 msgid "Enable All"
 msgstr "Activează tot"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:831
+#: usr/share/layout-switcher/ui/page_extensions.py:902
 msgid "Disable all extensions?"
 msgstr "Dezactivezi toate extensiile?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:832
+#: usr/share/layout-switcher/ui/page_extensions.py:903
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr "Toate extensiile vor fi dezactivate. Le poți reactiva mai târziu."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:852
+#: usr/share/layout-switcher/ui/page_extensions.py:923
 msgid "All extensions disabled"
 msgstr "Toate extensiile au fost dezactivate"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:852
+#: usr/share/layout-switcher/ui/page_extensions.py:923
 msgid "All extensions enabled"
 msgstr "Toate extensiile au fost activate"
 
@@ -836,31 +827,26 @@ msgstr "Se reîncarcă componentele…"
 msgid "Layout status"
 msgstr "Stare layout"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:141
+#: usr/share/layout-switcher/ui/page_layouts.py:152
 msgid "Contains your saved customizations"
 msgstr "Conține personalizările tale salvate"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:145
+#: usr/share/layout-switcher/ui/page_layouts.py:156
 msgid "Modified"
 msgstr "Modificat"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:159
-#: usr/share/layout-switcher/ui/page_layouts.py:206
-#: usr/share/layout-switcher/ui/page_themes.py:306
-#: usr/share/layout-switcher/ui/page_themes.py:360
+#: usr/share/layout-switcher/ui/page_layouts.py:170
+#: usr/share/layout-switcher/ui/page_layouts.py:219
+#: usr/share/layout-switcher/ui/page_themes.py:318
 msgid "Active"
 msgstr "Activ"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:177
-#: usr/share/layout-switcher/ui/page_layouts.py:204
+#: usr/share/layout-switcher/ui/page_layouts.py:190
+#: usr/share/layout-switcher/ui/page_layouts.py:217
 msgid "Coming soon"
 msgstr "În curând"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:215
-msgid "This layout is already active"
-msgstr "Acest layout este deja activ"
-
-#: usr/share/layout-switcher/ui/page_layouts.py:227
+#: usr/share/layout-switcher/ui/page_layouts.py:237
 msgid ""
 "You have previously modified this layout. Apply the original system default "
 "or resume your changes?"
@@ -868,15 +854,15 @@ msgstr ""
 "Ați modificat anterior acest aspect. Aplicați setările implicite originale "
 "ale sistemului sau reluați modificările dvs.?"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:232
+#: usr/share/layout-switcher/ui/page_layouts.py:242
 msgid "Resume my changes"
 msgstr "Reia modificările mele"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:233
+#: usr/share/layout-switcher/ui/page_layouts.py:243
 msgid "Apply original"
 msgstr "Aplică originalul"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:239
+#: usr/share/layout-switcher/ui/page_layouts.py:249
 msgid ""
 "Apply this layout? A backup of your current configuration will be created "
 "automatically."
@@ -884,281 +870,852 @@ msgstr ""
 "Aplici acest layout? Se va crea automat o copie de siguranță a configurației"
 " tale curente."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:244
+#: usr/share/layout-switcher/ui/page_layouts.py:254
 msgid "Apply"
 msgstr "Aplică"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:274
-#: usr/share/layout-switcher/ui/page_layouts.py:276
+#: usr/share/layout-switcher/ui/page_layouts.py:295
 msgid "Applying"
 msgstr "Se aplică"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:307
+#: usr/share/layout-switcher/ui/page_layouts.py:325
 msgid "Snapshot not found"
 msgstr "Instantaneu nu a fost găsit"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:329
+#: usr/share/layout-switcher/ui/page_layouts.py:353
 msgid "Layout file not found"
 msgstr "Fișierul de aspect nu a fost găsit"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:358
-#: usr/share/layout-switcher/ui/page_layouts.py:366
-#: usr/share/layout-switcher/ui/page_layouts.py:375
+#: usr/share/layout-switcher/ui/page_layouts.py:392
+#: usr/share/layout-switcher/ui/page_layouts.py:400
+#: usr/share/layout-switcher/ui/page_layouts.py:409
 msgid "applied"
 msgstr "aplicat"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:368
+#: usr/share/layout-switcher/ui/page_layouts.py:402
 msgid "Undo"
 msgstr "Anulează"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:385
+#: usr/share/layout-switcher/ui/page_layouts.py:419
 msgid "Restart the session for the 100% clean state"
 msgstr "Reporniți sesiunea pentru o stare 100% curată"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:388
+#: usr/share/layout-switcher/ui/page_layouts.py:422
 msgid "Restart now"
 msgstr "Repornește acum"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:412
+#: usr/share/layout-switcher/ui/page_layouts.py:446
 msgid "Cannot restart session"
 msgstr "Nu se poate reporni sesiunea"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
-#: usr/share/layout-switcher/ui/page_layouts.py:421
+#: usr/share/layout-switcher/ui/page_layouts.py:453
+#: usr/share/layout-switcher/ui/page_layouts.py:455
 msgid "Restoring previous layout…"
 msgstr "Se restaurează aspectul anterior…"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:449
+#: usr/share/layout-switcher/ui/page_layouts.py:485
 msgid "Layout restored"
 msgstr "Aspect restaurat"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:451
+#: usr/share/layout-switcher/ui/page_layouts.py:487
 msgid "Previous layout restored"
 msgstr "Aspectul anterior a fost restaurat"
 
-#: usr/share/layout-switcher/ui/page_themes.py:94
+#: usr/share/layout-switcher/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "Filtrează teme…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "GTK"
-msgstr "GTK"
-
-#: usr/share/layout-switcher/ui/page_themes.py:130
-msgid "Applications"
-msgstr "Aplicații"
-
-#: usr/share/layout-switcher/ui/page_themes.py:130
+#: usr/share/layout-switcher/ui/page_themes.py:109
 msgid "Icons"
 msgstr "Pictograme"
 
-#: usr/share/layout-switcher/ui/page_themes.py:210
+#: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Nu s-au găsit teme"
 
-#: usr/share/layout-switcher/ui/page_themes.py:211
+#: usr/share/layout-switcher/ui/page_themes.py:241
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "Instalează temele în ~/.themes sau /usr/share/themes"
 
-#: usr/share/layout-switcher/ui/page_themes.py:218
+#: usr/share/layout-switcher/ui/page_themes.py:247
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "{n} teme disponibile"
 
-#: usr/share/layout-switcher/ui/page_themes.py:304
-#: usr/share/layout-switcher/ui/page_themes.py:358
+#: usr/share/layout-switcher/ui/page_themes.py:316
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} temă"
 
-#: usr/share/layout-switcher/ui/page_themes.py:420
-msgid "User Themes required"
-msgstr "Sunt necesare User Themes"
-
-#: usr/share/layout-switcher/ui/page_themes.py:421
-msgid "Install and enable the User Themes extension to apply shell themes."
-msgstr ""
-"Instalează și activează extensia User Themes pentru a aplica teme de shell."
-
-#: usr/share/layout-switcher/ui/page_themes.py:424
-msgid "Open Extensions Page"
-msgstr "Deschide pagina Extensii"
-
-#: usr/share/layout-switcher/ui/window.py:66
-#: usr/share/layout-switcher/ui/window.py:323
+#: usr/share/layout-switcher/ui/window.py:71
+#: usr/share/layout-switcher/ui/window.py:377
 msgid "Layout Switcher"
 msgstr "Layout Switcher"
 
-#: usr/share/layout-switcher/ui/window.py:190
-#: usr/share/layout-switcher/ui/window.py:191
+#: usr/share/layout-switcher/ui/window.py:229
+#: usr/share/layout-switcher/ui/window.py:230
 msgid "Show Sidebar"
 msgstr "Afișează bara laterală"
 
-#: usr/share/layout-switcher/ui/window.py:197
-#: usr/share/layout-switcher/ui/window.py:347
-#: usr/share/layout-switcher/ui/window.py:422
+#: usr/share/layout-switcher/ui/window.py:236
+#: usr/share/layout-switcher/ui/window.py:401
+#: usr/share/layout-switcher/ui/window.py:484
 msgid "Layouts"
 msgstr "Layout-uri"
 
-#: usr/share/layout-switcher/ui/window.py:203
+#: usr/share/layout-switcher/ui/window.py:242
 msgid "Menu"
 msgstr "Meniu"
 
-#: usr/share/layout-switcher/ui/window.py:204
+#: usr/share/layout-switcher/ui/window.py:243
 msgid "Main menu"
 msgstr "Meniul principal"
 
-#: usr/share/layout-switcher/ui/window.py:208
+#: usr/share/layout-switcher/ui/window.py:247
 msgid "Check for updates"
 msgstr "Verificați actualizări"
 
-#: usr/share/layout-switcher/ui/window.py:209
+#: usr/share/layout-switcher/ui/window.py:248
 msgid "Auto-update extensions"
 msgstr "Actualizare automată a extensiilor"
 
-#: usr/share/layout-switcher/ui/window.py:211
+#: usr/share/layout-switcher/ui/window.py:250
 msgid "Backups…"
 msgstr "Copii de rezervă…"
 
-#: usr/share/layout-switcher/ui/window.py:212
+#: usr/share/layout-switcher/ui/window.py:251
 msgid "About"
 msgstr "Despre"
 
-#: usr/share/layout-switcher/ui/window.py:221
+#: usr/share/layout-switcher/ui/window.py:260
 msgid "Welcome! Choose a desktop layout below to get started."
 msgstr "Bine ai venit! Alege un layout de desktop de mai jos pentru a începe."
 
-#: usr/share/layout-switcher/ui/window.py:222
+#: usr/share/layout-switcher/ui/window.py:261
 msgid "Got it"
 msgstr "Am înțeles"
 
-#: usr/share/layout-switcher/ui/window.py:348
-#: usr/share/layout-switcher/ui/window.py:423
+#: usr/share/layout-switcher/ui/window.py:402
+#: usr/share/layout-switcher/ui/window.py:485
 msgid "Fonts"
 msgstr "Fonturi"
 
-#: usr/share/layout-switcher/ui/window.py:349
-#: usr/share/layout-switcher/ui/window.py:424
+#: usr/share/layout-switcher/ui/window.py:403
+#: usr/share/layout-switcher/ui/window.py:486
 msgid "Themes"
 msgstr "Teme"
 
-#: usr/share/layout-switcher/ui/window.py:350
-#: usr/share/layout-switcher/ui/window.py:425
+#: usr/share/layout-switcher/ui/window.py:406
+#: usr/share/layout-switcher/ui/window.py:489
 msgid "Effects"
 msgstr "Efecte"
 
-#: usr/share/layout-switcher/ui/window.py:351
-#: usr/share/layout-switcher/ui/window.py:426
+#: usr/share/layout-switcher/ui/page_extensions.py:494
+#: usr/share/layout-switcher/ui/page_extensions.py:502
+#: usr/share/layout-switcher/ui/window.py:407
+#: usr/share/layout-switcher/ui/window.py:490
 msgid "Extensions"
 msgstr "Extensii"
 
-#: usr/share/layout-switcher/ui/window.py:461
+#: usr/share/layout-switcher/ui/window.py:528
 msgid "Community Layout Switcher"
 msgstr "Comunitatea Layout Switcher"
 
-#: usr/share/layout-switcher/ui/window.py:466
+#: usr/share/layout-switcher/ui/window.py:533
 msgid "Layouts, effects and themes for your GNOME desktop."
 msgstr "Layout-uri, efecte și teme pentru desktopul tău GNOME."
 
-#: usr/share/layout-switcher/ui/window.py:512
+#: usr/share/layout-switcher/ui/window.py:599
 msgid "Applying…"
 msgstr "Se aplică…"
 
-#: usr/share/layout-switcher/ui/window.py:585
+#: usr/share/layout-switcher/ui/window.py:706
 msgid "All extensions up to date"
 msgstr "Toate extensiile sunt actualizate"
 
-#: usr/share/layout-switcher/ui/window.py:600
+#: usr/share/layout-switcher/ui/window.py:721
 #, python-brace-format
 msgid "Auto-updated {n} extensions"
 msgstr "{n} extensii actualizate automat"
 
-#: usr/share/layout-switcher/ui/window.py:605
+#: usr/share/layout-switcher/ui/window.py:726
 #, python-brace-format
 msgid "{n} update(s) available"
 msgstr "{n} actualizare(i) disponibilă(e)"
 
-#: usr/share/layout-switcher/ui/window.py:612
+#: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update enabled"
 msgstr "Actualizare automată activată"
 
-#: usr/share/layout-switcher/ui/window.py:612
+#: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update disabled"
 msgstr "Actualizare automată dezactivată"
 
-#~ msgid "System fonts"
-#~ msgstr "Fonturi de sistem"
+#: usr/share/layout-switcher/extension_update_monitor.py:238
+msgid "Extension updates available"
+msgstr "Actualizări de extensii disponibile"
 
-#~ msgid "Fonts used by the GNOME interface"
-#~ msgstr "Fonturi folosite de interfața GNOME"
+#: usr/share/layout-switcher/extension_update_monitor.py:239
+#, python-brace-format
+msgid "Available updates: {names}"
+msgstr "Actualizări disponibile: {names}"
 
-#~ msgid "Window titles (legacy)"
-#~ msgstr "Titluri ferestre (moștenire)"
+#: usr/share/layout-switcher/extension_update_monitor.py:243
+#: usr/share/layout-switcher/extension_update_monitor.py:244
+#: usr/share/layout-switcher/extension_update_monitor.py:336
+#: usr/share/layout-switcher/extension_update_monitor.py:337
+msgid "View updates"
+msgstr "Vezi actualizările"
 
-#~ msgid "Choose…"
-#~ msgstr "Alege…"
+#: usr/share/layout-switcher/extension_update_monitor.py:306
+msgid "Extension updates installed"
+msgstr "Actualizări de extensii instalate"
 
-#~ msgid "Appearance"
-#~ msgstr "Aspect"
+#: usr/share/layout-switcher/extension_update_monitor.py:307
+#: usr/share/layout-switcher/extension_update_monitor.py:322
+#, python-brace-format
+msgid "Updated: {names}"
+msgstr "Actualizate: {names}"
 
-#~ msgid "How fonts are rendered on screen"
-#~ msgstr "Cum sunt redate fonturile pe ecran"
+#: usr/share/layout-switcher/extension_update_monitor.py:311
+#: usr/share/layout-switcher/extension_update_monitor.py:312
+msgid "View extensions"
+msgstr "Vezi extensiile"
 
-#~ msgid "Antialiasing"
-#~ msgstr "Antialiasing"
+#: usr/share/layout-switcher/extension_update_monitor.py:328
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Eșuate: {names}"
 
-#~ msgid "Grayscale"
-#~ msgstr "Scală de gri"
+#: usr/share/layout-switcher/extension_update_monitor.py:333
+msgid "Some extension updates failed"
+msgstr "Unele actualizări de extensii au eșuat"
 
-#~ msgid "Subpixel (RGBA)"
-#~ msgstr "Subpixel (RGBA)"
+#: usr/share/layout-switcher/extension_update_monitor.py:338
+msgid "Try again"
+msgstr "Încearcă din nou"
 
-#~ msgid "Installed fonts"
-#~ msgstr "Fonturi instalate"
+#: usr/share/layout-switcher/helper_client.py:113
+msgid "The required layout helper is not installed."
+msgstr "Asistentul de layout necesar nu este instalat."
 
-#~ msgid "Browse font families installed on your system"
-#~ msgstr "Răsfoiește familiile de fonturi instalate pe sistemul tău"
+#: usr/share/layout-switcher/helper_client.py:152
+msgid "The required layout helper did not start."
+msgstr "Asistentul de layout necesar nu a pornit."
 
-#~ msgid "No fonts match your search"
-#~ msgstr "Niciun font nu corespunde căutării tale"
+#: usr/share/layout-switcher/helper_guard.py:78
+msgid "Layout helper restored"
+msgstr "Asistentul de layout a fost restaurat"
 
-#~ msgid "(refine search to see more)"
-#~ msgstr "(rafinează căutarea pentru a vedea mai multe)"
+#: usr/share/layout-switcher/helper_guard.py:79
+msgid "The required layout helper was re-enabled automatically."
+msgstr "Asistentul de layout necesar a fost reactivat automat."
 
-#~ msgid "fonts"
-#~ msgstr "fonturi"
+#: usr/share/layout-switcher/layout_applier.py:2254
+msgid "Layout Switcher Helper is required to apply layouts."
+msgstr ""
+"Asistentul Layout Switcher este necesar pentru aplicarea layout-urilor."
 
-#~ msgid "The quick brown fox jumps over the lazy dog 0123"
-#~ msgstr "Muzicologă în bej vând whisky și tequila, preț fix 0123"
+#: usr/share/layout-switcher/shell_reloader.py:280
+#: usr/share/layout-switcher/ui/page_extensions.py:704
+#: usr/share/layout-switcher/ui/page_extensions.py:760
+#: usr/share/layout-switcher/ui/page_extensions.py:761
+msgid "Required for layout switching"
+msgstr "Necesar pentru comutarea layout-urilor"
 
-#~ msgid "Install more fonts"
-#~ msgstr "Instalează mai multe fonturi"
+#: usr/share/layout-switcher/ui/desktop_icons.py:28
+#: usr/share/layout-switcher/ui/window.py:404
+#: usr/share/layout-switcher/ui/window.py:487
+msgid "Desktop"
+msgstr "Desktop"
 
-#~ msgid "Opens fonts.google.com in your browser"
-#~ msgstr "Deschide fonts.google.com în browserul tău"
+#: usr/share/layout-switcher/ui/desktop_icons.py:32
+#: usr/share/layout-switcher/ui/desktop_icons.py:51
+msgid "Desktop icons"
+msgstr "Pictograme desktop"
 
-#~ msgid "How to install"
-#~ msgstr "Cum să instalezi"
+#: usr/share/layout-switcher/ui/desktop_icons.py:33
+#: usr/share/layout-switcher/ui/desktop_icons.py:72
+msgid "Show files and folders on the desktop"
+msgstr "Afișează fișierele și folderele pe desktop"
 
-#~ msgid ""
-#~ "Place .ttf/.otf files in ~/.local/share/fonts/ then run 'fc-cache -f -v' and"
-#~ " refresh this list."
-#~ msgstr ""
-#~ "Plasează fișierele .ttf/.otf în ~/.local/share/fonts/ apoi rulează 'fc-cache"
-#~ " -f -v' și reîmprospătează această listă."
+#: usr/share/layout-switcher/ui/desktop_icons.py:39
+msgid "Desktop icon settings"
+msgstr "Setări pictograme desktop"
 
-#~ msgid "system"
-#~ msgstr "sistem"
+#: usr/share/layout-switcher/ui/desktop_icons.py:74
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "GTK4 Desktop Icons NG nu este instalat"
 
-#~ msgid "theme"
-#~ msgstr "temă"
+#: usr/share/layout-switcher/ui/desktop_icons.py:95
+msgid "Desktop icons enabled"
+msgstr "Pictograme desktop activate"
 
-#~ msgid "Click a layout to apply"
-#~ msgstr "Fă clic pe un layout pentru a-l aplica"
+#: usr/share/layout-switcher/ui/desktop_icons.py:97
+msgid "Desktop icons disabled"
+msgstr "Pictograme desktop dezactivate"
 
-#~ msgid ""
-#~ "Marked layouts contain your saved customizations — click to resume them or "
-#~ "apply the original."
-#~ msgstr ""
-#~ "Aspectele marcate conțin personalizările salvate — faceți clic pentru a le "
-#~ "relua sau pentru a aplica originalul."
+#: usr/share/layout-switcher/ui/desktop_icons.py:102
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "Nu s-au putut modifica pictogramele desktop: {message}"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:60
+msgid "Overview blur"
+msgstr "Estompare prezentare generală"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:60
+msgid "Frosted glass"
+msgstr "Sticlă mată"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:67
+msgid "Blur for the workspace and application overview"
+msgstr ""
+"Estompare pentru prezentarea generală a spațiilor de lucru și aplicațiilor"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:69
+msgid "Unified blur for windows and GNOME Shell surfaces"
+msgstr "Estompare unificată pentru ferestre și suprafețele GNOME Shell"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:79
+msgid "unknown"
+msgstr "necunoscut"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:82
+#, python-brace-format
+msgid ""
+"Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
+msgstr ""
+"Estomparea prezentării generale necesită GNOME 50 sau mai nou. Acest desktop"
+" este GNOME {version}."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:89
+msgid ""
+"Install or update Layout Switcher to make Frosted Glass settings available."
+msgstr ""
+"Instalați sau actualizați Layout Switcher pentru a face disponibile setările"
+" Sticlă mată."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:110
+msgid "Enable overview blur"
+msgstr "Activează estomparea în vizualizarea generală"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:111
+#: usr/share/layout-switcher/ui/frosted_glass.py:190
+msgid "Workspace and application overview"
+msgstr "Vizualizarea lucrărilor și aplicațiilor"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:122
+#: usr/share/layout-switcher/ui/frosted_glass.py:206
+msgid "Material"
+msgstr "Material"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "Blur strength"
+msgstr "Intensitatea estompării"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "Less"
+msgstr "Mai puțin"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:124
+#: usr/share/layout-switcher/ui/frosted_glass.py:216
+msgid "More"
+msgstr "Mai mult"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+msgid "Material opacity"
+msgstr "Opacitatea materialului"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/layout-switcher/ui/page_panel_dock.py:199
+msgid "Transparent"
+msgstr "Transparent"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:127
+#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/layout-switcher/ui/page_panel_dock.py:212
+msgid "Opaque"
+msgstr "Opac"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:137
+#: usr/share/layout-switcher/ui/frosted_glass.py:196
+#: usr/share/layout-switcher/ui/frosted_glass.py:198
+msgid "Not available in this session"
+msgstr "Indisponibil în această sesiune"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:147
+msgid "Enable frosted glass"
+msgstr "Activează efectul de sticlă mată"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:148
+msgid "Apply the material without changing the active desktop layout"
+msgstr "Aplică materialul fără a modifica aspectul desktopului activ"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:160
+msgid "Surfaces"
+msgstr "Suprafețe"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:161
+msgid "Choose independently where the material is applied."
+msgstr "Alege independent unde este aplicat materialul."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:164
+msgid "Windows"
+msgstr "Ferestre"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:164
+msgid "GTK, Qt and other application windows"
+msgstr "Ferestre GTK, Qt și alte ferestre de aplicații"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:165
+#: usr/share/layout-switcher/ui/page_panel_dock.py:74
+msgid "Panel"
+msgstr "Panou"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:165
+msgid "GNOME panel and Community Panel"
+msgstr "Panoul GNOME și panoul comunității"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:166
+#: usr/share/layout-switcher/ui/page_panel_dock.py:55
+#: usr/share/layout-switcher/ui/page_panel_dock.py:254
+#: usr/share/layout-switcher/ui/page_panel_dock.py:257
+msgid "Dock"
+msgstr "Doc"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:166
+msgid "Community Dock surfaces"
+msgstr "Suprafețe de doc ale comunității"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:169
+msgid "Layout menus"
+msgstr "Meniuri de aspect"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:170
+msgid "Application menus used by Classic, Hybrid and Desk-UX"
+msgstr "Meniuri de aplicații folosite de Classic, Hybrid și Desk-UX"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:174
+msgid "Quick Settings"
+msgstr "Setări rapide"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:175
+msgid "System settings menu in the panel"
+msgstr "Meniul de setări de sistem din panou"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:179
+msgid "Calendar and notifications"
+msgstr "Calendar și notificări"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:180
+msgid "Date, calendar and notification menu in the panel"
+msgstr "Meniul de dată, calendar și notificări din panou"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:184
+msgid "System dialogs"
+msgstr "Dialoguri de sistem"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:185
+msgid "Power, restart and other GNOME Shell dialogs"
+msgstr "Dialoguri de alimentare, repornire și alte dialoguri GNOME Shell"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:189
+msgid "Overview"
+msgstr "Prezentare generală"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:209
+msgid "Rendering mode"
+msgstr "Mod de redare"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:210
+msgid "Automatic balances visual quality and power usage"
+msgstr "Automat echilibrează calitatea vizuală și consumul de energie"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Automatic"
+msgstr "Automat"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Dynamic"
+msgstr "Dinamic"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:212
+msgid "Static"
+msgstr "Static"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:228
+msgid "Behavior"
+msgstr "Comportament"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:229
+msgid "Application identifiers can be separated by commas."
+msgstr "Identificatorii de aplicații pot fi separați prin virgule."
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:231
+msgid "Application exceptions"
+msgstr "Excepții pentru aplicații"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+msgid "Keep blur"
+msgstr "Păstrează estomparea"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+msgid "Make opaque"
+msgstr "Fă opac"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Disable blur"
+msgstr "Dezactivează estomparea"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:239
+msgid "Maximized windows"
+msgstr "Ferestre maximizate"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:242
+msgid "Fullscreen windows"
+msgstr "Ferestre pe tot ecranul"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:246
+msgid "Power saving"
+msgstr "Economisire energie"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:247
+msgid "Used on battery and with the power-saver profile"
+msgstr "Folosit pe baterie și cu profilul de economisire a energiei"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Keep selected mode"
+msgstr "Păstrează modul selectat"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:249
+msgid "Use static blur"
+msgstr "Utilizează estomparea statică"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:334
+msgid "Frosted glass enabled"
+msgstr "Sticlă mată activată"
+
+#: usr/share/layout-switcher/ui/frosted_glass.py:339
+#, python-brace-format
+msgid "Could not enable Frosted Glass: {message}"
+msgstr "Nu s-a putut activa Sticla Mată: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "Centru sus"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "Centru jos"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "Dreapta sus"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "Stânga sus"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "Stânga jos"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "Dreapta jos"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "Poziția notificărilor"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "Alege unde să apară banner-ele de notificare."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "Afișează notificările la {position}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:143
+#: usr/share/layout-switcher/ui/page_desktop.py:287
+msgid "Default"
+msgstr "Implicit"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:194
+#: usr/share/layout-switcher/ui/page_desktop.py:199
+#: usr/share/layout-switcher/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "Meniul aplicației"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "Disponibil pentru aspectele Classic, Desk-UX și Hybrid."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:200
+#: usr/share/layout-switcher/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "Folosește Meniul Comunității ca meniu de aplicații"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "Stilul meniului"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "Alege aspectul Meniului Comunității."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Tasta Super"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "Alege ce se întâmplă la apăsarea tastei Super"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "Deschide meniul"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "Deschide prezentarea generală"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "Folosește stilul de meniu {name}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "Meniul Comunității nu este instalat"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "Poziția notificărilor {position} a fost aplicată"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "Nu s-a putut schimba poziția notificărilor: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "Previzualizare notificare"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "Notificările vor apărea aici."
+
+#: usr/share/layout-switcher/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "Meniul de aplicații activat"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "Meniul de aplicații dezactivat"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "Nu s-a putut modifica meniul aplicațiilor: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "Stilul de meniu {name} a fost aplicat"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "Nu s-a putut modifica stilul de meniu: {message}"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "Super deschide meniul aplicațiilor"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "Super deschide prezentarea generală"
+
+#: usr/share/layout-switcher/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "Nu s-a putut modifica tasta Super: {message}"
+
+#: usr/share/layout-switcher/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "Alte efecte vizuale"
+
+#: usr/share/layout-switcher/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "Previzualizarea efectului {name}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:20
+msgid "Always visible"
+msgstr "Mereu vizibil"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:21
+msgid "Always hidden (show at edge)"
+msgstr "Mereu ascuns (afișat la margine)"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:22
+msgid "Intelligent hiding"
+msgstr "Ascundere inteligentă"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:25
+msgid "Dot"
+msgstr "Punct"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:26
+msgid "Hybrid line"
+msgstr "Linie hibridă"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:27
+msgid "Desk UX line"
+msgstr "Linie Desk UX"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:56
+#: usr/share/layout-switcher/ui/page_panel_dock.py:259
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "Configurează aspectul și vizibilitatea Docului comunității."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:62
+msgid "Dock transparency"
+msgstr "Transparență Dock"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:65
+msgid "Dock visibility"
+msgstr "Vizibilitate Dock"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:75
+#: usr/share/layout-switcher/ui/page_panel_dock.py:271
+msgid "Configure the system panel appearance and visibility."
+msgstr "Configurează aspectul și vizibilitatea panoului de sistem."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:81
+msgid "Panel transparency"
+msgstr "Transparență panou"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:84
+msgid "Panel visibility"
+msgstr "Vizibilitate panou"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:101
+msgid "Running app indicator"
+msgstr "Indicator aplicații în execuție"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:105
+msgid "Choose the mark shown below running applications."
+msgstr "Alege marcajul afișat sub aplicațiile în execuție."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:142
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "Folosește indicatorul {style}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:222
+msgid "Choose how this component behaves on the desktop."
+msgstr "Alege cum se comportă această componentă pe desktop."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:251
+msgid "Taskbar"
+msgstr "Bară de activități"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:252
+msgid "Configure running application indicators."
+msgstr "Configurează indicatorii aplicațiilor în execuție."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:255
+msgid "Available when Community Dock is active."
+msgstr "Disponibil când Community Dock este activ."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:263
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "Disponibil când Community Dock sau Community Panel este activ."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:267
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "Configurează aspectul și vizibilitatea Community Panel."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:321
+msgid "Dock visibility updated"
+msgstr "Vizibilitatea Dock a fost actualizată"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:328
+msgid "Panel visibility updated"
+msgstr "Vizibilitatea panoului a fost actualizată"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:338
+msgid "Indicator style updated"
+msgstr "Stilul indicatorului a fost actualizat"
+
+#: usr/share/layout-switcher/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Albastru"
+
+#: usr/share/layout-switcher/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Turcoaz"
+
+#: usr/share/layout-switcher/ui/page_themes.py:22
+msgid "Green"
+msgstr "Verde"
+
+#: usr/share/layout-switcher/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Galben"
+
+#: usr/share/layout-switcher/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Portocaliu"
+
+#: usr/share/layout-switcher/ui/page_themes.py:25
+msgid "Red"
+msgstr "Roșu"
+
+#: usr/share/layout-switcher/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Roz"
+
+#: usr/share/layout-switcher/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Mov"
+
+#: usr/share/layout-switcher/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Ardezie"
+
+#: usr/share/layout-switcher/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/layout-switcher/ui/page_themes.py:108
+msgid "Colors"
+msgstr "Culori"
+
+#: usr/share/layout-switcher/ui/page_themes.py:165
+msgid "Accent color"
+msgstr "Culoare de accent"
+
+#: usr/share/layout-switcher/ui/page_themes.py:174
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "Alege culoarea folosită pentru butoane, selecții și evidențieri."
+
+#: usr/share/layout-switcher/ui/page_themes.py:207
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color} culoare de accent"
+
+#: usr/share/layout-switcher/ui/window.py:405
+#: usr/share/layout-switcher/ui/window.py:488
+msgid "Panel and Dock"
+msgstr "Panou și Dock"
