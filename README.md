@@ -15,7 +15,7 @@
   <img alt="Python 3.10 or newer" src="https://img.shields.io/badge/Python-3.10%2B-3776ab.svg?logo=python&logoColor=white">
   <img alt="GTK 4" src="https://img.shields.io/badge/GTK-4-4a86cf.svg?logo=gnome&logoColor=white">
   <img alt="GNOME Shell 45 through 51" src="https://img.shields.io/badge/GNOME_Shell-45--51-4a86cf.svg?logo=gnome&logoColor=white">
-  <img alt="435 tests" src="https://img.shields.io/badge/tests-435-success.svg">
+  <img alt="446 tests" src="https://img.shields.io/badge/tests-446-success.svg">
   <img alt="29 translations" src="https://img.shields.io/badge/i18n-29_languages-9141ac.svg">
 </p>
 
@@ -213,7 +213,7 @@ ruff format --check .
 python3 -m pytest tests/ -q
 ```
 
-The test suite is display-independent and currently contains 435 tests.
+The test suite is display-independent and currently contains 446 tests.
 
 ### Project structure
 

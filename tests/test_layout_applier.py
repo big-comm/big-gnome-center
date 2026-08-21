@@ -1889,6 +1889,25 @@ class TestHelperIntegration:
         assert current in enabled
         assert legacy not in out
 
+    def test_inject_helper_uuid_keeps_installed_legacy_big_shot_at_runtime(self):
+        legacy = "big-shot@bigcommunity.org"
+        current = "big-shot@communitybig.org"
+        data = (
+            "[org/gnome/shell]\n"
+            f"enabled-extensions=['{current}', 'stay@ext']\n"
+            "disabled-extensions=[]\n"
+        )
+
+        out = LayoutApplier._inject_helper_uuid(
+            data,
+            available_uuids={legacy},
+        )
+        shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+
+        assert legacy in enabled
+        assert current not in enabled
+
     def test_inject_helper_uuid_retires_legacy_from_saved_lists(self):
         from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
 

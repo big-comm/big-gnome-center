@@ -388,6 +388,7 @@ class LayoutApplier:
         data: str,
         persistent_uuids: Optional[Iterable[str]] = None,
         active_helper_uuid: str = "",
+        available_uuids: Optional[Iterable[str]] = None,
     ) -> str:
         """
         Keep the helper enabled first and preserve layout-independent features.
@@ -397,7 +398,7 @@ class LayoutApplier:
         """
         data = cls._migrate_layout_component_uuids(
             data,
-            available_uuids=HelperClient.installed_extension_uuids(),
+            available_uuids=available_uuids,
         )
         data = cls._retire_blur_my_shell(data)
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
@@ -2258,6 +2259,7 @@ class LayoutApplier:
             data,
             before_uuids,
             active_helper_uuid=HelperClient.active_uuid(),
+            available_uuids=HelperClient.installed_extension_uuids(),
         )
         data = cls._apply_user_component_overrides(data, layout_id=layout_id)
         if layout_id and gnome_shell_version()[0] == 50:
