@@ -73,7 +73,7 @@ def test_overview_material_defaults_and_range():
     keys = {node.attrib["name"]: node for node in schema.findall("key")}
 
     assert keys["blur-strength"].findtext("default") == "23"
-    assert keys["glass-opacity"].findtext("default") == "32"
+    assert keys["glass-opacity"].findtext("default") == "31"
     assert keys["glass-opacity"].find("range").attrib == {"min": "0", "max": "100"}
     assert keys["use-accent-color"].findtext("default") == "false"
 

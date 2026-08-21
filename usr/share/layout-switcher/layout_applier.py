@@ -137,6 +137,7 @@ _LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 _USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
+_FROSTED_GLASS_DEFAULT_OPACITY = 31
 _GTK4_DING_UUID = "gtk4-ding@smedius.gitlab.com"
 _BLUR_MY_SHELL_UUID = "blur-my-shell@aunetx"
 _LAYOUT_INDEPENDENT_UUIDS = (_FROSTED_GLASS_UUID,)
@@ -1211,6 +1212,16 @@ class LayoutApplier:
             cls._quote_string_list(extensions),
         )
 
+    @classmethod
+    def _apply_original_frosted_glass_defaults(cls, data: str) -> str:
+        """Reset product-owned Frosted Glass defaults for an original layout."""
+        return cls._replace_or_add_dconf_key(
+            data,
+            "/org/communitybig/frosted-glass",
+            "glass-opacity",
+            str(_FROSTED_GLASS_DEFAULT_OPACITY),
+        )
+
     @staticmethod
     def _prefers_dark(values: Dict[Tuple[str, str], str]) -> Optional[bool]:
         """Infer current light/dark preference from live theme keys."""
@@ -2262,8 +2273,10 @@ class LayoutApplier:
             available_uuids=HelperClient.installed_extension_uuids(),
         )
         data = cls._apply_user_component_overrides(data, layout_id=layout_id)
-        if layout_id and gnome_shell_version()[0] == 50:
-            data = cls._apply_gnome50_overview_default(data, layout_id)
+        if layout_id:
+            data = cls._apply_original_frosted_glass_defaults(data)
+            if gnome_shell_version()[0] == 50:
+                data = cls._apply_gnome50_overview_default(data, layout_id)
 
         data = cls._retire_blur_my_shell(data)
         valid, validation_error = cls._validate_structural_extensions(data)

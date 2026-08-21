@@ -2042,6 +2042,14 @@ class TestHelperIntegration:
         assert glass["overview-enabled"] == value
         assert ("frosted-glass@communitybig.org" in enabled) is expected
 
+    def test_original_frosted_glass_default_resets_material_opacity(self):
+        data = "[org/communitybig/frosted-glass]\nglass-opacity=100\n"
+
+        out = LayoutApplier._apply_original_frosted_glass_defaults(data)
+        glass = LayoutApplier._section_key_values(out, "/org/communitybig/frosted-glass")
+
+        assert glass["glass-opacity"] == "31"
+
     def test_inject_helper_uuid_retires_blur_my_shell(self):
         blur_my_shell = "blur-my-shell@aunetx"
         data = (
