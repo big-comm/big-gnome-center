@@ -121,12 +121,14 @@ class FrostedGlassControls(Gtk.Box):
     def _build_overview_material_group(self) -> Adw.PreferencesGroup:
         group = Adw.PreferencesGroup(title=tr("Material"))
         strength = self._scale_row("blur-strength", tr("Blur strength"), tr("Less"), tr("More"))
+        accent = self._switch_row("use-accent-color", tr("Accent color"), "")
         opacity = self._scale_row(
             "glass-opacity", tr("Material opacity"), tr("Transparent"), tr("Opaque")
         )
         group.add(strength)
+        group.add(accent)
         group.add(opacity)
-        self._dependent_rows.extend([strength, opacity])
+        self._dependent_rows.extend([strength, accent, opacity])
         return group
 
     def _unavailable(self, message: str) -> Gtk.Widget:
@@ -209,12 +211,14 @@ class FrostedGlassControls(Gtk.Box):
         )
         group.add(mode)
         strength = self._scale_row("blur-strength", tr("Blur strength"), tr("Less"), tr("More"))
+        accent = self._switch_row("use-accent-color", tr("Accent color"), "")
         opacity = self._scale_row(
             "glass-opacity", tr("Material opacity"), tr("Transparent"), tr("Opaque")
         )
         group.add(strength)
+        group.add(accent)
         group.add(opacity)
-        self._dependent_rows.extend([mode, strength, opacity])
+        self._dependent_rows.extend([mode, strength, accent, opacity])
         return group
 
     def _build_rules_group(self) -> Adw.PreferencesGroup:

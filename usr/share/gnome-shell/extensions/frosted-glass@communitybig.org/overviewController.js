@@ -8,6 +8,7 @@ import * as Background from 'resource:///org/gnome/shell/ui/background.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import {ConnectionManager} from './connectionManager.js';
+import {materialColor, OverviewMaterialStylesheet} from './overviewMaterial.js';
 
 const EFFECT_NAME = 'communitybig-frosted-glass-overview';
 const STYLE_CLASS = 'frosted-glass-overview';
@@ -21,6 +22,7 @@ export class OverviewController {
             name: 'communitybig-frosted-glass-overview-group',
         });
         this._managers = [];
+        this._materialStylesheet = new OverviewMaterialStylesheet();
         this._enabled = false;
         this._reinserting = false;
     }
@@ -50,6 +52,8 @@ export class OverviewController {
     destroy() {
         this._connections.disconnectAll();
         this._detach();
+        this._materialStylesheet.destroy();
+        this._materialStylesheet = null;
         this._group.destroy();
         this._group = null;
     }
@@ -101,11 +105,11 @@ export class OverviewController {
             record.effect.radius = Math.max(0, Math.round(config.radius * scale));
             record.effect.brightness = config.brightness;
             actor.set_child_above_sibling(record.tint, null);
-            const tintColor = config.lightMode ? '247, 248, 252' : '28, 28, 34';
             record.tint.set_style(
-                `background-color: rgba(${tintColor}, ${config.tintOpacity.toFixed(3)});`
+                `background-color: ${materialColor(config, config.tintOpacity)};`
             );
         }
+        this._materialStylesheet.update(config);
         if (config.lightMode)
             Main.uiGroup.add_style_class_name(LIGHT_STYLE_CLASS);
         else

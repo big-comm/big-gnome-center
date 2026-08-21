@@ -45,8 +45,12 @@
     </key>
     <key name="glass-opacity" type="i">
       <range min="0" max="100"/>
-      <default>82</default>
+      <default>32</default>
       <summary>Material opacity</summary>
+    </key>
+    <key name="use-accent-color" type="b">
+      <default>false</default>
+      <summary>Use the Shell accent color for the glass material</summary>
     </key>
     <key name="blur-mode" type="s">
       <choices>

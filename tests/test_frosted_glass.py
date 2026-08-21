@@ -59,6 +59,7 @@ def test_schema_covers_requested_surfaces_and_rules():
         "overview-enabled",
         "blur-strength",
         "glass-opacity",
+        "use-accent-color",
         "blur-mode",
         "application-exclusions",
         "maximized-behavior",
@@ -72,8 +73,9 @@ def test_overview_material_defaults_and_range():
     keys = {node.attrib["name"]: node for node in schema.findall("key")}
 
     assert keys["blur-strength"].findtext("default") == "23"
-    assert keys["glass-opacity"].findtext("default") == "82"
+    assert keys["glass-opacity"].findtext("default") == "32"
     assert keys["glass-opacity"].find("range").attrib == {"min": "0", "max": "100"}
+    assert keys["use-accent-color"].findtext("default") == "false"
 
 
 def test_automatic_mode_uses_live_background_blur():
@@ -81,6 +83,8 @@ def test_automatic_mode_uses_live_background_blur():
 
     assert "requestedMode === 'automatic' ? 'dynamic'" in extension
     assert "savingPower && powerBehavior === 'static'" in extension
+    assert "MATERIAL_OPACITY_EXPONENT = 1.8" in extension
+    assert "Math.pow(opacityPercent / 100, MATERIAL_OPACITY_EXPONENT)" in extension
 
 
 def test_extension_does_not_depend_on_blur_my_shell_runtime():
@@ -133,6 +137,7 @@ def test_layout_switcher_exposes_frosted_glass_controls():
         "overview-enabled",
         "blur-strength",
         "glass-opacity",
+        "use-accent-color",
         "blur-mode",
         "power-save-behavior",
     ]:
@@ -330,10 +335,11 @@ def test_glass_material_tracks_light_and_dark_color_scheme():
     assert "Main.extensionManager.lookup(COMMUNITY_MENU_UUID)?.state" in extension
     assert "lightMode = appLightMode && communityMenuActive" in extension
     assert "brightness: lightMode ? 1.0 : 0.9" in extension
-    assert "tintOpacity: 0.60 * opacityPercent / 100" in extension
+    assert "tintOpacity: materialOpacity" in extension
+    assert "useAccentColor: this._settings.get_boolean('use-accent-color')" in extension
     assert "const LIGHT_STYLE_CLASS = 'frosted-glass-light'" in surface
     assert "config.lightMode ? '247, 248, 252'" in surface
-    assert "config.lightMode ? '247, 248, 252'" in overview
+    assert "materialColor(config, config.tintOpacity)" in overview
     assert "this._syncQuickSubmenus(quickSubmenus, config.lightMode)" in discovery
     assert "lightMode: config.appLightMode" in discovery
     assert "brightness: config.appLightMode ? 1.0 : 0.9" in discovery
@@ -397,10 +403,25 @@ def test_overview_folder_tiles_reuse_the_blurred_backdrop():
 
 def test_overview_controls_reuse_the_blurred_backdrop():
     controller = (EXTENSION / "overviewController.js").read_text()
+    material = (EXTENSION / "overviewMaterial.js").read_text()
     stylesheet = (EXTENSION / "stylesheet.css").read_text()
 
     assert "container.set_child_above_sibling(tint, null)" in controller
     assert "actor.set_child_above_sibling(record.tint, null)" in controller
+    assert "new OverviewMaterialStylesheet()" in controller
+    assert "materialColor(config, config.tintOpacity)" in controller
+    assert "config.materialOpacity" in material
+    assert "config.useAccentColor" in material
+    assert "st-transparentize(-st-accent-color" in material
+    assert "rgba(${neutral.join(', ')}, ${alpha.toFixed(3)})" in material
+    assert ".search-section-content" in material
+    assert ".overview-tile.app-folder" in material
+    assert ".grid-search-result:focus" in material
+    assert "load_stylesheet" in material
+    assert "unload_stylesheet" in material
+    assert "UPDATE_DELAY_MS = 120" in material
+    assert "GLib.timeout_add" in material
+    assert "GLib.source_remove(this._updateId)" in material
     assert ".frosted-glass-overview .search-entry" in stylesheet
     assert ".frosted-glass-overview .workspace-thumbnail" in stylesheet
     assert ".frosted-glass-overview .search-section-content" in stylesheet

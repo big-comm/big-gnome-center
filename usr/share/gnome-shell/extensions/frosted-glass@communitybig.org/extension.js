@@ -20,6 +20,7 @@ const FULL_BACKEND_AVAILABLE = SHELL_MAJOR >= FULL_BACKEND_MINIMUM_SHELL_MAJOR;
 const COMMUNITY_MENU_UUID = 'community-menu@communitybig.org';
 const LIVE_EXTENSION_STATES = new Set([1, 8]);
 const LIGHT_SHELL_MENU_LAYOUTS = new Set([1, 4]);
+const MATERIAL_OPACITY_EXPONENT = 1.8;
 
 export default class FrostedGlassExtension extends Extension {
     enable() {
@@ -112,6 +113,7 @@ export default class FrostedGlassExtension extends Extension {
 
         const strength = this._settings.get_int('blur-strength');
         const opacityPercent = this._settings.get_int('glass-opacity');
+        const materialOpacity = Math.pow(opacityPercent / 100, MATERIAL_OPACITY_EXPONENT);
         const appLightMode = this._interfaceSettings.get_string('color-scheme') !==
             'prefer-dark';
         const communityMenuActive = LIVE_EXTENSION_STATES.has(
@@ -133,7 +135,9 @@ export default class FrostedGlassExtension extends Extension {
             radius: Math.max(0, strength * 1.6),
             brightness: lightMode ? 1.0 : 0.9,
             opacity: Math.round(255 * opacityPercent / 100),
-            tintOpacity: 0.60 * opacityPercent / 100,
+            tintOpacity: materialOpacity,
+            materialOpacity,
+            useAccentColor: this._settings.get_boolean('use-accent-color'),
             lightMode,
             appLightMode,
             mode,
