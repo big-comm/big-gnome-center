@@ -631,10 +631,11 @@ export const HybridCategoriesSection = GObject.registerClass({
                 this._iconSize,
                 false);
             this._categoryButtons.set(category, button);
+            const categoryMenuId = category.get_menu_id();
             button.connectObject('selected', this._selected.bind(this), this);
             button.connectObject('notify::hover', () => {
-                if (button.hover)
-                    this._selected(button, category.get_menu_id());
+                if (button.hover && categoryMenuId !== 'recent_files')
+                    this._selected(button, categoryMenuId);
             }, this);
         }
         if (!button.get_parent())

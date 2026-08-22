@@ -326,7 +326,8 @@ def test_hybrid_layout_matches_enterprise_menu_structure():
     assert "class HybridCategoriesSection" in sections
     assert "Constants.COMPACT_SUBMENU_ICON_SIZE" in sections
     assert "notify::hover" in sections
-    assert "this._selected(button, category.get_menu_id())" in sections
+    assert "categoryMenuId !== 'recent_files'" in sections
+    assert "this._selected(button, categoryMenuId)" in sections
     assert "iconSize = Constants.APP_LIST_ICON_SIZE, showArrow = true" in items
     assert "if (showArrow)" in items
     assert "gridColumns = Constants.COLUMN_COUNT" in sections
