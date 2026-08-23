@@ -54,6 +54,8 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert profiles.count("indicator: 'desk-ux'") == 2
     assert profiles.count("indicator: 'hybrid'") == 1
     assert profiles.count("indicator: 'dot'") == 1
+    assert profiles.count("hover: 'lift'") == 1
+    assert profiles.count("hover: 'default'") == 5
 
 
 def test_unified_runtime_applies_profile_or_override_indicator_before_activation():
@@ -62,13 +64,17 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
     taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
 
     assert "indicator-style-overrides" in controller
-    assert "this._dock.activate(profile, indicator)" in controller
-    assert "this._taskbar.activate(profile, indicator)" in controller
+    assert "dock-hover-overrides" in controller
+    assert "this._dock.activate(profile, indicator, hover)" in controller
+    assert "this._taskbar.activate(profile, indicator, hover)" in controller
     assert "set_string('indicator-style', style)" in dock
+    assert "set_string('dock-hover-effect', effect)" in dock
+    assert "set_enum('dock-position', position)" in dock
     assert "dot: ['DOTS', 'DOTS', 6]" in taskbar
     assert "hybrid: ['SEGMENTED', 'SEGMENTED', 3]" in taskbar
     assert "'desk-ux': ['METRO', 'DASHES', 3]" in taskbar
     assert "settings.set_int('dot-size', 0)" in taskbar
+    assert "settings.set_boolean('animate-appicon-hover', hover === 'lift')" in taskbar
 
 
 def test_unified_runtime_replaces_component_extension_activation():

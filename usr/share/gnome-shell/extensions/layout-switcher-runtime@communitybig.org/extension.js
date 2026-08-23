@@ -14,4 +14,11 @@ export default class LayoutSwitcherRuntimeExtension extends Extension {
         this._controller?.disable();
         this._controller = null;
     }
+
+    diagnostics() {
+        return this._controller?.diagnostics() ?? {
+            enabled: false,
+            error: 'runtime controller is unavailable',
+        };
+    }
 }

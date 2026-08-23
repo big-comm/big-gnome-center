@@ -1,7 +1,10 @@
 # Shell Runtime Migration Plan
 
-Last update: 2026-08-22
-Status: Phase 2 complete; focused Dock and Taskbar transition in progress
+Last update: 2026-08-23
+Status: safe unified-controller checkpoint; compatibility extraction pending
+
+The actionable remaining-work checklist is maintained in
+[`SHELL_RUNTIME_REMAINING_WORK.md`](SHELL_RUNTIME_REMAINING_WORK.md).
 
 ## Goal
 
@@ -160,11 +163,16 @@ fullscreen, visibility, and monitor changes.
 - [x] List inherited modules and map active schema sections by layout.
 - [x] Record current installed size and source line count.
 - [x] Build a six-layout behavior matrix.
-- [ ] Add focused tests for every behavior that must survive extraction.
-- [ ] Capture GNOME 50 reference screenshots and measurements.
-- [ ] Review GNOME 51 API differences before runtime extraction.
+- [x] Add focused baseline and transition-contract tests.
+- [x] Capture GNOME 50 reference screenshots and measurements.
+- [x] Capture GNOME 51 reference screenshots and measurements.
+- [x] Review GNOME 51 runtime behavior before extraction.
 
 Gate: baseline reviewed. No runtime behavior changed.
+
+Evidence: [`baselines/README.md`](baselines/README.md). GNOME 50.4 and GNOME 51
+beta passed the same clean-session matrix. Their actor-allocation differences
+are recorded and must not be normalized blindly during extraction.
 
 ### Phase 1 — Centralize configuration safely
 

@@ -1728,6 +1728,7 @@ class TestCuratedLayoutFiles:
                 return {
                     "indicator-style-overrides": "{'G-Unity': 'dot'}",
                     "dock-opacity-overrides": "{'G-Unity': uint32 80}",
+                    "dock-hover-overrides": "{'G-Unity': 'lift'}",
                 }
 
         source = "[org/gnome/shell]\nenabled-extensions=[]\n"
@@ -1743,6 +1744,7 @@ class TestCuratedLayoutFiles:
         )
         assert runtime["indicator-style-overrides"] == "{'G-Unity': 'dot'}"
         assert runtime["dock-opacity-overrides"] == "{'G-Unity': uint32 80}"
+        assert runtime["dock-hover-overrides"] == "{'G-Unity': 'lift'}"
 
     def test_desk_ux_dtp_position_and_size_are_explicit(self):
         """Desk UX must not depend on inherited DTP defaults."""

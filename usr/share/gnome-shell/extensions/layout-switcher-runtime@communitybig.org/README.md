@@ -1,11 +1,11 @@
 # Layout Switcher Shell Runtime
 
-Focused GNOME Shell runtime for the six supported Layout Switcher profiles.
+Unified GNOME Shell controller for the six supported Layout Switcher profiles.
 
-The current build is intentionally passive. It validates lifecycle, schema
-access, and profile selection while Community Dock and Community Panel remain
-the visual owners. Actor extraction begins only after the corresponding layout
-contract is accepted on GNOME 50.
+The controller is active and selects Dock, Taskbar, or native GNOME behavior
+from the current layout. The accepted Community Dock and Community Panel
+engines remain internal compatibility modules while their behavior is extracted
+incrementally. Their standalone UUIDs are not enabled by layout files.
 
 This extension has no preferences window. User-facing settings belong to the
 Layout Switcher application.

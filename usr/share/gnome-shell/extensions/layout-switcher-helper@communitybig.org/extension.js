@@ -50,6 +50,7 @@
 //   CompleteSwitch(payload: s)-> s   see _completeSwitch for the schema
 //   AbortSwitch()             -> s   rollback to the pre-switch set
 //   SetNotificationPosition(position: s) -> s   apply banner alignment
+//   AuditRuntime()             -> s   read-only actor/runtime diagnostics
 //   ApplyLayout(payload: s)   -> s   legacy v6 incremental switch
 //   ReloadExtension(uuid: s)  -> s   reload one extension (re-read appearance)
 
@@ -116,7 +117,7 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 64;
+const HELPER_BUILD = 65;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -157,6 +158,9 @@ const IFACE = `
     </method>
     <method name="SetNotificationPosition">
       <arg type="s" direction="in" name="position"/>
+      <arg type="s" direction="out" name="result"/>
+    </method>
+    <method name="AuditRuntime">
       <arg type="s" direction="out" name="result"/>
     </method>
     <method name="ApplyLayout">
@@ -372,6 +376,72 @@ export default class LayoutSwitcherHelper extends Extension {
             busy: Boolean(this._switching || this._applying),
             notificationPosition: this._notificationPosition ?? '',
         });
+    }
+
+    AuditRuntime() {
+        const extension = Main.extensionManager.lookup(RUNTIME_UUID);
+        let runtime = null;
+        let runtimeError = '';
+        try {
+            const stateObject = extension?.stateObj;
+            if (typeof stateObject?.diagnostics !== 'function')
+                throw new Error('runtime diagnostics unavailable');
+            runtime = stateObject.diagnostics();
+        } catch (error) {
+            runtimeError = String(error);
+        }
+
+        return JSON.stringify({
+            helperBuild: HELPER_BUILD,
+            runtime,
+            runtimeError,
+            stage: this._runtimeActors(),
+            monitors: Main.layoutManager.monitors.map(monitor => ({
+                index: monitor.index,
+                x: monitor.x,
+                y: monitor.y,
+                width: monitor.width,
+                height: monitor.height,
+            })),
+            primaryMonitor: Main.layoutManager.primaryIndex,
+        });
+    }
+
+    _runtimeActors() {
+        const result = {dock: [], taskbar: [], visited: 0};
+        const pending = [global.stage];
+        const seen = new Set();
+        while (pending.length) {
+            const actor = pending.pop();
+            if (!actor || seen.has(actor))
+                continue;
+            seen.add(actor);
+            result.visited++;
+
+            const name = actor.name ?? actor.get_name?.() ?? '';
+            const classes = actor.get_style_class_name?.() ?? '';
+            if (name === 'dashtodockContainer')
+                result.dock.push(this._runtimeActorRecord(actor, name, classes));
+            if (classes.split(/\s+/).includes('dashtopanelPanel'))
+                result.taskbar.push(this._runtimeActorRecord(actor, name, classes));
+
+            for (const child of actor.get_children?.() ?? [])
+                pending.push(child);
+        }
+        return result;
+    }
+
+    _runtimeActorRecord(actor, name, classes) {
+        return {
+            name,
+            classes,
+            x: Math.round(actor.x ?? 0),
+            y: Math.round(actor.y ?? 0),
+            width: Math.round(actor.width ?? 0),
+            height: Math.round(actor.height ?? 0),
+            visible: Boolean(actor.visible),
+            mapped: Boolean(actor.mapped),
+        };
     }
 
     _selfUuid() {

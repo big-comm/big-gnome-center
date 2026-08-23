@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 3;
+export const RUNTIME_BUILD = 6;
 
 export class RuntimeController {
     constructor(extension) {
@@ -70,14 +70,15 @@ export class RuntimeController {
 
         const profile = profileForLayout(this._settings.get_string('active-layout'));
         const indicator = this._indicatorForProfile(profile);
+        const hover = this._hoverForProfile(profile);
         this._dock.deactivate();
         this._taskbar.deactivate();
         this._activeProfile = profile;
 
         if (profile.surface === RuntimeSurface.DOCK) {
-            this._dock.activate(profile, indicator);
+            this._dock.activate(profile, indicator, hover);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
-            await this._taskbar.activate(profile, indicator);
+            await this._taskbar.activate(profile, indicator, hover);
             if (!this._enabled || generation !== this._syncGeneration)
                 this._taskbar.deactivate();
         }
@@ -88,5 +89,30 @@ export class RuntimeController {
             .get_value('indicator-style-overrides')
             .deep_unpack();
         return overrides[profile.layout] ?? profile.indicator;
+    }
+
+    _hoverForProfile(profile) {
+        const overrides = this._settings
+            .get_value('dock-hover-overrides')
+            .deep_unpack();
+        return overrides[profile.layout] ?? profile.hover;
+    }
+
+    diagnostics() {
+        const profile = this._activeProfile ??
+            profileForLayout(this._settings?.get_string('active-layout') ?? '');
+        return {
+            build: RUNTIME_BUILD,
+            enabled: Boolean(this._enabled),
+            layout: profile.layout,
+            expected: {
+                surface: profile.surface,
+                edge: profile.edge,
+                indicator: this._indicatorForProfile(profile),
+                hover: this._hoverForProfile(profile),
+            },
+            dock: this._dock?.diagnostics() ?? {active: false, actors: []},
+            taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},
+        };
     }
 }

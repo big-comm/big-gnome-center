@@ -13,6 +13,7 @@ const LAYOUT_PROFILES = new Map([
         edge: 'bottom',
         labels: false,
         indicator: 'desk-ux',
+        hover: 'default',
     })],
     ['G-Unity', Object.freeze({
         layout: 'G-Unity',
@@ -20,6 +21,7 @@ const LAYOUT_PROFILES = new Map([
         edge: 'left',
         labels: false,
         indicator: 'dot',
+        hover: 'default',
     })],
     ['Hybrid', Object.freeze({
         layout: 'Hybrid',
@@ -27,6 +29,7 @@ const LAYOUT_PROFILES = new Map([
         edge: 'bottom',
         labels: false,
         indicator: 'hybrid',
+        hover: 'lift',
     })],
     ['Desk UX', Object.freeze({
         layout: 'Desk UX',
@@ -34,6 +37,7 @@ const LAYOUT_PROFILES = new Map([
         edge: 'bottom',
         labels: false,
         indicator: 'desk-ux',
+        hover: 'default',
     })],
     ['Classic', Object.freeze({
         layout: 'Classic',
@@ -41,6 +45,7 @@ const LAYOUT_PROFILES = new Map([
         edge: 'bottom',
         labels: true,
         indicator: 'none',
+        hover: 'default',
     })],
     ['Minimal', Object.freeze({
         layout: 'Minimal',
@@ -48,6 +53,7 @@ const LAYOUT_PROFILES = new Map([
         edge: 'top',
         labels: false,
         indicator: 'none',
+        hover: 'default',
     })],
 ]);
 

@@ -1,18 +1,18 @@
 # Shell Runtime Inventory
 
-Last update: 2026-08-22
-Status: static inventory and passive unified runtime foundation complete
+Last update: 2026-08-23
+Status: static inventory and safe unified-controller checkpoint complete
 
 ## Ownership matrix
 
 | Layout | Active runtime | Position | Dormant inherited settings |
 |---|---|---|---|
-| BigGnome | Community Dock + native panel controller | bottom | none |
-| G-Unity | Community Dock + native panel controller | left | none |
-| Hybrid | Community Panel | bottom | Dash to Dock snapshot, not enabled |
-| Desk UX | Community Panel | bottom | Dash to Dock snapshot, not enabled |
-| Classic | Community Panel | bottom | Dash to Dock snapshot, not enabled |
-| Minimal | native GNOME panel only | top | Dash to Dock snapshot, not enabled |
+| BigGnome | Unified runtime -> Dock compatibility engine | bottom | none |
+| G-Unity | Unified runtime -> Dock compatibility engine | left | none |
+| Hybrid | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
+| Desk UX | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
+| Classic | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
+| Minimal | Unified runtime -> native GNOME panel only | top | Dash to Dock snapshot, not enabled |
 
 The dormant Dash to Dock sections are migration debt. They must not be treated
 as runtime requirements when the focused schema is introduced.
@@ -29,22 +29,23 @@ Phase 1 checkpoint after removing independent preferences:
 
 | Component | Current bytes | Current JS/CSS lines |
 |---|---:|---:|
-| Community Dock | 628,811 | 14,545 |
-| Community Panel | 1,201,954 | 12,857 |
-| Combined | 1,830,765 | 27,402 |
+| Community Dock | 632,843 | 14,652 |
+| Community Panel | 1,201,543 | 12,854 |
+| Combined | 1,834,386 | 27,506 |
 
-This first cleanup removes 508,889 bytes and 5,314 JS/CSS lines without
-removing runtime features.
+The current cleanup removes 505,268 bytes and 5,210 JS/CSS lines from the two
+compatibility engines without removing accepted runtime features.
 
-Passive unified runtime checkpoint:
+Active unified-controller checkpoint:
 
 | Component | Current bytes | JavaScript lines | Actor ownership |
 |---|---:|---:|---|
-| Layout Switcher Shell Runtime | 23,406 | 166 | none (extraction gate) |
+| Layout Switcher Shell Runtime | 11,005 | 336 | compatibility-engine lifecycle |
 
-The new runtime reads the owned schema and maps all six layout profiles, but
-an explicit passive gate prevents it from creating actors. Community Dock and
-Community Panel remain authoritative until their individual approval gates.
+The runtime reads the owned schema, maps all six layout profiles, and selects
+Dock, Taskbar, or native GNOME behavior. Community Dock and Community Panel are
+not enabled as standalone UUIDs; their accepted engines remain imported as
+internal compatibility modules until their individual extraction gates pass.
 
 Preferences-only payload removed:
 

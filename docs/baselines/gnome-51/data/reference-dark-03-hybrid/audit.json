@@ -1,0 +1,288 @@
+{
+  "apply_seconds": 4.784,
+  "checks": [
+    {
+      "detail": "no duplicate UUIDs",
+      "name": "extension-list",
+      "status": "PASS"
+    },
+    {
+      "detail": "layout-switcher-runtime@communitybig.org",
+      "name": "runtime-enabled",
+      "status": "PASS"
+    },
+    {
+      "detail": "layout-switcher-helper@communitybig.org",
+      "name": "helper-enabled",
+      "status": "PASS"
+    },
+    {
+      "detail": "no standalone or legacy Dock/Panel UUID is enabled",
+      "name": "single-runtime",
+      "status": "PASS"
+    },
+    {
+      "detail": "Shell reports state 1",
+      "name": "runtime-active",
+      "status": "PASS"
+    },
+    {
+      "detail": "Shell reports state 1",
+      "name": "helper-active",
+      "status": "PASS"
+    },
+    {
+      "detail": "Hybrid: taskbar-bottom",
+      "name": "active-layout",
+      "status": "PASS"
+    },
+    {
+      "detail": "extension.js present",
+      "name": "payload:layout-switcher-runtime@communitybig.org",
+      "status": "PASS"
+    },
+    {
+      "detail": "extension.js present",
+      "name": "payload:community-dock@communitybig.org",
+      "status": "PASS"
+    },
+    {
+      "detail": "extension.js present",
+      "name": "payload:community-panel@communitybig.org",
+      "status": "PASS"
+    },
+    {
+      "detail": "extension.js present",
+      "name": "payload:layout-switcher-helper@communitybig.org",
+      "status": "PASS"
+    },
+    {
+      "detail": "gschemas.compiled present",
+      "name": "compiled-schema:community-dock@communitybig.org",
+      "status": "PASS"
+    },
+    {
+      "detail": "gschemas.compiled present",
+      "name": "compiled-schema:community-panel@communitybig.org",
+      "status": "PASS"
+    },
+    {
+      "detail": "GNOME Shell 51.beta",
+      "name": "shell-version",
+      "status": "PASS"
+    },
+    {
+      "detail": "tty",
+      "name": "session-type",
+      "status": "WARN"
+    },
+    {
+      "detail": "prefer-dark",
+      "name": "color-scheme",
+      "status": "INFO"
+    },
+    {
+      "detail": "bigicons-papient-dark",
+      "name": "icon-theme",
+      "status": "INFO"
+    },
+    {
+      "detail": "runtime build 5",
+      "name": "runtime-diagnostics",
+      "status": "PASS"
+    },
+    {
+      "detail": "Hybrid",
+      "name": "runtime-layout",
+      "status": "PASS"
+    },
+    {
+      "detail": "active=False",
+      "name": "dock-state",
+      "status": "PASS"
+    },
+    {
+      "detail": "active=True",
+      "name": "taskbar-state",
+      "status": "PASS"
+    },
+    {
+      "detail": "manager actors=0",
+      "name": "dock-actors",
+      "status": "PASS"
+    },
+    {
+      "detail": "manager actors=1",
+      "name": "taskbar-actors",
+      "status": "PASS"
+    },
+    {
+      "detail": "stage=0, manager=0",
+      "name": "dock-stage-residue",
+      "status": "PASS"
+    },
+    {
+      "detail": "stage=1, manager=1",
+      "name": "taskbar-stage-residue",
+      "status": "PASS"
+    },
+    {
+      "detail": "bottom",
+      "name": "surface-edge",
+      "status": "PASS"
+    },
+    {
+      "detail": "m0=1280x46",
+      "name": "surface-geometry",
+      "status": "PASS"
+    },
+    {
+      "detail": "monitors=[0]",
+      "name": "surface-monitor-uniqueness",
+      "status": "PASS"
+    },
+    {
+      "detail": "15c556efe553d3a83e99b9957c38a4829d7a1aa1d3f51c78fb865cbffaf1d827",
+      "name": "hash:community-dock@communitybig.org",
+      "status": "INFO"
+    },
+    {
+      "detail": "5dc54d2cf64fc0a441305566adefc39344b4852d53192a85cfebbee4f7f7c6d7",
+      "name": "hash:community-panel@communitybig.org",
+      "status": "INFO"
+    },
+    {
+      "detail": "da9b44721d28e905444a286edee9a0fb87b6fb95e793b1774911d00e5c185b66",
+      "name": "hash:layout-switcher-helper@communitybig.org",
+      "status": "INFO"
+    },
+    {
+      "detail": "c8c716a6bc0adef0f019977c557e1d178dad06f402fbcd2ece1db9fdb8d3b522",
+      "name": "hash:layout-switcher-runtime@communitybig.org",
+      "status": "INFO"
+    },
+    {
+      "detail": "70bdfe1b9d37528ee26c1241b4a341e50a974897315ffda27ed9a32116011591",
+      "name": "hash:runtime-audit-tool",
+      "status": "INFO"
+    },
+    {
+      "detail": "fed2f3f958cda6ec29ffe0307fa1e3ee30aab4881be62794886feb928aba895a",
+      "name": "hash:runtime-baseline-tool",
+      "status": "INFO"
+    },
+    {
+      "detail": "menu contract matches Hybrid",
+      "name": "layout-menu",
+      "status": "PASS"
+    },
+    {
+      "detail": "desktop icon contract matches Hybrid",
+      "name": "layout-desktop-icons",
+      "status": "PASS"
+    },
+    {
+      "detail": "hybrid",
+      "name": "layout-indicator",
+      "status": "PASS"
+    }
+  ],
+  "layout": "Hybrid",
+  "name": "reference-dark-03-hybrid",
+  "passed": true,
+  "scheme": "dark",
+  "screenshot_error": "",
+  "snapshot": {
+    "active_layout": "Hybrid",
+    "color_scheme": "prefer-dark",
+    "enabled_extensions": [
+      "layout-switcher-helper@communitybig.org",
+      "layout-switcher-runtime@communitybig.org",
+      "appindicatorsupport@rgcjonas.gmail.com",
+      "big-shot@bigcommunity.org",
+      "copyous@boerdereinar.dev",
+      "legacyschemeautoswitcher@joshimukul29.gmail.com",
+      "gsconnect@andyholmes.github.io",
+      "gtk4-ding@smedius.gitlab.com",
+      "community-menu@communitybig.org",
+      "drive-menu@gnome-shell-extensions.gcampax.github.com"
+    ],
+    "helper_state": 1,
+    "icon_theme": "bigicons-papient-dark",
+    "indicator_overrides": {},
+    "payload_hashes": {
+      "community-dock@communitybig.org": "15c556efe553d3a83e99b9957c38a4829d7a1aa1d3f51c78fb865cbffaf1d827",
+      "community-panel@communitybig.org": "5dc54d2cf64fc0a441305566adefc39344b4852d53192a85cfebbee4f7f7c6d7",
+      "layout-switcher-helper@communitybig.org": "da9b44721d28e905444a286edee9a0fb87b6fb95e793b1774911d00e5c185b66",
+      "layout-switcher-runtime@communitybig.org": "c8c716a6bc0adef0f019977c557e1d178dad06f402fbcd2ece1db9fdb8d3b522",
+      "runtime-audit-tool": "70bdfe1b9d37528ee26c1241b4a341e50a974897315ffda27ed9a32116011591",
+      "runtime-baseline-tool": "fed2f3f958cda6ec29ffe0307fa1e3ee30aab4881be62794886feb928aba895a"
+    },
+    "runtime_diagnostics": {
+      "helperBuild": 65,
+      "monitors": [
+        {
+          "height": 800,
+          "index": 0,
+          "width": 1280,
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "primaryMonitor": 0,
+      "runtime": {
+        "build": 5,
+        "dock": {
+          "active": false,
+          "actors": [],
+          "indicator": "",
+          "profile": ""
+        },
+        "enabled": true,
+        "expected": {
+          "edge": "bottom",
+          "indicator": "hybrid",
+          "surface": "taskbar"
+        },
+        "layout": "Hybrid",
+        "taskbar": {
+          "active": true,
+          "actors": [
+            {
+              "edge": "bottom",
+              "height": 46,
+              "mapped": true,
+              "monitor": 0,
+              "visible": true,
+              "width": 1280,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "indicator": "hybrid",
+          "profile": "Hybrid"
+        }
+      },
+      "runtimeError": "",
+      "stage": {
+        "dock": [],
+        "taskbar": [
+          {
+            "classes": "dashtopanelPanel dock",
+            "height": 40,
+            "mapped": true,
+            "name": "",
+            "visible": true,
+            "width": 1274,
+            "x": 3,
+            "y": 3
+          }
+        ],
+        "visited": 2531
+      }
+    },
+    "runtime_state": 1,
+    "session_type": "tty",
+    "shell_version": "GNOME Shell 51.beta"
+  }
+}
