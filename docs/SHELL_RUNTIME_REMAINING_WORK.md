@@ -102,6 +102,7 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port primary launch, focus, minimize, and multiple-window actions.
 - [x] Port favorite and running-app data ownership and stable ordering.
 - [x] Port notification monitor and badge-count ownership.
+- [x] Port core application context-menu action ownership.
 - [x] Port favorites, running applications, launch, focus, minimize, and
   multiple-window behavior.
 - [ ] Port notification badges and application context menus.

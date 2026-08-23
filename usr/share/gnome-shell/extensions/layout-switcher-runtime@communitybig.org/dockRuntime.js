@@ -4,6 +4,7 @@ import {CommunityDockRuntime} from '../community-dock@communitybig.org/extension
 
 import {ComponentHost} from './componentHost.js';
 import {DockAppActions} from './dockAppActions.js';
+import {DockAppMenuActions} from './dockAppMenuActions.js';
 import {DockAppModel} from './dockAppModel.js';
 import {DockNotificationMonitor} from './dockNotificationMonitor.js';
 
@@ -18,6 +19,7 @@ export class DockRuntime {
             version: 1,
         });
         this._host.appActions = new DockAppActions();
+        this._host.appMenuActions = new DockAppMenuActions();
         this._host.appModel = new DockAppModel();
         this._engine = new CommunityDockRuntime(this._host);
     }

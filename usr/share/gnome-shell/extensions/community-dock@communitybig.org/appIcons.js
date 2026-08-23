@@ -515,6 +515,8 @@ export const DockAbstractAppIcon = GObject.registerClass({
         if (!this._menu) {
             this._menu = new DockAppIconMenu(this);
             this._menu.connect('activate-window', (menu, window) => {
+                if (Docking.DockManager.extension.appMenuActions?.activateWindow(window))
+                    return;
                 if (window) {
                     Main.activateWindow(window);
                 } else {
@@ -1213,10 +1215,12 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 actions.indexOf('new-window') === -1) {
                 const newMenuItem = this._appendMenuItem(_('New Window'));
                 newMenuItem.connect('activate', () => {
-                    if (app.state === Shell.AppState.STOPPED)
-                        this.sourceActor.animateLaunch();
-
-                    app.open_new_window(-1);
+                    if (!Docking.DockManager.extension.appMenuActions
+                        ?.openNewWindow(this.sourceActor)) {
+                        if (app.state === Shell.AppState.STOPPED)
+                            this.sourceActor.animateLaunch();
+                        app.open_new_window(-1);
+                    }
                     this.emit('activate-window', null);
                 });
                 this._appendSeparator();
@@ -1233,8 +1237,11 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                     ? _('Launch using Integrated Graphics Card')
                     : _('Launch using Discrete Graphics Card'));
                 gpuMenuItem.connect('activate', () => {
-                    this.sourceActor.animateLaunch();
-                    app.launch(0, -1, gpuPref);
+                    if (!Docking.DockManager.extension.appMenuActions
+                        ?.launchOnGpu(this.sourceActor, gpuPref)) {
+                        this.sourceActor.animateLaunch();
+                        app.launch(0, -1, gpuPref);
+                    }
                     this.emit('activate-window', null);
                 });
             }
@@ -1244,7 +1251,9 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 const item = this._appendMenuItem(appInfo.get_action_name(action));
                 item.sensitive = !appInfo.busy;
                 item.connect('activate', (emitter, event) => {
-                    app.launch_action(action, event.get_time(), -1);
+                    if (!Docking.DockManager.extension.appMenuActions
+                        ?.launchDesktopAction(this.sourceActor, action, event.get_time()))
+                        app.launch_action(action, event.get_time(), -1);
                     this.emit('activate-window', null);
                 });
             }
@@ -1260,14 +1269,20 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 if (isFavorite) {
                     const item = this._appendMenuItem(_('Unpin'));
                     item.connect('activate', () => {
-                        const favs = AppFavorites.getAppFavorites();
-                        favs.removeFavorite(app.get_id());
+                        if (!Docking.DockManager.extension.appMenuActions
+                            ?.setFavorite(app.get_id(), false)) {
+                            const favs = AppFavorites.getAppFavorites();
+                            favs.removeFavorite(app.get_id());
+                        }
                     });
                 } else {
                     const item = this._appendMenuItem(__('Pin to Dock'));
                     item.connect('activate', () => {
-                        const favs = AppFavorites.getAppFavorites();
-                        favs.addFavorite(app.get_id());
+                        if (!Docking.DockManager.extension.appMenuActions
+                            ?.setFavorite(app.get_id(), true)) {
+                            const favs = AppFavorites.getAppFavorites();
+                            favs.addFavorite(app.get_id());
+                        }
                     });
                 }
             }
@@ -1332,7 +1347,10 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
         // quit menu
         this._appendSeparator();
         this._quitMenuItem = this._appendMenuItem(_('Quit'));
-        this._quitMenuItem.connect('activate', () => this.sourceActor.closeAllWindows());
+        this._quitMenuItem.connect('activate', () => {
+            if (!Docking.DockManager.extension.appMenuActions?.quit(this.sourceActor))
+                this.sourceActor.closeAllWindows();
+        });
 
         this.update();
     }

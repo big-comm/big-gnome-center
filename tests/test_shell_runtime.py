@@ -176,6 +176,29 @@ def test_runtime_owns_dock_notification_monitor_and_badge_count():
     assert "notificationsMonitor.getAppNotificationsCount" in indicators
 
 
+def test_runtime_owns_core_dock_context_menu_actions():
+    actions = (RUNTIME / "dockAppMenuActions.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    app_icons = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+    ).read_text()
+
+    assert "new DockAppMenuActions()" in dock
+    assert "appMenuActions?.activateWindow(window)" in app_icons
+    assert "?.openNewWindow(this.sourceActor)" in app_icons
+    assert "?.launchOnGpu(this.sourceActor, gpuPref)" in app_icons
+    assert "?.launchDesktopAction(this.sourceActor" in app_icons
+    assert "?.setFavorite(app.get_id(), false)" in app_icons
+    assert "?.setFavorite(app.get_id(), true)" in app_icons
+    assert "appMenuActions?.quit(this.sourceActor)" in app_icons
+    assert "Main.activateWindow(window)" in actions
+    assert "icon.app.open_new_window(-1)" in actions
+    assert "favorites.addFavorite(appId)" in actions
+    assert "favorites.removeFavorite(appId)" in actions
+    assert "window.delete(time)" in actions
+
+
 def test_unified_runtime_preserves_helper_fault_isolation():
     metadata = json.loads((RUNTIME / "metadata.json").read_text())
     helper = ROOT / (
