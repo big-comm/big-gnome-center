@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 59" in source
+    assert "const HELPER_BUILD = 64" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -93,7 +93,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 59" in source
+    assert "const HELPER_BUILD = 64" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -104,8 +104,8 @@ def test_native_shell_running_indicators_follow_shell_accent():
     assert "const accentIndicatorLayout = deskUxLayout || hybridLayout" in source
     assert "'changed::accent-color'" in source
     assert "_syncClassicFocusHighlight()" in source
-    assert "lookup(COMMUNITY_PANEL_UUID)?.stateObj" in source
-    assert "panelExtension?.getSettings?.(" in source
+    assert "Gio.SettingsSchemaSource.new_from_directory(" in source
+    assert "this._panelSettings = new Gio.Settings" in source
     assert "get_string('focus-highlight-color')" in source
     assert "set_string('focus-highlight-color', accent)" in source
     assert "layout-switcher-accent-probe" in stylesheet
@@ -128,7 +128,52 @@ def test_icon_theme_change_refreshes_appindicator_cache():
     assert "iconThemeChanged = true" in source
     assert "await this._refreshIconThemeConsumers()" in source
     assert "rescan_icon_theme?.()" in source
-    assert "await this._reloadOne(mgr, APPINDICATOR_UUID)" in source
+    assert "Gio.File.new_for_path(utilPath).get_uri()" in source
+    assert "await import(utilUri)" in source
+    assert "destroyDefaultTheme?.()" in source
+    assert "Gio.File.new_for_path(actorPath).get_uri()" in source
+    assert "appIndicatorModule = await import(actorUri)" in source
+    assert "new appIndicatorModule.IconActor" in source
+    assert "statusIcon._setIconActor(newIcon)" in source
+    assert "Object.entries(Main.panel.statusArea)" in source
+    assert "id.startsWith('appindicator-')" in source
+    assert "refreshAllProperties?.()" in source
+    assert "_invalidateIcon?.()" in source
+    assert source.count("steps.push(`status icons refreshed ${refreshed}`)") == 2
+    complete = source.index("async _completeSwitch")
+    legacy = source.index("async _applyLayout")
+    first_refresh = source.index("steps.push(`status icons refreshed ${refreshed}`)")
+    second_refresh = source.index(
+        "steps.push(`status icons refreshed ${refreshed}`)", first_refresh + 1
+    )
+    assert complete < first_refresh < legacy < second_refresh
+    private_reset = source.index("destroyDefaultTheme?.()")
+    actor_reset = source.index("_invalidateIcon?.()", private_reset)
+    assert private_reset < actor_reset
+
+
+def test_live_color_switch_supports_runtime_hosted_panel():
+    source = HELPER.read_text()
+    follower = source[source.index("async _followColorScheme"):source.index(
+        "async _refreshIconThemeConsumers"
+    )]
+
+    assert "const panelWillRun = this._panelWillRun();" in follower
+    assert "live.has(KIWI_UUID) || !panelWillRun" in follower
+    assert "live.has(KIWI_UUID) || !livePanelUuid" not in follower
+    assert "mgr.lookup(livePanelUuid ?? COMMUNITY_PANEL_UUID)" in follower
+
+
+def test_live_color_switch_refreshes_tray_icons_after_shell_theme():
+    source = HELPER.read_text()
+    follower = source[source.index("async _followColorScheme"):source.index(
+        "async _refreshIconThemeConsumers"
+    )]
+
+    assert follower.index("Main.loadTheme()") < follower.index(
+        "await this._refreshIconThemeConsumers()"
+    )
+    assert "deferred icon-theme refresh failed" in follower
 
 
 def test_biggnome_uses_helper_owned_floating_panel():

@@ -27,10 +27,10 @@ def test_community_panel_has_distinct_identity_and_shell_support():
 
 def test_community_panel_preserves_dash_to_panel_73_core_baseline():
     expected = {
-        "panel.js": "f1b771a838802bddcd82b2e8e2ce0e3b7af30c40f829c7e68805e49e2fe691a8",
+        "panel.js": "8dd0d19610f82568a1d539dc36766d1c5f0109babd632f506409a23bb0cfc1c2",
         "panelManager.js": "0be559edf513ed68791ef0fb55d776f18f5a0de7a57959f90ab124e979db9d87",
         "taskbar.js": "3b70a094b701291c2b6360d0105e8801610fe841c2120076e94fd1d5091fe427",
-        "windowPreview.js": "8c0ac01c051a5129dbb6ad539a1291e3dcafe66be2b4574db2bbb4606f96c0b7",
+        "windowPreview.js": "0b61a11adad74464800bc63cefd2846faddb4bb969096a6dd99f2df1f4f92fb7",
         "stylesheet.css": "be6dbf8d2d8247a29200a7c8279e647018dfe501b713ec3e3c32a8204d512165",
     }
 
@@ -72,7 +72,22 @@ def test_community_panel_preserves_license_provenance_schema_and_translations():
     assert (PANEL / "locale/pt_BR/LC_MESSAGES/dash-to-panel.mo").is_file()
 
 
-def test_taskbar_layouts_use_only_community_panel():
+def test_community_panel_runtime_does_not_require_an_active_extension_record():
+    i18n = (PANEL / "i18n.js").read_text()
+    desktop_icons = (PANEL / "desktopIconsIntegration.js").read_text()
+
+    assert "Gettext.domain('dash-to-panel')" in i18n
+    for name in ("appIcons.js", "panel.js", "windowPreview.js"):
+        source = (PANEL / name).read_text()
+        assert "gettext as _ } from './i18n.js'" in source or (
+            name == "appIcons.js" and "gettext as _, ngettext } from './i18n.js'" in source
+        )
+        assert "gettext as _" not in source.split("./i18n.js", 1)[-1]
+    assert "Extension.lookupByURL" not in desktop_icons
+    assert "const PANEL_UUID = 'community-panel@communitybig.org'" in desktop_icons
+
+
+def test_taskbar_layouts_use_only_unified_runtime():
     for layout in ("classic.txt", "hybrid.txt", "desk-ux.txt"):
         shell = _section(layout, "org/gnome/shell")
         enabled = next(
@@ -82,7 +97,8 @@ def test_taskbar_layouts_use_only_community_panel():
             line for line in shell.splitlines() if line.startswith("disabled-extensions=")
         )
 
-        assert "community-panel@communitybig.org" in enabled
+        assert "layout-switcher-runtime@communitybig.org" in enabled
+        assert "community-panel@communitybig.org" not in enabled
         assert "dash-to-panel@jderose9.github.com" not in enabled
         assert "dash-to-panel@jderose9.github.com" not in disabled
 
@@ -131,6 +147,19 @@ def test_desk_ux_panel_baseline_is_preserved():
         assert setting in panel
 
 
+def test_desk_ux_offers_the_gentle_hover_lift_without_enabling_it_by_default():
+    panel = _section("desk-ux.txt", "org/gnome/shell/extensions/dash-to-panel")
+
+    for setting in (
+        "animate-appicon-hover=false",
+        "animate-appicon-hover-animation-type='SIMPLE'",
+        "animate-appicon-hover-animation-duration={'SIMPLE': uint32 220,",
+        "animate-appicon-hover-animation-travel={'SIMPLE': 0.080000000000000002,",
+        "animate-appicon-hover-animation-zoom={'SIMPLE': 1.0800000000000001,",
+    ):
+        assert setting in panel
+
+
 def test_desk_ux_unfocused_indicator_is_neutral_gray():
     app_icons = (PANEL / "appIcons.js").read_text()
 
@@ -150,6 +179,26 @@ def test_panel_style_does_not_reparent_status_buttons_during_teardown():
     assert "this._refreshPanelButtons = false" in panel_style
     assert "this._refreshPanelButtons &&" in panel_style
     assert "if (!parent) return" in panel_style
+
+
+def test_community_panel_context_menu_has_no_runtime_configuration():
+    app_icons = (PANEL / "appIcons.js").read_text()
+
+    assert "Dash to Panel Settings" not in app_icons
+    assert "DTP_EXTENSION.openPreferences()" not in app_icons
+    assert "Unlock taskbar" not in app_icons
+    assert "Lock taskbar" not in app_icons
+
+
+def test_community_panel_has_no_independent_preferences_ui():
+    extension = (PANEL / "extension.js").read_text()
+    panel_settings = (PANEL / "panelSettings.js").read_text()
+
+    assert not (PANEL / "prefs.js").exists()
+    assert not any((PANEL / "ui").glob("*"))
+    assert "openPreferences()" not in extension
+    assert "prefs-opened" not in extension
+    assert "prefs-opened" not in panel_settings
 
 
 def test_helper_and_applier_own_only_community_panel():

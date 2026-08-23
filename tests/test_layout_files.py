@@ -23,6 +23,8 @@ MACHINE_MONITOR_IDS = {
 COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
 ARCMENU_UUID = "arcmenu@arcmenu.com"
 COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
+COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
+RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 KIWI_UUID = "kiwi@kemma"
@@ -31,6 +33,7 @@ LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@communitybig.org"
 LEGACY_LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
 BIG_SHOT_UUID = "big-shot@communitybig.org"
 LEGACY_BIG_SHOT_UUID = "big-shot@bigcommunity.org"
+PAMAC_UPDATES_UUID = "pamac-updates@manjaro.org"
 COPYOUS_SECTION = "org/gnome/shell/extensions/copyous"
 COMMUNITY_MENU_LAYOUTS = {
     "classic.txt": "APPS_ONLY",
@@ -106,12 +109,26 @@ def test_layout_switcher_helper_is_always_first_and_enabled():
         assert LEGACY_LAYOUT_SWITCHER_HELPER_UUID not in enabled
 
 
+def test_unified_runtime_is_the_only_dock_and_panel_extension_enabled():
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        enabled, _disabled = _shell_extension_lists(layout_file.read_text())
+        assert RUNTIME_UUID in enabled
+        assert COMMUNITY_DOCK_UUID not in enabled
+        assert COMMUNITY_PANEL_UUID not in enabled
+
+
 def test_layouts_use_current_big_shot_and_do_not_require_kiwi():
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         enabled, disabled = _shell_extension_lists(layout_file.read_text())
         assert BIG_SHOT_UUID in enabled
         assert LEGACY_BIG_SHOT_UUID not in enabled
         assert KIWI_UUID not in enabled
+
+
+def test_no_layout_enables_the_pamac_updates_extension():
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        enabled, _disabled = _shell_extension_lists(layout_file.read_text())
+        assert PAMAC_UPDATES_UUID not in enabled
 
 
 def test_package_does_not_patch_external_kiwi_installations():
@@ -196,7 +213,7 @@ def test_community_menu_layout_mapping_and_panel_order():
         assert COMMUNITY_MENU_UUID not in disabled
         assert ARCMENU_UUID not in enabled
         assert ARCMENU_UUID in disabled
-        assert enabled.index(COMMUNITY_PANEL_UUID) < enabled.index(COMMUNITY_MENU_UUID)
+        assert enabled.index(RUNTIME_UUID) < enabled.index(COMMUNITY_MENU_UUID)
         if filename == "classic.txt":
             assert dtp_values["leftbox-padding"] == "3"
             assert dtp_values["dot-color-override"] == "false"
@@ -241,7 +258,7 @@ def test_hybrid_uses_community_menu_and_compact_panel():
     assert COMMUNITY_MENU_UUID not in disabled
     assert ARCMENU_UUID not in enabled
     assert ARCMENU_UUID in disabled
-    assert enabled.index(COMMUNITY_PANEL_UUID) < enabled.index(COMMUNITY_MENU_UUID)
+    assert enabled.index(RUNTIME_UUID) < enabled.index(COMMUNITY_MENU_UUID)
     assert menu_values == {
         "desktop-layout": "'Hybrid'",
         "layout": "'MINT'",

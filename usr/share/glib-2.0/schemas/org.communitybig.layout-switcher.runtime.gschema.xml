@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.communitybig.layout-switcher.runtime" path="/org/communitybig/layout-switcher/runtime/">
+    <key name="active-layout" type="s">
+      <default>''</default>
+      <summary>Active layout</summary>
+    </key>
+    <key name="imported-layouts" type="as">
+      <default>[]</default>
+      <summary>Layouts imported from compatibility settings</summary>
+    </key>
+    <key name="dock-opacity-overrides" type="a{su}">
+      <default>{}</default>
+      <summary>Dock opacity overrides by layout</summary>
+    </key>
+    <key name="dock-visibility-overrides" type="a{ss}">
+      <default>{}</default>
+      <summary>Dock visibility overrides by layout</summary>
+    </key>
+    <key name="panel-opacity-overrides" type="a{su}">
+      <default>{}</default>
+      <summary>Panel opacity overrides by layout</summary>
+    </key>
+    <key name="panel-visibility-overrides" type="a{ss}">
+      <default>{}</default>
+      <summary>Panel visibility overrides by layout</summary>
+    </key>
+    <key name="indicator-style-overrides" type="a{ss}">
+      <default>{}</default>
+      <summary>Running indicator overrides by layout</summary>
+    </key>
+    <key name="dock-size-overrides" type="a{su}">
+      <default>{}</default>
+      <summary>Dock size overrides by layout</summary>
+    </key>
+    <key name="panel-height-overrides" type="a{su}">
+      <default>{}</default>
+      <summary>Panel height overrides by layout</summary>
+    </key>
+    <key name="dock-hover-overrides" type="a{ss}">
+      <default>{}</default>
+      <summary>Dock hover effect overrides by layout</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -47,6 +47,8 @@ def test_guard_migrates_owned_extension_uuids_at_session_start():
     assert "HelperClient.apply_layout(" in guard
     assert "reload=reload_uuids" in guard
     assert "LEGACY_DASH_TO_PANEL_UUID" in guard
+    assert "COMMUNITY_DOCK_UUID" in guard
+    assert "COMMUNITY_PANEL_UUID" in guard
     assert "available_uuids=HelperClient.installed_extension_uuids()" in guard
     assert "_migrate_arcmenu_icon_path" in guard
     assert "HelperClient.migrate_component_asset_path(current)" in guard

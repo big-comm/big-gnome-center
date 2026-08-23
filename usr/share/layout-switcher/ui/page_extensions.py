@@ -29,13 +29,78 @@ from ui.ext_detail_view import ExtDetailView
 from utils import run_cmd
 
 
+_BIG_SHOT_DESCRIPTION = tr("Captures, annotates and records the screen.")
+_CURATED_EXTENSION_DESCRIPTIONS = {
+    "appindicatorsupport@rgcjonas.gmail.com": tr(
+        "Shows application tray icons in the system panel."
+    ),
+    "big-shot@communitybig.org": _BIG_SHOT_DESCRIPTION,
+    "big-shot@bigcommunity.org": _BIG_SHOT_DESCRIPTION,
+    "community-dock@communitybig.org": tr(
+        "Provides application launchers and running windows in a dock."
+    ),
+    "community-menu@communitybig.org": tr(
+        "Provides the applications menu used by desktop layouts."
+    ),
+    "community-panel@communitybig.org": tr(
+        "Provides the taskbar and system panel used by desktop layouts."
+    ),
+    "copyous@boerdereinar.dev": tr(
+        "Keeps a searchable history of copied content."
+    ),
+    "drive-menu@gnome-shell-extensions.gcampax.github.com": tr(
+        "Shows removable devices and lets you safely eject them."
+    ),
+    "frosted-glass@communitybig.org": tr(
+        "Adds controlled blur and transparency to the desktop."
+    ),
+    "gsconnect@andyholmes.github.io": tr(
+        "Connects phones to share files, notifications and other features."
+    ),
+    "gtk4-ding@smedius.gitlab.com": tr(
+        "Shows files and folders on the desktop."
+    ),
+    "layout-switcher-helper@communitybig.org": tr(
+        "Applies layout changes safely inside GNOME Shell."
+    ),
+    "layout-switcher-runtime@communitybig.org": tr(
+        "Provides the dock and taskbar runtime used by desktop layouts."
+    ),
+    "legacyschemeautoswitcher@joshimukul29.gmail.com": tr(
+        "Keeps GTK 3 applications aligned with light and dark mode."
+    ),
+    "light-style@gnome-shell-extensions.gcampax.github.com": tr(
+        "Uses the light GNOME Shell appearance."
+    ),
+    "user-theme@gnome-shell-extensions.gcampax.github.com": tr(
+        "Loads the Shell theme selected by the active layout."
+    ),
+}
+
+
+def _installed_extension_description(ext: Dict) -> str:
+    """Return a short localized summary for an installed extension."""
+    description = _CURATED_EXTENSION_DESCRIPTIONS.get(ext.get("uuid", ""))
+    if not description:
+        description = str(ext.get("description", "")).strip()
+    if description:
+        first_paragraph = description.split("\n\n", 1)[0]
+        normalized = " ".join(first_paragraph.split())
+        if normalized:
+            return normalized
+    return tr("Description not provided by the developer.")
+
+
 def _matches_installed_extension(ext: Dict, query: str) -> bool:
     """Match an installed extension by name, UUID, or description."""
     needle = query.strip().casefold()
     if not needle:
         return True
     searchable = "\n".join(
-        str(ext.get(field, "")) for field in ("name", "uuid", "description")
+        [
+            *(str(ext.get(field, "")) for field in ("name", "uuid", "description")),
+            _installed_extension_description(ext),
+        ]
     ).casefold()
     return needle in searchable
 
@@ -175,7 +240,7 @@ class ExtensionsPage(Gtk.Box):
 
         self._feat_flow = Gtk.FlowBox()
         self._feat_flow.set_selection_mode(Gtk.SelectionMode.NONE)
-        self._feat_flow.set_max_children_per_line(3)
+        self._feat_flow.set_max_children_per_line(2)
         self._feat_flow.set_min_children_per_line(1)
         self._feat_flow.set_row_spacing(12)
         self._feat_flow.set_column_spacing(12)
@@ -183,6 +248,7 @@ class ExtensionsPage(Gtk.Box):
         self._feat_flow.set_margin_end(22)
         self._feat_flow.set_margin_bottom(22)
         self._feat_flow.set_homogeneous(True)
+        self._feat_flow.set_valign(Gtk.Align.START)
 
         self._feat_cards: Dict[str, Gtk.Box] = {}
         self.rebuild_featured()
@@ -657,7 +723,7 @@ class ExtensionsPage(Gtk.Box):
     def _make_installed_row(self, ext: Dict) -> Gtk.ListBoxRow:
         """
         Linha de extensão instalada como Gtk.ListBoxRow.
-        Layout compacto e fixo: ícone | nome+uuid | badge sistema | switch | lixo
+        Compact layout: icon | name+description | controls.
         """
         enabled = ext["enabled"]
         is_user = ext["user"]
@@ -680,7 +746,7 @@ class ExtensionsPage(Gtk.Box):
             ico.add_css_class("accent")
         inner.append(ico)
 
-        # Nome + UUID
+        # Name and user-facing description.
         tc = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
         tc.set_hexpand(True)
         tc.set_valign(Gtk.Align.CENTER)
@@ -692,14 +758,19 @@ class ExtensionsPage(Gtk.Box):
         nl.set_xalign(0)
         tc.append(nl)
 
-        ul = Gtk.Label(label=ext["uuid"])
-        ul.add_css_class("caption")
-        ul.add_css_class("dim-label")
-        ul.add_css_class("mono")
-        ul.set_halign(Gtk.Align.START)
-        ul.set_ellipsize(Pango.EllipsizeMode.END)
-        ul.set_xalign(0)
-        tc.append(ul)
+        description = _installed_extension_description(ext)
+        dl = Gtk.Label(label=description)
+        dl.add_css_class("caption")
+        dl.add_css_class("dim-label")
+        dl.set_halign(Gtk.Align.START)
+        dl.set_ellipsize(Pango.EllipsizeMode.END)
+        dl.set_xalign(0)
+        tc.append(dl)
+
+        details = [description, tr("Technical identifier: {uuid}").format(uuid=ext["uuid"])]
+        if ext.get("version"):
+            details.append(tr("Version: {version}").format(version=ext["version"]))
+        tc.set_tooltip_text("\n".join(details))
         if is_required:
             required_label = Gtk.Label(label=tr("Required for layout switching"))
             required_label.add_css_class("caption")
@@ -707,6 +778,10 @@ class ExtensionsPage(Gtk.Box):
             required_label.set_halign(Gtk.Align.START)
             required_label.set_xalign(0)
             tc.append(required_label)
+        row.update_property(
+            [Gtk.AccessibleProperty.LABEL],
+            [f"{ext['name']}. {description}"],
+        )
         inner.append(tc)
 
         # Right-side controls use fixed slots so every row lines up.

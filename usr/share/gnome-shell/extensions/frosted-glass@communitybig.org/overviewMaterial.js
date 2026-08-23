@@ -44,11 +44,23 @@ function materialStylesheet(config) {
             '.workspace-thumbnail',
             '.search-section-content',
             '.overview-tile.app-folder',
+            '.app-folder-dialog',
+            '.app-folder-dialog .folder-name-entry',
         ], `  background-color: ${materialColor(config, base)} !important;`),
+        selectorGroup([
+            '.app-folder-dialog',
+            '.app-folder-dialog .folder-name-entry',
+        ], [
+            '  background-image: none !important;',
+            '  border: none !important;',
+            '  box-shadow: none !important;',
+        ].join('\n')),
         selectorGroup([
             '.search-entry',
             '.search-section-content',
             '.overview-tile.app-folder',
+            '.app-folder-dialog',
+            '.app-folder-dialog .folder-name-entry',
         ], `  color: ${foreground} !important;`),
         selectorGroup([
             '.overview-tile:hover',
@@ -90,6 +102,14 @@ function materialStylesheet(config) {
             '.overview-tile.app-folder:focus:hover',
             '.overview-tile.app-folder:drop',
         ], `  background-color: ${materialColor(config, active, [188, 190, 198])} !important;`),
+        selectorGroup([
+            '#dash .overview-tile',
+            '#dash .show-apps',
+        ], [
+            '  background-color: transparent !important;',
+            '  border-color: transparent !important;',
+            '  box-shadow: none !important;',
+        ].join('\n')),
     ].join('\n\n');
 }
 

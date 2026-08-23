@@ -83,10 +83,10 @@ from typing import Callable, Dict, Iterable, List, Optional, Set, Tuple
 from constants import tr
 from helper_client import (
     HELPER_UUID,
-    LAYOUT_COMPONENT_UUID_MIGRATIONS,
     LEGACY_HELPER_UUID,
     HelperClient,
 )
+from runtime_settings import RuntimeSettings
 from settings_store import Settings
 from shell_reloader import ShellReloader
 from utils import atomic_write_text, gnome_shell_version, run_cmd
@@ -133,11 +133,13 @@ _COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
 _COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
 _PANEL_UUIDS = (_COMMUNITY_PANEL_UUID,)
 _COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
+_RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 _LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 _USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
-_FROSTED_GLASS_DEFAULT_OPACITY = 31
+_FROSTED_GLASS_DEFAULT_OPACITY = 37
+_RUNTIME_SETTINGS_SECTION = "/org/communitybig/layout-switcher/runtime"
 _GTK4_DING_UUID = "gtk4-ding@smedius.gitlab.com"
 _BLUR_MY_SHELL_UUID = "blur-my-shell@aunetx"
 _LAYOUT_INDEPENDENT_UUIDS = (_FROSTED_GLASS_UUID,)
@@ -153,6 +155,7 @@ _STRUCTURAL_EXTENSION_UUIDS = frozenset(
         _COMMUNITY_MENU_UUID,
         _COMMUNITY_DOCK_UUID,
         _COMMUNITY_PANEL_UUID,
+        _RUNTIME_UUID,
         _KIWI_UUID,
         _LIGHT_STYLE_UUID,
         _USER_THEME_UUID,
@@ -165,6 +168,7 @@ _HELPER_RELOAD_UUIDS = frozenset(
     {
         "community-panel@communitybig.org",
         "community-dock@communitybig.org",
+        _RUNTIME_UUID,
         "arcmenu@arcmenu.com",
         "community-menu@communitybig.org",
         "kiwi@kemma",
@@ -178,14 +182,14 @@ _HELPER_TEARDOWN_UUIDS = frozenset(
     {
         "community-dock@communitybig.org",
         "community-panel@communitybig.org",
+        _RUNTIME_UUID,
     }
 )
-# Extensions that remain live across layout switches. System indicators leave
-# orphan work behind when toggled. Frosted Glass is layout-independent and
-# discovers replacement panel, dock, and menu actors itself.
+# Extensions that remain live across layout switches. Some system indicators
+# leave orphan work behind when toggled. Frosted Glass is layout-independent
+# and discovers replacement panel, dock, and menu actors itself.
 _HELPER_PERSIST_UUIDS = frozenset(
     {
-        "pamac-updates@manjaro.org",
         "appindicatorsupport@rgcjonas.gmail.com",
         "gsconnect@andyholmes.github.io",
         "drive-menu@gnome-shell-extensions.gcampax.github.com",
@@ -568,12 +572,9 @@ class LayoutApplier:
         if _USER_THEME_UUID in target_enabled and not ut_name:
             target_enabled = [u for u in target_enabled if u != _USER_THEME_UUID]
 
-        # Keep system indicators (pamac-updates, tray, gsconnect, drive-menu)
-        # stable across switches. Toggling them off/on leaves orphan timers
-        # firing into disposed objects — pamac-updates re-notifies "updates
-        # available" forever until relogin. Anything currently enabled that is
-        # a known persistent indicator stays in the target, so the helper never
-        # disables it (and won't re-enable it either, since it's already live).
+        # Keep selected system indicators stable across switches. Anything
+        # currently enabled that is known to be persistent stays in the target,
+        # so the helper never disables or re-enables it.
         currently_enabled = set(cls._enabled_extensions())
         for uuid in _HELPER_PERSIST_UUIDS:
             if uuid in currently_enabled and uuid not in target_enabled:
@@ -625,6 +626,39 @@ class LayoutApplier:
     def _layout_display_label(stem: str) -> str:
         """Human-readable layout name for the helper's transition curtain."""
         return _LAYOUT_DISPLAY_NAMES.get(stem, stem.replace("-", " ").title())
+
+    @classmethod
+    def _inject_runtime_active_layout(cls, data: str, layout_id: str) -> str:
+        """Persist the active profile for the focused Shell runtime."""
+        if not layout_id:
+            return data
+        layout = cls._layout_display_label(layout_id)
+        return cls._replace_or_add_dconf_key(
+            data,
+            _RUNTIME_SETTINGS_SECTION,
+            "active-layout",
+            cls._quote_gvariant_string(layout),
+        )
+
+    @classmethod
+    def _reset_original_runtime_overrides(cls, data: str, layout_id: str) -> str:
+        """Remove target-layout customizations when applying its original profile."""
+        if not layout_id:
+            return data
+        layout = cls._layout_display_label(layout_id)
+        try:
+            serialized = RuntimeSettings().serialized_overrides_without_layout(layout)
+        except Exception as exc:
+            log.warning("cannot reset runtime overrides for %s: %s", layout, exc)
+            return data
+        for key, value in serialized.items():
+            data = cls._replace_or_add_dconf_key(
+                data,
+                _RUNTIME_SETTINGS_SECTION,
+                key,
+                value,
+            )
+        return data
 
     @classmethod
     def _managed_extension_subdirs(
@@ -749,10 +783,7 @@ class LayoutApplier:
                     *[u for u in target_enabled if u != uuid],
                 ]
 
-        # Keep system indicators (pamac-updates, tray, gsconnect, drive-menu)
-        # stable across switches. Toggling them off/on leaves orphan timers
-        # firing into disposed objects — pamac-updates re-notifies "updates
-        # available" forever until relogin.
+        # Keep selected system indicators stable across switches.
         currently_enabled = set(cls._enabled_extensions())
         for uuid in _HELPER_PERSIST_UUIDS:
             if uuid in currently_enabled and uuid not in target_enabled:
@@ -1322,28 +1353,22 @@ class LayoutApplier:
         force_shell_dark: bool = False,
     ) -> str:
         """
-        Keep only the user's light/dark preference out of layout switching.
+        Preserve the live user color mode across every layout switch.
 
-        Original layouts must restore their factory GTK, icon and Shell
-        themes. Light/dark remains a user preference, so only
-        ``color-scheme`` is copied from the live session.
+        Layout files never own the application's current light/dark choice.
+        Always read the effective session value so changes made outside Layout
+        Switcher are preserved too. Layouts with a fixed dark Shell keep their
+        panel and menu structure while GTK applications remain light.
         """
         value = cls._current_color_scheme_value()
         if value is None:
             return text
-
         prefer_dark = cls._prefers_dark({_COLOR_SCHEME_KEY: value})
-        shell_dark = True if force_shell_dark else prefer_dark
+        shell_dark = force_shell_dark or prefer_dark
 
-        # GNOME's Shell panel/menus FOLLOW color-scheme: 'prefer-light' whitens
-        # them. The always-dark layouts (biggnome/g-unity/minimal) must keep a
-        # dark Shell while their apps stay light — and that's exactly what
-        # 'default' gives: a dark Adwaita Shell with light libadwaita apps.
-        # 'prefer-light' is the only value that lightens the Shell, so when an
-        # always-dark layout is applied under a light app preference, persist
-        # 'default' instead. A dark preference stays 'prefer-dark' (Shell is
-        # already dark there). Without this the bar/menus turn white in light
-        # mode even with no shell theme and light-style off.
+        # ``default`` means light applications with GNOME's native dark Shell.
+        # It prevents Light Style from replacing the structural Shell CSS used
+        # by G-Unity, BigGnome, Desk UX and Minimal.
         if force_shell_dark and not prefer_dark:
             value = "'default'"
 
@@ -1352,6 +1377,23 @@ class LayoutApplier:
         return cls._rewrite_shell_theme_mode(
             out,
             prefer_dark=shell_dark,
+        )
+
+    @classmethod
+    def _adjust_gtk_theme_for_scheme(cls, text: str) -> str:
+        """Select the adw-gtk3 variant matching the preserved color mode."""
+        interface = cls._section_key_values(text, _INTERFACE_SECTION)
+        current = cls._gvariant_string(interface.get("gtk-theme"))
+        if current not in {"adw-gtk3", "adw-gtk3-dark"}:
+            return text
+
+        scheme = cls._gvariant_string(interface.get("color-scheme"))
+        target = "'adw-gtk3-dark'" if scheme == "prefer-dark" else "'adw-gtk3'"
+        return cls._replace_or_add_dconf_key(
+            text,
+            _INTERFACE_SECTION,
+            "gtk-theme",
+            target,
         )
 
     @classmethod
@@ -1379,7 +1421,9 @@ class LayoutApplier:
             return text
         # Only 'prefer-dark' is dark here: 'default' means LIGHT apps (the
         # dark-shell reading of 'default' applies to the Shell, not to apps).
-        scheme = cls._gvariant_string(cls._current_color_scheme_value() or "''")
+        scheme = cls._gvariant_string(values.get("color-scheme"))
+        if not scheme:
+            scheme = cls._gvariant_string(cls._current_color_scheme_value() or "''")
         target = (
             "'bigicons-papient-dark'"
             if scheme == "prefer-dark"
@@ -1416,7 +1460,10 @@ class LayoutApplier:
             return text
         # Only 'prefer-dark' is dark here: 'default' means LIGHT apps/bar
         # (light-style keeps the bar light under 'default' on these layouts).
-        scheme = cls._gvariant_string(cls._current_color_scheme_value() or "''")
+        interface = cls._section_key_values(text, _INTERFACE_SECTION)
+        scheme = cls._gvariant_string(interface.get("color-scheme"))
+        if not scheme:
+            scheme = cls._gvariant_string(cls._current_color_scheme_value() or "''")
         if scheme == "prefer-dark":
             return text
         for key, color in targets.items():
@@ -2274,6 +2321,7 @@ class LayoutApplier:
         )
         data = cls._apply_user_component_overrides(data, layout_id=layout_id)
         if layout_id:
+            data = cls._inject_runtime_active_layout(data, layout_id)
             data = cls._apply_original_frosted_glass_defaults(data)
             if gnome_shell_version()[0] == 50:
                 data = cls._apply_gnome50_overview_default(data, layout_id)
@@ -2640,6 +2688,10 @@ class LayoutApplier:
 
         local_dtp_monitors = cls._read_dtp_monitor_keys()
         layout_text = cls._rewrite_dtp_keys_in_text(layout_text, local_dtp_monitors)
+        layout_text = cls._reset_original_runtime_overrides(
+            layout_text,
+            config_path.stem,
+        )
 
         before = cls._enabled_extensions()
         force_shell_dark = config_path.stem in {
@@ -2650,17 +2702,14 @@ class LayoutApplier:
         }
         layout_text = cls._preserve_user_color_scheme(
             layout_text,
-            # BigGnome, Desk UX, and the Kiwi layouts keep a dark native Shell
-            # in every color-scheme. Only their GTK applications follow the
-            # light/dark preference.
             force_shell_dark=force_shell_dark,
         )
+        layout_text = cls._adjust_gtk_theme_for_scheme(layout_text)
         layout_text = cls._adjust_icon_theme_for_scheme(
             layout_text,
             light_variant=config_path.stem in {"classic", "hybrid"},
         )
         if not force_shell_dark:
-            # classic in light mode: black window-title labels (contrast).
             layout_text = cls._adjust_dtp_label_colors_for_scheme(layout_text)
         return cls.load_dconf_safely(
             layout_text,

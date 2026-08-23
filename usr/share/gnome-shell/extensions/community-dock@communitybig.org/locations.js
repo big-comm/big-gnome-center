@@ -839,20 +839,25 @@ class TrashAppInfo extends LocationAppInfo {
                 Gio.FILE_ATTRIBUTE_TRASH_ITEM_COUNT);
             return;
         } catch (e) {
-            if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                logError(e, 'Impossible to get trash children from infos');
+            if (e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+                return;
+            logError(e, 'Impossible to get trash children from infos');
         } finally {
             cancellable.cancel();
-            if (this._updateIconCancellable === cancellable)
+            if (this._updateTrashCancellable === cancellable)
                 delete this._updateTrashCancellable;
         }
 
+        if (!this.location)
+            return;
+        const fallbackCancellable = new Utils.CancellableChild(this.cancellable);
+        this._updateTrashCancellable = fallbackCancellable;
         try {
             const childrenEnumerator = await this.location.enumerate_children_async(
                 Gio.FILE_ATTRIBUTE_STANDARD_TYPE, Gio.FileQueryInfoFlags.NONE,
-                priority, cancellable);
+                priority, fallbackCancellable);
             const children = await childrenEnumerator.next_files_async(1,
-                priority, cancellable);
+                priority, fallbackCancellable);
             this.empty = !children.length;
 
             await childrenEnumerator.close_async(priority, null);
@@ -860,8 +865,8 @@ class TrashAppInfo extends LocationAppInfo {
             if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
                 logError(e, 'Impossible to enumerate trash children');
         } finally {
-            cancellable.cancel();
-            if (this._updateIconCancellable === cancellable)
+            fallbackCancellable.cancel();
+            if (this._updateTrashCancellable === fallbackCancellable)
                 delete this._updateTrashCancellable;
         }
     }

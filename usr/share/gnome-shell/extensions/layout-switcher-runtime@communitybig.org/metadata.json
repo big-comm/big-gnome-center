@@ -1,0 +1,8 @@
+{
+  "uuid": "layout-switcher-runtime@communitybig.org",
+  "name": "Layout Switcher Shell Runtime",
+  "description": "Focused dock and taskbar runtime for BigCommunity desktop layouts.",
+  "shell-version": ["50", "51"],
+  "version": 2,
+  "url": "https://github.com/BigCommunity/layout-switcher"
+}

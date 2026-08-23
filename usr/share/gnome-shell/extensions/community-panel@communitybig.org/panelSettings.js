@@ -33,9 +33,6 @@ const displayConfigWrapper = Gio.DBusProxy.makeProxyWrapper(
   </node>`,
 )
 
-// the module variables here are different in the settings dialog (gjs process)
-// and in gnome-shell (gnome-shell process)
-let prefsOpenedId = null
 let useCache = false
 let cache = {}
 let monitorIdToIndex = {}
@@ -47,16 +44,8 @@ export var availableMonitors = []
 export async function init(settings) {
   useCache = true
   cache = {}
-  prefsOpenedId = settings.connect(
-    'changed::prefs-opened',
-    () => (useCache = !settings.get_boolean('prefs-opened')),
-  )
 
   await setMonitorsInfo(settings)
-}
-
-export async function disable(settings) {
-  settings.disconnect(prefsOpenedId)
 }
 
 export function clearCache(setting) {

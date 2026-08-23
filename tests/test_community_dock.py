@@ -21,7 +21,6 @@ def test_community_dock_has_distinct_identity_and_shell_support():
 def test_community_dock_preserves_dash_to_dock_106_core_baseline():
     expected = {
         "docking.js": "07b9376d63f718812d2a7b701eb2258be1154fa1b9069bc036d8c4f1b8f0d3f8",
-        "dash.js": "2a561992aa912a502464133437f30d7f63d7b29ef8f0ffe7a88b7460638a60f1",
     }
 
     for name, digest in expected.items():
@@ -46,7 +45,7 @@ def test_layouts_do_not_reference_external_dash_to_dock():
         assert "dash-to-dock@micxgx.gmail.com" not in shell_section
 
 
-def test_dock_layouts_use_only_community_dock():
+def test_dock_layouts_use_only_unified_runtime():
     for filename in ("biggnome.txt", "g-unity.txt"):
         layout = (ROOT / f"usr/share/layout-switcher/layouts/{filename}").read_text()
         shell_section = layout.split("[org/gnome/shell]", 1)[1].split("\n\n", 1)[0]
@@ -54,7 +53,8 @@ def test_dock_layouts_use_only_community_dock():
             line for line in shell_section.splitlines() if line.startswith("enabled-extensions=")
         )
 
-        assert "community-dock@communitybig.org" in enabled_line
+        assert "layout-switcher-runtime@communitybig.org" in enabled_line
+        assert "community-dock@communitybig.org" not in enabled_line
 
 
 def test_g_unity_preserves_its_left_fixed_dock_baseline():
@@ -119,7 +119,7 @@ def test_running_indicator_styles_are_owned_by_community_dock():
     assert "rgba(160, 160, 168, 0.72)" in stylesheet
     assert "background-color: -st-accent-color" in stylesheet
     assert "layout-switcher-biggnome-dock" not in stylesheet
-    assert "new IndicatorController(this, dockManager)" in extension
+    assert "new IndicatorController(this._extension, dockManager)" in extension
     assert "changed::indicator-style" in controller
     assert "changed::running-indicator-style" in controller
     assert "this._dockSettings.set_enum('running-indicator-style', 0)" in controller
@@ -146,12 +146,53 @@ def test_community_dock_focus_tracks_newly_focused_windows_immediately():
     assert "this._updateFocusState();" in app_icons
 
 
+def test_community_dock_has_no_independent_settings_menu():
+    app_icons = (DOCK / "appIcons.js").read_text()
+
+    assert "Community Dock is configured exclusively by Layout Switcher." in app_icons
+    assert "DockShowAppsIconMenu" not in app_icons
+    assert "Docking.DockManager.extension.openPreferences()" not in app_icons
+    assert "__('Dash to Dock')" not in app_icons
+
+
+def test_community_dock_has_no_independent_preferences_ui():
+    assert not (DOCK / "prefs.js").exists()
+    assert not (DOCK / "Settings.ui").exists()
+
+
+def test_community_dock_hover_effect_is_small_and_layout_switcher_owned():
+    dash = (DOCK / "dash.js").read_text()
+    schema = (DOCK / "schemas/org.communitybig.panel-and-dock.gschema.xml").read_text()
+
+    assert 'name="dock-hover-effect" type="s"' in schema
+    assert '<choice value="default"/>' in schema
+    assert '<choice value="lift"/>' in schema
+    assert "COMMUNITY_SETTINGS_SCHEMA" in dash
+    assert "changed::dock-hover-effect" in dash
+    assert "_animateAppIconHover" in dash
+    assert "_syncHoverEffectStyle" in dash
+    assert "community-dock-hover-lift" in dash
+    assert "notify::hover" in dash
+    assert "scale_x: lift ? 1.08 : 1" in dash
+
+
+def test_community_dock_trash_refresh_stops_cleanly_during_runtime_reload():
+    locations = (DOCK / "locations.js").read_text()
+    refresh = locations.split("async _updateTrash()", 1)[1].split("launchAction", 1)[0]
+
+    assert "if (e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))" in refresh
+    assert "if (!this.location)" in refresh
+    assert "const fallbackCancellable" in refresh
+    assert "this._updateTrashCancellable === fallbackCancellable" in refresh
+    assert "this._updateIconCancellable" not in refresh
+
+
 def test_community_dock_owns_native_panel_runtime():
     extension = (DOCK / "extension.js").read_text()
     controller = (DOCK / "panelController.js").read_text()
     schema = (DOCK / "schemas/org.communitybig.panel-and-dock.gschema.xml").read_text()
 
-    assert "new PanelController(this)" in extension
+    assert "new PanelController(this._extension)" in extension
     assert "this._panelController?.destroy()" in extension
     assert "Main.layoutManager.panelBox" in controller
     assert "panel-opacity" in controller

@@ -2,7 +2,7 @@
 
 > Active continuation document. Read this file before changing the repository.
 > Update the checklist and decision log after every verified task.
-> Last updated: 2026-08-20.
+> Last updated: 2026-08-22.
 
 ## Current objective
 
@@ -154,10 +154,12 @@ Final clean migration result:
 ### Frosted Glass overview polish (GNOME 50)
 
 - [x] Set the clean-install blur-strength default to 23%.
+- [x] Set the material-opacity default and original-layout reset to 37%.
 - [x] Make material opacity cover the real 0-100 range.
-- [x] Keep the overview tint above backgrounds recreated by GNOME Shell.
+- [x] Keep wallpaper blur independent from material opacity and accent color.
 - [x] Make search provider cards and focused results translucent.
 - [x] Cover GNOME 50 `overview-tile` focus and checked app states.
+- [x] Apply the same dynamic material to opened application-folder dialogs.
 - [x] Compile and deploy both extension-local and system schema copies.
 - [x] Verify the five deployed source hashes against the local repository.
 - [x] Pass the full local suite: `436 passed`.
@@ -312,6 +314,9 @@ GNOME 50 local/remote SHA-256:
 Implementation notes:
 
 - Panel settings schema: `org.communitybig.panel-and-dock`.
+- Future unified runtime schema: `org.communitybig.layout-switcher.runtime`.
+  Defaults live in `runtime_settings.py`; only per-layout overrides are persisted.
+  `PanelDockSettings` mirrors current Dock/Panel writes during migration.
 - Dock controls map to the Community Dock-local Dash to Dock schema; no
   external extension is enabled.
 - “Always hidden” is auto-hide, not permanent removal: panel and dock return
@@ -737,8 +742,10 @@ unexecuted check as passing.
 2. Stage only the changed runtime files under a unique directory in `/tmp` on
    the VM.
 3. Inspect staged paths.
-4. Copy them with `sudo install` or `sudo cp` to the matching paths under
-   `/usr/share/layout-switcher/`.
+4. Copy regular files with `sudo install`, or copy directory *contents* to the
+   exact destination. Never run `cp -a staged/usr /` (or the equivalent for
+   `etc`): it can replace the ownership of `/usr`, `/etc`, and their shared
+   directories with the staging user's ownership.
 5. Compare local and remote SHA-256 hashes.
 6. Restart only the affected application. A Shell or display-manager restart is
    unnecessary for Python UI/CSS-only changes.
@@ -756,6 +763,13 @@ usr/share/locale/pt_BR/LC_MESSAGES/layout-switcher.mo
 
 Do not deploy `tests/test_desktop_icons.py` or this handoff document into
 `/usr/share/layout-switcher/`.
+
+GNOME 50 recovery note (2026-08-22): a broad archive copy left `/`, `/etc`,
+`/usr`, `/usr/bin`, and `/usr/share` owned by `tales`. `systemd-tmpfiles` then
+rejected unsafe path transitions, `/tmp/.X11-unix` was created by the GDM
+greeter, and user login aborted while starting XWayland. Ownership was restored
+non-recursively to `root:root`, the X11 socket directory was restored to mode
+1777, and `systemd-tmpfiles --create` completed normally.
 
 ## Known review follow-ups
 
@@ -1091,3 +1105,111 @@ Append one entry per completed change:
 - Next: test an upgrade from the previous testing package on a clean GNOME 50
   installation. Confirm the menu remains available at first login and verify
   the six desktop-icon defaults before publishing another package.
+
+## 2026-08-21 — Focused Shell runtime roadmap
+
+- User approved replacing the bundled Dash to Dock and Dash to Panel forks
+  incrementally with a focused Layout Switcher-owned Shell runtime.
+- All user-facing Dock and Panel settings must exist only in Layout Switcher.
+- The runtime remains a GJS extension because Shell actors cannot run in the
+  external GTK process. Keep it separate from the D-Bus helper for isolation.
+- First new controls: safe dock size/thickness and panel height, saved per
+  layout, live-applied, with a restore-default action.
+- Keep current icon spacing fixed. The user explicitly rejected a spacing
+  control because the accepted value is already correct.
+- Product direction: curated Deepin-like controls, strong defaults, and visual
+  cards. Do not expose arbitrary alignment, padding, margin, or element order.
+- Add an illustrated Dock hover option for the accepted Hybrid-style icon lift.
+- Keep Applications, Trash, and mounted-volume visibility at current defaults;
+  they are possible future controls, not initial scope.
+- Do not start by deleting inherited code. Inventory, test, extract, obtain
+  live approval, then remove the replaced code.
+- Detailed phases, gates, layout contracts, and candidate settings are in
+  `docs/SHELL_RUNTIME_MIGRATION.md`.
+
+## 2026-08-22 — Passive unified runtime foundation
+
+- Added `layout-switcher-runtime@communitybig.org` as the future single visual
+  runtime for Dock and Taskbar.
+- Build 1 is intentionally passive: it reads the owned runtime schema and maps
+  all six profiles, but an explicit gate prevents actor activation.
+- Added separate Dock and Taskbar modules under one extension lifecycle.
+- Original layout applies now persist the canonical active layout in
+  `org.communitybig.layout-switcher.runtime` without requiring the settings
+  page to be opened.
+- Community Dock and Community Panel remain enabled by the accepted layouts;
+  no layout enables the new runtime in this gate.
+- Package staging and JavaScript/schema/JSON checks passed. Full suite:
+  `478 passed`.
+- Installed and hash-verified on GNOME 50 and 51. The new UUID was absent from
+  both sessions' enabled-extension lists; no graphical restart was performed.
+- `PKGBUILD` was not changed.
+
+### 2026-08-22 — GNOME 50 zero-drift sync and stable migration audit
+
+- Local source and `192.168.128.230` now match by checksum for the application,
+  Community Menu, Frosted Glass, helper, unified runtime, Community Dock, and
+  Community Panel.
+- System copies are `root:root`; deploy only to exact package-owned paths.
+  Never copy a staged `usr/` or `etc/` tree over the filesystem root.
+- Community Dock and Community Panel remain bundled as internal runtime source
+  modules. They are not enabled as standalone extensions and must stay in sync.
+- Login migration maps stable Dash to Dock/Panel UUIDs and intermediate
+  Community Dock/Panel UUIDs to the unified runtime, preserving unrelated user
+  extensions and removing duplicates.
+- Migration teardown covers all four retired standalone UUIDs to prevent ghost
+  panels or docks on the first upgraded login.
+- Validation: focused migration suite `164 passed`; full suite `484 passed`.
+
+### 2026-08-22 — Per-layout indicator ownership checkpoint
+
+- Canonical defaults: BigGnome and Desk UX use Desk UX, Hybrid uses Hybrid,
+  G-Unity uses dot, and Classic keeps indicators disabled.
+- The unified runtime resolves the active layout override or its default and
+  applies it before activating the Dock or Taskbar compatibility module.
+- `Apply original` removes only the target layout's runtime overrides, so a
+  previous layout cannot contaminate its indicator while other layout
+  customizations remain preserved.
+- Missing runtime schemas now raise a recoverable Python error instead of
+  aborting through `Gio.Settings.new()`.
+- Validation: focused suite `133 passed`; full suite `491 passed`; JavaScript
+  syntax passed. GNOME 50 deployment hashes match local source for all six
+  changed runtime/application files. Live validation requires a session restart.
+
+### 2026-08-22 — Global color-mode ownership
+
+- Layouts never own the user's light/dark choice. Every switch preserves the
+  effective live session mode, including changes made outside Layout Switcher.
+- The preserved mode also selects the matching `adw-gtk3` and Papient variants;
+  target layout files cannot force their saved dark/light variant.
+- The global choice applies to applications and icons across all six layouts.
+- BigGnome, Desk UX, G-Unity, and Minimal retain their structural dark Shell;
+  light mode uses light applications without enabling Light Style over their
+  panel/menu CSS.
+- Icon-theme and taskbar-label transforms read the transformed target mode,
+  not the source layout file.
+
+### 2026-08-22 — Rejected direct Dock lifecycle extraction
+
+- A direct `DockManager` lifecycle inside the unified runtime passed static and
+  automated checks but failed the live Classic to BigGnome transition.
+- Dock teardown callbacks accessed cleared extension settings and wedged Shell
+  D-Bus before `CompleteSwitch`.
+- The experiment was fully reverted locally and on GNOME 50. Keep
+  `CommunityDockRuntime` as the rollback boundary until teardown ownership is
+  isolated and covered by a live transition check.
+- The blocked graphical session was terminated cleanly after exact rollback
+  hashes were confirmed. Relogin is required once.
+
+### 2026-08-22 — Status icon theme transition refresh
+
+- G-Unity light to Hybrid left JamesDSP's white StatusNotifierItem pixmap on
+  the light panel even though the final Papient Light theme was correct.
+- Root cause: AppIndicator retained its rendered actor cache across the icon
+  theme transition. The existing refresh ran only for live color-mode changes.
+- Both layout apply protocols now refresh each live AppIndicator proxy and
+  invalidate its icon actor after the target extensions are ready.
+- The refresh is in-place. It does not restart applications or reload the
+  AppIndicator host, avoiding orphaned tray items.
+- Validation: JavaScript syntax passed; focused suite `123 passed`; full suite
+  `493 passed`.

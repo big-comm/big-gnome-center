@@ -15,6 +15,7 @@ from helper_client import (
     LEGACY_DASH_TO_DOCK_UUID,
     LEGACY_DASH_TO_PANEL_UUID,
     LEGACY_HELPER_UUID,
+    RUNTIME_UUID,
     HelperClient,
 )
 
@@ -89,8 +90,38 @@ class TestRequiredExtensionLists:
             [LEGACY_DASH_TO_PANEL_UUID],
         )
 
-        assert enabled == [HELPER_UUID, COMMUNITY_DOCK_UUID, "user@example.org"]
-        assert disabled == [COMMUNITY_PANEL_UUID]
+        assert enabled == [HELPER_UUID, RUNTIME_UUID, "user@example.org"]
+        assert disabled == []
+
+    def test_migrates_intermediate_components_to_unified_runtime(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [COMMUNITY_DOCK_UUID, COMMUNITY_PANEL_UUID, "user@example.org"],
+            [LEGACY_DASH_TO_DOCK_UUID, LEGACY_DASH_TO_PANEL_UUID],
+            available_uuids={HELPER_UUID, RUNTIME_UUID},
+        )
+
+        assert enabled == [HELPER_UUID, RUNTIME_UUID, "user@example.org"]
+        assert disabled == []
+
+    def test_migrates_stable_hybrid_session_without_touching_user_extensions(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [
+                LEGACY_HELPER_UUID,
+                LEGACY_DASH_TO_PANEL_UUID,
+                ARCMENU_UUID,
+                "user@example.org",
+            ],
+            [LEGACY_DASH_TO_DOCK_UUID, "disabled@example.org"],
+            available_uuids={HELPER_UUID, RUNTIME_UUID, ARCMENU_UUID, "user@example.org"},
+        )
+
+        assert enabled == [
+            HELPER_UUID,
+            RUNTIME_UUID,
+            ARCMENU_UUID,
+            "user@example.org",
+        ]
+        assert disabled == ["disabled@example.org"]
 
     def test_helper_only_repair_preserves_live_legacy_components(self):
         enabled, disabled = HelperClient.required_helper_lists(
@@ -129,19 +160,19 @@ class TestRequiredExtensionLists:
         enabled, _disabled = HelperClient.required_extension_lists(
             [LEGACY_DASH_TO_PANEL_UUID],
             [],
-            available_uuids={HELPER_UUID, COMMUNITY_PANEL_UUID},
+            available_uuids={HELPER_UUID, RUNTIME_UUID},
         )
 
-        assert enabled == [HELPER_UUID, COMMUNITY_PANEL_UUID]
+        assert enabled == [HELPER_UUID, RUNTIME_UUID]
 
     def test_places_migrated_panel_before_arc_menu(self):
         enabled, _disabled = HelperClient.required_extension_lists(
             [ARCMENU_UUID, LEGACY_DASH_TO_PANEL_UUID],
             [],
-            available_uuids={HELPER_UUID, COMMUNITY_PANEL_UUID, ARCMENU_UUID},
+            available_uuids={HELPER_UUID, RUNTIME_UUID, ARCMENU_UUID},
         )
 
-        assert enabled == [HELPER_UUID, COMMUNITY_PANEL_UUID, ARCMENU_UUID]
+        assert enabled == [HELPER_UUID, RUNTIME_UUID, ARCMENU_UUID]
 
 
 class TestComponentAssetMigration:

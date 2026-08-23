@@ -1,0 +1,92 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+import Gio from 'gi://Gio';
+
+import {DockRuntime} from './dockRuntime.js';
+import {profileForLayout, RuntimeSurface} from './layoutProfiles.js';
+import {TaskbarRuntime} from './taskbarRuntime.js';
+
+const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
+
+export const RUNTIME_BUILD = 3;
+
+export class RuntimeController {
+    constructor(extension) {
+        this._extension = extension;
+    }
+
+    enable() {
+        if (this._settings)
+            return;
+
+        const source = Gio.SettingsSchemaSource.get_default();
+        const schema = source.lookup(RUNTIME_SCHEMA, true);
+        if (!schema) {
+            console.error(`[layout-switcher-runtime] missing schema ${RUNTIME_SCHEMA}`);
+            return;
+        }
+
+        this._dock = new DockRuntime(this._extension);
+        this._taskbar = new TaskbarRuntime(this._extension);
+        this._enabled = true;
+        this._syncPromise = Promise.resolve();
+        this._settings = new Gio.Settings({settings_schema: schema});
+        this._layoutChangedId = this._settings.connect(
+            'changed::active-layout',
+            () => this._queueSync(),
+        );
+        this._queueSync();
+        console.info(`[layout-switcher-runtime] build ${RUNTIME_BUILD} ready`);
+    }
+
+    disable() {
+        this._enabled = false;
+        this._syncGeneration = (this._syncGeneration ?? 0) + 1;
+        if (this._layoutChangedId && this._settings)
+            this._settings.disconnect(this._layoutChangedId);
+        this._layoutChangedId = 0;
+        this._dock?.deactivate();
+        this._taskbar?.deactivate();
+        this._activeProfile = null;
+        this._dock = null;
+        this._taskbar = null;
+        this._settings = null;
+        this._syncPromise = null;
+    }
+
+    _queueSync() {
+        const generation = (this._syncGeneration ?? 0) + 1;
+        this._syncGeneration = generation;
+        this._syncPromise = this._syncPromise
+            .then(() => this._syncProfile(generation))
+            .catch(error => console.error(
+                `[layout-switcher-runtime] profile activation failed: ${error.stack ?? error}`,
+            ));
+    }
+
+    async _syncProfile(generation) {
+        if (!this._enabled || !this._settings)
+            return;
+
+        const profile = profileForLayout(this._settings.get_string('active-layout'));
+        const indicator = this._indicatorForProfile(profile);
+        this._dock.deactivate();
+        this._taskbar.deactivate();
+        this._activeProfile = profile;
+
+        if (profile.surface === RuntimeSurface.DOCK) {
+            this._dock.activate(profile, indicator);
+        } else if (profile.surface === RuntimeSurface.TASKBAR) {
+            await this._taskbar.activate(profile, indicator);
+            if (!this._enabled || generation !== this._syncGeneration)
+                this._taskbar.deactivate();
+        }
+    }
+
+    _indicatorForProfile(profile) {
+        const overrides = this._settings
+            .get_value('indicator-style-overrides')
+            .deep_unpack();
+        return overrides[profile.layout] ?? profile.indicator;
+    }
+}

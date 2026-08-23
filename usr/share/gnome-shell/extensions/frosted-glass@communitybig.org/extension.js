@@ -137,7 +137,8 @@ export default class FrostedGlassExtension extends Extension {
             opacity: Math.round(255 * opacityPercent / 100),
             tintOpacity: materialOpacity,
             materialOpacity,
-            useAccentColor: this._settings.get_boolean('use-accent-color'),
+            useAccentColor: this._settings.settings_schema.has_key('use-accent-color') &&
+                this._settings.get_boolean('use-accent-color'),
             lightMode,
             appLightMode,
             mode,

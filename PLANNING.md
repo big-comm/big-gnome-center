@@ -1,7 +1,20 @@
 # PLANNING.md — Layout Switcher Roadmap
 
-Última revisão: 2026-04-21
+Última revisão: 2026-08-22
 Versão atual: **2.18.0**
+
+## Active roadmap — focused Shell runtime
+
+The approved Dock and Panel simplification roadmap is maintained in
+[`docs/SHELL_RUNTIME_MIGRATION.md`](docs/SHELL_RUNTIME_MIGRATION.md).
+
+Current state: Phase 2 complete; the unified runtime owns surface activation
+and per-layout indicator application. Focused Dock and Taskbar extraction is
+in progress behind compatibility modules and live approval gates.
+All user-facing configuration will move to Layout Switcher. A small GJS runtime
+will remain necessary because GNOME Shell actors cannot run in the GTK process.
+Each phase requires automated checks and live GNOME 50 approval before inherited
+code is removed. GNOME 51 remains a compatibility requirement.
 
 ## Status geral
 

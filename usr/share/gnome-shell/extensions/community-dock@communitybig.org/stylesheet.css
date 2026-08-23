@@ -7,6 +7,19 @@
 .dash-item-container .show-apps:hover .overview-icon {
   background-color: rgba(238, 238, 238, 0.2); }
 
+#dash.community-dock-hover-lift .dash-item-container .overview-tile:hover .overview-icon,
+#dash.community-dock-hover-lift .dash-item-container .overview-tile.focused .overview-icon,
+#dash.community-dock-hover-lift .dash-item-container .show-apps:hover .overview-icon {
+  background-color: transparent;
+  box-shadow: none; }
+
+#dash.community-dock-hover-lift .dash-item-container .overview-tile:hover,
+#dash.community-dock-hover-lift .dash-item-container .overview-tile.focused,
+#dash.community-dock-hover-lift .dash-item-container .show-apps:hover {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none; }
+
 .dash-item-container .overview-tile .app-grid-running-dot {
   margin-bottom: 8px;
   offset-y: 2px; }

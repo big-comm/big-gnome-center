@@ -12,6 +12,8 @@ from extension_manager import ExtMgr
 from panel_dock_settings import (
     COMMUNITY_DOCK_UUID,
     COMMUNITY_PANEL_UUID,
+    DOCK_SIZE_RANGE,
+    PANEL_HEIGHT_RANGE,
     PanelDockSettings,
 )
 from settings_store import Settings
@@ -27,6 +29,13 @@ INDICATOR_STYLES = (
     ("hybrid", tr("Hybrid line")),
     ("desk-ux", tr("Desk UX line")),
 )
+DOCK_HOVER_EFFECTS = (
+    ("default", tr("Standard")),
+    ("lift", tr("Gentle lift")),
+)
+RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
+RUNTIME_DOCK_LAYOUTS = frozenset(("BigGnome", "G-Unity"))
+RUNTIME_TASKBAR_LAYOUTS = frozenset(("Hybrid", "Desk UX", "Classic"))
 
 
 class PanelDockPage(Gtk.Box):
@@ -38,6 +47,7 @@ class PanelDockPage(Gtk.Box):
         self._syncing = False
         self._settings = None
         self._indicator_buttons = {}
+        self._hover_buttons = {}
         self._build()
         self.refresh()
 
@@ -62,6 +72,18 @@ class PanelDockPage(Gtk.Box):
             self._dock_opacity_label,
         ) = self._opacity_row(tr("Dock transparency"), self._on_dock_opacity_changed)
         self._dock_group.add(self._dock_opacity)
+        (
+            self._dock_size,
+            self._dock_size_scale,
+            self._dock_size_label,
+        ) = self._size_row(
+            tr("Dock size"),
+            DOCK_SIZE_RANGE,
+            self._on_dock_size_changed,
+        )
+        self._dock_group.add(self._dock_size)
+        self._hover_row = self._build_hover_effect_row()
+        self._dock_group.add(self._hover_row)
         self._dock_visibility = self._visibility_row(
             tr("Dock visibility"),
             self._on_dock_visibility_changed,
@@ -81,6 +103,16 @@ class PanelDockPage(Gtk.Box):
             self._panel_opacity_label,
         ) = self._opacity_row(tr("Panel transparency"), self._on_panel_opacity_changed)
         self._panel_group.add(self._panel_opacity)
+        (
+            self._panel_height,
+            self._panel_height_scale,
+            self._panel_height_label,
+        ) = self._size_row(
+            tr("Panel height"),
+            PANEL_HEIGHT_RANGE,
+            self._on_panel_height_changed,
+        )
+        self._panel_group.add(self._panel_height)
         self._panel_visibility = self._visibility_row(
             tr("Panel visibility"),
             self._on_panel_visibility_changed,
@@ -88,8 +120,91 @@ class PanelDockPage(Gtk.Box):
         self._panel_group.add(self._panel_visibility)
         content.append(self._panel_group)
 
+        self._restore_group = Adw.PreferencesGroup()
+        restore_row = Adw.ActionRow(
+            title=tr("Restore layout defaults"),
+            subtitle=tr("Reset Panel and Dock options for the active layout."),
+        )
+        restore_button = Gtk.Button(label=tr("Restore"))
+        restore_button.set_valign(Gtk.Align.CENTER)
+        restore_button.add_css_class("destructive-action")
+        restore_button.connect("clicked", self._on_restore_defaults_clicked)
+        restore_row.add_suffix(restore_button)
+        restore_row.set_activatable_widget(restore_button)
+        self._restore_group.add(restore_row)
+        content.append(self._restore_group)
+
         scroll.set_child(content)
         self.append(scroll)
+
+    def _build_hover_effect_row(self) -> Adw.PreferencesRow:
+        row = Adw.PreferencesRow()
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box.set_margin_top(12)
+        box.set_margin_bottom(12)
+        box.set_margin_start(12)
+        box.set_margin_end(12)
+        title = Gtk.Label(label=tr("Icon hover effect"), xalign=0)
+        title.add_css_class("heading")
+        box.append(title)
+        hint = Gtk.Label(
+            label=tr("Choose how dock icons react to the pointer."),
+            wrap=True,
+            xalign=0,
+        )
+        hint.add_css_class("dim-label")
+        hint.add_css_class("caption")
+        box.append(hint)
+        flow = Gtk.FlowBox()
+        flow.add_css_class("dock-hover-grid")
+        flow.set_selection_mode(Gtk.SelectionMode.NONE)
+        flow.set_min_children_per_line(2)
+        flow.set_max_children_per_line(2)
+        flow.set_column_spacing(10)
+        flow.set_homogeneous(True)
+        first_button = None
+        for value, label in DOCK_HOVER_EFFECTS:
+            button = self._build_hover_effect_button(value, label)
+            if first_button is None:
+                first_button = button
+            else:
+                button.set_group(first_button)
+            flow.append(button)
+            self._hover_buttons[value] = button
+        box.append(flow)
+        row.set_child(box)
+        return row
+
+    def _build_hover_effect_button(self, value: str, label: str) -> Gtk.ToggleButton:
+        button = Gtk.ToggleButton()
+        button.add_css_class("dock-hover-card")
+        button.set_tooltip_text(tr("Use the {effect} hover effect").format(effect=label))
+        button.update_property([Gtk.AccessibleProperty.LABEL], [label])
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
+        box.set_margin_top(10)
+        box.set_margin_bottom(9)
+        box.set_margin_start(8)
+        box.set_margin_end(8)
+        preview = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=14)
+        preview.add_css_class("dock-hover-preview")
+        preview.set_halign(Gtk.Align.CENTER)
+        preview.set_size_request(-1, 58)
+        for index in range(3):
+            icon = Gtk.Box()
+            icon.add_css_class("dock-hover-preview-icon")
+            icon.set_size_request(30, 30)
+            icon.set_valign(Gtk.Align.END)
+            if value == "lift" and index == 1:
+                icon.add_css_class("dock-hover-preview-raised")
+                icon.set_margin_bottom(8)
+            preview.append(icon)
+        box.append(preview)
+        effect_label = Gtk.Label(label=label)
+        effect_label.add_css_class("heading")
+        box.append(effect_label)
+        button.set_child(box)
+        button.connect("toggled", self._on_hover_effect_toggled, value)
+        return button
 
     def _build_indicator_style_row(self) -> Adw.PreferencesRow:
         row = Adw.PreferencesRow()
@@ -226,13 +341,49 @@ class PanelDockPage(Gtk.Box):
         row.connect("notify::selected", callback)
         return row
 
+    @staticmethod
+    def _size_row(
+        title: str,
+        value_range: tuple[int, int],
+        callback,
+    ) -> tuple[Adw.ActionRow, Gtk.Scale, Gtk.Label]:
+        row = Adw.ActionRow(title=title)
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        smaller = Gtk.Label(label=tr("Smaller"))
+        smaller.add_css_class("caption")
+        box.append(smaller)
+        scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            value_range[0],
+            value_range[1],
+            1,
+        )
+        scale.set_draw_value(False)
+        scale.set_size_request(250, -1)
+        scale.connect("value-changed", callback)
+        box.append(scale)
+        value = Gtk.Label(label="0 px")
+        value.set_width_chars(5)
+        box.append(value)
+        larger = Gtk.Label(label=tr("Larger"))
+        larger.add_css_class("caption")
+        box.append(larger)
+        row.add_suffix(box)
+        return row, scale, value
+
     def refresh(self) -> None:
         active_layout = Settings().get("active_layout", "")
-        dock_active = ExtMgr.is_enabled(COMMUNITY_DOCK_UUID)
-        community_panel_active = ExtMgr.is_enabled(COMMUNITY_PANEL_UUID)
+        runtime_active = ExtMgr.is_enabled(RUNTIME_UUID)
+        dock_active = ExtMgr.is_enabled(COMMUNITY_DOCK_UUID) or (
+            runtime_active and active_layout in RUNTIME_DOCK_LAYOUTS
+        )
+        community_panel_active = ExtMgr.is_enabled(COMMUNITY_PANEL_UUID) or (
+            runtime_active and active_layout in RUNTIME_TASKBAR_LAYOUTS
+        )
         try:
             self._settings = (
                 PanelDockSettings(
+                    active_layout=active_layout,
                     dock_active=dock_active,
                     community_panel_active=community_panel_active,
                 )
@@ -244,11 +395,17 @@ class PanelDockPage(Gtk.Box):
         dock_available = self._settings is not None and dock_active
         panel_available = self._settings is not None and (dock_active or community_panel_active)
         indicator_available = self._settings is not None and (dock_active or community_panel_active)
+        hover_available = self._settings is not None and (
+            dock_active or community_panel_active
+        )
         self._dock_group.set_visible(active_layout != "Classic")
         self._dock_group.set_sensitive(dock_available or indicator_available)
         self._panel_group.set_sensitive(panel_available)
         self._dock_opacity.set_visible(not community_panel_active)
+        self._dock_size.set_visible(dock_available and not community_panel_active)
+        self._hover_row.set_visible(hover_available and active_layout != "Classic")
         self._dock_visibility.set_visible(not community_panel_active)
+        self._panel_height.set_visible(community_panel_active)
         self._indicator_row.set_sensitive(indicator_available)
         if community_panel_active:
             self._dock_group.set_title(tr("Taskbar"))
@@ -286,6 +443,13 @@ class PanelDockPage(Gtk.Box):
             self._dock_visibility.set_selected(
                 VISIBILITY_VALUES.index(self._settings.dock_visibility())
             )
+            self._set_size(
+                self._dock_size_scale,
+                self._dock_size_label,
+                self._settings.dock_size(),
+            )
+        if hover_available:
+            self._hover_buttons[self._settings.dock_hover_effect()].set_active(True)
         if indicator_available:
             self._indicator_buttons[self._settings.indicator_style()].set_active(True)
         if panel_available:
@@ -297,12 +461,23 @@ class PanelDockPage(Gtk.Box):
             self._panel_visibility.set_selected(
                 VISIBILITY_VALUES.index(self._settings.panel_visibility())
             )
+            if community_panel_active:
+                self._set_size(
+                    self._panel_height_scale,
+                    self._panel_height_label,
+                    self._settings.panel_height(),
+                )
         self._syncing = False
 
     @staticmethod
     def _set_opacity(scale: Gtk.Scale, label: Gtk.Label, value: int) -> None:
         scale.set_value(value)
         label.set_label(f"{value}%")
+
+    @staticmethod
+    def _set_size(scale: Gtk.Scale, label: Gtk.Label, value: int) -> None:
+        scale.set_value(value)
+        label.set_label(f"{value} px")
 
     def _on_dock_opacity_changed(self, scale: Gtk.Scale) -> None:
         value = round(scale.get_value())
@@ -315,6 +490,18 @@ class PanelDockPage(Gtk.Box):
         self._panel_opacity_label.set_label(f"{value}%")
         if not self._syncing and self._settings:
             self._settings.set_panel_opacity(value)
+
+    def _on_dock_size_changed(self, scale: Gtk.Scale) -> None:
+        value = round(scale.get_value())
+        self._dock_size_label.set_label(f"{value} px")
+        if not self._syncing and self._settings:
+            self._settings.set_dock_size(value)
+
+    def _on_panel_height_changed(self, scale: Gtk.Scale) -> None:
+        value = round(scale.get_value())
+        self._panel_height_label.set_label(f"{value} px")
+        if not self._syncing and self._settings:
+            self._settings.set_panel_height(value)
 
     def _on_dock_visibility_changed(self, row: Adw.ComboRow, param) -> None:
         if self._syncing or not self._settings:
@@ -339,3 +526,20 @@ class PanelDockPage(Gtk.Box):
             return
         self._settings.set_indicator_style(style)
         self._toast(tr("Indicator style updated"))
+
+    def _on_hover_effect_toggled(
+        self,
+        button: Gtk.ToggleButton,
+        effect: str,
+    ) -> None:
+        if self._syncing or not self._settings or not button.get_active():
+            return
+        self._settings.set_dock_hover_effect(effect)
+        self._toast(tr("Icon hover effect updated"))
+
+    def _on_restore_defaults_clicked(self, button: Gtk.Button) -> None:
+        if not self._settings:
+            return
+        self._settings.restore_layout_defaults()
+        self.refresh()
+        self._toast(tr("Layout Panel and Dock defaults restored"))

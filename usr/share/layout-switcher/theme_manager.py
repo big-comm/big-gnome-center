@@ -283,8 +283,8 @@ class ThemeMgr:
         native_shell: bool = False,
         fixed_shell: bool = False,
     ) -> None:
-        # These layouts intentionally keep GNOME's native dark Shell while
-        # their application color scheme changes independently.
+        # These layouts keep their structural dark Shell while GTK
+        # applications continue to follow the global light/dark choice.
         if fixed_shell:
             return
 

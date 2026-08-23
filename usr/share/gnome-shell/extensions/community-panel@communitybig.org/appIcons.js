@@ -51,10 +51,7 @@ import {
   EXTENSION_PATH,
   tracker,
 } from './extension.js'
-import {
-  gettext as _,
-  ngettext,
-} from 'resource:///org/gnome/shell/extensions/extension.js'
+import { gettext as _, ngettext } from './i18n.js'
 
 //timeout names
 const T2 = 'mouseScrollTimeout'
@@ -2394,25 +2391,10 @@ export const MyShowAppsIconMenu = class extends PopupMenu.PopupMenu {
 
     this._appendSeparator()
 
-    let lockTaskbarMenuItem = this._appendMenuItem(
-      SETTINGS.get_boolean('taskbar-locked')
-        ? _('Unlock taskbar')
-        : _('Lock taskbar'),
-    )
-    lockTaskbarMenuItem.connect('activate', () => {
-      SETTINGS.set_boolean(
-        'taskbar-locked',
-        !SETTINGS.get_boolean('taskbar-locked'),
-      )
-    })
-
     this._appendItem({
       title: _('Gnome Settings'),
       cmd: ['gnome-control-center'],
     })
-
-    let settingsMenuItem = this._appendMenuItem(_('Dash to Panel Settings'))
-    settingsMenuItem.connect('activate', () => DTP_EXTENSION.openPreferences())
 
     if (this.sourceActor == Main.layoutManager.dummyCursor) {
       this._appendSeparator()

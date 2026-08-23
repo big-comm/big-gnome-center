@@ -42,6 +42,7 @@ COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
 LEGACY_DASH_TO_DOCK_UUID = "dash-to-dock@micxgx.gmail.com"
 COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
 LEGACY_DASH_TO_PANEL_UUID = "dash-to-panel@jderose9.github.com"
+RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 ARCMENU_UUID = "arcmenu@arcmenu.com"
 
 _LEGACY_COMMUNITY_MENU_DIR = (
@@ -55,8 +56,10 @@ LAYOUT_COMPONENT_UUID_MIGRATIONS = {
     LEGACY_HELPER_UUID: HELPER_UUID,
     LEGACY_COMMUNITY_MENU_UUID: COMMUNITY_MENU_UUID,
     LEGACY_BIG_SHOT_UUID: BIG_SHOT_UUID,
-    LEGACY_DASH_TO_DOCK_UUID: COMMUNITY_DOCK_UUID,
-    LEGACY_DASH_TO_PANEL_UUID: COMMUNITY_PANEL_UUID,
+    LEGACY_DASH_TO_DOCK_UUID: RUNTIME_UUID,
+    LEGACY_DASH_TO_PANEL_UUID: RUNTIME_UUID,
+    COMMUNITY_DOCK_UUID: RUNTIME_UUID,
+    COMMUNITY_PANEL_UUID: RUNTIME_UUID,
 }
 
 _DEST = "org.gnome.Shell"
@@ -144,8 +147,8 @@ class HelperClient:
 
         enabled_migrated = migrate(enabled)
         disabled_migrated = migrate(disabled)
-        if COMMUNITY_PANEL_UUID in enabled_migrated:
-            panel_index = enabled_migrated.index(COMMUNITY_PANEL_UUID)
+        if RUNTIME_UUID in enabled_migrated:
+            panel_index = enabled_migrated.index(RUNTIME_UUID)
             menu_indexes = [
                 enabled_migrated.index(uuid)
                 for uuid in (ARCMENU_UUID, COMMUNITY_MENU_UUID)
@@ -153,7 +156,7 @@ class HelperClient:
             ]
             if menu_indexes and panel_index > min(menu_indexes):
                 enabled_migrated.pop(panel_index)
-                enabled_migrated.insert(min(menu_indexes), COMMUNITY_PANEL_UUID)
+                enabled_migrated.insert(min(menu_indexes), RUNTIME_UUID)
         enabled_out = [HELPER_UUID]
         enabled_out.extend(uuid for uuid in enabled_migrated if uuid != HELPER_UUID)
         enabled_set = set(enabled_out)

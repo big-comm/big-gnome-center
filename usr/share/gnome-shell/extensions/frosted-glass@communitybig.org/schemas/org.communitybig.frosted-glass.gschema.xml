@@ -45,7 +45,7 @@
     </key>
     <key name="glass-opacity" type="i">
       <range min="0" max="100"/>
-      <default>31</default>
+      <default>37</default>
       <summary>Material opacity</summary>
     </key>
     <key name="use-accent-color" type="b">

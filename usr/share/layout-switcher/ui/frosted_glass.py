@@ -34,6 +34,12 @@ def _schema_available() -> bool:
     return bool(source and source.lookup(FROSTED_GLASS_SCHEMA, True))
 
 
+def _schema_has_key(key: str) -> bool:
+    source = Gio.SettingsSchemaSource.get_default()
+    schema = source.lookup(FROSTED_GLASS_SCHEMA, True) if source else None
+    return bool(schema and schema.has_key(key))
+
+
 class FrostedGlassControls(Gtk.Box):
     """Live GSettings editor. The Shell extension owns rendering."""
 
@@ -121,14 +127,18 @@ class FrostedGlassControls(Gtk.Box):
     def _build_overview_material_group(self) -> Adw.PreferencesGroup:
         group = Adw.PreferencesGroup(title=tr("Material"))
         strength = self._scale_row("blur-strength", tr("Blur strength"), tr("Less"), tr("More"))
-        accent = self._switch_row("use-accent-color", tr("Accent color"), "")
         opacity = self._scale_row(
             "glass-opacity", tr("Material opacity"), tr("Transparent"), tr("Opaque")
         )
         group.add(strength)
-        group.add(accent)
+        rows = [strength]
+        if _schema_has_key("use-accent-color"):
+            accent = self._switch_row("use-accent-color", tr("Accent color"), "")
+            group.add(accent)
+            rows.append(accent)
         group.add(opacity)
-        self._dependent_rows.extend([strength, accent, opacity])
+        rows.append(opacity)
+        self._dependent_rows.extend(rows)
         return group
 
     def _unavailable(self, message: str) -> Gtk.Widget:
@@ -211,14 +221,18 @@ class FrostedGlassControls(Gtk.Box):
         )
         group.add(mode)
         strength = self._scale_row("blur-strength", tr("Blur strength"), tr("Less"), tr("More"))
-        accent = self._switch_row("use-accent-color", tr("Accent color"), "")
         opacity = self._scale_row(
             "glass-opacity", tr("Material opacity"), tr("Transparent"), tr("Opaque")
         )
         group.add(strength)
-        group.add(accent)
+        rows = [mode, strength]
+        if _schema_has_key("use-accent-color"):
+            accent = self._switch_row("use-accent-color", tr("Accent color"), "")
+            group.add(accent)
+            rows.append(accent)
         group.add(opacity)
-        self._dependent_rows.extend([mode, strength, accent, opacity])
+        rows.append(opacity)
+        self._dependent_rows.extend(rows)
         return group
 
     def _build_rules_group(self) -> Adw.PreferencesGroup:

@@ -63,6 +63,16 @@ def test_menu_button_uses_bundled_community_icon():
     assert "style_class: 'popup-menu-icon'" not in source
 
 
+def test_secondary_menu_has_no_panel_preferences_entry():
+    secondary_menu = (EXTENSION_DIR / "widgets/secondaryMenu.js").read_text()
+    utils = (EXTENSION_DIR / "utils.js").read_text()
+
+    assert "Community Panel Settings" not in secondary_menu
+    assert "_maybeAppendPanelExtensionSettings" not in secondary_menu
+    assert "Utils.openPrefs" not in secondary_menu
+    assert "openPrefs(" not in utils
+
+
 def test_captured_events_tolerate_gnome_51_keyboard_api():
     source = (EXTENSION_DIR / "menu.js").read_text()
 

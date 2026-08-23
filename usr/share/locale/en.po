@@ -1243,7 +1243,7 @@ msgstr ""
 #: usr/share/layout-switcher/ui/frosted_glass.py:89
 msgid ""
 "Install or update Layout Switcher to make Frosted Glass settings available."
-msgstr ""
+msgstr "Panel height"
 "Install or update Layout Switcher to make Frosted Glass settings available."
 
 #: usr/share/layout-switcher/ui/frosted_glass.py:110

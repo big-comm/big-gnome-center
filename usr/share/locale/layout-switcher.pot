@@ -1698,3 +1698,56 @@ msgstr ""
 #: usr/share/layout-switcher/ui/window.py:733
 msgid "Auto-update disabled"
 msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:72
+msgid "Dock size"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:101
+msgid "Panel height"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:259
+msgid "Smaller"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:275
+msgid "Larger"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:115
+msgid "Restore layout defaults"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:116
+msgid "Reset Panel and Dock options for the active layout."
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:445
+msgid "Layout Panel and Dock defaults restored"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:27
+msgid "Standard"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:28
+msgid "Gentle lift"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:144
+msgid "Icon hover effect"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:148
+msgid "Choose how dock icons react to the pointer."
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:178
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:526
+msgid "Icon hover effect updated"
+msgstr ""

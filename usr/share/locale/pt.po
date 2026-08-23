@@ -1636,7 +1636,7 @@ msgstr "Disponível quando o Dock da Comunidade está ativo."
 
 #: usr/share/layout-switcher/ui/page_panel_dock.py:263
 msgid "Available when Community Dock or Community Panel is active."
-msgstr ""
+msgstr "Altura do painel"
 "Disponível quando o Dock da Comunidade ou o Painel da Comunidade está ativo."
 
 #: usr/share/layout-switcher/ui/page_panel_dock.py:267

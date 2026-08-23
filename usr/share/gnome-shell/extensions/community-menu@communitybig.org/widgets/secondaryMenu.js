@@ -30,7 +30,6 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import * as Constants from '../constants.js';
 import * as Utils from '../utils.js';
 
 
@@ -151,7 +150,7 @@ export const ButtonMenu = class extends PopupMenu.PopupMenu {
 };
 
 export const MenuButtonSecondaryMenu = class extends PopupMenu.PopupMenu {
-    constructor(source, panelExtension) {
+    constructor(source) {
         super(source, 0.5, St.Side.TOP);
 
         this.actor.add_style_class_name('panel-menu app-menu');
@@ -190,7 +189,6 @@ export const MenuButtonSecondaryMenu = class extends PopupMenu.PopupMenu {
             cmd: ['gnome-control-center', 'search']
         });
 
-        this._maybeAppendPanelExtensionSettings(panelExtension);
     }
 
     // Only add menu entries for commands that exist in path
@@ -276,18 +274,6 @@ export const MenuButtonSecondaryMenu = class extends PopupMenu.PopupMenu {
             this._switchUserItem.visible ||
             this._logoutItem.visible;
      }
-
-    _maybeAppendPanelExtensionSettings(panelExtension) {
-        if(!panelExtension) {
-            return;
-        }
-
-        if (panelExtension === "dashToPanel") {
-            const item = new PopupMenu.PopupMenuItem(_('Community Panel Settings'));
-            item.connect('activate', () => Utils.openPrefs(Constants.COMMUNITY_PANEL_UUID));
-            this.addMenuItem(item);
-        }
-    }
 
     updateArrowSide(side) {
         this._arrowSide = side;

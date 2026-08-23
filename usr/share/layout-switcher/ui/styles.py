@@ -303,6 +303,43 @@ APP_CSS = """
     min-width: 20px;
 }
 
+/* ── Community Dock hover chooser ──────────────────────────────────── */
+.dock-hover-grid > flowboxchild {
+    background: none;
+    outline: none;
+    box-shadow: none;
+}
+.dock-hover-card {
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid alpha(@card_fg_color, 0.12);
+    background-color: alpha(@card_bg_color, 0.54);
+    box-shadow: none;
+}
+.dock-hover-card:hover {
+    border-color: alpha(@accent_color, 0.48);
+    background-color: alpha(@card_bg_color, 0.82);
+}
+.dock-hover-card:checked {
+    border-color: @accent_color;
+    background-color: alpha(@accent_bg_color, 0.13);
+    box-shadow: inset 0 0 0 1px @accent_color;
+}
+.dock-hover-preview {
+    padding: 8px 18px;
+    border-radius: 9px;
+    background-color: #17171c;
+    border: 1px solid alpha(white, 0.08);
+}
+.dock-hover-preview-icon {
+    border-radius: 7px;
+    background-color: #5e606a;
+    border: 1px solid alpha(white, 0.12);
+}
+.dock-hover-preview-raised {
+    background-color: @accent_bg_color;
+}
+
 /* ── Extension cards em destaque ─────────────────────────────────────── */
 .ext-card {
     outline: 1px solid alpha(@card_fg_color, 0.12);

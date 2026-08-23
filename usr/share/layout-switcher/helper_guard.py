@@ -7,6 +7,7 @@ from pathlib import Path
 from constants import ICON_NAME, tr
 from extension_update_monitor import ExtensionUpdateMonitor
 from helper_client import (
+    COMMUNITY_DOCK_UUID,
     COMMUNITY_PANEL_UUID,
     LEGACY_DASH_TO_DOCK_UUID,
     LEGACY_DASH_TO_PANEL_UUID,
@@ -78,7 +79,12 @@ class HelperGuard:
         apply_ok, apply_info = HelperClient.apply_layout(
             enabled_target,
             reload=reload_uuids,
-            teardown=[LEGACY_DASH_TO_DOCK_UUID, LEGACY_DASH_TO_PANEL_UUID],
+            teardown=[
+                LEGACY_DASH_TO_DOCK_UUID,
+                LEGACY_DASH_TO_PANEL_UUID,
+                COMMUNITY_DOCK_UUID,
+                COMMUNITY_PANEL_UUID,
+            ],
         )
         if not apply_ok:
             log.warning("initial component migration failed: %s", apply_info)

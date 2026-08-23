@@ -247,8 +247,8 @@ sleep-inactive-ac-type='nothing'
 app-picker-layout=[{'AudioVideo': <{'position': <0>}>, 'Office': <{'position': <1>}>, 'Utilities': <{'position': <2>}>, 'Settings': <{'position': <3>}>, 'Network': <{'position': <4>}>, 'Game': <{'position': <5>}>, 'WebApps': <{'position': <6>}>}]
 command-history=['ajustes', 'r']
 disable-user-extensions=false
-disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com', 'gtk4-ding@smedius.gitlab.com']
-enabled-extensions=['layout-switcher-helper@communitybig.org', 'gsconnect@andyholmes.github.io', 'pamac-updates@manjaro.org', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@communitybig.org', 'community-panel@communitybig.org', 'community-menu@communitybig.org', 'appindicatorsupport@rgcjonas.gmail.com']
+disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com', 'gtk4-ding@smedius.gitlab.com', 'community-dock@communitybig.org', 'community-panel@communitybig.org']
+enabled-extensions=['layout-switcher-helper@communitybig.org', 'layout-switcher-runtime@communitybig.org', 'gsconnect@andyholmes.github.io', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'copyous@boerdereinar.dev', 'big-shot@communitybig.org', 'community-menu@communitybig.org', 'appindicatorsupport@rgcjonas.gmail.com']
 favorite-apps=['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.communitybig.ashyterm.desktop', 'org.gnome.TextEditor.desktop']
 welcome-dialog-last-shown-version='43.2'
 
@@ -294,7 +294,14 @@ show-mounts=false
 transparency-mode='FIXED'
 
 [org/gnome/shell/extensions/dash-to-panel]
+animate-appicon-hover=false
+animate-appicon-hover-animation-convexity={'RIPPLE': 2.0, 'PLANK': 1.0, 'SIMPLE': 0.0}
+animate-appicon-hover-animation-duration={'SIMPLE': uint32 220, 'RIPPLE': 130, 'PLANK': 100}
 animate-appicon-hover-animation-extent={'RIPPLE': 4, 'PLANK': 4, 'SIMPLE': 1}
+animate-appicon-hover-animation-rotation={'SIMPLE': 0, 'RIPPLE': 0, 'PLANK': 0}
+animate-appicon-hover-animation-travel={'SIMPLE': 0.080000000000000002, 'RIPPLE': 0.40000000000000002, 'PLANK': 0.0}
+animate-appicon-hover-animation-type='SIMPLE'
+animate-appicon-hover-animation-zoom={'SIMPLE': 1.0800000000000001, 'RIPPLE': 1.0, 'PLANK': 2.0}
 appicon-margin=0
 appicon-padding=2
 appicon-style='NORMAL'

@@ -73,7 +73,7 @@ def test_overview_material_defaults_and_range():
     keys = {node.attrib["name"]: node for node in schema.findall("key")}
 
     assert keys["blur-strength"].findtext("default") == "23"
-    assert keys["glass-opacity"].findtext("default") == "31"
+    assert keys["glass-opacity"].findtext("default") == "37"
     assert keys["glass-opacity"].find("range").attrib == {"min": "0", "max": "100"}
     assert keys["use-accent-color"].findtext("default") == "false"
 
@@ -127,6 +127,7 @@ def test_layout_switcher_exposes_frosted_glass_controls():
     assert "FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51" in controls
     assert "_build_overview_main_group" in controls
     assert 'self._settings.set_boolean("overview-enabled", True)' in controls
+    assert 'if _schema_has_key("use-accent-color"):' in controls
     for setting in [
         "panel-enabled",
         "dock-enabled",
@@ -336,10 +337,12 @@ def test_glass_material_tracks_light_and_dark_color_scheme():
     assert "lightMode = appLightMode && communityMenuActive" in extension
     assert "brightness: lightMode ? 1.0 : 0.9" in extension
     assert "tintOpacity: materialOpacity" in extension
-    assert "useAccentColor: this._settings.get_boolean('use-accent-color')" in extension
+    assert "this._settings.settings_schema.has_key('use-accent-color')" in extension
+    assert "this._settings.get_boolean('use-accent-color')" in extension
     assert "const LIGHT_STYLE_CLASS = 'frosted-glass-light'" in surface
     assert "config.lightMode ? '247, 248, 252'" in surface
-    assert "materialColor(config, config.tintOpacity)" in overview
+    assert "materialColor(config, config.tintOpacity)" not in overview
+    assert "record.tint" not in overview
     assert "this._syncQuickSubmenus(quickSubmenus, config.lightMode)" in discovery
     assert "lightMode: config.appLightMode" in discovery
     assert "brightness: config.appLightMode ? 1.0 : 0.9" in discovery
@@ -406,16 +409,19 @@ def test_overview_controls_reuse_the_blurred_backdrop():
     material = (EXTENSION / "overviewMaterial.js").read_text()
     stylesheet = (EXTENSION / "stylesheet.css").read_text()
 
-    assert "container.set_child_above_sibling(tint, null)" in controller
-    assert "actor.set_child_above_sibling(record.tint, null)" in controller
     assert "new OverviewMaterialStylesheet()" in controller
-    assert "materialColor(config, config.tintOpacity)" in controller
+    assert "record.tint" not in controller
+    assert "materialColor(config, config.tintOpacity)" not in controller
     assert "config.materialOpacity" in material
     assert "config.useAccentColor" in material
     assert "st-transparentize(-st-accent-color" in material
     assert "rgba(${neutral.join(', ')}, ${alpha.toFixed(3)})" in material
     assert ".search-section-content" in material
     assert ".overview-tile.app-folder" in material
+    assert ".app-folder-dialog" in material
+    assert ".app-folder-dialog .folder-name-entry" in material
+    assert "#dash .overview-tile" in material
+    assert "#dash .show-apps" in material
     assert ".grid-search-result:focus" in material
     assert "load_stylesheet" in material
     assert "unload_stylesheet" in material

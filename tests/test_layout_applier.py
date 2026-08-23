@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from layout_applier import LayoutApplier
+from layout_applier import _HELPER_PERSIST_UUIDS, LayoutApplier
 
 CURRENT_DCONF = """\
 [org/gnome/desktop/input-sources]
@@ -18,6 +18,10 @@ natural-scroll=false
 [org/gnome/shell]
 enabled-extensions=[]
 """
+
+
+def test_pamac_updates_is_not_preserved_across_layout_switches():
+    assert "pamac-updates@manjaro.org" not in _HELPER_PERSIST_UUIDS
 
 
 @pytest.fixture(autouse=True)
@@ -554,6 +558,28 @@ disabled-extensions=['community-menu@communitybig.org']
 
         assert "icon-theme='bigicons-papient'" in out
 
+    def test_light_mode_selects_light_adw_gtk3_variant(self):
+        data = (
+            "[org/gnome/desktop/interface]\n"
+            "color-scheme='default'\n"
+            "gtk-theme='adw-gtk3-dark'\n"
+        )
+
+        out = LayoutApplier._adjust_gtk_theme_for_scheme(data)
+
+        assert "gtk-theme='adw-gtk3'" in out
+
+    def test_dark_mode_selects_dark_adw_gtk3_variant(self):
+        data = (
+            "[org/gnome/desktop/interface]\n"
+            "color-scheme='prefer-dark'\n"
+            "gtk-theme='adw-gtk3'\n"
+        )
+
+        out = LayoutApplier._adjust_gtk_theme_for_scheme(data)
+
+        assert "gtk-theme='adw-gtk3-dark'" in out
+
     def test_desk_ux_uses_native_dark_shell(self):
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
@@ -656,8 +682,8 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "color-scheme='prefer-dark'" in out
 
     @patch("layout_applier.run_cmd")
-    def test_g_unity_keeps_shell_dark_with_light_user_scheme(self, mock_run):
-        """G-Unity preserves light apps but keeps Shell/top bar dark."""
+    def test_g_unity_preserves_light_apps_and_dark_shell(self, mock_run):
+        """G-Unity keeps light apps without replacing its Shell CSS."""
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
@@ -679,9 +705,6 @@ disabled-extensions=['community-menu@communitybig.org']
             force_shell_dark=True,
         )
 
-        # A light user preference on an always-dark layout persists as
-        # 'default' — the only color-scheme that keeps the Shell dark while
-        # libadwaita apps stay light ('prefer-light' would whiten the bar).
         assert "color-scheme='default'" in out
         assert "gtk-theme='adw-gtk3-dark'" in out
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
@@ -722,8 +745,8 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "name='Big-Blue'" in out
 
     @patch("layout_applier.run_cmd")
-    def test_biggnome_keeps_named_shell_theme_with_light_user_scheme(self, mock_run):
-        """BigGnome preserves light apps but keeps its dark Shell theme."""
+    def test_biggnome_preserves_light_apps_and_dark_shell(self, mock_run):
+        """BigGnome keeps light apps and its named dark Shell theme."""
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
@@ -745,8 +768,6 @@ disabled-extensions=['community-menu@communitybig.org']
             force_shell_dark=True,
         )
 
-        # Light preference on an always-dark layout persists as 'default'
-        # (dark Shell + light apps); 'prefer-light' would whiten the bar.
         assert "color-scheme='default'" in out
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
@@ -1684,6 +1705,45 @@ class TestCuratedLayoutFiles:
     def test_desk_ux_helper_label_uses_canonical_spelling(self):
         assert LayoutApplier._layout_display_label("desk-ux") == "Desk UX"
 
+    def test_layout_apply_data_records_the_unified_runtime_profile(self):
+        source = "[org/gnome/shell]\nenabled-extensions=[]\n"
+
+        result = LayoutApplier._inject_runtime_active_layout(source, "desk-ux")
+        runtime = LayoutApplier._section_key_values(
+            result,
+            "/org/communitybig/layout-switcher/runtime",
+        )
+
+        assert runtime["active-layout"] == "'Desk UX'"
+
+    def test_saved_snapshot_without_layout_identity_is_unchanged(self):
+        source = "[org/gnome/shell]\nenabled-extensions=[]\n"
+
+        assert LayoutApplier._inject_runtime_active_layout(source, "") == source
+
+    def test_original_layout_removes_only_its_runtime_overrides(self):
+        class FakeRuntimeSettings:
+            def serialized_overrides_without_layout(self, layout):
+                assert layout == "BigGnome"
+                return {
+                    "indicator-style-overrides": "{'G-Unity': 'dot'}",
+                    "dock-opacity-overrides": "{'G-Unity': uint32 80}",
+                }
+
+        source = "[org/gnome/shell]\nenabled-extensions=[]\n"
+        with patch("layout_applier.RuntimeSettings", FakeRuntimeSettings):
+            result = LayoutApplier._reset_original_runtime_overrides(
+                source,
+                "biggnome",
+            )
+
+        runtime = LayoutApplier._section_key_values(
+            result,
+            "/org/communitybig/layout-switcher/runtime",
+        )
+        assert runtime["indicator-style-overrides"] == "{'G-Unity': 'dot'}"
+        assert runtime["dock-opacity-overrides"] == "{'G-Unity': uint32 80}"
+
     def test_desk_ux_dtp_position_and_size_are_explicit(self):
         """Desk UX must not depend on inherited DTP defaults."""
         text = Path("usr/share/layout-switcher/layouts/desk-ux.txt").read_text(encoding="utf-8")
@@ -1870,8 +1930,8 @@ class TestHelperIntegration:
     @pytest.mark.parametrize(
         ("legacy", "current"),
         [
-            ("dash-to-dock@micxgx.gmail.com", "community-dock@communitybig.org"),
-            ("dash-to-panel@jderose9.github.com", "community-panel@communitybig.org"),
+            ("dash-to-dock@micxgx.gmail.com", "layout-switcher-runtime@communitybig.org"),
+            ("dash-to-panel@jderose9.github.com", "layout-switcher-runtime@communitybig.org"),
             ("big-shot@bigcommunity.org", "big-shot@communitybig.org"),
         ],
     )
@@ -2048,7 +2108,7 @@ class TestHelperIntegration:
         out = LayoutApplier._apply_original_frosted_glass_defaults(data)
         glass = LayoutApplier._section_key_values(out, "/org/communitybig/frosted-glass")
 
-        assert glass["glass-opacity"] == "31"
+        assert glass["glass-opacity"] == "37"
 
     def test_inject_helper_uuid_retires_blur_my_shell(self):
         blur_my_shell = "blur-my-shell@aunetx"

@@ -71,6 +71,7 @@ const LIGHT_STYLE_UUID = 'light-style@gnome-shell-extensions.gcampax.github.com'
 const COMMUNITY_PANEL_UUID = 'community-panel@communitybig.org';
 const PANEL_UUIDS = [COMMUNITY_PANEL_UUID];
 const COMMUNITY_DOCK_UUID = 'community-dock@communitybig.org';
+const RUNTIME_UUID = 'layout-switcher-runtime@communitybig.org';
 const KIWI_UUID = 'kiwi@kemma';
 const COMMUNITY_MENU_UUID = 'community-menu@communitybig.org';
 const APPINDICATOR_UUID = 'appindicatorsupport@rgcjonas.gmail.com';
@@ -79,6 +80,7 @@ const STRUCTURAL_UUIDS = new Set([
     LIGHT_STYLE_UUID,
     COMMUNITY_PANEL_UUID,
     COMMUNITY_DOCK_UUID,
+    RUNTIME_UUID,
     KIWI_UUID,
     COMMUNITY_MENU_UUID,
 ]);
@@ -114,7 +116,7 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 59;
+const HELPER_BUILD = 64;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -510,11 +512,31 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     _dockWillRun() {
-        return this._extensionWillRun(COMMUNITY_DOCK_UUID);
+        if (this._extensionWillRun(COMMUNITY_DOCK_UUID))
+            return true;
+        if (!this._extensionWillRun(RUNTIME_UUID))
+            return false;
+        return ['BigGnome', 'G-Unity'].includes(this._runtimeLayout());
     }
 
     _panelWillRun() {
-        return PANEL_UUIDS.some(uuid => this._extensionWillRun(uuid));
+        if (PANEL_UUIDS.some(uuid => this._extensionWillRun(uuid)))
+            return true;
+        if (!this._extensionWillRun(RUNTIME_UUID))
+            return false;
+        return ['Classic', 'Hybrid', 'Desk UX'].includes(this._runtimeLayout());
+    }
+
+    _runtimeLayout() {
+        try {
+            this._runtimeSettings ??= new Gio.Settings({
+                schema_id: 'org.communitybig.layout-switcher.runtime',
+            });
+            return this._runtimeSettings.get_string('active-layout');
+        } catch (e) {
+            logHelper(`runtime layout read failed: ${e}`);
+            return '';
+        }
     }
 
     _usesMenuSessionActions() {
@@ -1146,10 +1168,25 @@ export default class LayoutSwitcherHelper extends Extension {
             return;
 
         try {
-            const panelExtension = Main.extensionManager
-                .lookup(COMMUNITY_PANEL_UUID)?.stateObj;
-            const settings = panelExtension?.getSettings?.(
-                'org.gnome.shell.extensions.dash-to-panel');
+            if (!this._panelSettings) {
+                const schemasPath = GLib.build_filenamev([
+                    '/usr/share/gnome-shell/extensions',
+                    COMMUNITY_PANEL_UUID,
+                    'schemas',
+                ]);
+                const source = Gio.SettingsSchemaSource.new_from_directory(
+                    schemasPath,
+                    Gio.SettingsSchemaSource.get_default(),
+                    false,
+                );
+                const schema = source.lookup(
+                    'org.gnome.shell.extensions.dash-to-panel',
+                    true,
+                );
+                if (schema)
+                    this._panelSettings = new Gio.Settings({settings_schema: schema});
+            }
+            const settings = this._panelSettings;
             if (!settings)
                 return;
             if (settings.get_string('focus-highlight-color') !== accent)
@@ -1393,13 +1430,13 @@ export default class LayoutSwitcherHelper extends Extension {
             this._ifaceSettings.get_string('color-scheme') === 'prefer-dark';
         const previousDark = this._lastColorSchemeDark ?? dark;
         const isLive = uuid => LIVE_STATES.has(mgr.lookup(uuid)?.state);
+        let iconThemeChanged = false;
         this._applying = true;   // serialize against layout switches
         try {
             // Classic/Hybrid use an explicit -light icon design. The other
             // four layouts use the unsuffixed design in light mode.
             const explicitLightIcons = this._activeLayoutLabel === 'Classic' ||
                 this._activeLayoutLabel === 'Hybrid';
-            let iconThemeChanged = false;
             try {
                 const icon = this._ifaceSettings.get_string('icon-theme');
                 const variants = new Set([
@@ -1420,13 +1457,11 @@ export default class LayoutSwitcherHelper extends Extension {
                 logHelper(`icon-theme follow failed: ${e}`);
             }
 
-            if (iconThemeChanged)
-                await this._refreshIconThemeConsumers();
-
             // BigGnome, Desk UX, and the Kiwi layouts keep an always-dark
             // native Shell. Their app/icon preference still follows light/dark.
             const livePanelUuid = PANEL_UUIDS.find(uuid => live.has(uuid));
-            if (live.has(KIWI_UUID) || !livePanelUuid ||
+            const panelWillRun = this._panelWillRun();
+            if (live.has(KIWI_UUID) || !panelWillRun ||
                 this._activeLayoutLabel === 'Desk UX' ||
                 !live.has(COMMUNITY_MENU_UUID))
                 return;
@@ -1498,7 +1533,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 let schema = defaultSource?.lookup(
                     'org.gnome.shell.extensions.dash-to-panel', true);
                 if (!schema) {
-                    const dtpExt = mgr.lookup(livePanelUuid);
+                    const dtpExt = mgr.lookup(livePanelUuid ?? COMMUNITY_PANEL_UUID);
                     if (dtpExt?.path) {
                         const source = Gio.SettingsSchemaSource.new_from_directory(
                             `${dtpExt.path}/schemas`, defaultSource, false);
@@ -1549,15 +1584,54 @@ export default class LayoutSwitcherHelper extends Extension {
             await this._sleep(60);
             Main.panel.remove_style_class_name('ls-style-recompute');
         } finally {
+            // Refresh after the Shell stylesheet and hosted panel have settled.
+            // AppIndicator otherwise keeps the pixmap rendered for the previous
+            // light/dark icon theme (notably JamesDSP).
+            if (iconThemeChanged) {
+                try {
+                    await this._refreshIconThemeConsumers();
+                } catch (e) {
+                    logHelper(`deferred icon-theme refresh failed: ${e}`);
+                }
+            }
             this._lastColorSchemeDark = dark;
             this._applying = false;
         }
     }
 
-    // AppIndicator keeps a private St.IconTheme and rendered icon cache.
-    // A GSettings icon-theme change alone does not reliably invalidate either,
-    // leaving status icons painted with the previous light/dark variant.
+    // AppIndicator keeps rendered pixmaps after the desktop icon theme changes.
+    // Refresh the live proxies and actors in place; reloading the whole host can
+    // orphan applications that do not register their StatusNotifierItem again.
     async _refreshIconThemeConsumers() {
+        const mgr = Main.extensionManager;
+        const appIndicator = mgr.lookup(APPINDICATOR_UUID);
+        let appIndicatorModule = null;
+
+        // AppIndicator owns a private St.IconTheme singleton in util.js. Its
+        // actors can be invalidated while that singleton still resolves the
+        // previous light/dark asset. Reset the singleton in place so existing
+        // StatusNotifierItems survive and resolve against the current theme.
+        try {
+            if (appIndicator?.path) {
+                const utilPath = GLib.build_filenamev([
+                    appIndicator.path,
+                    'util.js',
+                ]);
+                const utilUri = Gio.File.new_for_path(utilPath).get_uri();
+                const appIndicatorUtil = await import(utilUri);
+                appIndicatorUtil.destroyDefaultTheme?.();
+
+                const actorPath = GLib.build_filenamev([
+                    appIndicator.path,
+                    'appIndicator.js',
+                ]);
+                const actorUri = Gio.File.new_for_path(actorPath).get_uri();
+                appIndicatorModule = await import(actorUri);
+            }
+        } catch (e) {
+            logHelper(`AppIndicator private icon-theme reset failed: ${e}`);
+        }
+
         try {
             St.TextureCache.get_default().rescan_icon_theme?.();
         } catch (e) {
@@ -1565,12 +1639,33 @@ export default class LayoutSwitcherHelper extends Extension {
         }
 
         await this._sleep(150);
-        const mgr = Main.extensionManager;
-        if (!LIVE_STATES.has(mgr.lookup(APPINDICATOR_UUID)?.state))
-            return;
+        if (!LIVE_STATES.has(appIndicator?.state))
+            return 0;
 
-        const refreshed = await this._reloadOne(mgr, APPINDICATOR_UUID);
-        logHelper(`AppIndicator icon-theme refresh: ${refreshed ? 'ok' : 'failed'}`);
+        let refreshed = 0;
+        for (const [id, statusIcon] of Object.entries(Main.panel.statusArea)) {
+            if (!id.startsWith('appindicator-'))
+                continue;
+            try {
+                await statusIcon?._indicator?._proxy?.refreshAllProperties?.();
+                const oldIcon = statusIcon?._icon;
+                if (appIndicatorModule?.IconActor &&
+                    statusIcon?._indicator && statusIcon?._setIconActor) {
+                    const iconSize = oldIcon?._iconSize ?? 22;
+                    const newIcon = new appIndicatorModule.IconActor(
+                        statusIcon._indicator, iconSize);
+                    statusIcon._setIconActor(newIcon);
+                } else {
+                    oldIcon?._invalidateIcon?.();
+                }
+                refreshed++;
+            } catch (e) {
+                logHelper(`AppIndicator icon refresh ${id} failed: ${e}`);
+            }
+        }
+        await this._sleep(80);
+        logHelper(`AppIndicator icon-theme refresh: ${refreshed} actor(s)`);
+        return refreshed;
     }
 
     // ── Transition curtain ──────────────────────────────────────────────────
@@ -2114,6 +2209,10 @@ export default class LayoutSwitcherHelper extends Extension {
         this._syncMinimalPanelClass();
         this._syncGUnitySurfaceClasses();
         this._syncNotificationPosition();
+        if (target.has(APPINDICATOR_UUID)) {
+            const refreshed = await this._refreshIconThemeConsumers();
+            steps.push(`status icons refreshed ${refreshed}`);
+        }
         await this._panelRepaint();
         steps.push('panel repaint');
         this._setupPanelSystemIndicator();
@@ -2326,6 +2425,10 @@ export default class LayoutSwitcherHelper extends Extension {
         this._syncMinimalPanelClass();
         this._syncGUnitySurfaceClasses();
         this._syncNotificationPosition();
+        if (target.has(APPINDICATOR_UUID)) {
+            const refreshed = await this._refreshIconThemeConsumers();
+            steps.push(`status icons refreshed ${refreshed}`);
+        }
 
         logHelper(`ApplyLayout done: ${steps.join(' | ')}`);
         return JSON.stringify({ok: true, steps, error: ''});

@@ -33,6 +33,7 @@ import {
 // taken from https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/dash.js
 const DASH_ANIMATION_TIME = Dash.DASH_ANIMATION_TIME ?? 200;
 const DASH_VISIBILITY_TIMEOUT = 3;
+const COMMUNITY_SETTINGS_SCHEMA = 'org.communitybig.panel-and-dock';
 
 const Labels = Object.freeze({
     SHOW_MOUNTS: Symbol('show-mounts'),
@@ -151,6 +152,9 @@ export const DockDash = GObject.registerClass({
         this._shownInitially = false;
         this._initializeIconSize(this.iconSize);
         this._signalsHandler = new Utils.GlobalSignalsHandler(this);
+        this._communitySettings = Docking.DockManager.extension.getSettings(
+            COMMUNITY_SETTINGS_SCHEMA);
+        this._syncHoverEffectStyle();
 
         this._separator = null;
 
@@ -257,6 +261,10 @@ export const DockDash = GObject.registerClass({
         this.iconAnimator = new Docking.IconAnimator(this);
 
         this._signalsHandler.add([
+            this._communitySettings,
+            'changed::dock-hover-effect',
+            this._syncHoverEffectStyle.bind(this),
+        ], [
             this._appSystem,
             'installed-changed',
             () => {
@@ -532,7 +540,10 @@ export const DockDash = GObject.registerClass({
         const item = new DockDashItemContainer(this._position);
         item.setChild(appIcon);
 
-        appIcon.connectObject('notify::hover', a => this._ensureItemVisibility(a), this);
+        appIcon.connectObject('notify::hover', a => {
+            this._ensureItemVisibility(a);
+            this._animateAppIconHover(a);
+        }, this);
         appIcon.connectObject('clicked', actor => {
             ensureActorVisibleInScrollView(this._scrollView, actor);
         }, this);
@@ -574,6 +585,39 @@ export const DockDash = GObject.registerClass({
         item.connectObject('notify::size', () => appIcon.updateIconGeometry(), appIcon);
 
         return item;
+    }
+
+    _animateAppIconHover(actor) {
+        const lift = actor.hover &&
+            this._communitySettings.get_string('dock-hover-effect') === 'lift';
+        const distance = lift ? Math.max(3, Math.round(this.iconSize * 0.1)) : 0;
+        let translationX = 0;
+        let translationY = 0;
+        if (this._position === St.Side.BOTTOM)
+            translationY = -distance;
+        else if (this._position === St.Side.TOP)
+            translationY = distance;
+        else if (this._position === St.Side.LEFT)
+            translationX = distance;
+        else if (this._position === St.Side.RIGHT)
+            translationX = -distance;
+
+        actor.set_pivot_point(0.5, 0.5);
+        actor.ease({
+            translation_x: translationX,
+            translation_y: translationY,
+            scale_x: lift ? 1.08 : 1,
+            scale_y: lift ? 1.08 : 1,
+            duration: 160,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+    }
+
+    _syncHoverEffectStyle() {
+        if (this._communitySettings.get_string('dock-hover-effect') === 'lift')
+            this.add_style_class_name('community-dock-hover-lift');
+        else
+            this.remove_style_class_name('community-dock-hover-lift');
     }
 
     _requireVisibility() {

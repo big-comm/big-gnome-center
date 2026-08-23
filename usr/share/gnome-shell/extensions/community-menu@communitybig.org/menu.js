@@ -249,7 +249,7 @@ export const ApplicationsButton = GObject.registerClass({
         this._menu = new ApplicationsMenu(this, panelInfo);
         this._menu.connectObject('open-state-changed', this._onOpenStateChanged.bind(this), this);
 
-        this._secondaryMenu = new SecondaryMenu.MenuButtonSecondaryMenu(this, panelInfo.panelExtension);
+        this._secondaryMenu = new SecondaryMenu.MenuButtonSecondaryMenu(this);
         this._secondaryMenu.connectObject('open-state-changed', this._onOpenStateChanged.bind(this), this);
 
         this.menuManager = new PopupMenu.PopupMenuManager();

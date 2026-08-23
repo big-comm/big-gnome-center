@@ -24,5 +24,13 @@
       <default>'dot'</default>
       <summary>Running application indicator style</summary>
     </key>
+    <key name="dock-hover-effect" type="s">
+      <choices>
+        <choice value="default"/>
+        <choice value="lift"/>
+      </choices>
+      <default>'default'</default>
+      <summary>Dock icon hover effect</summary>
+    </key>
   </schema>
 </schemalist>

@@ -62,9 +62,9 @@ import {
   tracker,
 } from './extension.js'
 import {
-  gettext as _,
   InjectionManager,
 } from 'resource:///org/gnome/shell/extensions/extension.js'
+import { gettext as _ } from './i18n.js'
 
 export const panelBoxes = ['_leftBox', '_centerBox', '_rightBox']
 

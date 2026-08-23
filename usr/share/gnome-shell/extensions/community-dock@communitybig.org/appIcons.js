@@ -1564,7 +1564,8 @@ export const DockShowAppsIcon = GObject.registerClass({
     }
 
     _hasPopupMenu() {
-        return Docking.DockManager.extension.uuid !== 'ubuntu-dock@ubuntu.com';
+        // Community Dock is configured exclusively by Layout Switcher.
+        return false;
     }
 
     _maybeEnablePopupGestures() {
@@ -1593,48 +1594,9 @@ export const DockShowAppsIcon = GObject.registerClass({
         this._removeMenuTimeout();
         this.toggleButton.fake_release();
 
-        if (!this._menu) {
-            this._menu = new DockShowAppsIconMenu(this);
-            this._menu.connect('open-state-changed', (menu, isPoppedUp) => {
-                if (!isPoppedUp)
-                    this._onMenuPoppedDown();
-            });
-            const id = Main.overview.connect('hiding', () => {
-                this._menu.close();
-            });
-            this._menu.actor.connect('destroy', () => {
-                Main.overview.disconnect(id);
-            });
-            this._menuManager.addMenu(this._menu);
-        }
-
-        this.emit('menu-state-changed', true);
-
-        this.toggleButton.set_hover(true);
-        this._menu.popup();
-        // Removed in GNOME 50.
-        this._menuManager.ignoreRelease?.();
-        this.emit('sync-tooltip');
-
         return false;
     }
 });
-
-
-/**
- * A menu for the showAppsIcon
- */
-class DockShowAppsIconMenu extends DockAppIconMenu {
-    _rebuildMenu() {
-        this.removeAll();
-
-        this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem(__('Dash to Dock')));
-
-        const item = this._appendMenuItem(_('Settings'));
-        item.connect('activate', () =>
-            Docking.DockManager.extension.openPreferences());
-    }
-}
 
 /**
  * This function is used for both DockShowAppsIcon and DockDashItemContainer

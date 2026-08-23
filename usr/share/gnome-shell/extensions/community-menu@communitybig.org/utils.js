@@ -28,8 +28,6 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
-import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-
 import * as Constants from './constants.js';
 
 const [ShellVersion] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
@@ -243,12 +241,6 @@ export function addClickGestures(actor, callbacks, enabled = true) {
     actor.add_action(rightClickGesture);
 
     return {clickGesture, longPressGesture, rightClickGesture};
-}
-
-export function openPrefs(uuid) {
-    const extension = Extension.lookupByUUID(uuid);
-    if (extension !== null)
-        extension.openPreferences();
 }
 
 export function areaOfTriangle(p1, p2, p3) {

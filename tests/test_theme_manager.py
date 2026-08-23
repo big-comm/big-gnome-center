@@ -396,7 +396,7 @@ class TestColorScheme:
 
     @patch("theme_manager.ThemeMgr._sync_shell_color_scheme")
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
-    def test_desk_ux_keeps_native_dark_shell(self, _mock_set, mock_sync):
+    def test_desk_ux_keeps_structural_dark_shell(self, _mock_set, mock_sync):
         with patch("theme_manager.Settings") as mock_settings:
             mock_settings.return_value.get.return_value = "Desk UX"
             ok, _msg = ThemeMgr.set_color_scheme(False)
