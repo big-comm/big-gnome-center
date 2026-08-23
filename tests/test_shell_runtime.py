@@ -113,6 +113,43 @@ def test_dock_lifecycle_is_owned_by_the_engine_adapter():
     assert "get docks()" in engine
 
 
+def test_runtime_owns_the_accepted_primary_dock_app_actions():
+    actions = (RUNTIME / "dockAppActions.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    app_icons = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+    ).read_text()
+
+    assert "new DockAppActions()" in dock
+    assert "appActions?.activate(this, button)" in app_icons
+    assert "button !== PRIMARY_BUTTON || modifiers" in actions
+    assert "app.open_new_window(-1)" in actions
+    assert "Main.activateWindow(windows[0])" in actions
+    assert "window.minimize()" in actions
+    assert "icon._windowPreviews()" in actions
+    assert "Main.overview.hide()" in actions
+
+
+def test_runtime_owns_dock_favorites_and_running_app_order():
+    model = (RUNTIME / "dockAppModel.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    dash = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/dash.js"
+    ).read_text()
+
+    assert "new DockAppModel()" in dock
+    assert "appModel?.favorites()" in dash
+    assert "appModel?.running()" in dash
+    assert "appModel.order(" in dash
+    assert "getFavoriteMap()" in model
+    assert "get_running()" in model
+    assert "const pending = [...running]" in model
+    assert "pending.indexOf(oldApp)" in model
+    assert "app.get_id() in favorites" in model
+
+
 def test_unified_runtime_preserves_helper_fault_isolation():
     metadata = json.loads((RUNTIME / "metadata.json").read_text())
     helper = ROOT / (

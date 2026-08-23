@@ -3,6 +3,8 @@
 import {CommunityDockRuntime} from '../community-dock@communitybig.org/extension.js';
 
 import {ComponentHost} from './componentHost.js';
+import {DockAppActions} from './dockAppActions.js';
+import {DockAppModel} from './dockAppModel.js';
 
 const DOCK_UUID = 'community-dock@communitybig.org';
 const DOCK_SCHEMA = 'org.gnome.shell.extensions.dash-to-dock';
@@ -14,6 +16,8 @@ export class DockRuntime {
             name: 'Community Dock',
             version: 1,
         });
+        this._host.appActions = new DockAppActions();
+        this._host.appModel = new DockAppModel();
         this._engine = new CommunityDockRuntime(this._host);
     }
 

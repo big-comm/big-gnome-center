@@ -565,6 +565,9 @@ export const DockAbstractAppIcon = GObject.registerClass({
     }
 
     activate(button) {
+        if (Docking.DockManager.extension.appActions?.activate(this, button))
+            return;
+
         const event = Clutter.get_current_event();
         let modifiers = event ? event.get_state() : 0;
 

@@ -797,9 +797,11 @@ export const DockDash = GObject.registerClass({
     }
 
     _redisplay() {
-        const favorites = AppFavorites.getAppFavorites().getFavoriteMap();
+        const appModel = Docking.DockManager.extension.appModel;
+        const favorites = appModel?.favorites() ??
+            AppFavorites.getAppFavorites().getFavoriteMap();
 
-        let running = this._appSystem.get_running();
+        let running = appModel?.running() ?? this._appSystem.get_running();
         const dockManager = Docking.DockManager.getDefault();
         const {settings} = dockManager;
 
@@ -837,28 +839,38 @@ export const DockDash = GObject.registerClass({
         const newApps = [];
 
         const {showFavorites} = settings;
-        if (showFavorites)
-            newApps.push(...Object.values(favorites));
+        if (appModel) {
+            newApps.push(...appModel.order(
+                oldApps,
+                favorites,
+                running,
+                showFavorites,
+                settings.showRunning,
+            ));
+        } else {
+            if (showFavorites)
+                newApps.push(...Object.values(favorites));
 
-        if (settings.showRunning) {
-            // We reorder the running apps so that they don't change position on the
-            // dash with every redisplay() call
+            if (settings.showRunning) {
+                // We reorder the running apps so that they don't change position on the
+                // dash with every redisplay() call
 
-            // First: add the apps from the oldApps list that are still running
-            oldApps.forEach(oldApp => {
-                const index = running.indexOf(oldApp);
-                if (index > -1) {
-                    const [app] = running.splice(index, 1);
+                // First: add the apps from the oldApps list that are still running
+                oldApps.forEach(oldApp => {
+                    const index = running.indexOf(oldApp);
+                    if (index > -1) {
+                        const [app] = running.splice(index, 1);
+                        if (!showFavorites || !(app.get_id() in favorites))
+                            newApps.push(app);
+                    }
+                });
+
+                // Second: add the new apps
+                running.forEach(app => {
                     if (!showFavorites || !(app.get_id() in favorites))
                         newApps.push(app);
-                }
-            });
-
-            // Second: add the new apps
-            running.forEach(app => {
-                if (!showFavorites || !(app.get_id() in favorites))
-                    newApps.push(app);
-            });
+                });
+            }
         }
 
         this._signalsHandler.removeWithLabel(Labels.SHOW_MOUNTS);
