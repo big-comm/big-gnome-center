@@ -10,7 +10,9 @@ import {DockAppModel} from './dockAppModel.js';
 import {DockHoverEffects} from './dockHoverEffects.js';
 import {DockNotificationBadges} from './dockNotificationBadges.js';
 import {DockNotificationMonitor} from './dockNotificationMonitor.js';
+import {DockPlacement} from './dockPlacement.js';
 import {DockRunningIndicators} from './dockRunningIndicators.js';
+import {DockVisibilityModes} from './dockVisibilityModes.js';
 
 const DOCK_UUID = 'community-dock@communitybig.org';
 const DOCK_SCHEMA = 'org.gnome.shell.extensions.dash-to-dock';
@@ -30,6 +32,12 @@ export class DockRuntime {
             this._host.getSettings(PANEL_SCHEMA),
         );
         this._host.notificationBadges = new DockNotificationBadges();
+        this._host.placement = new DockPlacement(
+            this._host.getSettings(DOCK_SCHEMA),
+        );
+        this._host.visibilityModes = new DockVisibilityModes(
+            this._host.getSettings(DOCK_SCHEMA),
+        );
         this._host.createIndicatorController = manager => {
             this._host.runningIndicators = new DockRunningIndicators(
                 this._host.getSettings(PANEL_SCHEMA),
@@ -41,16 +49,18 @@ export class DockRuntime {
         this._engine = new CommunityDockRuntime(this._host);
     }
 
-    activate(profile, indicator, hover) {
+    activate(profile, indicator, hover, visibility) {
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
+        this._visibility = visibility;
         if (this._active)
             return;
 
         this._applyProfile(profile);
         this._applyIndicator(indicator);
         this._applyHover(hover);
+        this._host.visibilityModes.apply(visibility);
         this._host.notificationsMonitor = new DockNotificationMonitor(
             this._host.getSettings(DOCK_SCHEMA),
         );
@@ -76,6 +86,7 @@ export class DockRuntime {
         this._profile = null;
         this._indicator = null;
         this._hover = null;
+        this._visibility = null;
     }
 
     diagnostics() {
@@ -85,6 +96,7 @@ export class DockRuntime {
             profile: this._profile?.layout ?? '',
             indicator: this._indicator ?? '',
             hover: this._hover ?? '',
+            visibility: this._host.visibilityModes.mode(),
             actors: docks.map(dock => this._actorDiagnostics(dock)),
         };
     }
@@ -127,14 +139,7 @@ export class DockRuntime {
     }
 
     _applyProfile(profile) {
-        const position = {
-            top: 0,
-            right: 1,
-            bottom: 2,
-            left: 3,
-        }[profile?.edge];
-        if (position !== undefined)
-            this._host.getSettings(DOCK_SCHEMA).set_enum('dock-position', position);
+        this._host.placement.apply(profile?.edge);
     }
 
     _destroyNotificationsMonitor() {

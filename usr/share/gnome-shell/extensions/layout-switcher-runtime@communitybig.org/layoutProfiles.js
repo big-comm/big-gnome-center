@@ -14,6 +14,7 @@ const LAYOUT_PROFILES = new Map([
         labels: false,
         indicator: 'desk-ux',
         hover: 'default',
+        visibility: 'intelligent',
     })],
     ['G-Unity', Object.freeze({
         layout: 'G-Unity',
@@ -22,6 +23,7 @@ const LAYOUT_PROFILES = new Map([
         labels: false,
         indicator: 'dot',
         hover: 'default',
+        visibility: 'always-visible',
     })],
     ['Hybrid', Object.freeze({
         layout: 'Hybrid',

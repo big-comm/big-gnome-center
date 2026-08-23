@@ -56,6 +56,8 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert profiles.count("indicator: 'dot'") == 1
     assert profiles.count("hover: 'lift'") == 1
     assert profiles.count("hover: 'default'") == 5
+    assert "visibility: 'intelligent'" in profiles
+    assert "visibility: 'always-visible'" in profiles
 
 
 def test_unified_runtime_applies_profile_or_override_indicator_before_activation():
@@ -65,16 +67,53 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
 
     assert "indicator-style-overrides" in controller
     assert "dock-hover-overrides" in controller
-    assert "this._dock.activate(profile, indicator, hover)" in controller
+    assert "this._dock.activate(profile, indicator, hover, visibility)" in controller
     assert "this._taskbar.activate(profile, indicator, hover)" in controller
     assert "set_string('indicator-style', style)" in dock
     assert "set_string('dock-hover-effect', effect)" in dock
-    assert "set_enum('dock-position', position)" in dock
+    assert "this._host.placement.apply(profile?.edge)" in dock
     assert "dot: ['DOTS', 'DOTS', 6]" in taskbar
     assert "hybrid: ['SEGMENTED', 'SEGMENTED', 3]" in taskbar
     assert "'desk-ux': ['METRO', 'DASHES', 3]" in taskbar
     assert "settings.set_int('dot-size', 0)" in taskbar
     assert "settings.set_boolean('animate-appicon-hover', hover === 'lift')" in taskbar
+
+
+def test_runtime_owns_dock_visibility_modes():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    runtime = (RUNTIME / "dockVisibilityModes.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    engine = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/docking.js"
+    ).read_text()
+
+    assert "dock-visibility-overrides" in controller
+    assert "new DockVisibilityModes(" in dock
+    assert "this._host.visibilityModes.apply(visibility)" in dock
+    for mode in ("always-visible", "always-hidden", "intelligent"):
+        assert f"'{mode}'" in runtime
+    assert "set_boolean('manualhide', false)" in runtime
+    assert "set_boolean('dock-fixed', selected === 'always-visible')" in runtime
+    assert "set_boolean('intellihide', selected === 'intelligent')" in runtime
+    assert "set_boolean('autohide', selected !== 'always-visible')" in runtime
+    assert "visibilityModes?.runtimeState()" in engine
+
+
+def test_runtime_owns_accepted_dock_placement():
+    runtime = (RUNTIME / "dockPlacement.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    utils = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/utils.js"
+    ).read_text()
+
+    assert "new DockPlacement(" in dock
+    assert "['bottom', St.Side.BOTTOM]" in runtime
+    assert "['left', St.Side.LEFT]" in runtime
+    assert "set_enum('dock-position', position)" in runtime
+    assert "Clutter.TextDirection.RTL" in runtime
+    assert "Docking.DockManager.extension.placement" in utils
 
 
 def test_unified_runtime_replaces_component_extension_activation():

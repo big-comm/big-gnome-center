@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 14;
+export const RUNTIME_BUILD = 15;
 
 export class RuntimeController {
     constructor(extension) {
@@ -71,12 +71,13 @@ export class RuntimeController {
         const profile = profileForLayout(this._settings.get_string('active-layout'));
         const indicator = this._indicatorForProfile(profile);
         const hover = this._hoverForProfile(profile);
+        const visibility = this._visibilityForProfile(profile);
         this._dock.deactivate();
         this._taskbar.deactivate();
         this._activeProfile = profile;
 
         if (profile.surface === RuntimeSurface.DOCK) {
-            this._dock.activate(profile, indicator, hover);
+            this._dock.activate(profile, indicator, hover, visibility);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             await this._taskbar.activate(profile, indicator, hover);
             if (!this._enabled || generation !== this._syncGeneration)
@@ -98,6 +99,13 @@ export class RuntimeController {
         return overrides[profile.layout] ?? profile.hover;
     }
 
+    _visibilityForProfile(profile) {
+        const overrides = this._settings
+            .get_value('dock-visibility-overrides')
+            .deep_unpack();
+        return overrides[profile.layout] ?? profile.visibility ?? 'intelligent';
+    }
+
     diagnostics() {
         const profile = this._activeProfile ??
             profileForLayout(this._settings?.get_string('active-layout') ?? '');
@@ -110,6 +118,7 @@ export class RuntimeController {
                 edge: profile.edge,
                 indicator: this._indicatorForProfile(profile),
                 hover: this._hoverForProfile(profile),
+                visibility: this._visibilityForProfile(profile),
             },
             dock: this._dock?.diagnostics() ?? {active: false, actors: []},
             taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},

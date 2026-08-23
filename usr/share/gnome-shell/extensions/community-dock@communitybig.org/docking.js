@@ -714,7 +714,11 @@ const DockedDash = GObject.registerClass({
      */
     _updateVisibilityMode() {
         const {settings} = DockManager;
-        if (DockManager.settings.dockFixed || DockManager.settings.manualhide) {
+        const visibilityState = DockManager.extension.visibilityModes?.runtimeState();
+        if (visibilityState) {
+            this._autohideIsEnabled = visibilityState.autohide;
+            this._intellihideIsEnabled = visibilityState.intellihide;
+        } else if (DockManager.settings.dockFixed || DockManager.settings.manualhide) {
             this._autohideIsEnabled = false;
             this._intellihideIsEnabled = false;
         } else {

@@ -20,7 +20,7 @@ def test_community_dock_has_distinct_identity_and_shell_support():
 
 def test_community_dock_preserves_dash_to_dock_106_core_baseline():
     expected = {
-        "docking.js": "7f20d4efe82a073e1a376bd5e39709150cad65a8562a10692ca6925de9d3b529",
+        "docking.js": "92fab05b4501be20c72cd333c2656ed98db6081481b7eda10cc44ed427d986df",
     }
 
     for name, digest in expected.items():
