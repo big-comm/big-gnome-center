@@ -1719,7 +1719,9 @@ export class DockManager {
         this._signalsHandler.add(this._oldDash, 'destroy', () => (this._oldDash = null));
         this._discreteGpuAvailable = AppDisplay.discreteGpuAvailable;
         this._appSpread = new AppSpread.AppSpread();
-        this._notificationsMonitor = new NotificationsMonitor.NotificationsMonitor();
+        this._notificationsMonitor = this._extension.notificationsMonitor ??
+            new NotificationsMonitor.NotificationsMonitor();
+        this._ownsNotificationsMonitor = !this._extension.notificationsMonitor;
 
         const needsRemoteModel = () =>
             !this._notificationsMonitor.dndMode && this._settings.showIconsEmblems;
@@ -2603,7 +2605,10 @@ export class DockManager {
             this._fm1Client.destroy();
             this._fm1Client = null;
         }
-        this._notificationsMonitor.destroy();
+        if (this._ownsNotificationsMonitor)
+            this._notificationsMonitor.destroy();
+        this._notificationsMonitor = null;
+        this._ownsNotificationsMonitor = false;
         this._appSpread.destroy();
         this._trash?.destroy();
         this._trash = null;

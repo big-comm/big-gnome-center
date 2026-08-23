@@ -5,6 +5,7 @@ import {CommunityDockRuntime} from '../community-dock@communitybig.org/extension
 import {ComponentHost} from './componentHost.js';
 import {DockAppActions} from './dockAppActions.js';
 import {DockAppModel} from './dockAppModel.js';
+import {DockNotificationMonitor} from './dockNotificationMonitor.js';
 
 const DOCK_UUID = 'community-dock@communitybig.org';
 const DOCK_SCHEMA = 'org.gnome.shell.extensions.dash-to-dock';
@@ -31,12 +32,16 @@ export class DockRuntime {
         this._applyProfile(profile);
         this._applyIndicator(indicator);
         this._applyHover(hover);
+        this._host.notificationsMonitor = new DockNotificationMonitor(
+            this._host.getSettings(DOCK_SCHEMA),
+        );
         this._host.loadStylesheet();
         try {
             this._engine.enable();
             this._active = true;
         } catch (error) {
             this._host.unloadStylesheet();
+            this._destroyNotificationsMonitor();
             throw error;
         }
     }
@@ -47,6 +52,7 @@ export class DockRuntime {
             this._active = false;
             this._host.unloadStylesheet();
         }
+        this._destroyNotificationsMonitor();
         this._profile = null;
         this._indicator = null;
         this._hover = null;
@@ -108,5 +114,10 @@ export class DockRuntime {
         }[profile?.edge];
         if (position !== undefined)
             this._host.getSettings(DOCK_SCHEMA).set_enum('dock-position', position);
+    }
+
+    _destroyNotificationsMonitor() {
+        this._host.notificationsMonitor?.destroy();
+        delete this._host.notificationsMonitor;
     }
 }

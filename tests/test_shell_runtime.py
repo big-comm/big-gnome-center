@@ -150,6 +150,32 @@ def test_runtime_owns_dock_favorites_and_running_app_order():
     assert "app.get_id() in favorites" in model
 
 
+def test_runtime_owns_dock_notification_monitor_and_badge_count():
+    monitor = (RUNTIME / "dockNotificationMonitor.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    manager = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/docking.js"
+    ).read_text()
+    indicators = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIconIndicators.js"
+    ).read_text()
+
+    assert "new DockNotificationMonitor(" in dock
+    assert "this._host.notificationsMonitor" in dock
+    assert "this._destroyNotificationsMonitor()" in dock
+    assert "Signals:" in monitor
+    assert "Main.messageTray.getSources()" in monitor
+    assert "show-icons-notifications-counter" in monitor
+    assert "notify::acknowledged" in monitor
+    assert "getBadgeCount(" in monitor
+    assert "this._extension.notificationsMonitor ??" in manager
+    assert "this._ownsNotificationsMonitor" in manager
+    assert "notificationsMonitor.getBadgeCount" in indicators
+    assert "notificationsMonitor.getAppNotificationsCount" in indicators
+
+
 def test_unified_runtime_preserves_helper_fault_isolation():
     metadata = json.loads((RUNTIME / "metadata.json").read_text())
     helper = ROOT / (

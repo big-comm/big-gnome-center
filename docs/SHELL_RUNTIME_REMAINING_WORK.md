@@ -101,7 +101,8 @@ sessions passed 12 reference states and all eight surface-transition directions.
   `DockManager` directly from the controller.
 - [x] Port primary launch, focus, minimize, and multiple-window actions.
 - [x] Port favorite and running-app data ownership and stable ordering.
-- [ ] Port favorites, running applications, launch, focus, minimize, and
+- [x] Port notification monitor and badge-count ownership.
+- [x] Port favorites, running applications, launch, focus, minimize, and
   multiple-window behavior.
 - [ ] Port notification badges and application context menus.
 - [ ] Port the three accepted running indicators.

@@ -851,6 +851,17 @@ export class UnityIndicator extends IndicatorBase {
     }
 
     _updateNotificationsCount() {
+        const {notificationsMonitor} = Docking.DockManager.getDefault();
+        if (notificationsMonitor.getBadgeCount) {
+            const count = notificationsMonitor.getBadgeCount(
+                this._source.app.id,
+                this._remoteEntry,
+                Docking.DockManager.settings.applicationCounterOverridesNotifications,
+            );
+            this.setNotificationCount(count);
+            return;
+        }
+
         const remoteCount = this._remoteEntry['count-visible']
             ? this._remoteEntry.count ?? 0 : 0;
 
@@ -860,7 +871,6 @@ export class UnityIndicator extends IndicatorBase {
             return;
         }
 
-        const {notificationsMonitor} = Docking.DockManager.getDefault();
         const notificationsCount = notificationsMonitor.getAppNotificationsCount(
             this._source.app.id);
 
