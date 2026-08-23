@@ -12,18 +12,24 @@ export let dockManager;
 export class CommunityDockRuntime {
     constructor(extension) {
         this._extension = extension;
+        this._manager = null;
     }
 
     enable() {
-        if (dockManager)
+        if (this._manager)
             return;
+        if (dockManager)
+            throw new Error('Community Dock lifecycle already owned');
 
+        let manager = null;
         try {
-            dockManager = new DockManager(this._extension);
-            this._indicatorController = new IndicatorController(this._extension, dockManager);
+            manager = new DockManager(this._extension);
+            this._manager = manager;
+            dockManager = manager;
+            this._indicatorController = new IndicatorController(this._extension, manager);
             this._panelController = new PanelController(this._extension);
         } catch (error) {
-            const partialManager = dockManager ?? DockManager.getDefault();
+            const partialManager = manager ?? DockManager.getDefault();
             this._panelController?.destroy();
             this._panelController = null;
             this._indicatorController?.destroy();
@@ -33,18 +39,31 @@ export class CommunityDockRuntime {
             } catch (cleanupError) {
                 console.warn(`[community-dock] partial startup cleanup failed: ${cleanupError}`);
             }
-            dockManager = null;
+            if (dockManager === manager)
+                dockManager = null;
+            this._manager = null;
             throw error;
         }
     }
 
     disable() {
+        const manager = this._manager;
         this._panelController?.destroy();
         this._panelController = null;
         this._indicatorController?.destroy();
         this._indicatorController = null;
-        dockManager?.destroy();
-        dockManager = null;
+        manager?.destroy();
+        this._manager = null;
+        if (dockManager === manager)
+            dockManager = null;
+    }
+
+    get active() {
+        return Boolean(this._manager);
+    }
+
+    get docks() {
+        return this._manager?._allDocks ?? [];
     }
 }
 

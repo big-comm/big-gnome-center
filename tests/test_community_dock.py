@@ -119,7 +119,7 @@ def test_running_indicator_styles_are_owned_by_community_dock():
     assert "rgba(160, 160, 168, 0.72)" in stylesheet
     assert "background-color: -st-accent-color" in stylesheet
     assert "layout-switcher-biggnome-dock" not in stylesheet
-    assert "new IndicatorController(this._extension, dockManager)" in extension
+    assert "new IndicatorController(this._extension, manager)" in extension
     assert "changed::indicator-style" in controller
     assert "changed::running-indicator-style" in controller
     assert "this._dockSettings.set_enum('running-indicator-style', 0)" in controller

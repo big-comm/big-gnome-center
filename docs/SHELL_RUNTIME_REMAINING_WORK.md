@@ -97,7 +97,7 @@ sessions passed 12 reference states and all eight surface-transition directions.
 
 ### 1. Extract the Dock engine incrementally
 
-- [ ] Isolate lifecycle ownership without constructing the inherited
+- [x] Isolate lifecycle ownership without constructing the inherited
   `DockManager` directly from the controller.
 - [ ] Port favorites, running applications, launch, focus, minimize, and
   multiple-window behavior.
@@ -193,6 +193,9 @@ Every implementation slice must:
 4. deploy exact files and verify local/VM hashes;
    package-managed extension UUIDs must exist only under `/usr/share`; never
    shadow them with a second copy under `~/.local/share/gnome-shell/extensions`;
+   after a direct file sync, compile every extension-local schema before
+   reloading the runtime (`community-dock`, `community-panel`, and
+   `frosted-glass`);
 5. restart only the Shell session when required;
 6. replay the affected source/target layout transitions on GNOME 50;
 7. replay them on GNOME 51 after GNOME 50 approval;

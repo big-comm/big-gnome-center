@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-import {
-    CommunityDockRuntime,
-    dockManager,
-} from '../community-dock@communitybig.org/extension.js';
+import {CommunityDockRuntime} from '../community-dock@communitybig.org/extension.js';
 
 import {ComponentHost} from './componentHost.js';
 
@@ -17,7 +14,7 @@ export class DockRuntime {
             name: 'Community Dock',
             version: 1,
         });
-        this._runtime = new CommunityDockRuntime(this._host);
+        this._engine = new CommunityDockRuntime(this._host);
     }
 
     activate(profile, indicator, hover) {
@@ -32,7 +29,7 @@ export class DockRuntime {
         this._applyHover(hover);
         this._host.loadStylesheet();
         try {
-            this._runtime.enable();
+            this._engine.enable();
             this._active = true;
         } catch (error) {
             this._host.unloadStylesheet();
@@ -42,7 +39,7 @@ export class DockRuntime {
 
     deactivate() {
         if (this._active) {
-            this._runtime.disable();
+            this._engine.disable();
             this._active = false;
             this._host.unloadStylesheet();
         }
@@ -52,9 +49,9 @@ export class DockRuntime {
     }
 
     diagnostics() {
-        const docks = dockManager?._allDocks ?? [];
+        const docks = this._engine.docks;
         return {
-            active: Boolean(this._active),
+            active: Boolean(this._active && this._engine.active),
             profile: this._profile?.layout ?? '',
             indicator: this._indicator ?? '',
             hover: this._hover ?? '',

@@ -95,6 +95,24 @@ def test_unified_runtime_loads_rollback_engines_behind_one_controller():
     assert "ComponentHost" in taskbar
 
 
+def test_dock_lifecycle_is_owned_by_the_engine_adapter():
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    engine = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/extension.js"
+    ).read_text()
+
+    assert "dockManager" not in dock
+    assert "this._engine = new CommunityDockRuntime" in dock
+    assert "this._engine.docks" in dock
+    assert "this._engine.active" in dock
+    assert "this._manager = new DockManager" not in engine
+    assert "this._manager = manager" in engine
+    assert "Community Dock lifecycle already owned" in engine
+    assert "get active()" in engine
+    assert "get docks()" in engine
+
+
 def test_unified_runtime_preserves_helper_fault_isolation():
     metadata = json.loads((RUNTIME / "metadata.json").read_text())
     helper = ROOT / (
