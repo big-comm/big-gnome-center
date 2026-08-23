@@ -588,6 +588,12 @@ export const DockDash = GObject.registerClass({
     }
 
     _animateAppIconHover(actor) {
+        const hoverEffects = Docking.DockManager.extension.hoverEffects;
+        if (hoverEffects) {
+            hoverEffects.animate(actor, this._position, this.iconSize);
+            return;
+        }
+
         const lift = actor.hover &&
             this._communitySettings.get_string('dock-hover-effect') === 'lift';
         const distance = lift ? Math.max(3, Math.round(this.iconSize * 0.1)) : 0;
@@ -614,6 +620,12 @@ export const DockDash = GObject.registerClass({
     }
 
     _syncHoverEffectStyle() {
+        const hoverEffects = Docking.DockManager.extension.hoverEffects;
+        if (hoverEffects) {
+            hoverEffects.applyStyle(this);
+            return;
+        }
+
         if (this._communitySettings.get_string('dock-hover-effect') === 'lift')
             this.add_style_class_name('community-dock-hover-lift');
         else

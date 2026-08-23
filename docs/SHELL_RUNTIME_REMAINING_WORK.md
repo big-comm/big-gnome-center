@@ -106,9 +106,9 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port notification badge actor and text ownership.
 - [x] Port favorites, running applications, launch, focus, minimize, and
   multiple-window behavior.
-- [ ] Port remaining application context-menu construction.
-- [ ] Port the three accepted running indicators.
-- [ ] Port standard and soft-lift hover behavior without hover rectangles.
+- [x] Port remaining application context-menu construction.
+- [x] Port the three accepted running indicators.
+- [x] Port standard and soft-lift hover behavior without hover rectangles.
 - [ ] Port always visible, always hidden, and intelligent hiding.
 - [ ] Port bottom placement for BigGnome.
 - [ ] Port left placement for G-Unity.

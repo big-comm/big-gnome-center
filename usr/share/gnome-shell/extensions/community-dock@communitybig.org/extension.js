@@ -26,7 +26,9 @@ export class CommunityDockRuntime {
             manager = new DockManager(this._extension);
             this._manager = manager;
             dockManager = manager;
-            this._indicatorController = new IndicatorController(this._extension, manager);
+            this._indicatorController = this._extension.createIndicatorController
+                ? this._extension.createIndicatorController(manager)
+                : new IndicatorController(this._extension, manager);
             this._panelController = new PanelController(this._extension);
         } catch (error) {
             const partialManager = manager ?? DockManager.getDefault();

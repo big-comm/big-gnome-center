@@ -193,6 +193,48 @@ def test_runtime_owns_dock_notification_badge_actor_and_text():
     assert "presenter.setText(this._notificationBadgeBin, text)" in indicators
 
 
+def test_runtime_owns_dock_running_indicator_renderers():
+    runtime = (RUNTIME / "dockRunningIndicators.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    extension = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/extension.js"
+    ).read_text()
+    icons = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+    ).read_text()
+
+    assert "new DockRunningIndicators(" in dock
+    assert "this._extension.createIndicatorController" in extension
+    assert "applyIconStyle(icon)" in runtime
+    assert "applyAppearance(dot, focused, position)" in runtime
+    assert "['dot', {inactive: [6, 6], active: [6, 6]" in runtime
+    assert "['hybrid', {inactive: [18, 4], active: [18, 4]" in runtime
+    assert "['desk-ux', {inactive: [8, 3], active: [18, 3]" in runtime
+    assert "controller.applyIconStyle(this)" in icons
+    assert "controller.applyAppearance(this._dot, this.focused, position)" in icons
+
+
+def test_runtime_owns_dock_hover_effects():
+    runtime = (RUNTIME / "dockHoverEffects.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    dash = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/dash.js"
+    ).read_text()
+
+    assert "new DockHoverEffects(" in dock
+    assert "this._host.hoverEffects.setEffect(effect)" in dock
+    assert "getSettings(PANEL_SCHEMA)" in dock
+    assert "applyStyle(actor)" in runtime
+    assert "animate(actor, position, iconSize)" in runtime
+    assert "get_string('dock-hover-effect')" in runtime
+    assert "scale_x: lift ? 1.08 : 1" in runtime
+    assert "hoverEffects.animate(actor, this._position, this.iconSize)" in dash
+    assert "hoverEffects.applyStyle(this)" in dash
+
+
 def test_runtime_owns_core_dock_context_menu_actions():
     actions = (RUNTIME / "dockAppMenuActions.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
@@ -214,6 +256,22 @@ def test_runtime_owns_core_dock_context_menu_actions():
     assert "favorites.addFavorite(appId)" in actions
     assert "favorites.removeFavorite(appId)" in actions
     assert "window.delete(time)" in actions
+
+
+def test_runtime_owns_dock_context_menu_construction():
+    runtime = (RUNTIME / "dockAppIconMenu.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    app_icons = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+    ).read_text()
+
+    assert "class DockAppIconMenu extends PopupMenu.PopupMenu" in runtime
+    assert "new DockAppMenuFactory()" in dock
+    assert "appMenuFactory" in app_icons
+    assert "?.create(this, this instanceof DockAppIcon)" in app_icons
+    assert "new DockAppIconMenu(this)" in app_icons
+    assert "this._isApplicationIcon" in runtime
 
 
 def test_unified_runtime_preserves_helper_fault_isolation():

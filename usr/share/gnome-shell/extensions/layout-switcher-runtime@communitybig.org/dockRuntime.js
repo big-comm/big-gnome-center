@@ -4,10 +4,13 @@ import {CommunityDockRuntime} from '../community-dock@communitybig.org/extension
 
 import {ComponentHost} from './componentHost.js';
 import {DockAppActions} from './dockAppActions.js';
+import {DockAppMenuFactory} from './dockAppIconMenu.js';
 import {DockAppMenuActions} from './dockAppMenuActions.js';
 import {DockAppModel} from './dockAppModel.js';
+import {DockHoverEffects} from './dockHoverEffects.js';
 import {DockNotificationBadges} from './dockNotificationBadges.js';
 import {DockNotificationMonitor} from './dockNotificationMonitor.js';
+import {DockRunningIndicators} from './dockRunningIndicators.js';
 
 const DOCK_UUID = 'community-dock@communitybig.org';
 const DOCK_SCHEMA = 'org.gnome.shell.extensions.dash-to-dock';
@@ -20,9 +23,21 @@ export class DockRuntime {
             version: 1,
         });
         this._host.appActions = new DockAppActions();
+        this._host.appMenuFactory = new DockAppMenuFactory();
         this._host.appMenuActions = new DockAppMenuActions();
         this._host.appModel = new DockAppModel();
+        this._host.hoverEffects = new DockHoverEffects(
+            this._host.getSettings(PANEL_SCHEMA),
+        );
         this._host.notificationBadges = new DockNotificationBadges();
+        this._host.createIndicatorController = manager => {
+            this._host.runningIndicators = new DockRunningIndicators(
+                this._host.getSettings(PANEL_SCHEMA),
+                this._host.getSettings(DOCK_SCHEMA),
+                manager,
+            );
+            return this._host.runningIndicators;
+        };
         this._engine = new CommunityDockRuntime(this._host);
     }
 
@@ -57,6 +72,7 @@ export class DockRuntime {
             this._host.unloadStylesheet();
         }
         this._destroyNotificationsMonitor();
+        delete this._host.runningIndicators;
         this._profile = null;
         this._indicator = null;
         this._hover = null;
@@ -106,6 +122,7 @@ export class DockRuntime {
 
     _applyHover(hover) {
         const effect = hover === 'lift' ? 'lift' : 'default';
+        this._host.hoverEffects.setEffect(effect);
         this._host.getSettings(PANEL_SCHEMA).set_string('dock-hover-effect', effect);
     }
 

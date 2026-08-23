@@ -371,6 +371,13 @@ export const DockAbstractAppIcon = GObject.registerClass({
     }
 
     _syncCommunityIndicatorStyle() {
+        const controller = Docking.DockManager.extension.runningIndicators;
+        if (controller) {
+            controller.applyIconStyle(this);
+            this._syncCommunityIndicatorAppearance();
+            return;
+        }
+
         for (const styleClass of COMMUNITY_INDICATOR_CLASSES.values())
             this.remove_style_class_name(styleClass);
         const configured = this._communityIndicatorSettings.get_string('indicator-style');
@@ -383,11 +390,17 @@ export const DockAbstractAppIcon = GObject.registerClass({
     _syncCommunityIndicatorAppearance() {
         if (!this._dot)
             return;
+        const controller = Docking.DockManager.extension.runningIndicators;
+        const position = Utils.getPosition();
+        if (controller) {
+            controller.applyAppearance(this._dot, this.focused, position);
+            return;
+        }
+
         const configured = this._communityIndicatorSettings.get_string('indicator-style');
         const geometry = COMMUNITY_INDICATOR_GEOMETRY.get(configured) ??
             COMMUNITY_INDICATOR_GEOMETRY.get('dot');
         let [width, height] = this.focused ? geometry.active : geometry.inactive;
-        const position = Utils.getPosition();
         const isVertical = position === St.Side.LEFT || position === St.Side.RIGHT;
         if (isVertical)
             [width, height] = [height, width];
@@ -513,7 +526,9 @@ export const DockAbstractAppIcon = GObject.registerClass({
         this._draggable.fakeRelease?.();
 
         if (!this._menu) {
-            this._menu = new DockAppIconMenu(this);
+            this._menu = Docking.DockManager.extension.appMenuFactory
+                ?.create(this, this instanceof DockAppIcon) ??
+                new DockAppIconMenu(this);
             this._menu.connect('activate-window', (menu, window) => {
                 if (Docking.DockManager.extension.appMenuActions?.activateWindow(window))
                     return;
