@@ -6,6 +6,7 @@ import {ComponentHost} from './componentHost.js';
 import {DockAppActions} from './dockAppActions.js';
 import {DockAppMenuActions} from './dockAppMenuActions.js';
 import {DockAppModel} from './dockAppModel.js';
+import {DockNotificationBadges} from './dockNotificationBadges.js';
 import {DockNotificationMonitor} from './dockNotificationMonitor.js';
 
 const DOCK_UUID = 'community-dock@communitybig.org';
@@ -21,6 +22,7 @@ export class DockRuntime {
         this._host.appActions = new DockAppActions();
         this._host.appMenuActions = new DockAppMenuActions();
         this._host.appModel = new DockAppModel();
+        this._host.notificationBadges = new DockNotificationBadges();
         this._engine = new CommunityDockRuntime(this._host);
     }
 

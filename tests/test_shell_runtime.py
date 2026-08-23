@@ -176,6 +176,23 @@ def test_runtime_owns_dock_notification_monitor_and_badge_count():
     assert "notificationsMonitor.getAppNotificationsCount" in indicators
 
 
+def test_runtime_owns_dock_notification_badge_actor_and_text():
+    badges = (RUNTIME / "dockNotificationBadges.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    indicators = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIconIndicators.js"
+    ).read_text()
+
+    assert "new DockNotificationBadges()" in dock
+    assert "textForCount(count)" in badges
+    assert "new St.Bin" in badges
+    assert "styleClass: 'notification-badge'" in badges
+    assert "presenter.textForCount(count)" in indicators
+    assert "presenter?.create(text)" in indicators
+    assert "presenter.setText(this._notificationBadgeBin, text)" in indicators
+
+
 def test_runtime_owns_core_dock_context_menu_actions():
     actions = (RUNTIME / "dockAppMenuActions.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()

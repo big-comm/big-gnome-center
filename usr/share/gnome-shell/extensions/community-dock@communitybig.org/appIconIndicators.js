@@ -830,6 +830,10 @@ export class UnityIndicator extends IndicatorBase {
     }
 
     _notificationBadgeCountToText(count) {
+        const presenter = Docking.DockManager.extension.notificationBadges;
+        if (presenter)
+            return presenter.textForCount(count);
+
         if (count <= 9999) {
             return count.toString();
         } else if (count < 1e5) {
@@ -878,12 +882,16 @@ export class UnityIndicator extends IndicatorBase {
     }
 
     _updateNotificationsBadge(text) {
+        const presenter = Docking.DockManager.extension.notificationBadges;
         if (this._notificationBadgeBin) {
-            this._notificationBadgeBin.child.text = text;
+            if (presenter)
+                presenter.setText(this._notificationBadgeBin, text);
+            else
+                this._notificationBadgeBin.child.text = text;
             return;
         }
 
-        this._notificationBadgeBin = new St.Bin({
+        this._notificationBadgeBin = presenter?.create(text) ?? new St.Bin({
             child: new St.Label({
                 styleClass: 'notification-badge',
                 text,
@@ -893,8 +901,10 @@ export class UnityIndicator extends IndicatorBase {
             xExpand: true,
             yExpand: true,
         });
-        this._notificationBadgeBin.child.clutterText.ellipsize =
-            Pango.EllipsizeMode.MIDDLE;
+        if (!presenter) {
+            this._notificationBadgeBin.child.clutterText.ellipsize =
+                Pango.EllipsizeMode.MIDDLE;
+        }
 
         this._source._iconContainer.add_child(this._notificationBadgeBin);
         this._updateNotificationBadgeStyle();

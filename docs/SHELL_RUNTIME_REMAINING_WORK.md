@@ -103,9 +103,10 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port favorite and running-app data ownership and stable ordering.
 - [x] Port notification monitor and badge-count ownership.
 - [x] Port core application context-menu action ownership.
+- [x] Port notification badge actor and text ownership.
 - [x] Port favorites, running applications, launch, focus, minimize, and
   multiple-window behavior.
-- [ ] Port notification badges and application context menus.
+- [ ] Port remaining application context-menu construction.
 - [ ] Port the three accepted running indicators.
 - [ ] Port standard and soft-lift hover behavior without hover rectangles.
 - [ ] Port always visible, always hidden, and intelligent hiding.
