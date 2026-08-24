@@ -29,7 +29,6 @@ import {
 
 import {
     AppIconsDecorator,
-    AppSpread,
     DockDash,
     DesktopIconsIntegration,
     FileManager1API,
@@ -1449,257 +1448,6 @@ const DockedDash = GObject.registerClass({
     }
 });
 
-/*
- * Handle keyboard shortcuts
- */
-const NUM_HOTKEYS = 10;
-
-const KeyboardShortcuts = class DashToDockKeyboardShortcuts {
-    constructor() {
-        this._signalsHandler = new Utils.GlobalSignalsHandler();
-
-        this._hotKeysEnabled = false;
-        if (DockManager.settings.hotKeys)
-            this._enableHotKeys();
-
-        this._signalsHandler.add([
-            DockManager.settings,
-            'changed::hot-keys',
-            () => {
-                if (DockManager.settings.hotKeys)
-                    this._enableHotKeys.bind(this)();
-                else
-                    this._disableHotKeys.bind(this)();
-            },
-        ]);
-
-        this._optionalNumberOverlay();
-    }
-
-    destroy() {
-        DockManager.allDocks.forEach(dock => {
-            if (dock._numberOverlayTimeoutId) {
-                GLib.source_remove(dock._numberOverlayTimeoutId);
-                delete dock._numberOverlayTimeoutId;
-            }
-        });
-
-        // Remove keybindings
-        this._disableHotKeys();
-        this._disableExtraShortcut();
-        this._signalsHandler.destroy();
-    }
-
-    _enableHotKeys() {
-        if (this._hotKeysEnabled)
-            return;
-
-        // Setup keyboard bindings for dash elements
-        const keys = ['app-hotkey-', 'app-shift-hotkey-', 'app-ctrl-hotkey-'];
-        const {mainDock} = DockManager.getDefault();
-        keys.forEach(function (key) {
-            for (let i = 0; i < NUM_HOTKEYS; i++) {
-                const appNum = i;
-                Main.wm.addKeybinding(key + (i + 1), DockManager.settings,
-                    Meta.KeyBindingFlags.IGNORE_AUTOREPEAT,
-                    Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
-                    () => {
-                        mainDock._activateApp(appNum);
-                        this._showOverlay();
-                    });
-            }
-        }, this);
-
-        this._hotKeysEnabled = true;
-    }
-
-    _disableHotKeys() {
-        if (!this._hotKeysEnabled)
-            return;
-
-        const keys = ['app-hotkey-', 'app-shift-hotkey-', 'app-ctrl-hotkey-'];
-        keys.forEach(key => {
-            for (let i = 0; i < NUM_HOTKEYS; i++)
-                Main.wm.removeKeybinding(key + (i + 1));
-        }, this);
-
-        this._hotKeysEnabled = false;
-    }
-
-    _optionalNumberOverlay() {
-        const {settings} = DockManager;
-        this._shortcutIsSet = false;
-        // Enable extra shortcut if either 'overlay' or 'show-dock' are true
-        if (settings.hotKeys &&
-           (settings.hotkeysOverlay || settings.hotkeysShowDock))
-            this._enableExtraShortcut();
-
-        this._signalsHandler.add([
-            settings,
-            'changed::hot-keys',
-            this._checkHotkeysOptions.bind(this),
-        ], [
-            settings,
-            'changed::hotkeys-overlay',
-            this._checkHotkeysOptions.bind(this),
-        ], [
-            settings,
-            'changed::hotkeys-show-dock',
-            this._checkHotkeysOptions.bind(this),
-        ]);
-    }
-
-    _checkHotkeysOptions() {
-        const {settings} = DockManager;
-
-        if (settings.hotKeys &&
-           (settings.hotkeysOverlay || settings.hotkeysShowDock))
-            this._enableExtraShortcut();
-        else
-            this._disableExtraShortcut();
-    }
-
-    _enableExtraShortcut() {
-        if (!this._shortcutIsSet) {
-            Main.wm.addKeybinding('shortcut', DockManager.settings,
-                Meta.KeyBindingFlags.IGNORE_AUTOREPEAT,
-                Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
-                this._showOverlay.bind(this));
-            this._shortcutIsSet = true;
-        }
-    }
-
-    _disableExtraShortcut() {
-        if (this._shortcutIsSet) {
-            Main.wm.removeKeybinding('shortcut');
-            this._shortcutIsSet = false;
-        }
-    }
-
-    _showOverlay() {
-        for (const dock of DockManager.allDocks) {
-            if (DockManager.settings.hotkeysOverlay)
-                dock.dash.toggleNumberOverlay(true);
-
-            // Restart the counting if the shortcut is pressed again
-            if (dock._numberOverlayTimeoutId) {
-                GLib.source_remove(dock._numberOverlayTimeoutId);
-                dock._numberOverlayTimeoutId = 0;
-            }
-
-            // Hide the overlay/dock after the timeout
-            const timeout = DockManager.settings.shortcutTimeout * 1000;
-            dock._numberOverlayTimeoutId = GLib.timeout_add(
-                GLib.PRIORITY_DEFAULT, timeout, () => {
-                    dock._numberOverlayTimeoutId = 0;
-                    dock.dash.toggleNumberOverlay(false);
-                    // Hide the dock again if necessary
-                    dock._updateDashVisibility();
-                });
-
-            // Show the dock if it is hidden
-            if (DockManager.settings.hotkeysShowDock) {
-                const showDock = dock._intellihideIsEnabled || dock._autohideIsEnabled;
-                if (showDock)
-                    dock._show();
-            }
-        }
-    }
-};
-
-/**
- * Isolate overview to open new windows for inactive apps
- * Note: the future implementation is not fully contained here.
- * Some bits are around in other methods of other classes.
- * This class just take care of enabling/disabling the option.
- */
-const WorkspaceIsolation = class DashToDockWorkspaceIsolation {
-    constructor() {
-        const {settings} = DockManager;
-
-        this._signalsHandler = new Utils.GlobalSignalsHandler();
-        this._injectionsHandler = new Utils.InjectionsHandler();
-
-        const updateAllDocks = () => {
-            DockManager.allDocks.forEach(dock =>
-                dock.dash.resetAppIcons());
-            if (settings.isolateWorkspaces ||
-                settings.isolateMonitors)
-                this._enable.bind(this)();
-            else
-                this._disable.bind(this)();
-        };
-        this._signalsHandler.add(
-            [settings, 'changed::isolate-workspaces', updateAllDocks],
-            [settings, 'changed::workspace-agnostic-urgent-windows', updateAllDocks],
-            [settings, 'changed::isolate-monitors', updateAllDocks]
-        );
-
-        if (settings.isolateWorkspaces ||
-            settings.isolateMonitors)
-            this._enable();
-    }
-
-    _enable() {
-        // ensure I never double-register/inject
-        // although it should never happen
-        this._disable();
-
-        DockManager.allDocks.forEach(dock => {
-            global.display.connectObject('restacked',
-                () => dock.dash._queueRedisplay(), dock.dash);
-            global.display.connectObject('window-marked-urgent',
-                () => dock.dash._queueRedisplay(), dock.dash);
-            global.display.connectObject('window-demands-attention',
-                () => dock.dash._queueRedisplay(), dock.dash);
-            global.window_manager.connectObject('switch-workspace',
-                () => dock.dash._queueRedisplay(), dock.dash);
-
-            // This last signal is only needed for monitor isolation, as windows
-            // might migrate from one monitor to another without triggering 'restacked'
-            if (DockManager.settings.isolateMonitors) {
-                global.display.connectObject('window-entered-monitor',
-                    () => dock.dash._queueRedisplay(), dock.dash);
-            }
-        });
-
-        /**
-         * here this is the Shell.App
-         */
-        function IsolatedOverview() {
-            // These lines take care of Nautilus for icons on Desktop
-            const activeWorkspaceIndex =
-                global.workspaceManager.get_active_workspace_index();
-            const windows = this.get_windows().filter(w =>
-                !w.skipTaskbar && w.get_workspace().index() === activeWorkspaceIndex);
-
-            if (windows.length)
-                return Main.activateWindow(windows[0]);
-            return this.open_new_window(-1);
-        }
-
-        this._injectionsHandler.addWithLabel(Labels.ISOLATION,
-            Shell.App.prototype,
-            'activate',
-            IsolatedOverview);
-    }
-
-    _disable() {
-        DockManager.allDocks.forEach(dock => {
-            global.display.disconnectObject(dock.dash);
-            global.window_manager.disconnectObject(dock.dash);
-        });
-        this._injectionsHandler.removeWithLabel(Labels.ISOLATION);
-    }
-
-    destroy() {
-        this._disable();
-        this._signalsHandler.destroy();
-        this._injectionsHandler.destroy();
-    }
-};
-
-
 export class DockManager {
     constructor(extension) {
         if (DockManager._singleton)
@@ -1721,7 +1469,6 @@ export class DockManager {
         this._oldDash = Main.overview.isDummy ? null : Main.overview.dash;
         this._signalsHandler.add(this._oldDash, 'destroy', () => (this._oldDash = null));
         this._discreteGpuAvailable = AppDisplay.discreteGpuAvailable;
-        this._appSpread = new AppSpread.AppSpread();
         this._notificationsMonitor = this._extension.notificationsMonitor;
 
         const needsRemoteModel = () =>
@@ -1839,10 +1586,6 @@ export class DockManager {
 
     get discreteGpuAvailable() {
         return AppDisplay.discreteGpuAvailable || this._discreteGpuAvailable;
-    }
-
-    get appSpread() {
-        return this._appSpread;
     }
 
     get notificationsMonitor() {
@@ -2053,8 +1796,6 @@ export class DockManager {
             },
         ]);
 
-        this._mapExternalSetting(this._appSwitcherSettings, 'current-workspace-only',
-            'isolate-workspaces', value => value || undefined);
     }
 
     _createDocks() {
@@ -2117,11 +1858,6 @@ export class DockManager {
                 this._createDock({monitorIndex: iMon});
             }
         }
-
-        // Load optional features. We load *after* the docks are created, since
-        // we need to connect the signals to all dock instances.
-        this._workspaceIsolation = new WorkspaceIsolation();
-        this._keyboardShortcuts = new KeyboardShortcuts();
 
         this.emit('docks-ready');
     }
@@ -2514,9 +2250,6 @@ export class DockManager {
     }
 
     _deleteDocks() {
-        // Remove extra features
-        this._workspaceIsolation?.destroy();
-        this._keyboardShortcuts?.destroy();
         this._desktopIconsUsableArea?.resetMargins();
 
         // Delete all docks
@@ -2607,7 +2340,6 @@ export class DockManager {
             this._fm1Client = null;
         }
         this._notificationsMonitor = null;
-        this._appSpread.destroy();
         this._trash?.destroy();
         this._trash = null;
         Locations.unWrapFileManagerApp();

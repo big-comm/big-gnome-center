@@ -46,8 +46,6 @@ const DBusMenu = await DBusMenuUtils.haveDBusMenu();
 const tracker = Shell.WindowTracker.get_default();
 
 const Labels = Object.freeze({
-    ISOLATE_MONITORS: Symbol('isolate-monitors'),
-    ISOLATE_WORKSPACES: Symbol('isolate-workspaces'),
     URGENT_WINDOWS: Symbol('urgent-windows'),
 });
 
@@ -91,7 +89,6 @@ let recentlyClickedAppLoopId = 0;
 let recentlyClickedApp = null;
 let recentlyClickedAppWindows = null;
 let recentlyClickedAppIndex = 0;
-let recentlyClickedAppMonitor = -1;
 
 /**
  * Extend AppIcon
@@ -160,19 +157,6 @@ export const DockAbstractAppIcon = GObject.registerClass({
             this._onWindowDemandsAttention(window));
         this._signalsHandler.add(global.display, 'window-marked-urgent', (_dpy, window) =>
             this._onWindowDemandsAttention(window));
-
-        // In Wayland sessions, this signal is needed to track the state of windows dragged
-        // from one monitor to another. As this is triggered quite often (whenever a new
-        // window of any application opened or moved to a different desktop),
-        // we restrict this signal to  the case when Labels.ISOLATE_MONITORS is true,
-        // and if there are at least 2 monitors.
-        if (Docking.DockManager.settings.isolateMonitors &&
-            Main.layoutManager.monitors.length > 1) {
-            this._signalsHandler.addWithLabel(Labels.ISOLATE_MONITORS,
-                global.display,
-                'window-entered-monitor',
-                this._onWindowEntered.bind(this));
-        }
 
         this.connect('notify::running', () => {
             if (this.running)
@@ -350,12 +334,6 @@ export const DockAbstractAppIcon = GObject.registerClass({
         this._updateFocusState();
         this._updateUrgentWindows(interestingWindows);
 
-        if (Docking.DockManager.settings.isolateWorkspaces) {
-            this._signalsHandler.removeWithLabel(Labels.ISOLATE_WORKSPACES);
-            interestingWindows.forEach(window =>
-                this._signalsHandler.addWithLabel(Labels.ISOLATE_WORKSPACES,
-                    window, 'workspace-changed', () => this._updateWindows()));
-        }
     }
 
     _updateRunningState() {
@@ -618,17 +596,10 @@ export const DockAbstractAppIcon = GObject.registerClass({
                 buttonAction = settings.clickAction;
         }
 
-        switch (buttonAction) {
-        case clickAction.FOCUS_OR_APP_SPREAD:
-            if (!Docking.DockManager.getDefault().appSpread.supported)
-                buttonAction = clickAction.FOCUS_OR_PREVIEWS;
-            break;
-
-        case clickAction.FOCUS_MINIMIZE_OR_APP_SPREAD:
-            if (!Docking.DockManager.getDefault().appSpread.supported)
-                buttonAction = clickAction.FOCUS_MINIMIZE_OR_PREVIEWS;
-            break;
-        }
+        if (buttonAction === clickAction.FOCUS_OR_APP_SPREAD)
+            buttonAction = clickAction.FOCUS_OR_PREVIEWS;
+        else if (buttonAction === clickAction.FOCUS_MINIMIZE_OR_APP_SPREAD)
+            buttonAction = clickAction.FOCUS_MINIMIZE_OR_PREVIEWS;
 
         // We check if the app is running, and that the # of windows is > 0 in
         // case we use workspace isolation.
@@ -675,10 +646,8 @@ export const DockAbstractAppIcon = GObject.registerClass({
                 if (singleOrUrgentWindows && !modifiers && button === 1) {
                     const [w] = windows;
                     if (this.focused) {
-                        if (buttonAction !== clickAction.FOCUS_OR_APP_SPREAD) {
-                            // Window is raised, minimize it
-                            this._minimizeWindow(w);
-                        }
+                        // Window is raised, minimize it
+                        this._minimizeWindow(w);
                     } else {
                         // Window is minimized, raise it
                         Main.activateWindow(w);
@@ -770,28 +739,6 @@ export const DockAbstractAppIcon = GObject.registerClass({
                     }
                 } else {
                     this.app.activate();
-                }
-                break;
-
-            case clickAction.FOCUS_OR_APP_SPREAD:
-                if (this.focused && !singleOrUrgentWindows && !modifiers && button === 1) {
-                    shouldHideOverview = false;
-                    Docking.DockManager.getDefault().appSpread.toggle(this.app);
-                } else {
-                    // Activate the first window
-                    Main.activateWindow(windows[0]);
-                }
-                break;
-
-            case clickAction.FOCUS_MINIMIZE_OR_APP_SPREAD:
-                if (this.focused && !singleOrUrgentWindows && !modifiers && button === 1) {
-                    shouldHideOverview = false;
-                    Docking.DockManager.getDefault().appSpread.toggle(this.app);
-                } else if (!this.focused) {
-                    // Activate the first window
-                    Main.activateWindow(windows[0]);
-                } else {
-                    this._minimizeWindow();
                 }
                 break;
 
@@ -940,14 +887,10 @@ export const DockAbstractAppIcon = GObject.registerClass({
     // By default only non minimized windows are activated.
     // This activates all windows in the current workspace.
     _activateAllWindows() {
-        // First activate first window so workspace is switched if needed.
-        // We don't do this if isolation is on!
-        if (!Docking.DockManager.settings.isolateWorkspaces &&
-            !Docking.DockManager.settings.isolateMonitors) {
-            if (!this.running)
-                this.animateLaunch();
-            this.app.activate();
-        }
+        // First activate the app so its workspace is selected if needed.
+        if (!this.running)
+            this.animateLaunch();
+        this.app.activate();
 
         // then activate all other app windows in the current workspace
         const windows = this.getInterestingWindows();
@@ -986,14 +929,11 @@ export const DockAbstractAppIcon = GObject.registerClass({
 
         // If there isn't already a list of windows for the current app,
         // or the stored list is outdated, use the current windows list.
-        const monitorIsolation = Docking.DockManager.settings.isolateMonitors;
         if (!recentlyClickedApp ||
             recentlyClickedApp.get_id() !== this.app.get_id() ||
-            recentlyClickedAppWindows.length !== appWindows.length ||
-            (recentlyClickedAppMonitor !== this.monitorIndex && monitorIsolation)) {
+            recentlyClickedAppWindows.length !== appWindows.length) {
             recentlyClickedApp = this.app;
             recentlyClickedAppWindows = appWindows;
-            recentlyClickedAppMonitor = this.monitorIndex;
             recentlyClickedAppIndex = 0;
         }
 
@@ -1017,7 +957,6 @@ export const DockAbstractAppIcon = GObject.registerClass({
         recentlyClickedApp = null;
         recentlyClickedAppWindows = null;
         recentlyClickedAppIndex = 0;
-        recentlyClickedAppMonitor = -1;
 
         return false;
     }
@@ -1477,25 +1416,6 @@ function isWindowUrgent(w) {
  * @param monitorIndex
  */
 export function getInterestingWindows(windows, monitorIndex) {
-    const {settings} = Docking.DockManager;
-
-    // When using workspace isolation, we filter out windows
-    // that are neither in the current workspace nor marked urgent
-    if (settings.isolateWorkspaces) {
-        const showUrgent = settings.workspaceAgnosticUrgentWindows;
-        const activeWorkspace = global.workspace_manager.get_active_workspace();
-        windows = windows.filter(w => {
-            const inWorkspace = w.get_workspace() === activeWorkspace;
-            return inWorkspace || (showUrgent && isWindowUrgent(w));
-        });
-    }
-
-    if (settings.isolateMonitors && monitorIndex >= 0) {
-        windows = windows.filter(w => {
-            return w.get_monitor() === monitorIndex;
-        });
-    }
-
     return windows.filter(w => !w.skipTaskbar);
 }
 

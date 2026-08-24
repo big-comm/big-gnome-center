@@ -20,7 +20,7 @@ def test_community_dock_has_distinct_identity_and_shell_support():
 
 def test_community_dock_tracks_accepted_core_baseline():
     expected = {
-        "docking.js": "99e214fc15e4b549b28fdaf2819d174012aa1c39f48b406e534445cb4db8e4dd",
+        "docking.js": "254f217b6591cb08ada3729aa95d047f698831bcc29ddd5261f565e44ace8d2f",
     }
 
     for name, digest in expected.items():
@@ -139,6 +139,25 @@ def test_legacy_dock_runtime_services_are_not_packaged():
     assert not (DOCK / "notificationsMonitor.js").exists()
 
 
+def test_dormant_optional_dock_services_are_not_packaged():
+    docking = (DOCK / "docking.js").read_text()
+    app_icons = (DOCK / "appIcons.js").read_text()
+    dash = (DOCK / "dash.js").read_text()
+    imports = (DOCK / "imports.js").read_text()
+
+    assert not (DOCK / "appSpread.js").exists()
+    assert "AppSpread" not in imports
+    assert "KeyboardShortcuts" not in docking
+    assert "WorkspaceIsolation" not in docking
+    assert "appSpread" not in app_icons
+    assert "isolateWorkspaces" not in app_icons
+    assert "isolateMonitors" not in app_icons
+    assert "isolateWorkspaces" not in dash
+    assert "isolateMonitors" not in dash
+    assert "buttonAction = clickAction.FOCUS_OR_PREVIEWS" in app_icons
+    assert "buttonAction = clickAction.FOCUS_MINIMIZE_OR_PREVIEWS" in app_icons
+
+
 def test_community_dock_focus_tracks_newly_focused_windows_immediately():
     app_icons = (DOCK / "appIcons.js").read_text()
 
@@ -222,6 +241,11 @@ def test_community_dock_owns_native_panel_runtime():
     assert "Main.layoutManager._findActor(this._panelBox)" in controller
     assert "this._panelActorData.affectsStruts = overlayMode" in controller
     assert "Main.layoutManager._queueUpdateRegions()" in controller
+    assert "this._connect(Main.overview, 'shown'" in controller
+    assert "this._connect(Main.overview, 'hiding'" in controller
+    assert controller.count("this._queueOpacityApply()") == 4
+    assert "GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE" in controller
+    assert "this._cancelOpacityApply();" in controller
 
 
 def test_legacy_dock_panel_controller_is_not_packaged():

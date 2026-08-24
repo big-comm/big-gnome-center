@@ -119,6 +119,8 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [ ] Validate overview, fullscreen, workspace changes, and monitor changes.
 - [x] Validate teardown/re-enable behavior on GNOME 50 and GNOME 51 after
   removing replaced inherited services.
+- [x] Remove dormant App Spread, workspace isolation, and numeric-shortcut
+  services; legacy App Spread actions fall back to accepted previews.
 - [ ] Remove each inherited Dock branch only after its replacement is accepted.
 
 Gates:

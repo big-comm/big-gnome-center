@@ -36,6 +36,7 @@ export class PanelController {
         this._applying = false;
         this._pointerReveal = false;
         this._hideTimeout = 0;
+        this._opacityIdle = 0;
 
         this._panel.reactive = true;
         this._panel.track_hover = true;
@@ -78,10 +79,14 @@ export class PanelController {
         this._connect(Main.overview, 'showing', () => {
             this._inOverview = true;
             this._applyVisibility();
+            this._queueOpacityApply();
         });
+        this._connect(Main.overview, 'shown', () => this._queueOpacityApply());
+        this._connect(Main.overview, 'hiding', () => this._queueOpacityApply());
         this._connect(Main.overview, 'hidden', () => {
             this._inOverview = false;
             this._applyVisibility();
+            this._queueOpacityApply();
         });
 
         this._watchFocusWindow();
@@ -90,6 +95,7 @@ export class PanelController {
 
     destroy() {
         this._cancelHide();
+        this._cancelOpacityApply();
         this._disconnectFocusWindow();
         for (const [object, id] of this._signals.splice(0)) {
             try {
@@ -165,6 +171,24 @@ export class PanelController {
         const base = this._originalStyle ? `${this._originalStyle}; ` : '';
         this._panel.set_style(
             `${base}background-color: rgba(0, 0, 0, ${opacity.toFixed(2)});`);
+    }
+
+    _queueOpacityApply() {
+        this._applyOpacity();
+        this._cancelOpacityApply();
+        this._opacityIdle = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            this._opacityIdle = 0;
+            if (this._settings)
+                this._applyOpacity();
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _cancelOpacityApply() {
+        if (!this._opacityIdle)
+            return;
+        GLib.Source.remove(this._opacityIdle);
+        this._opacityIdle = 0;
     }
 
     _applyVisibility() {

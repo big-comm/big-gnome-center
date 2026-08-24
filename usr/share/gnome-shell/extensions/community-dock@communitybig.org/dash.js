@@ -831,15 +831,6 @@ export const DockDash = GObject.registerClass({
             }
         }
 
-        if (settings.isolateWorkspaces ||
-            settings.isolateMonitors) {
-            // When using isolation, we filter out apps that have no windows in
-            // the current workspace
-            const monitorIndex = this._monitorIndex;
-            running = running.filter(app =>
-                AppIcons.getInterestingWindows(app.get_windows(), monitorIndex).length);
-        }
-
         const children = this._box.get_children().filter(actor => {
             return actor.child &&
                    actor.child._delegate &&
