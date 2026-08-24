@@ -36,6 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
+    assert "RUNTIME_BUILD = 17" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -153,6 +154,20 @@ def test_dock_lifecycle_is_owned_by_the_engine_adapter():
     assert "Community Dock lifecycle already owned" in engine
     assert "get active()" in engine
     assert "get docks()" in engine
+
+
+def test_runtime_owns_native_panel_controller_for_dock_layouts():
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    controller = (RUNTIME / "dockPanelController.js").read_text()
+    engine = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/extension.js"
+    ).read_text()
+
+    assert "createPanelController = () => new PanelController(this._host)" in dock
+    assert "Main.layoutManager.panelBox" in controller
+    assert "this._extension.createPanelController()" in engine
+    assert "from './panelController.js'" not in engine
 
 
 def test_runtime_owns_the_accepted_primary_dock_app_actions():

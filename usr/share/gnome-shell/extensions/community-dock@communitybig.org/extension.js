@@ -2,7 +2,6 @@
 // Community Dock fork, 2026-08-19: distinct bundled extension identity.
 
 import {DockManager} from './docking.js';
-import {PanelController} from './panelController.js';
 import {Extension} from './dependencies/shell/extensions/extension.js';
 
 // We export this so it can be accessed by other extensions
@@ -23,6 +22,8 @@ export class CommunityDockRuntime {
             throw new Error('Layout Switcher notification monitor is required');
         if (!this._extension.createIndicatorController)
             throw new Error('Layout Switcher indicator controller is required');
+        if (!this._extension.createPanelController)
+            throw new Error('Layout Switcher panel controller is required');
 
         let manager = null;
         try {
@@ -30,7 +31,7 @@ export class CommunityDockRuntime {
             this._manager = manager;
             dockManager = manager;
             this._indicatorController = this._extension.createIndicatorController(manager);
-            this._panelController = new PanelController(this._extension);
+            this._panelController = this._extension.createPanelController();
         } catch (error) {
             const partialManager = manager ?? DockManager.getDefault();
             this._panelController?.destroy();

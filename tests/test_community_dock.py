@@ -191,10 +191,14 @@ def test_community_dock_trash_refresh_stops_cleanly_during_runtime_reload():
 
 def test_community_dock_owns_native_panel_runtime():
     extension = (DOCK / "extension.js").read_text()
-    controller = (DOCK / "panelController.js").read_text()
+    runtime = ROOT / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org"
+    dock_runtime = (runtime / "dockRuntime.js").read_text()
+    controller = (runtime / "dockPanelController.js").read_text()
     schema = (DOCK / "schemas/org.communitybig.panel-and-dock.gschema.xml").read_text()
 
-    assert "new PanelController(this._extension)" in extension
+    assert "Layout Switcher panel controller is required" in extension
+    assert "this._extension.createPanelController()" in extension
+    assert "createPanelController = () => new PanelController(this._host)" in dock_runtime
     assert "this._panelController?.destroy()" in extension
     assert "Main.layoutManager.panelBox" in controller
     assert "panel-opacity" in controller
@@ -218,3 +222,7 @@ def test_community_dock_owns_native_panel_runtime():
     assert "Main.layoutManager._findActor(this._panelBox)" in controller
     assert "this._panelActorData.affectsStruts = overlayMode" in controller
     assert "Main.layoutManager._queueUpdateRegions()" in controller
+
+
+def test_legacy_dock_panel_controller_is_not_packaged():
+    assert not (DOCK / "panelController.js").exists()

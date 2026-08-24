@@ -10,6 +10,7 @@ import {DockAppModel} from './dockAppModel.js';
 import {DockHoverEffects} from './dockHoverEffects.js';
 import {DockNotificationBadges} from './dockNotificationBadges.js';
 import {DockNotificationMonitor} from './dockNotificationMonitor.js';
+import {PanelController} from './dockPanelController.js';
 import {DockPlacement} from './dockPlacement.js';
 import {DockRunningIndicators} from './dockRunningIndicators.js';
 import {DockVisibilityModes} from './dockVisibilityModes.js';
@@ -46,6 +47,7 @@ export class DockRuntime {
             );
             return this._host.runningIndicators;
         };
+        this._host.createPanelController = () => new PanelController(this._host);
         this._engine = new CommunityDockRuntime(this._host);
     }
 

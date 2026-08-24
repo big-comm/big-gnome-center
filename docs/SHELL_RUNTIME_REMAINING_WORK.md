@@ -106,6 +106,8 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port notification badge actor and text ownership.
 - [x] Remove the replaced inherited notification-monitor and
   indicator-controller branches.
+- [x] Port the native top-panel appearance and visibility controller used by
+  Dock layouts, then remove its inherited branch.
 - [x] Port favorites, running applications, launch, focus, minimize, and
   multiple-window behavior.
 - [x] Port remaining application context-menu construction.

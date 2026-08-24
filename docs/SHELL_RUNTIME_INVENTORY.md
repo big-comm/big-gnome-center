@@ -61,7 +61,6 @@ Preferences-only payload removed:
 Runtime entry and orchestration:
 
 - `extension.js`, `docking.js`, `dash.js`, `imports.js`.
-- `indicatorController.js`, `panelController.js`.
 
 Application behavior:
 
