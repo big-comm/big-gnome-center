@@ -97,6 +97,7 @@ export class DockRuntime {
             indicator: this._indicator ?? '',
             hover: this._hover ?? '',
             visibility: this._host.visibilityModes.mode(),
+            extended: this._host.placement.extended(),
             actors: docks.map(dock => this._actorDiagnostics(dock)),
         };
     }
@@ -139,7 +140,7 @@ export class DockRuntime {
     }
 
     _applyProfile(profile) {
-        this._host.placement.apply(profile?.edge);
+        this._host.placement.apply(profile?.edge, profile?.extended);
     }
 
     _destroyNotificationsMonitor() {

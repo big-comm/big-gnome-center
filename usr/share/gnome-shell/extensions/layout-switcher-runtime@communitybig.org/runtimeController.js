@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 15;
+export const RUNTIME_BUILD = 16;
 
 export class RuntimeController {
     constructor(extension) {
@@ -116,6 +116,7 @@ export class RuntimeController {
             expected: {
                 surface: profile.surface,
                 edge: profile.edge,
+                extended: profile.extended,
                 indicator: this._indicatorForProfile(profile),
                 hover: this._hoverForProfile(profile),
                 visibility: this._visibilityForProfile(profile),

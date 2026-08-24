@@ -62,9 +62,28 @@ def _snapshot(**changes) -> Snapshot:
                 "expected": {
                     "surface": surface,
                     "edge": edge,
+                    "extended": {
+                        "BigGnome": False,
+                        "G-Unity": True,
+                    }.get(layout),
                     "hover": "lift" if layout == "Hybrid" else "default",
+                    "visibility": {
+                        "BigGnome": "intelligent",
+                        "G-Unity": "always-visible",
+                    }.get(layout),
                 },
-                "dock": {"active": surface == "dock", "actors": dock_actors},
+                "dock": {
+                    "active": surface == "dock",
+                    "extended": {
+                        "BigGnome": False,
+                        "G-Unity": True,
+                    }.get(layout),
+                    "visibility": {
+                        "BigGnome": "intelligent",
+                        "G-Unity": "always-visible",
+                    }.get(layout),
+                    "actors": dock_actors,
+                },
                 "taskbar": {"active": surface == "taskbar", "actors": taskbar_actors},
             },
             "runtimeError": "",
@@ -141,6 +160,44 @@ def test_strict_audit_rejects_original_biggnome_with_lift_hover(tmp_path):
     )
 
     assert "layout-hover" in failures
+
+
+def test_audit_rejects_dock_visibility_drift(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["dock"] = dict(runtime["dock"], visibility="always-visible")
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+            strict_layout=True,
+        )
+    )
+
+    assert "dock-visibility" in failures
+
+
+def test_audit_rejects_extended_biggnome_dock(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["dock"] = dict(runtime["dock"], extended=True)
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+            strict_layout=True,
+        )
+    )
+
+    assert "dock-extended" in failures
 
 
 def test_audit_reports_missing_internal_payload(tmp_path):

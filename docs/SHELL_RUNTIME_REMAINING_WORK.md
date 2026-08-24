@@ -109,9 +109,9 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port remaining application context-menu construction.
 - [x] Port the three accepted running indicators.
 - [x] Port standard and soft-lift hover behavior without hover rectangles.
-- [ ] Port always visible, always hidden, and intelligent hiding.
-- [ ] Port bottom placement for BigGnome.
-- [ ] Port left placement for G-Unity.
+- [x] Port always visible, always hidden, and intelligent hiding.
+- [x] Port bottom placement for BigGnome.
+- [x] Port left placement for G-Unity.
 - [ ] Validate overview, fullscreen, workspace changes, monitor changes, and
   teardown/re-enable behavior.
 - [ ] Remove each inherited Dock branch only after its replacement is accepted.

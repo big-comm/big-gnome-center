@@ -15,10 +15,11 @@ export class DockPlacement {
         this._settings = settings;
     }
 
-    apply(edge) {
+    apply(edge, extended) {
         const position = POSITIONS.get(edge);
         if (position !== undefined)
             this._settings.set_enum('dock-position', position);
+        this._settings.set_boolean('extend-height', Boolean(extended));
     }
 
     position() {
@@ -35,5 +36,9 @@ export class DockPlacement {
     edge() {
         const position = this._settings.get_enum('dock-position');
         return [...POSITIONS].find(([, value]) => value === position)?.[0] ?? 'bottom';
+    }
+
+    extended() {
+        return this._settings.get_boolean('extend-height');
     }
 }

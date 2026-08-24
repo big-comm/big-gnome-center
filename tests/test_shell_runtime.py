@@ -58,6 +58,8 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert profiles.count("hover: 'default'") == 5
     assert "visibility: 'intelligent'" in profiles
     assert "visibility: 'always-visible'" in profiles
+    assert "extended: false" in profiles
+    assert "extended: true" in profiles
 
 
 def test_unified_runtime_applies_profile_or_override_indicator_before_activation():
@@ -71,7 +73,7 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
     assert "this._taskbar.activate(profile, indicator, hover)" in controller
     assert "set_string('indicator-style', style)" in dock
     assert "set_string('dock-hover-effect', effect)" in dock
-    assert "this._host.placement.apply(profile?.edge)" in dock
+    assert "this._host.placement.apply(profile?.edge, profile?.extended)" in dock
     assert "dot: ['DOTS', 'DOTS', 6]" in taskbar
     assert "hybrid: ['SEGMENTED', 'SEGMENTED', 3]" in taskbar
     assert "'desk-ux': ['METRO', 'DASHES', 3]" in taskbar
@@ -112,6 +114,7 @@ def test_runtime_owns_accepted_dock_placement():
     assert "['bottom', St.Side.BOTTOM]" in runtime
     assert "['left', St.Side.LEFT]" in runtime
     assert "set_enum('dock-position', position)" in runtime
+    assert "set_boolean('extend-height', Boolean(extended))" in runtime
     assert "Clutter.TextDirection.RTL" in runtime
     assert "Docking.DockManager.extension.placement" in utils
 

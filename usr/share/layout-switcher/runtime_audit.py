@@ -52,6 +52,14 @@ HOVER_DEFAULTS = {
     "Classic": "default",
     "Minimal": "default",
 }
+VISIBILITY_DEFAULTS = {
+    "BigGnome": "intelligent",
+    "G-Unity": "always-visible",
+}
+EXTENDED_DOCK_DEFAULTS = {
+    "BigGnome": False,
+    "G-Unity": True,
+}
 MENU_LAYOUTS = {"Hybrid", "Desk UX", "Classic"}
 DESKTOP_ICON_LAYOUTS = {"Hybrid", "Classic"}
 RETIRED_RUNTIME_UUIDS = {
@@ -301,6 +309,26 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
         ),
     ]
 
+    if expected_docks:
+        checks.extend(
+            (
+                _check(
+                    dock.get("visibility") == expected.get("visibility"),
+                    "dock-visibility",
+                    str(expected.get("visibility")),
+                    "expected "
+                    f"{expected.get('visibility')}, got {dock.get('visibility')}",
+                ),
+                _check(
+                    dock.get("extended") == expected.get("extended"),
+                    "dock-extended",
+                    str(expected.get("extended")),
+                    "expected "
+                    f"{expected.get('extended')}, got {dock.get('extended')}",
+                ),
+            )
+        )
+
     active_actors = dock_actors if expected_docks else taskbar_actors if expected_taskbars else []
     if active_actors:
         actual_edges = {actor.get("edge") for actor in active_actors}
@@ -469,6 +497,34 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
                 ),
             )
         )
+        if layout in VISIBILITY_DEFAULTS:
+            actual_visibility = (
+                (snapshot.runtime_diagnostics.get("runtime") or {})
+                .get("expected", {})
+                .get("visibility")
+            )
+            checks.append(
+                _check(
+                    actual_visibility == VISIBILITY_DEFAULTS[layout],
+                    "layout-dock-visibility",
+                    VISIBILITY_DEFAULTS[layout],
+                    f"expected {VISIBILITY_DEFAULTS[layout]}, got {actual_visibility}",
+                )
+            )
+        if layout in EXTENDED_DOCK_DEFAULTS:
+            actual_extended = (
+                (snapshot.runtime_diagnostics.get("runtime") or {})
+                .get("expected", {})
+                .get("extended")
+            )
+            checks.append(
+                _check(
+                    actual_extended == EXTENDED_DOCK_DEFAULTS[layout],
+                    "layout-dock-extended",
+                    str(EXTENDED_DOCK_DEFAULTS[layout]),
+                    f"expected {EXTENDED_DOCK_DEFAULTS[layout]}, got {actual_extended}",
+                )
+            )
 
     return checks
 
