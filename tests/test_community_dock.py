@@ -104,7 +104,6 @@ def test_package_compiles_dock_schema_and_installs_its_license():
 
 def test_running_indicator_styles_are_owned_by_community_dock():
     stylesheet = (DOCK / "stylesheet.css").read_text()
-    controller = (DOCK / "indicatorController.js").read_text()
     extension = (DOCK / "extension.js").read_text()
     app_icons = (DOCK / "appIcons.js").read_text()
 
@@ -121,9 +120,6 @@ def test_running_indicator_styles_are_owned_by_community_dock():
     assert "layout-switcher-biggnome-dock" not in stylesheet
     assert "Layout Switcher indicator controller is required" in extension
     assert "new IndicatorController(this._extension, manager)" not in extension
-    assert "changed::indicator-style" in controller
-    assert "changed::running-indicator-style" in controller
-    assert "this._dockSettings.set_enum('running-indicator-style', 0)" in controller
     assert "Per-icon ownership keeps style changes live" in stylesheet
     assert "COMMUNITY_INDICATOR_CLASSES" in app_icons
     assert "COMMUNITY_INDICATOR_GEOMETRY" in app_icons
@@ -136,6 +132,11 @@ def test_running_indicator_styles_are_owned_by_community_dock():
     assert "[width, height] = [height, width]" in app_icons
     assert "? Clutter.ActorAlign.START" in app_icons
     assert "? Clutter.ActorAlign.END" in app_icons
+
+
+def test_legacy_dock_runtime_services_are_not_packaged():
+    assert not (DOCK / "indicatorController.js").exists()
+    assert not (DOCK / "notificationsMonitor.js").exists()
 
 
 def test_community_dock_focus_tracks_newly_focused_windows_immediately():

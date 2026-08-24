@@ -104,6 +104,8 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port notification monitor and badge-count ownership.
 - [x] Port core application context-menu action ownership.
 - [x] Port notification badge actor and text ownership.
+- [x] Remove the replaced inherited notification-monitor and
+  indicator-controller branches.
 - [x] Port favorites, running applications, launch, focus, minimize, and
   multiple-window behavior.
 - [x] Port remaining application context-menu construction.
@@ -112,8 +114,9 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port always visible, always hidden, and intelligent hiding.
 - [x] Port bottom placement for BigGnome.
 - [x] Port left placement for G-Unity.
-- [ ] Validate overview, fullscreen, workspace changes, monitor changes, and
-  teardown/re-enable behavior.
+- [ ] Validate overview, fullscreen, workspace changes, and monitor changes.
+- [x] Validate teardown/re-enable behavior on GNOME 50 and GNOME 51 after
+  removing replaced inherited services.
 - [ ] Remove each inherited Dock branch only after its replacement is accepted.
 
 Gates:
