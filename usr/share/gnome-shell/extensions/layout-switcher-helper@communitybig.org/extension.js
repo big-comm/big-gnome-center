@@ -2099,6 +2099,11 @@ export default class LayoutSwitcherHelper extends Extension {
         // Let the curtain reach full opacity before the desktop mutates.
         await this._sleep(CURTAIN_FADE_MS + 30);
 
+        // Release the tracked dock actor while it is still alive. The runtime
+        // teardown disposes it, so deferring this cleanup until target enable
+        // would access a stale GObject when leaving BigGnome.
+        this._clearBigGnomeDockClass();
+
         // Restore actors while the G-Unity panel and dock still exist. Waiting
         // until target enable leaves dateMenu attached to stale parents and
         // attempts to clean an already-disposed dock actor.

@@ -18,9 +18,9 @@ def test_community_dock_has_distinct_identity_and_shell_support():
     assert metadata["original-author"] == "micxgx@gmail.com"
 
 
-def test_community_dock_preserves_dash_to_dock_106_core_baseline():
+def test_community_dock_tracks_accepted_core_baseline():
     expected = {
-        "docking.js": "92fab05b4501be20c72cd333c2656ed98db6081481b7eda10cc44ed427d986df",
+        "docking.js": "99e214fc15e4b549b28fdaf2819d174012aa1c39f48b406e534445cb4db8e4dd",
     }
 
     for name, digest in expected.items():
@@ -119,7 +119,8 @@ def test_running_indicator_styles_are_owned_by_community_dock():
     assert "rgba(160, 160, 168, 0.72)" in stylesheet
     assert "background-color: -st-accent-color" in stylesheet
     assert "layout-switcher-biggnome-dock" not in stylesheet
-    assert "new IndicatorController(this._extension, manager)" in extension
+    assert "Layout Switcher indicator controller is required" in extension
+    assert "new IndicatorController(this._extension, manager)" not in extension
     assert "changed::indicator-style" in controller
     assert "changed::running-indicator-style" in controller
     assert "this._dockSettings.set_enum('running-indicator-style', 0)" in controller

@@ -213,6 +213,15 @@ def test_shell_surfaces_preserve_theme_corner_geometry():
     assert "Number.isFinite(radius)" in surface
 
 
+def test_dock_material_discovers_the_runtime_dock_background():
+    discovery = (EXTENSION / "shellSurfaces.js").read_text()
+
+    assert "name === 'dashtodockContainer'" in discovery
+    assert "styleClasses(child).has('dash-background')" in discovery
+    assert "targets.set(background, 'dash-to-dock')" in discovery
+    assert "global.layoutSwitcherRuntime?.dockActor" not in discovery
+
+
 def test_minimal_panel_material_preserves_square_borderless_geometry():
     surface = (EXTENSION / "shellBlurSurface.js").read_text()
 

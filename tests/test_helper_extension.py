@@ -272,6 +272,16 @@ def test_biggnome_uses_compact_accent_aware_dock():
     assert "background-color: -st-accent-color" in stylesheet
 
 
+def test_biggnome_dock_style_is_released_before_runtime_teardown():
+    source = HELPER.read_text()
+    begin_switch = source.split("async _beginSwitch(payload) {", 1)[1]
+    begin_switch = begin_switch.split("CompleteSwitchAsync", 1)[0]
+
+    assert begin_switch.index("this._clearBigGnomeDockClass();") < begin_switch.index(
+        "for (const uuid of teardown)"
+    )
+
+
 def test_accent_indicators_preserve_layout_specific_sizes():
     source = HELPER.read_text()
 

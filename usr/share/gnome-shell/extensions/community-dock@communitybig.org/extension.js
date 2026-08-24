@@ -2,7 +2,6 @@
 // Community Dock fork, 2026-08-19: distinct bundled extension identity.
 
 import {DockManager} from './docking.js';
-import {IndicatorController} from './indicatorController.js';
 import {PanelController} from './panelController.js';
 import {Extension} from './dependencies/shell/extensions/extension.js';
 
@@ -20,15 +19,17 @@ export class CommunityDockRuntime {
             return;
         if (dockManager)
             throw new Error('Community Dock lifecycle already owned');
+        if (!this._extension.notificationsMonitor)
+            throw new Error('Layout Switcher notification monitor is required');
+        if (!this._extension.createIndicatorController)
+            throw new Error('Layout Switcher indicator controller is required');
 
         let manager = null;
         try {
             manager = new DockManager(this._extension);
             this._manager = manager;
             dockManager = manager;
-            this._indicatorController = this._extension.createIndicatorController
-                ? this._extension.createIndicatorController(manager)
-                : new IndicatorController(this._extension, manager);
+            this._indicatorController = this._extension.createIndicatorController(manager);
             this._panelController = new PanelController(this._extension);
         } catch (error) {
             const partialManager = manager ?? DockManager.getDefault();

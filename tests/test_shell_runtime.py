@@ -212,8 +212,9 @@ def test_runtime_owns_dock_notification_monitor_and_badge_count():
     assert "show-icons-notifications-counter" in monitor
     assert "notify::acknowledged" in monitor
     assert "getBadgeCount(" in monitor
-    assert "this._extension.notificationsMonitor ??" in manager
-    assert "this._ownsNotificationsMonitor" in manager
+    assert "this._notificationsMonitor = this._extension.notificationsMonitor" in manager
+    assert "this._extension.notificationsMonitor ??" not in manager
+    assert "this._ownsNotificationsMonitor" not in manager
     assert "notificationsMonitor.getBadgeCount" in indicators
     assert "notificationsMonitor.getAppNotificationsCount" in indicators
 
@@ -249,6 +250,8 @@ def test_runtime_owns_dock_running_indicator_renderers():
 
     assert "new DockRunningIndicators(" in dock
     assert "this._extension.createIndicatorController" in extension
+    assert "Layout Switcher indicator controller is required" in extension
+    assert "new IndicatorController(" not in extension
     assert "applyIconStyle(icon)" in runtime
     assert "applyAppearance(dot, focused, position)" in runtime
     assert "['dot', {inactive: [6, 6], active: [6, 6]" in runtime

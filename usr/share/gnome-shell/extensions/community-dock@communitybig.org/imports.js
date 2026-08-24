@@ -11,7 +11,6 @@ export * as FileManager1API from './fileManager1API.js';
 export * as Intellihide from './intellihide.js';
 export * as LauncherAPI from './launcherAPI.js';
 export * as Locations from './locations.js';
-export * as NotificationsMonitor from './notificationsMonitor.js';
 export * as Theming from './theming.js';
 export * as Utils from './utils.js';
 export * as WindowPreview from './windowPreview.js';
