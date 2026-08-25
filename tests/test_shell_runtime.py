@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 19" in controller
+    assert "RUNTIME_BUILD = 35" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -164,8 +164,13 @@ def test_runtime_owns_native_panel_controller_for_dock_layouts():
         / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/extension.js"
     ).read_text()
 
-    assert "createPanelController = () => new PanelController(this._host)" in dock
+    assert "this._host.createPanelController = () => new PanelController(" in dock
+    assert "() => this._engine.docks" in dock
     assert "Main.layoutManager.panelBox" in controller
+    assert "this._applyDockFullscreen(" not in controller
+    assert "this._dockActorData" not in controller
+    assert "this._syncDockTracking" not in controller
+    assert "'in-fullscreen-changed'" in controller
     assert "this._extension.createPanelController()" in engine
     assert "from './panelController.js'" not in engine
 

@@ -185,6 +185,8 @@ def test_runtime_defaults_match_accepted_layout_contracts():
     runtime = RuntimeSettings(FakeRuntimeBackend())
 
     assert runtime.get("BigGnome", "dock-opacity") == 77
+    assert runtime.get("G-Unity", "dock-opacity") == 70
+    assert runtime.get("G-Unity", "panel-opacity") == 70
     assert runtime.get("G-Unity", "dock-visibility") == "always-visible"
     assert runtime.get("BigGnome", "indicator-style") == "desk-ux"
     assert runtime.get("G-Unity", "indicator-style") == "dot"
@@ -549,3 +551,32 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert 'tr("Configure running application indicators.")' in page
     assert "self._dock_opacity.set_visible(not community_panel_active)" in page
     assert 'tr("Configure the Community Panel appearance and visibility.")' in page
+
+
+def test_runtime_leaves_dock_fullscreen_tracking_to_native_engine():
+    controller = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/"
+        "layout-switcher-runtime@communitybig.org/dockPanelController.js"
+    ).read_text()
+
+    native_dock = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/"
+        "docking.js"
+    ).read_text()
+
+    assert "this._panelActorData.affectsStruts = overlayMode" in controller
+    assert "this._panelActorData.trackFullscreen = overlayMode" in controller
+    assert "this._dockActorData" not in controller
+    assert "this._syncDockTracking" not in controller
+    assert "this._restoreDockTracking" not in controller
+    assert "this._applyDockFullscreen" not in controller
+    assert "this._dockFullscreenState" not in controller
+    assert "notify::fullscreen" not in controller
+    assert "Meta.LaterType.BEFORE_REDRAW" not in controller
+    assert "Main.layoutManager._updateVisibility?.()" not in controller
+    assert "'in-fullscreen-changed'" in controller
+    assert "const monitorFullscreen = Boolean(" in controller
+    assert "trackFullscreen: true" in native_dock
+    assert "'in-fullscreen-changed'" in native_dock

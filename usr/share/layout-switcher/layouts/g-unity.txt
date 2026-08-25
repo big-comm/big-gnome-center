@@ -263,7 +263,7 @@ animation-time=0.49999999999999994
 apply-custom-theme=false
 autohide-in-fullscreen=true
 background-color='rgb(0,0,0)'
-background-opacity=0.80000000000000004
+background-opacity=0.70000000000000007
 click-action='minimize-or-previews'
 custom-background-color=true
 custom-theme-shrink=true
@@ -277,7 +277,7 @@ height-fraction=0.90000000000000002
 hide-delay=0.099999999999999686
 icon-size-fixed=false
 intellihide-mode='FOCUS_APPLICATION_WINDOWS'
-max-alpha=0.80000000000000004
+max-alpha=0.70000000000000007
 multi-monitor=true
 preferred-monitor=-2
 preferred-monitor-by-connector='primary'
@@ -289,6 +289,9 @@ scroll-action='switch-workspace'
 show-mounts=false
 show-mounts-network=false
 transparency-mode='FIXED'
+
+[org/communitybig/panel-and-dock]
+panel-opacity=uint32 70
 
 [org/gnome/shell/extensions/gsconnect]
 devices=@as []

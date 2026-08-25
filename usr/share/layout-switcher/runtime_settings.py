@@ -14,9 +14,9 @@ LAYOUT_DEFAULTS = {
         "dock-hover": "default",
     },
     "G-Unity": {
-        "dock-opacity": 80,
+        "dock-opacity": 70,
         "dock-visibility": "always-visible",
-        "panel-opacity": 65,
+        "panel-opacity": 70,
         "panel-visibility": "always-visible",
         "indicator-style": "dot",
         "dock-size": 39,

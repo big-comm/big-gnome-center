@@ -66,13 +66,17 @@ def test_g_unity_preserves_its_left_fixed_dock_baseline():
         "dock-fixed=true",
         "extend-height=true",
         "dash-max-icon-size=39",
-        "background-opacity=0.80000000000000004",
+        "background-opacity=0.70000000000000007",
+        "max-alpha=0.70000000000000007",
         "click-action='minimize-or-previews'",
         "multi-monitor=true",
         "scroll-action='switch-workspace'",
         "show-mounts=false",
     ):
         assert setting in dock
+
+    panel = layout.split("[org/communitybig/panel-and-dock]", 1)[1].split("\n\n", 1)[0]
+    assert "panel-opacity=uint32 70" in panel
 
 
 def test_helper_and_applier_own_only_community_dock():
@@ -217,7 +221,8 @@ def test_community_dock_owns_native_panel_runtime():
 
     assert "Layout Switcher panel controller is required" in extension
     assert "this._extension.createPanelController()" in extension
-    assert "createPanelController = () => new PanelController(this._host)" in dock_runtime
+    assert "this._host.createPanelController = () => new PanelController(" in dock_runtime
+    assert "() => this._engine.docks" in dock_runtime
     assert "this._panelController?.destroy()" in extension
     assert "Main.layoutManager.panelBox" in controller
     assert "panel-opacity" in controller
@@ -238,11 +243,54 @@ def test_community_dock_owns_native_panel_runtime():
     assert "!this._panel.hover && !this._panelInteractionActive()" in controller
     assert "Main.layoutManager.getWorkAreaForMonitor" in controller
     assert "window.maximized_vertically || window.fullscreen" in controller
+    assert "this._applyDockFullscreen(" not in controller
+    assert "this._dockFullscreenState" not in controller
+    assert "'notify::fullscreen'" not in controller
+    assert "fullscreen: Boolean(monitor?.inFullscreen)" in controller
+    assert "panel: this._engine.panelController?.diagnostics()" in dock_runtime
     assert "Main.layoutManager._findActor(this._panelBox)" in controller
     assert "this._panelActorData.affectsStruts = overlayMode" in controller
+    assert "this._panelActorData.trackFullscreen = overlayMode" in controller
+    assert "Main.layoutManager._findActor(dock)" in controller
+    assert "this._dockActorData" not in controller
+    assert "this._syncDockTracking" not in controller
+    assert "this._restoreDockTracking" not in controller
+    assert "Main.layoutManager._updateVisibility?.()" not in controller
+    assert "'in-fullscreen-changed'" in controller
     assert "Main.layoutManager._queueUpdateRegions()" in controller
     assert "this._connect(Main.overview, 'shown'" in controller
     assert "this._connect(Main.overview, 'hiding'" in controller
+    assert "this._connect(global.workspace_manager, 'active-workspace-changed'" in controller
+    assert "this._connect(Main.layoutManager, 'monitors-changed'" in controller
+    assert "Meta.LaterType.BEFORE_REDRAW" not in controller
+    assert "this._queueVisibilityApply()" not in controller
+    assert "windowFullscreen: Boolean(window?.fullscreen)" in controller
+    assert "monitorFullscreen: Boolean(monitor?.inFullscreen)" in controller
+    assert "windowActor: this._windowActorDiagnostics(windowActor)" in controller
+    assert "translationX: Math.round(actor.translation_x)" in controller
+    assert "transformedX: Math.round(transformedX)" in controller
+    assert "transitions: transitionNames.filter" in controller
+    assert "resizePending: Boolean(Main.wm?._resizePending?.has(actor))" in controller
+    assert "resizing: Boolean(Main.wm?._resizing?.has(actor))" in controller
+    assert "const monitorFullscreen = Boolean(" in controller
+    assert "FULLSCREEN_EXIT_SETTLE_MS = 120" in controller
+    assert "FULLSCREEN_REPAIR_STAGE_TIMEOUT_MS = 500" in controller
+    assert "FULLSCREEN_EXIT_REPAIR_LIMIT = 3" in controller
+    assert "() => this._onFullscreenChanged()" in controller
+    assert "this._queueFullscreenExitRepair();" in controller
+    assert "window.maximized_horizontally" in controller
+    assert "const target = normal.maximized ? workArea : normal.frame" in controller
+    assert "const targetBuffer = normal.maximized ? workArea : normal.buffer" in controller
+    assert "const actorMatches = !actor" in controller
+    assert "window.unmaximize();" in controller
+    assert "window.maximize();" in controller
+    assert "window.move_resize_frame(" in controller
+    assert "'await-temporary-maximized'" in controller
+    assert "'await-restored-normal'" in controller
+    assert "this._rememberNormalGeometry();" in controller
+    assert controller.index("window.unmaximize();") < controller.index(
+        "window.maximize();"
+    )
     assert controller.count("this._queueOpacityApply()") == 4
     assert "GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE" in controller
     assert "this._cancelOpacityApply();" in controller

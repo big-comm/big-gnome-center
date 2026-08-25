@@ -69,6 +69,10 @@ export class CommunityDockRuntime {
     get docks() {
         return this._manager?._allDocks ?? [];
     }
+
+    get panelController() {
+        return this._panelController;
+    }
 }
 
 export default class CommunityDockExtension extends Extension.Extension {

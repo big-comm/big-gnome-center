@@ -248,6 +248,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     stage = diagnostics.get("stage") or {}
     expected = runtime.get("expected") or {}
     dock = runtime.get("dock") or {}
+    panel = dock.get("panel") or {}
     taskbar = runtime.get("taskbar") or {}
     dock_actors = dock.get("actors") or []
     taskbar_actors = taskbar.get("actors") or []
@@ -318,6 +319,25 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     str(expected.get("visibility")),
                     "expected "
                     f"{expected.get('visibility')}, got {dock.get('visibility')}",
+                ),
+                _check(
+                    not panel.get("fullscreen") or not panel.get("visible"),
+                    "fullscreen-panel",
+                    "hidden while the focused window is fullscreen"
+                    if panel.get("fullscreen")
+                    else "no focused fullscreen window",
+                    "panel remains visible over the focused fullscreen window",
+                ),
+                _check(
+                    not panel.get("fullscreen") or (
+                        bool(panel.get("dockVisible"))
+                        and not any(panel.get("dockVisible", ()))
+                    ),
+                    "fullscreen-dock",
+                    "dock hidden while the focused window is fullscreen"
+                    if panel.get("fullscreen")
+                    else "no focused fullscreen window",
+                    "dock remains visible over the focused fullscreen window",
                 ),
                 _check(
                     dock.get("extended") == expected.get("extended"),

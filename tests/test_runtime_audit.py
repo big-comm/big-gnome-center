@@ -74,6 +74,12 @@ def _snapshot(**changes) -> Snapshot:
                 },
                 "dock": {
                     "active": surface == "dock",
+                    "panel": {
+                        "visible": True,
+                        "fullscreen": False,
+                        "affectsStruts": True,
+                        "dockAffectsStruts": [True],
+                    },
                     "extended": {
                         "BigGnome": False,
                         "G-Unity": True,
@@ -179,6 +185,54 @@ def test_audit_rejects_dock_visibility_drift(tmp_path):
     )
 
     assert "dock-visibility" in failures
+
+
+def test_audit_rejects_panel_visible_over_fullscreen_window(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    dock = dict(runtime["dock"])
+    dock["panel"] = {"visible": True, "fullscreen": True}
+    runtime["dock"] = dock
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+            strict_layout=True,
+        )
+    )
+
+    assert "fullscreen-panel" in failures
+
+
+def test_audit_rejects_visible_dock_over_fullscreen_window(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    dock = dict(runtime["dock"])
+    dock["panel"] = {
+        "visible": False,
+        "fullscreen": True,
+        "affectsStruts": False,
+        "dockAffectsStruts": [False],
+        "dockVisible": [True],
+    }
+    runtime["dock"] = dock
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+            strict_layout=True,
+        )
+    )
+
+    assert "fullscreen-dock" in failures
 
 
 def test_audit_rejects_extended_biggnome_dock(tmp_path):

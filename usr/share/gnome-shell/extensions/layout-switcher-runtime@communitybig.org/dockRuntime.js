@@ -47,7 +47,10 @@ export class DockRuntime {
             );
             return this._host.runningIndicators;
         };
-        this._host.createPanelController = () => new PanelController(this._host);
+        this._host.createPanelController = () => new PanelController(
+            this._host,
+            () => this._engine.docks,
+        );
         this._engine = new CommunityDockRuntime(this._host);
     }
 
@@ -100,6 +103,7 @@ export class DockRuntime {
             hover: this._hover ?? '',
             visibility: this._host.visibilityModes.mode(),
             extended: this._host.placement.extended(),
+            panel: this._engine.panelController?.diagnostics() ?? {},
             actors: docks.map(dock => this._actorDiagnostics(dock)),
         };
     }

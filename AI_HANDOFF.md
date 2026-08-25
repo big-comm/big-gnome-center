@@ -1213,3 +1213,133 @@ Append one entry per completed change:
   AppIndicator host, avoiding orphaned tray items.
 - Validation: JavaScript syntax passed; focused suite `123 passed`; full suite
   `493 passed`.
+
+## 2026-08-24 — Rejected logical-only G-Unity fullscreen acceptance
+
+- Latest committed checkpoint: `2ca0253`. The accepted live state is the
+  uncommitted runtime build 29 working tree.
+- GNOME Shell 50 tracks both the native panel and fixed Dock with
+  `affectsStruts=true` and `trackFullscreen=true`. Its
+  `in-fullscreen-changed` handler hides tracked actors immediately and queues
+  region updates before redraw. The nominal work area remains reserved; a real
+  fullscreen MetaWindow uses the complete monitor.
+- Initial hypothesis: the custom panel policy also reacts to focus, restack,
+  and frame changes, so reapplying `always-visible` during the native
+  fullscreen transition can show `panelBox` after Shell hid it. Keeping the
+  restored `in-fullscreen-changed` observer and fullscreen guard is necessary,
+  but later visual evidence proves it is not sufficient.
+- The native-only experiment that removed this callback regressed rapid F11
+  transitions and remains rejected.
+- GNOME 50.4 session started after the restored controller was installed, so
+  runtime build 29 contains the on-disk source rather than a cached earlier
+  module.
+- Logical Brave diagnostics passed one initial cycle, 10 slow non-maximized
+  cycles, and 20 rapid maximized cycles. Every sampled fullscreen state reported frame
+  `0,0 1280x800`, panel unmapped, and Dock unmapped. Every exit restored panel,
+  Dock, and the original normal or maximized frame.
+- The GNOME Shell journal contained no entries during the automated test
+  window. Final strict runtime audit passed with zero failures and warnings.
+- Local and GNOME 50 `dockPanelController.js` SHA-256:
+  `f89572cdd24fc46cf4aa81546b5e6b5f6f1ad07f4ff70ff49737d41780bd2b0f`.
+- A stale VM-only audit assertion incorrectly required fullscreen actors to set
+  `affectsStruts=false`. It was not imported. The reviewed local audit replaced
+  it and now matches the VM at SHA-256
+  `f980f5fa251134cee26954c1a0ba30c63156781cdd778f19e6c9364b3409c231`.
+- Focused Dock/Panel/runtime checks: `76 passed`. JavaScript syntax and diff
+  whitespace checks passed.
+- BigGnome passed three slow and ten rapid additional F11 frame/panel cycles.
+  Its inherited autohide engine keeps the outer Dock container mapped while an
+  internal slider retracts, so actor diagnostics alone cannot replace visual
+  confirmation that the bottom Dock is absent.
+- The complete local suite passed: `528 passed`, with one known PyGI
+  deprecation warning.
+- G-Unity was restored on GNOME 50 and its strict audit passed. The F11-only
+  journal window remained clean. Layout switches exposed existing Copyous and
+  AppIndicator teardown errors outside this fullscreen change.
+- All seven reviewed files are synchronized by SHA-256 on GNOME 51. Its current
+  Shell session still runs cached build 19; logout/login is required before
+  build 29 and fullscreen behavior can be validated there.
+- This acceptance is rejected. Visual captures later reproduced persistent
+  black top/left bands while all recorded logical checks passed.
+
+## 2026-08-24 — Fullscreen compositor-actor race evidence
+
+- GNOME 50 and GNOME 51 both reproduce the defect with runtime build 29 loaded.
+- During a visually broken fullscreen state, both report MetaWindow frame
+  `0,0 1280x800`, fullscreen window and monitor flags, and unmapped panel and
+  Dock. The failure is downstream of strut, work-area, and tracked-chrome state.
+- Pixel comparison between broken and correct GNOME 50 captures shows the
+  entire Brave surface shifted `+29,+16` and clipped on the right/bottom. This
+  is approximately half the G-Unity maximized origin `57,29`.
+- GNOME Shell 50 `WindowManager._sizeChangedWindow()` starts size-change
+  animation by setting the window actor translation to the source/target
+  rectangle difference, then eases translation and scale to their identity
+  values. `_sizeChangeWindowDone()` is responsible for removing transitions
+  and forcing translation to zero.
+- Current evidence identifies an interrupted or incomplete native size-change
+  animation: the MetaWindow reaches fullscreen, but its compositor actor keeps
+  an intermediate transform. Existing diagnostics cannot observe actor
+  translation, scale, or active transitions.
+- Next step is diagnostic-only instrumentation of the focused compositor actor.
+  Do not change fullscreen policy until a broken visual state captures those
+  properties.
+
+## 2026-08-24 — Fullscreen exit configure race isolated
+
+- Runtime build 30 adds diagnostic-only frame, buffer, compositor actor,
+  transition, and Shell resize-state telemetry. It does not change behavior.
+- A slow exit orders state as follows: `MetaWindow.fullscreen=false`, then
+  `monitor.inFullscreen=false` and native chrome returns, then the Wayland
+  client commits its normal-size buffer. The final configure trails the
+  fullscreen flags by roughly one frame.
+- Rapid F11 re-entry inside that interval leaves a maximized window at its
+  work-area origin with the monitor-sized `1280x800` frame and buffer. The
+  state persists after three seconds with no actor transition, animation,
+  `_resizePending`, or `_resizing` entry. The prior incomplete-animation
+  hypothesis is rejected.
+- G-Unity reproduces as `57,29 1280x800` against work area
+  `57,29 1223x771`. BigGnome independently reproduces as
+  `0,38 1280x800` against work area `0,38 1280x762`; its Dock does not affect
+  struts. Therefore neither the left Dock nor its strut is the root cause.
+- A non-maximized Brave window retains its correct frame rectangle while its
+  Wayland buffer temporarily remains monitor-sized. A maximized window loses
+  the correct frame size until its maximized state is reasserted.
+- The actionable fault boundary is the final fullscreen-exit configure, not
+  panel/Dock visibility. Keep the restored `in-fullscreen-changed` handler and
+  monitor-fullscreen guard. Repair only a maximized post-exit frame that does
+  not equal the current work area; never resize arbitrary non-maximized
+  windows.
+
+## 2026-08-25 — Fullscreen exit configure repair accepted
+
+- Runtime build 35 preserves the custom `in-fullscreen-changed` observer and
+  the fullscreen visibility guard. The rejected native-only experiment remains
+  reverted.
+- Root cause: rapid re-entry can overtake Brave's final Wayland exit configure.
+  Mutter then keeps a monitor-sized frame, buffer, or compositor surface after
+  fullscreen flags clear. Panel, Dock, struts, and work area are already
+  correct at this point.
+- The controller records only the focused window's stable normal frame, buffer,
+  and maximized state. After exit settles, it compares frame, buffer, and actor
+  geometry with that saved target.
+- An inconsistent target receives a bounded native state round trip. Each
+  maximize/unmaximize stage waits for a real geometry acknowledgement before
+  advancing; this prevents Mutter from coalescing synchronous state calls.
+  Non-maximized windows are returned to their exact saved rectangle. The repair
+  is cancelled on focus/fullscreen changes and is limited to three attempts.
+- GNOME 50 G-Unity passed 10 slow plus 20 rapid cycles from maximized and
+  non-maximized states. Fullscreen and restored-normal screenshots have no
+  black edge; frame, buffer, and actor targets match. BigGnome passed the same
+  rapid path and visual fullscreen check.
+- GNOME 51 G-Unity passed 10 slow plus 20 rapid cycles from both states. Every
+  slow sample reached `0,0 1280x800` with panel and Dock hidden, then restored
+  the exact original geometry. Both post-rapid fullscreen captures have no
+  black edge.
+- Both VMs finish in G-Unity and pass strict runtime audit with zero failures.
+  The SSH-only session-type warning is expected. GNOME 50's current Shell
+  journal has no warnings; GNOME 51 has only pre-existing external extension,
+  KMS, and cursor warnings.
+- Local, GNOME 50, and GNOME 51 SHA-256: `dockPanelController.js`
+  `349f9d9094d40287b43d7b161a45aaa7ef851f1cb69256aab26f5476fd9154e5`;
+  `runtimeController.js`
+  `a5b7759346388af7cefecb09dcec7c957a439cec86cfaf9ff755457055a1e02f`.
