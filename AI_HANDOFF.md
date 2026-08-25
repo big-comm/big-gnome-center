@@ -1412,3 +1412,30 @@ Append one entry per completed change:
   `6d12dedc89d5bc680ab75ab3033e7d00d0d383980fb87616a48cdf604ae6bb35`;
   audit payload-tree hash is
   `b5f632038d92f802057a6a67edb2fafaaa21823d7fe7838f151dcdfddbd11f3a`.
+
+## 2026-08-25 — Original Dock-layout panel defaults repaired
+
+- Reproduced on GNOME 50 after applying original BigGnome: the owned
+  `panel-opacity-overrides` map no longer contained BigGnome, but the live
+  compatibility key remained `uint32 0`.
+- Root cause: original layout data is loaded additively. BigGnome does not
+  contain `/org/communitybig/panel-and-dock`, while `PanelController` still
+  reads that compatibility schema. Removing only the owned override therefore
+  left the old live opacity unchanged. The Restore button worked because it
+  explicitly wrote the compatibility key.
+- Original BigGnome and G-Unity applies now write their accepted panel opacity
+  and visibility defaults into the compatibility section while removing only
+  the target layout's owned overrides. Other layout overrides remain intact.
+- GNOME 50 passed `0 -> original BigGnome -> 65`; GNOME 51 passed
+  `0 -> original G-Unity -> 70`. Both strict audits report zero failures and
+  zero warnings. `layout_applier.py` SHA-256 is
+  `073deb9f167f9f034c6241027983b1ff426f46c1fb86cf9f517de851d92dace4`
+  locally and on both VMs.
+- Focused suite: `140 passed`. Full suite: `530 passed`, one known PyGI
+  deprecation warning. Ruff and diff checks pass; PKGBUILD is unchanged.
+- Separate live debt: same-layout G-Unity reapply on GNOME 51 logged one helper
+  access to a disposed old Dock actor while clearing its style class. Final
+  actors and audit are correct. Investigate in a dedicated GJS lifecycle slice.
+- GNOME 51 GSConnect 72 remains in its pre-existing incompatible state
+  (`Cannot inherit from a final type`); its metadata supports Shell only
+  through GNOME 50.

@@ -1721,7 +1721,7 @@ class TestCuratedLayoutFiles:
 
         assert LayoutApplier._inject_runtime_active_layout(source, "") == source
 
-    def test_original_layout_removes_only_its_runtime_overrides(self):
+    def test_original_dock_layout_resets_overrides_and_live_panel_defaults(self):
         class FakeRuntimeSettings:
             def serialized_overrides_without_layout(self, layout):
                 assert layout == "BigGnome"
@@ -1730,6 +1730,13 @@ class TestCuratedLayoutFiles:
                     "dock-opacity-overrides": "{'G-Unity': uint32 80}",
                     "dock-hover-overrides": "{'G-Unity': 'lift'}",
                 }
+
+            def default(self, layout, setting):
+                assert layout == "BigGnome"
+                return {
+                    "panel-opacity": 65,
+                    "panel-visibility": "always-visible",
+                }[setting]
 
         source = "[org/gnome/shell]\nenabled-extensions=[]\n"
         with patch("layout_applier.RuntimeSettings", FakeRuntimeSettings):
@@ -1745,6 +1752,12 @@ class TestCuratedLayoutFiles:
         assert runtime["indicator-style-overrides"] == "{'G-Unity': 'dot'}"
         assert runtime["dock-opacity-overrides"] == "{'G-Unity': uint32 80}"
         assert runtime["dock-hover-overrides"] == "{'G-Unity': 'lift'}"
+        panel = LayoutApplier._section_key_values(
+            result,
+            "/org/communitybig/panel-and-dock",
+        )
+        assert panel["panel-opacity"] == "uint32 65"
+        assert panel["panel-visibility"] == "'always-visible'"
 
     def test_desk_ux_dtp_position_and_size_are_explicit(self):
         """Desk UX must not depend on inherited DTP defaults."""

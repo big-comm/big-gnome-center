@@ -140,6 +140,8 @@ _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
 _FROSTED_GLASS_DEFAULT_OPACITY = 37
 _RUNTIME_SETTINGS_SECTION = "/org/communitybig/layout-switcher/runtime"
+_DOCK_PANEL_SETTINGS_SECTION = "/org/communitybig/panel-and-dock"
+_DOCK_RUNTIME_LAYOUTS = frozenset({"BigGnome", "G-Unity"})
 _GTK4_DING_UUID = "gtk4-ding@smedius.gitlab.com"
 _BLUR_MY_SHELL_UUID = "blur-my-shell@aunetx"
 _LAYOUT_INDEPENDENT_UUIDS = (_FROSTED_GLASS_UUID,)
@@ -647,7 +649,8 @@ class LayoutApplier:
             return data
         layout = cls._layout_display_label(layout_id)
         try:
-            serialized = RuntimeSettings().serialized_overrides_without_layout(layout)
+            runtime = RuntimeSettings()
+            serialized = runtime.serialized_overrides_without_layout(layout)
         except Exception as exc:
             log.warning("cannot reset runtime overrides for %s: %s", layout, exc)
             return data
@@ -657,6 +660,21 @@ class LayoutApplier:
                 _RUNTIME_SETTINGS_SECTION,
                 key,
                 value,
+            )
+        if layout in _DOCK_RUNTIME_LAYOUTS:
+            data = cls._replace_or_add_dconf_key(
+                data,
+                _DOCK_PANEL_SETTINGS_SECTION,
+                "panel-opacity",
+                f"uint32 {int(runtime.default(layout, 'panel-opacity'))}",
+            )
+            data = cls._replace_or_add_dconf_key(
+                data,
+                _DOCK_PANEL_SETTINGS_SECTION,
+                "panel-visibility",
+                cls._quote_gvariant_string(
+                    runtime.default(layout, "panel-visibility"),
+                ),
             )
         return data
 
