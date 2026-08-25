@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 import {
     GLib,
@@ -256,7 +257,7 @@ export class Intellihide {
         const workspaceIndex = workspace.index();
 
         // Depending on the intellihide mode, exclude non-relevent windows
-        switch (Docking.DockManager.settings.intellihideMode) {
+        switch (Docking.DockSurfaceManager.settings.intellihideMode) {
         case IntellihideMode.ALL_WINDOWS:
             // Do nothing
             break;

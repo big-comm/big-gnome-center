@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 import {
     Clutter,
@@ -134,7 +135,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
         // a prefix is required to avoid conflicting with the parent class variable
         this.monitorIndex = monitorIndex;
         this._signalsHandler = new Utils.GlobalSignalsHandler(this);
-        this._communityIndicatorSettings = Docking.DockManager.extension.getSettings(
+        this._communityIndicatorSettings = Docking.DockSurfaceManager.extension.getSettings(
             COMMUNITY_INDICATOR_SCHEMA);
         this._signalsHandler.add(
             this._communityIndicatorSettings,
@@ -185,13 +186,13 @@ export const DockAbstractAppIcon = GObject.registerClass({
         this.notify('updating');
         this._syncCommunityIndicatorStyle();
 
-        const {notificationsMonitor} = Docking.DockManager.getDefault();
+        const {notificationsMonitor} = Docking.DockSurfaceManager.getDefault();
 
         this.connect('notify::urgent', () => {
             const icon = this.icon._iconBin;
             this._signalsHandler.removeWithLabel(Labels.URGENT_WINDOWS);
             if (this.urgent) {
-                if (Docking.DockManager.settings.danceUrgentApplications &&
+                if (Docking.DockSurfaceManager.settings.danceUrgentApplications &&
                     notificationsMonitor.enabled) {
                     icon.set_pivot_point(0.5, 0.5);
                     this.iconAnimator.addAnimation(icon, 'wiggle');
@@ -221,7 +222,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
             'application-counter-overrides-notifications',
         ].forEach(key => {
             this._signalsHandler.add(
-                Docking.DockManager.settings,
+                Docking.DockSurfaceManager.settings,
                 `changed::${key}`, () => {
                     this._indicator.destroy();
                     this._indicator = new AppIconIndicators.AppIconIndicator(this);
@@ -261,7 +262,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
     }
 
     vfunc_scroll_event(scrollEvent) {
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
         const isEnabled = settings.scrollAction === scrollAction.CYCLE_WINDOWS;
         if (!isEnabled)
             return Clutter.EVENT_PROPAGATE;
@@ -349,7 +350,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
     }
 
     _syncCommunityIndicatorStyle() {
-        const controller = Docking.DockManager.extension.runningIndicators;
+        const controller = Docking.DockSurfaceManager.extension.runningIndicators;
         if (controller) {
             controller.applyIconStyle(this);
             this._syncCommunityIndicatorAppearance();
@@ -368,7 +369,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
     _syncCommunityIndicatorAppearance() {
         if (!this._dot)
             return;
-        const controller = Docking.DockManager.extension.runningIndicators;
+        const controller = Docking.DockSurfaceManager.extension.runningIndicators;
         const position = Utils.getPosition();
         if (controller) {
             controller.applyAppearance(this._dot, this.focused, position);
@@ -477,7 +478,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
         [rect.width, rect.height] = this.get_transformed_size();
 
         let windows = this.getWindows();
-        if (Docking.DockManager.settings.multiMonitor) {
+        if (Docking.DockSurfaceManager.settings.multiMonitor) {
             const {monitorIndex} = this;
             windows = windows.filter(w => w.get_monitor() === monitorIndex);
         }
@@ -504,11 +505,11 @@ export const DockAbstractAppIcon = GObject.registerClass({
         this._draggable.fakeRelease?.();
 
         if (!this._menu) {
-            this._menu = Docking.DockManager.extension.appMenuFactory
+            this._menu = Docking.DockSurfaceManager.extension.appMenuFactory
                 ?.create(this, this instanceof DockAppIcon) ??
                 new DockAppIconMenu(this);
             this._menu.connect('activate-window', (menu, window) => {
-                if (Docking.DockManager.extension.appMenuActions?.activateWindow(window))
+                if (Docking.DockSurfaceManager.extension.appMenuActions?.activateWindow(window))
                     return;
                 if (window) {
                     Main.activateWindow(window);
@@ -529,7 +530,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
                     const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
                     const isHorizontal = position === St.Side.TOP || position === St.Side.BOTTOM;
                     // If horizontal also remove the height of the dash
-                    const {dockFixed: fixedDock} = Docking.DockManager.settings;
+                    const {dockFixed: fixedDock} = Docking.DockSurfaceManager.settings;
                     const additionalMargin = isHorizontal && !fixedDock ? Main.overview.dash.height : 0;
                     const verticalMargins = this._menu.actor.margin_top + this._menu.actor.margin_bottom;
                     const maxMenuHeight = workArea.height - additionalMargin - verticalMargins;
@@ -560,7 +561,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
     }
 
     activate(button) {
-        if (Docking.DockManager.extension.appActions?.activate(this, button))
+        if (Docking.DockSurfaceManager.extension.appActions?.activate(this, button))
             return;
 
         const event = Clutter.get_current_event();
@@ -583,7 +584,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
         // being used. We then define what buttonAction should be for this
         // event.
         let buttonAction = 0;
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
         if (button && button === 2) {
             if (modifiers & Clutter.ModifierType.SHIFT_MASK)
                 buttonAction = settings.shiftMiddleClickAction;
@@ -761,7 +762,7 @@ export const DockAbstractAppIcon = GObject.registerClass({
 
     shouldShowTooltip() {
         return super.shouldShowTooltip() && !this._previewMenu?.isOpen &&
-            !Docking.DockManager.settings.hideTooltip;
+            !Docking.DockSurfaceManager.settings.hideTooltip;
     }
 
     _windowPreviews() {
@@ -1001,7 +1002,7 @@ const DockLocationAppIcon = GObject.registerClass({
 
         super._init(app, monitorIndex, iconAnimator);
 
-        if (Docking.DockManager.settings.isolateLocations) {
+        if (Docking.DockSurfaceManager.settings.isolateLocations) {
             this._signalsHandler.add(tracker, 'notify::focus-app', () => this._updateFocusState());
         } else {
             this._signalsHandler.add(global.display, 'notify::focus-window',
@@ -1016,7 +1017,7 @@ const DockLocationAppIcon = GObject.registerClass({
     }
 
     _updateFocusState() {
-        if (Docking.DockManager.settings.isolateLocations) {
+        if (Docking.DockSurfaceManager.settings.isolateLocations) {
             super._updateFocusState();
             return;
         }
@@ -1067,7 +1068,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
 
         Main.uiGroup.add_child(this.actor);
 
-        const {remoteModel} = Docking.DockManager.getDefault();
+        const {remoteModel} = Docking.DockSurfaceManager.getDefault();
         const remoteModelApp = remoteModel?.lookupById(this.sourceActor?.app?.id);
         if (remoteModelApp && DBusMenu) {
             const [onQuickList, onDynamicSection] = Utils.splitHandler((sender,
@@ -1130,7 +1131,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
 
         const {app} = this.sourceActor;
 
-        if (Docking.DockManager.settings.showWindowsPreview) {
+        if (Docking.DockSurfaceManager.settings.showWindowsPreview) {
             // Display the app windows menu items and the separator between windows
             // of the current desktop and other windows.
             const windows = this.sourceActor.getInterestingWindows();
@@ -1169,7 +1170,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 actions.indexOf('new-window') === -1) {
                 const newMenuItem = this._appendMenuItem(_('New Window'));
                 newMenuItem.connect('activate', () => {
-                    if (!Docking.DockManager.extension.appMenuActions
+                    if (!Docking.DockSurfaceManager.extension.appMenuActions
                         ?.openNewWindow(this.sourceActor)) {
                         if (app.state === Shell.AppState.STOPPED)
                             this.sourceActor.animateLaunch();
@@ -1181,7 +1182,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
             }
 
             if (!this.sourceActor.updating &&
-                Docking.DockManager.getDefault().discreteGpuAvailable &&
+                Docking.DockSurfaceManager.getDefault().discreteGpuAvailable &&
                 app.state === Shell.AppState.STOPPED) {
                 const appPrefersNonDefaultGPU = appInfo.get_boolean('PrefersNonDefaultGPU');
                 const gpuPref = appPrefersNonDefaultGPU
@@ -1191,7 +1192,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                     ? _('Launch using Integrated Graphics Card')
                     : _('Launch using Discrete Graphics Card'));
                 gpuMenuItem.connect('activate', () => {
-                    if (!Docking.DockManager.extension.appMenuActions
+                    if (!Docking.DockSurfaceManager.extension.appMenuActions
                         ?.launchOnGpu(this.sourceActor, gpuPref)) {
                         this.sourceActor.animateLaunch();
                         app.launch(0, -1, gpuPref);
@@ -1205,7 +1206,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 const item = this._appendMenuItem(appInfo.get_action_name(action));
                 item.sensitive = !appInfo.busy;
                 item.connect('activate', (emitter, event) => {
-                    if (!Docking.DockManager.extension.appMenuActions
+                    if (!Docking.DockSurfaceManager.extension.appMenuActions
                         ?.launchDesktopAction(this.sourceActor, action, event.get_time()))
                         app.launch_action(action, event.get_time(), -1);
                     this.emit('activate-window', null);
@@ -1223,7 +1224,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 if (isFavorite) {
                     const item = this._appendMenuItem(_('Unpin'));
                     item.connect('activate', () => {
-                        if (!Docking.DockManager.extension.appMenuActions
+                        if (!Docking.DockSurfaceManager.extension.appMenuActions
                             ?.setFavorite(app.get_id(), false)) {
                             const favs = AppFavorites.getAppFavorites();
                             favs.removeFavorite(app.get_id());
@@ -1232,7 +1233,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 } else {
                     const item = this._appendMenuItem(__('Pin to Dock'));
                     item.connect('activate', () => {
-                        if (!Docking.DockManager.extension.appMenuActions
+                        if (!Docking.DockSurfaceManager.extension.appMenuActions
                             ?.setFavorite(app.get_id(), true)) {
                             const favs = AppFavorites.getAppFavorites();
                             favs.addFavorite(app.get_id());
@@ -1302,7 +1303,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
         this._appendSeparator();
         this._quitMenuItem = this._appendMenuItem(_('Quit'));
         this._quitMenuItem.connect('activate', () => {
-            if (!Docking.DockManager.extension.appMenuActions?.quit(this.sourceActor))
+            if (!Docking.DockSurfaceManager.extension.appMenuActions?.quit(this.sourceActor))
                 this.sourceActor.closeAllWindows();
         });
 
@@ -1327,7 +1328,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
             this._quitMenuItem.actor.hide();
         }
 
-        if (Docking.DockManager.settings.showWindowsPreview) {
+        if (Docking.DockSurfaceManager.settings.showWindowsPreview) {
             const windows = this.sourceActor.getInterestingWindows();
 
             // update, show, or hide the allWindows menu
@@ -1356,7 +1357,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 this._allWindowsMenuItem.show();
                 this._allWindowsMenuItem.setSensitive(true);
 
-                if (Docking.DockManager.settings.defaultWindowsPreviewToOpen)
+                if (Docking.DockSurfaceManager.settings.defaultWindowsPreviewToOpen)
                     this._allWindowsMenuItem.menu.open();
             }
         }
@@ -1456,7 +1457,7 @@ export const DockShowAppsIcon = GObject.registerClass({
             this._removeMenuTimeout(...args);
 
         this.label?.add_style_class_name(Theming.PositionStyleClass[position]);
-        if (Docking.DockManager.settings.customThemeShrink)
+        if (Docking.DockSurfaceManager.settings.customThemeShrink)
             this.label?.add_style_class_name('shrink');
 
         this._menu = null;

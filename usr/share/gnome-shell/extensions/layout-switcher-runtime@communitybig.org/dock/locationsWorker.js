@@ -1,4 +1,5 @@
 #!/usr/bin/env gjs
+// Layout Switcher private Dock module.
 
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';

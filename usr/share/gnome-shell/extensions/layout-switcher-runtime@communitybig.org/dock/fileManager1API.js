@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 import {GLib, Gio} from './dependencies/gi.js';
 const {signals: Signals} = imports;

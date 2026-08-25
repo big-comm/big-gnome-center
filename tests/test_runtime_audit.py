@@ -18,14 +18,17 @@ from runtime_audit import (
 
 def _payload(root: Path) -> None:
     extensions = root / "usr/share/gnome-shell/extensions"
-    for uuid in (RUNTIME_UUID, COMMUNITY_DOCK_UUID, COMMUNITY_PANEL_UUID, HELPER_UUID):
+    for uuid in (RUNTIME_UUID, COMMUNITY_PANEL_UUID, HELPER_UUID):
         path = extensions / uuid
         path.mkdir(parents=True)
         (path / "extension.js").touch()
-        if uuid in (COMMUNITY_DOCK_UUID, COMMUNITY_PANEL_UUID):
+        if uuid == COMMUNITY_PANEL_UUID:
             schemas = path / "schemas"
             schemas.mkdir()
             (schemas / "gschemas.compiled").touch()
+    dock_schemas = extensions / COMMUNITY_DOCK_UUID / "schemas"
+    dock_schemas.mkdir(parents=True)
+    (dock_schemas / "gschemas.compiled").touch()
 
 
 def _snapshot(**changes) -> Snapshot:

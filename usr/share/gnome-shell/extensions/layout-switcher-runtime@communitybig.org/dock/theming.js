@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 import {
     Clutter,
@@ -110,7 +111,7 @@ export class ThemeManager {
     }
 
     _updateDashOpacity() {
-        const newAlpha = Docking.DockManager.settings.backgroundOpacity;
+        const newAlpha = Docking.DockSurfaceManager.settings.backgroundOpacity;
 
         const [backgroundColor, borderColor] = this._getDefaultColors();
 
@@ -171,7 +172,7 @@ export class ThemeManager {
         if (!backgroundColor)
             return;
 
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
 
         if (settings.customBackgroundColor) {
             // When applying a custom color, we need to check the alpha value,
@@ -208,7 +209,7 @@ export class ThemeManager {
     }
 
     _updateCustomStyleClasses() {
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
 
         if (settings.applyCustomTheme)
             this._actor.add_style_class_name('dashtodock');
@@ -250,7 +251,7 @@ export class ThemeManager {
      * Reimported back and adapted from atomdock
      */
     _adjustTheme() {
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
 
         // Remove prior style edits
         this._dash._background.set_style(null);
@@ -316,7 +317,7 @@ export class ThemeManager {
             'force-straight-corner'];
 
         this._signalsHandler.addWithLabel(Labels.THEME_CHANGED, ...keys.map(key => [
-            Docking.DockManager.settings,
+            Docking.DockSurfaceManager.settings,
             `changed::${key}`,
             () => this.updateCustomTheme(),
         ]));
@@ -486,7 +487,7 @@ class Transparency {
          * up when it slides out. This is avoid an ugly transition.
          * */
         let factor = 0;
-        if (!Docking.DockManager.settings.dockFixed &&
+        if (!Docking.DockSurfaceManager.settings.dockFixed &&
             this._dock.getDockState() === Docking.State.HIDDEN)
             factor = 1;
         const [leftCoord, topCoord] = this._actor.get_transformed_position();
@@ -567,7 +568,7 @@ class Transparency {
 
         Main.uiGroup.remove_child(dummyObject);
 
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
 
         if (settings.customizeAlphas) {
             this._opaqueAlpha = settings.maxAlpha;

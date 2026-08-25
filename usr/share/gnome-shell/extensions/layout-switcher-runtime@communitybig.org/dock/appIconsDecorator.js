@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 
 import {
@@ -72,7 +73,7 @@ export class AppIconsDecorator {
     }
 
     _decorateIcons() {
-        const {appDisplay} = Docking.DockManager.getDefault().overviewControls;
+        const {appDisplay} = Docking.DockSurfaceManager.getDefault().overviewControls;
 
         const decorateAppIcons = () => {
             this._signals.removeWithLabel(Labels.ICONS);

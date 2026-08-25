@@ -1343,3 +1343,72 @@ Append one entry per completed change:
   `349f9d9094d40287b43d7b161a45aaa7ef851f1cb69256aab26f5476fd9154e5`;
   `runtimeController.js`
   `a5b7759346388af7cefecb09dcec7c957a439cec86cfaf9ff755457055a1e02f`.
+
+## 2026-08-25 — Fullscreen paint-state race reopened
+
+- Runtime build 40 reproduces a persistent visual offset after rapid F11
+  cycles on GNOME 50. Logical-only acceptance remains invalid.
+- In the broken state, MetaWindow frame/buffer, Meta.WindowActor,
+  MetaSurfaceContainerActorWayland, and MetaSurfaceActorWayland all report
+  `0,0 1280x800`. Panel and fixed Dock are unmapped.
+- The rendered Brave content is nevertheless shifted and clipped. From a
+  G-Unity maximized origin of `57,29`, the black edges are about `29,15`,
+  matching a stale scaled paint origin rather than any strut or actor geometry.
+- A coherent fresh BigGnome session passes the same test. A direct test apply
+  that skipped the UI's `settings.json` persistence created a hybrid session;
+  that harness artifact is rejected and the VM state was repaired.
+- Next fix boundary: refresh the focused WindowActor shaped-texture size after
+  the fullscreen buffer commit. Do not change fullscreen visibility policy or
+  broaden the existing exit geometry repair.
+- Build 41's single 80 ms refresh fixes G-Unity on both Shell versions, but
+  GNOME 51 BigGnome still reproduces a 19 px top edge after 20 rapid cycles.
+  Its normal origin is `y=38`, confirming that BigGnome's final client commit
+  can arrive after the first refresh. The refresh must be bounded and retried.
+- Build 42 retries size invalidation three times. BigGnome still keeps the
+  19 px edge. Mutter documents `invalidate_size()` as preferred-size/relayout
+  invalidation; it does not invalidate already-painted content. The next
+  candidate must invalidate `Clutter.Content` itself.
+
+## 2026-08-25 — Dock runtime migration and fullscreen paint repair accepted
+
+- Runtime build 43 owns Dock actor construction and lifecycle directly.
+  `DockSurfaceManager` replaces the inherited `DockManager` boundary. Teardown
+  is exact reverse order: panel controller, indicator controller, surface.
+- Executable Community Dock modules moved under the unified runtime `dock/`
+  tree. The old Community Dock directory now contains only schemas, stylesheet,
+  media, license, and provenance. It has no metadata, entry point, or JavaScript.
+- The controller preserves its `in-fullscreen-changed` observer and fullscreen
+  visibility guard. The rejected native-only callback removal was not repeated.
+- Root cause of the remaining black edge was stale shaped-texture content after
+  a late Wayland fullscreen buffer commit. Window, buffer, compositor actor,
+  surface container, struts, and work area were already correct.
+- The accepted bounded refresh invalidates shaped-texture size and content,
+  then queues actor and stage relayout/redraw at 80, 240, and 400 ms. It is
+  cancelled on exit, focus loss, or controller teardown.
+- GNOME 50 G-Unity passed 10 slow plus 20 rapid F11 cycles from a non-maximized
+  window on build 43. Earlier build 41 coverage passed the same matrix from
+  maximized and non-maximized windows. Captures have no black edge.
+- GNOME 51 BigGnome passed 10 slow plus 20 rapid F11 cycles from a maximized
+  window on build 43. G-Unity passed the full maximized and non-maximized matrix
+  during build 41 validation. Captures have no black edge.
+- GNOME 51 Classic -> BigGnome -> G-Unity and GNOME 50 six-layout Dock/Taskbar
+  transition stress passed without duplicate or residual actors. A direct test
+  apply that omitted `settings.json` persistence caused one hybrid relogin; this
+  was a harness error, not product behavior, and both VMs were restored.
+- Final focused suite: `78 passed`. Full suite: `530 passed`, one known PyGI
+  deprecation warning. All runtime JavaScript syntax and diff checks passed.
+- Both VMs finish in a fresh G-Unity session on runtime build 43. Strict audits
+  report zero failures and zero warnings; current Shell warning journals are
+  empty.
+- Local and both VM payload hashes: runtime
+  `f405709a3d7c5d374acff26ca598443ea5d6beeed8a83088feb1691370c836a9`;
+  Dock resource host
+  `2bfa2cd685fba7e97c1780e49fc1a4876b0f3aaa4d3adb94b5cf498617606822`;
+  Panel host
+  `5dc54d2cf64fc0a441305566adefc39344b4852d53192a85cfebbee4f7f7c6d7`;
+  helper
+  `fcbf2de6c3fcea98192347cd79bb81bf027a660b29255ecb2da5bd74cd3e5744`.
+- Audit source SHA-256 is
+  `6d12dedc89d5bc680ab75ab3033e7d00d0d383980fb87616a48cdf604ae6bb35`;
+  audit payload-tree hash is
+  `b5f632038d92f802057a6a67edb2fafaaa21823d7fe7838f151dcdfddbd11f3a`.

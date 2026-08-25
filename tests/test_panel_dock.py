@@ -562,8 +562,8 @@ def test_runtime_leaves_dock_fullscreen_tracking_to_native_engine():
 
     native_dock = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/"
-        "docking.js"
+        / "usr/share/gnome-shell/extensions/"
+        "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
 
     assert "this._panelActorData.affectsStruts = overlayMode" in controller

@@ -1,3 +1,4 @@
+// Layout Switcher private Dock module.
 export {default as Atk} from 'gi://Atk';
 export {default as Clutter} from 'gi://Clutter';
 export {default as Cogl} from 'gi://Cogl';
@@ -11,4 +12,3 @@ export {default as Mtk} from 'gi://Mtk';
 export {default as Pango} from 'gi://Pango';
 export {default as Shell} from 'gi://Shell';
 export {default as St} from 'gi://St';
-

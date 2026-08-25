@@ -1,3 +1,4 @@
+// Layout Switcher private Dock module.
 export * as AppDisplay from 'resource:///org/gnome/shell/ui/appDisplay.js';
 export * as AppMenu from 'resource:///org/gnome/shell/ui/appMenu.js';
 export * as AppFavorites from 'resource:///org/gnome/shell/ui/appFavorites.js';

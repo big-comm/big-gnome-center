@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
-Last update: 2026-08-23
-Safe checkpoint: `13c4da6`
-Status: unified controller accepted; compatibility-engine extraction pending
+Last update: 2026-08-25
+Safe checkpoint: `8677d42`
+Status: Dock runtime extraction complete; Panel/Taskbar extraction pending
 
 ## Purpose
 
@@ -22,17 +22,20 @@ The current source deliberately stops at the last safe boundary:
 - `layout-switcher-runtime@communitybig.org` is the only visual runtime UUID
   enabled by layout files;
 - the unified controller selects Dock, Taskbar, or native GNOME per layout;
-- Community Dock and Community Panel are disabled as standalone extensions;
-- their accepted runtime engines are still imported internally as rollback
-  modules;
+- Community Dock is retired as an extension; Community Panel is disabled as a
+  standalone extension;
+- the accepted Panel/Taskbar engine remains imported internally as a rollback
+  module;
+- Dock construction, lifecycle, and executable modules belong to the unified
+  runtime;
 - independent Dock and Panel preference screens are removed;
 - supported controls and per-layout defaults belong to Layout Switcher;
 - external Dash to Dock and Dash to Panel packages are not package dependencies
   and are not modified or uninstalled from user systems.
 
-The earlier direct `DockManager` replacement was removed because its teardown
-callbacks outlived cleared extension settings and could wedge Shell D-Bus during
-a Classic-to-BigGnome transition.
+The first direct Dock lifecycle attempt was rejected because teardown callbacks
+outlived cleared extension settings. The accepted implementation gives the
+unified runtime exact construction and reverse-order teardown ownership.
 
 ## Current architecture
 
@@ -41,7 +44,7 @@ Layout Switcher GTK app
   -> owned runtime schema and per-layout overrides
   -> helper extension for safe switch orchestration
   -> unified Shell runtime UUID
-       -> Dock compatibility engine for BigGnome and G-Unity
+       -> owned Dock runtime for BigGnome and G-Unity
        -> Taskbar compatibility engine for Hybrid, Desk UX, and Classic
        -> native GNOME surface for Minimal
 ```
@@ -50,10 +53,10 @@ Current internal payload:
 
 | Module | Bytes | JS/CSS lines | Public UUID enabled |
 |---|---:|---:|---|
-| Unified controller | 11,005 | 336 | yes |
-| Dock compatibility engine | 632,843 | 14,652 | no |
+| Unified runtime with Dock | 498,721 | 14,173 | yes |
+| Dock resource host | 178,485 | 1,713 CSS | no entry point |
 | Taskbar compatibility engine | 1,201,543 | 12,854 | no |
-| Total | 1,845,391 | 27,842 | one public runtime |
+| Total | 1,878,749 | 28,740 | one public runtime |
 
 The size target is not a fixed percentage. Removal is allowed only when a
 replacement passes the relevant behavior contract.
@@ -116,18 +119,20 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port always visible, always hidden, and intelligent hiding.
 - [x] Port bottom placement for BigGnome.
 - [x] Port left placement for G-Unity.
-- [ ] Validate overview, fullscreen, workspace changes, and monitor changes.
+- [x] Validate repeated slow and rapid fullscreen changes on GNOME 50 and 51.
+- [ ] Validate overview, workspace changes, and the complete monitor matrix.
 - [x] Validate teardown/re-enable behavior on GNOME 50 and GNOME 51 after
   removing replaced inherited services.
 - [x] Remove dormant App Spread, workspace isolation, and numeric-shortcut
   services; legacy App Spread actions fall back to accepted previews.
-- [ ] Remove each inherited Dock branch only after its replacement is accepted.
+- [x] Move executable Dock modules into the unified runtime.
+- [x] Remove the standalone Community Dock entry point, metadata, and lifecycle.
 
 Gates:
 
 1. BigGnome accepted on GNOME 50, then GNOME 51.
 2. G-Unity accepted on GNOME 50, then GNOME 51.
-3. Dock compatibility engine removed only after both gates pass.
+3. Standalone Dock compatibility engine removed only after both gates pass.
 
 ### 2. Extract the Taskbar and Panel engine incrementally
 

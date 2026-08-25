@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 import {
     Gio,
@@ -350,7 +351,7 @@ export const LocationAppInfo = GObject.registerClass({
 
     _getHandlerAppFromWorker(cancellable) {
         const locationsWorker = GLib.build_filenamev([
-            Docking.DockManager.extension.path,
+            Docking.DockSurfaceManager.extension.codePath,
             'locationsWorker.js',
         ]);
         const locationsWorkerArgs = [LocationAppInfo.GJS_BINARY_PATH, '-m',
@@ -1207,7 +1208,7 @@ function makeLocationApp(params) {
         /* eslint-enable no-invalid-this */
     });
 
-    const {fm1Client} = Docking.DockManager.getDefault();
+    const {fm1Client} = Docking.DockSurfaceManager.getDefault();
     shellApp._setDtdData({
         _needsResort: true,
 
@@ -1270,7 +1271,7 @@ export function wrapFileManagerApp() {
     const originalGetWindows = fileManagerApp.get_windows;
     wrapWindowsBackedApp(fileManagerApp);
 
-    const {removables, trash} = Docking.DockManager.getDefault();
+    const {removables, trash} = Docking.DockSurfaceManager.getDefault();
     fileManagerApp._signalConnections.addWithLabel(Labels.WINDOWS_CHANGED,
         fileManagerApp, 'windows-changed', () => {
             fileManagerApp.stop_emission_by_name('windows-changed');
@@ -1408,11 +1409,11 @@ export class Removables {
             'mount-added',
             (_, mount) => this._onMountAdded(mount),
         ], [
-            Docking.DockManager.settings,
+            Docking.DockSurfaceManager.settings,
             'changed::show-mounts-only-mounted',
             () => this._updateVolumes(),
         ], [
-            Docking.DockManager.settings,
+            Docking.DockSurfaceManager.settings,
             'changed::show-mounts-network',
             () => this._updateVolumes(),
         ]);
@@ -1438,7 +1439,7 @@ export class Removables {
     _onVolumeAdded(volume) {
         Removables.initVolumePromises(volume);
 
-        if (!Docking.DockManager.settings.showMountsNetwork &&
+        if (!Docking.DockSurfaceManager.settings.showMountsNetwork &&
             volume.get_identifier('class') === 'network')
             return;
 
@@ -1450,7 +1451,7 @@ export class Removables {
             if (!mount.can_eject() && !mount.can_unmount())
                 return;
         } else {
-            if (Docking.DockManager.settings.showMountsOnlyMounted)
+            if (Docking.DockSurfaceManager.settings.showMountsOnlyMounted)
                 return;
             if (!volume.can_mount() && !volume.can_eject())
                 return;
@@ -1466,7 +1467,7 @@ export class Removables {
         volumeApp._signalConnections.add(volumeApp, 'windows-changed',
             () => this.emit('windows-changed', volumeApp));
 
-        if (Docking.DockManager.settings.showMountsOnlyMounted) {
+        if (Docking.DockSurfaceManager.settings.showMountsOnlyMounted) {
             volumeApp._signalConnections.add(appInfo, 'notify::mount',
                 () => !appInfo.mount && this._onVolumeRemoved(appInfo.volume));
         }
@@ -1490,7 +1491,7 @@ export class Removables {
     _onMountAdded(mount) {
         Removables.initMountPromises(mount);
 
-        if (!Docking.DockManager.settings.showMountsOnlyMounted)
+        if (!Docking.DockSurfaceManager.settings.showMountsOnlyMounted)
             return;
 
         if (!this._volumeApps.find(({appInfo}) => appInfo.mount === mount)) {
@@ -1513,7 +1514,7 @@ Signals.addSignalMethods(Removables.prototype);
  *
  */
 function getApps() {
-    const dockManager = Docking.DockManager.getDefault();
+    const dockManager = Docking.DockSurfaceManager.getDefault();
     const locationApps = [];
 
     if (dockManager.removables)

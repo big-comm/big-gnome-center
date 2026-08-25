@@ -2,29 +2,30 @@
 """Community Dock packaging and migration contracts."""
 
 import hashlib
-import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCK = ROOT / "usr/share/gnome-shell/extensions/community-dock@communitybig.org"
+DOCK_MODULES = ROOT / (
+    "usr/share/gnome-shell/extensions/"
+    "layout-switcher-runtime@communitybig.org/dock"
+)
+DOCK_SURFACE = ROOT / (
+    "usr/share/gnome-shell/extensions/"
+    "layout-switcher-runtime@communitybig.org/dockSurface.js"
+)
 
 
-def test_community_dock_has_distinct_identity_and_shell_support():
-    metadata = json.loads((DOCK / "metadata.json").read_text())
-
-    assert metadata["uuid"] == "community-dock@communitybig.org"
-    assert metadata["name"] == "Community Dock"
-    assert {"50", "51"}.issubset(metadata["shell-version"])
-    assert metadata["original-author"] == "micxgx@gmail.com"
+def test_community_dock_is_a_private_resource_host():
+    assert not (DOCK / "metadata.json").exists()
+    assert not (DOCK / "extension.js").exists()
+    assert DOCK_SURFACE.is_file()
 
 
 def test_community_dock_tracks_accepted_core_baseline():
-    expected = {
-        "docking.js": "254f217b6591cb08ada3729aa95d047f698831bcc29ddd5261f565e44ace8d2f",
-    }
-
-    for name, digest in expected.items():
-        assert hashlib.sha256((DOCK / name).read_bytes()).hexdigest() == digest
+    assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
+        "f8fe0f2e8fec576c453ee5a639db584b9de47a6ba04f4c1c36494980146b1ece"
+    )
 
 
 def test_community_dock_preserves_license_provenance_and_schema():
@@ -108,8 +109,7 @@ def test_package_compiles_dock_schema_and_installs_its_license():
 
 def test_running_indicator_styles_are_owned_by_community_dock():
     stylesheet = (DOCK / "stylesheet.css").read_text()
-    extension = (DOCK / "extension.js").read_text()
-    app_icons = (DOCK / "appIcons.js").read_text()
+    app_icons = (DOCK_MODULES / "appIcons.js").read_text()
 
     assert "BigGnome parity is owned by Community Dock" in stylesheet
     assert "community-indicator-dot" in stylesheet
@@ -122,8 +122,6 @@ def test_running_indicator_styles_are_owned_by_community_dock():
     assert "rgba(160, 160, 168, 0.72)" in stylesheet
     assert "background-color: -st-accent-color" in stylesheet
     assert "layout-switcher-biggnome-dock" not in stylesheet
-    assert "Layout Switcher indicator controller is required" in extension
-    assert "new IndicatorController(this._extension, manager)" not in extension
     assert "Per-icon ownership keeps style changes live" in stylesheet
     assert "COMMUNITY_INDICATOR_CLASSES" in app_icons
     assert "COMMUNITY_INDICATOR_GEOMETRY" in app_icons
@@ -139,17 +137,17 @@ def test_running_indicator_styles_are_owned_by_community_dock():
 
 
 def test_legacy_dock_runtime_services_are_not_packaged():
-    assert not (DOCK / "indicatorController.js").exists()
-    assert not (DOCK / "notificationsMonitor.js").exists()
+    assert not (DOCK_MODULES / "indicatorController.js").exists()
+    assert not (DOCK_MODULES / "notificationsMonitor.js").exists()
 
 
 def test_dormant_optional_dock_services_are_not_packaged():
-    docking = (DOCK / "docking.js").read_text()
-    app_icons = (DOCK / "appIcons.js").read_text()
-    dash = (DOCK / "dash.js").read_text()
-    imports = (DOCK / "imports.js").read_text()
+    docking = DOCK_SURFACE.read_text()
+    app_icons = (DOCK_MODULES / "appIcons.js").read_text()
+    dash = (DOCK_MODULES / "dash.js").read_text()
+    imports = (DOCK_MODULES / "imports.js").read_text()
 
-    assert not (DOCK / "appSpread.js").exists()
+    assert not (DOCK_MODULES / "appSpread.js").exists()
     assert "AppSpread" not in imports
     assert "KeyboardShortcuts" not in docking
     assert "WorkspaceIsolation" not in docking
@@ -163,7 +161,7 @@ def test_dormant_optional_dock_services_are_not_packaged():
 
 
 def test_community_dock_focus_tracks_newly_focused_windows_immediately():
-    app_icons = (DOCK / "appIcons.js").read_text()
+    app_icons = (DOCK_MODULES / "appIcons.js").read_text()
 
     assert "global.display.focus_window" in app_icons
     assert "this.getWindows().includes(focusWindow)" in app_icons
@@ -172,11 +170,11 @@ def test_community_dock_focus_tracks_newly_focused_windows_immediately():
 
 
 def test_community_dock_has_no_independent_settings_menu():
-    app_icons = (DOCK / "appIcons.js").read_text()
+    app_icons = (DOCK_MODULES / "appIcons.js").read_text()
 
     assert "Community Dock is configured exclusively by Layout Switcher." in app_icons
     assert "DockShowAppsIconMenu" not in app_icons
-    assert "Docking.DockManager.extension.openPreferences()" not in app_icons
+    assert "Docking.DockSurfaceManager.extension.openPreferences()" not in app_icons
     assert "__('Dash to Dock')" not in app_icons
 
 
@@ -186,7 +184,7 @@ def test_community_dock_has_no_independent_preferences_ui():
 
 
 def test_community_dock_hover_effect_is_small_and_layout_switcher_owned():
-    dash = (DOCK / "dash.js").read_text()
+    dash = (DOCK_MODULES / "dash.js").read_text()
     schema = (DOCK / "schemas/org.communitybig.panel-and-dock.gschema.xml").read_text()
 
     assert 'name="dock-hover-effect" type="s"' in schema
@@ -202,7 +200,7 @@ def test_community_dock_hover_effect_is_small_and_layout_switcher_owned():
 
 
 def test_community_dock_trash_refresh_stops_cleanly_during_runtime_reload():
-    locations = (DOCK / "locations.js").read_text()
+    locations = (DOCK_MODULES / "locations.js").read_text()
     refresh = locations.split("async _updateTrash()", 1)[1].split("launchAction", 1)[0]
 
     assert "if (e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))" in refresh
@@ -213,17 +211,14 @@ def test_community_dock_trash_refresh_stops_cleanly_during_runtime_reload():
 
 
 def test_community_dock_owns_native_panel_runtime():
-    extension = (DOCK / "extension.js").read_text()
     runtime = ROOT / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org"
     dock_runtime = (runtime / "dockRuntime.js").read_text()
     controller = (runtime / "dockPanelController.js").read_text()
     schema = (DOCK / "schemas/org.communitybig.panel-and-dock.gschema.xml").read_text()
 
-    assert "Layout Switcher panel controller is required" in extension
-    assert "this._extension.createPanelController()" in extension
     assert "this._host.createPanelController = () => new PanelController(" in dock_runtime
-    assert "() => this._engine.docks" in dock_runtime
-    assert "this._panelController?.destroy()" in extension
+    assert "() => this._manager?._allDocks ?? []" in dock_runtime
+    assert "this._panelController?.destroy()" in dock_runtime
     assert "Main.layoutManager.panelBox" in controller
     assert "panel-opacity" in controller
     assert "panel-visibility" in controller
@@ -247,7 +242,7 @@ def test_community_dock_owns_native_panel_runtime():
     assert "this._dockFullscreenState" not in controller
     assert "'notify::fullscreen'" not in controller
     assert "fullscreen: Boolean(monitor?.inFullscreen)" in controller
-    assert "panel: this._engine.panelController?.diagnostics()" in dock_runtime
+    assert "panel: this._panelController?.diagnostics()" in dock_runtime
     assert "Main.layoutManager._findActor(this._panelBox)" in controller
     assert "this._panelActorData.affectsStruts = overlayMode" in controller
     assert "this._panelActorData.trackFullscreen = overlayMode" in controller
@@ -276,6 +271,15 @@ def test_community_dock_owns_native_panel_runtime():
     assert "FULLSCREEN_EXIT_SETTLE_MS = 120" in controller
     assert "FULLSCREEN_REPAIR_STAGE_TIMEOUT_MS = 500" in controller
     assert "FULLSCREEN_EXIT_REPAIR_LIMIT = 3" in controller
+    assert "FULLSCREEN_TEXTURE_REFRESH_MS = 80" in controller
+    assert "FULLSCREEN_TEXTURE_REFRESH_RETRY_MS = 160" in controller
+    assert "FULLSCREEN_TEXTURE_REFRESH_LIMIT = 3" in controller
+    assert "this._queueFullscreenTextureRefresh();" in controller
+    assert "texture?.invalidate_size?.();" in controller
+    assert "texture?.invalidate?.();" in controller
+    assert "actor?.queue_relayout();" in controller
+    assert "actor?.queue_redraw();" in controller
+    assert "global.stage.queue_redraw();" in controller
     assert "() => this._onFullscreenChanged()" in controller
     assert "this._queueFullscreenExitRepair();" in controller
     assert "window.maximized_horizontally" in controller

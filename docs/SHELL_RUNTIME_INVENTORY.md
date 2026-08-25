@@ -1,14 +1,14 @@
 # Shell Runtime Inventory
 
-Last update: 2026-08-23
-Status: static inventory and safe unified-controller checkpoint complete
+Last update: 2026-08-25
+Status: Dock executable runtime internalized; Panel extraction pending
 
 ## Ownership matrix
 
 | Layout | Active runtime | Position | Dormant inherited settings |
 |---|---|---|---|
-| BigGnome | Unified runtime -> Dock compatibility engine | bottom | none |
-| G-Unity | Unified runtime -> Dock compatibility engine | left | none |
+| BigGnome | Unified runtime -> owned Dock | bottom | none |
+| G-Unity | Unified runtime -> owned Dock | left | none |
 | Hybrid | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
 | Desk UX | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
 | Classic | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
@@ -25,27 +25,19 @@ as runtime requirements when the focused schema is introduced.
 | Community Panel | 1.6 MiB | 16,955 | Hybrid, Desk UX, Classic |
 | Combined | 2,339,654 bytes | 32,716 | five layouts |
 
-Phase 1 checkpoint after removing independent preferences:
+Current installed payload:
 
 | Component | Current bytes | Current JS/CSS lines |
 |---|---:|---:|
-| Community Dock | 632,843 | 14,652 |
+| Unified runtime with Dock | 498,721 | 14,173 |
+| Dock resources and schemas | 178,485 | 1,713 CSS |
 | Community Panel | 1,201,543 | 12,854 |
-| Combined | 1,834,386 | 27,506 |
-
-The current cleanup removes 505,268 bytes and 5,210 JS/CSS lines from the two
-compatibility engines without removing accepted runtime features.
-
-Active unified-controller checkpoint:
-
-| Component | Current bytes | JavaScript lines | Actor ownership |
-|---|---:|---:|---|
-| Layout Switcher Shell Runtime | 11,005 | 336 | compatibility-engine lifecycle |
+| Combined | 1,878,749 | 28,740 |
 
 The runtime reads the owned schema, maps all six layout profiles, and selects
-Dock, Taskbar, or native GNOME behavior. Community Dock and Community Panel are
-not enabled as standalone UUIDs; their accepted engines remain imported as
-internal compatibility modules until their individual extraction gates pass.
+Dock, Taskbar, or native GNOME behavior. Dock actors and lifecycle are owned by
+this runtime. Community Panel remains an internal compatibility module. The old
+Community Dock path is not an extension and contains no executable JavaScript.
 
 Preferences-only payload removed:
 
@@ -56,31 +48,31 @@ Preferences-only payload removed:
 
 ## Module inventory
 
-### Community Dock
+### Unified Dock runtime
 
 Runtime entry and orchestration:
 
-- `extension.js`, `docking.js`, `dash.js`, `imports.js`.
+- `dockRuntime.js`, `dockSurface.js`, `dockActorFactory.js`, `dock/dash.js`.
 
 Application behavior:
 
-- `appIcons.js`, `appIconIndicators.js`, `appIconsDecorator.js`.
-- `appSpread.js`, `windowPreview.js`, `notificationsMonitor.js`.
+- `dock/appIcons.js`, `dock/appIconIndicators.js`.
+- `dock/windowPreview.js`.
 
 Visibility and appearance:
 
-- `intellihide.js`, `theming.js`, `stylesheet.css`.
+- `dock/intellihide.js`, `dock/theming.js`.
+- Resource-host `stylesheet.css`.
 
 Integration and compatibility:
 
-- `dbusmenuUtils.js`, `desktopIconsIntegration.js`, `fileManager1API.js`.
-- `launcherAPI.js`, `locations.js`, `locationsWorker.js`, `utils.js`.
-- `dependencies/gi.js`, `dependencies/shell/extensions/extension.js`.
-- `dependencies/shell/misc.js`, `dependencies/shell/ui.js`.
+- `dock/dbusmenuUtils.js`, `dock/desktopIconsIntegration.js`.
+- `dock/fileManager1API.js`, `dock/launcherAPI.js`, `dock/locations.js`.
+- `dock/locationsWorker.js`, `dock/utils.js`, `dock/dependencies/`.
 
-Removed preferences-only payload:
+Removed standalone payload:
 
-- `prefs.js`, `Settings.ui`.
+- `extension.js`, `metadata.json`, `prefs.js`, and `Settings.ui`.
 
 ### Community Panel
 

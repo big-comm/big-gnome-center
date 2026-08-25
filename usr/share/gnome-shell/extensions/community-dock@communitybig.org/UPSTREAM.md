@@ -12,12 +12,10 @@ License: GPL-2.0-or-later. `COPYING` is preserved unmodified.
 
 Local changes:
 
-- Distinct `community-dock@communitybig.org` UUID and Community Dock identity.
-- Bundled schema source for independence from the external package.
-- Layout Switcher lifecycle integration and BigCommunity layout defaults.
-- Selectable BigCommunity running-indicator styling and controller owned by
-  Community Dock.
-- BigCommunity panel opacity and visibility controller with an independent schema.
+- JavaScript runtime moved under the unified Layout Switcher runtime.
+- Standalone Community Dock entry point and UUID metadata removed.
+- Original resource directory retained for schemas, stylesheet, and media.
+- Layout Switcher owns lifecycle, layout defaults, indicators, and panel policy.
 
 Do not remove upstream copyright or license notices. Keep functional parity
-until BigGnome and G-Unity have passed live comparison and rollback testing.
+through upgrade and rollback testing.

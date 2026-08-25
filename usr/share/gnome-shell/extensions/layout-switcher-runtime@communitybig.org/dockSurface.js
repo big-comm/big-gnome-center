@@ -8,7 +8,7 @@ import {
     Meta,
     Shell,
     St,
-} from './dependencies/gi.js';
+} from './dock/dependencies/gi.js';
 
 import {
     AppMenu,
@@ -21,11 +21,11 @@ import {
     Workspace,
     WorkspacesView,
     WorkspaceSwitcherPopup,
-} from './dependencies/shell/ui.js';
+} from './dock/dependencies/shell/ui.js';
 
 import {
     AnimationUtils,
-} from './dependencies/shell/misc.js';
+} from './dock/dependencies/shell/misc.js';
 
 import {
     AppIconsDecorator,
@@ -37,9 +37,9 @@ import {
     Locations,
     Theming,
     Utils,
-} from './imports.js';
+} from './dock/imports.js';
 
-import {Extension} from './dependencies/shell/extensions/extension.js';
+import {Extension} from './dock/dependencies/shell/extensions/extension.js';
 
 // Use __ () and N__() for the extension gettext domain, and reuse
 // the shell domain with the default _() and N_()
@@ -110,7 +110,7 @@ const DashSlideContainer = GObject.registerClass({
         this._slideoutSize = 0; // minimum size when slided out
         this.connect('notify::slide-x', () => this.queue_relayout());
 
-        if (this.side === St.Side.TOP && DockManager.settings.dockFixed) {
+        if (this.side === St.Side.TOP && DockSurfaceManager.settings.dockFixed) {
             this._signalsHandler = new Utils.GlobalSignalsHandler(this);
             this._signalsHandler.add(Main.panel, 'notify::height',
                 () => this.queue_relayout());
@@ -151,7 +151,7 @@ const DashSlideContainer = GObject.registerClass({
             const monitor = Main.layoutManager.monitors[this.monitorIndex];
             let yOffset = 0;
             if (Main.panel.x === monitor.x && Main.panel.y === monitor.y &&
-                DockManager.settings.dockFixed)
+                DockSurfaceManager.settings.dockFixed)
                 yOffset = Main.panel.height;
             childBox.x1 = 0;
             childBox.x2 = childWidth;
@@ -191,7 +191,7 @@ const DashSlideContainer = GObject.registerClass({
             minHeight = (minHeight - this._slideoutSize) * this.slideX + this._slideoutSize;
             natHeight = (natHeight - this._slideoutSize) * this.slideX + this._slideoutSize;
 
-            if (this.side === St.Side.TOP && DockManager.settings.dockFixed) {
+            if (this.side === St.Side.TOP && DockSurfaceManager.settings.dockFixed) {
                 const monitor = Main.layoutManager.monitors[this.monitorIndex];
                 if (Main.panel.x === monitor.x && Main.panel.y === monitor.y) {
                     minHeight += Main.panel.height;
@@ -203,7 +203,7 @@ const DashSlideContainer = GObject.registerClass({
     }
 });
 
-const DockedDash = GObject.registerClass({
+export const DockedDash = GObject.registerClass({
     Properties: {
         'is-main': GObject.ParamSpec.boolean(
             'is-main', 'is-main', 'is-main',
@@ -233,7 +233,7 @@ const DockedDash = GObject.registerClass({
         this._rtl = Clutter.get_default_text_direction() === Clutter.TextDirection.RTL;
 
         // Load settings
-        const {settings} = DockManager;
+        const {settings} = DockSurfaceManager;
         this._isHorizontal = (this._position === St.Side.TOP) || (this._position === St.Side.BOTTOM);
 
         // Temporary ignore hover events linked to autohide for whatever reason
@@ -371,7 +371,7 @@ const DockedDash = GObject.registerClass({
         this._signalsHandler.add(this._themeManager, 'updated',
             () => this.dash.resetAppIcons());
 
-        this._signalsHandler.add(DockManager.iconTheme, 'changed',
+        this._signalsHandler.add(DockSurfaceManager.iconTheme, 'changed',
             () => this.dash.resetAppIcons());
 
         // Since the actor is not a topLevel child and its parent is now not added to the Chrome,
@@ -437,7 +437,7 @@ const DockedDash = GObject.registerClass({
     }
 
     _trackDock() {
-        if (DockManager.settings.dockFixed) {
+        if (DockSurfaceManager.settings.dockFixed) {
             if (this.get_parent())
                 Main.layoutManager.removeChrome(this);
             Main.layoutManager.addChrome(this, {
@@ -537,7 +537,7 @@ const DockedDash = GObject.registerClass({
     }
 
     _bindSettingsChanges() {
-        const {settings} = DockManager;
+        const {settings} = DockSurfaceManager;
         this._signalsHandler.add([
             settings,
             'changed::scroll-action',
@@ -711,12 +711,12 @@ const DockedDash = GObject.registerClass({
      * This is call when visibility settings change
      */
     _updateVisibilityMode() {
-        const {settings} = DockManager;
-        const visibilityState = DockManager.extension.visibilityModes?.runtimeState();
+        const {settings} = DockSurfaceManager;
+        const visibilityState = DockSurfaceManager.extension.visibilityModes?.runtimeState();
         if (visibilityState) {
             this._autohideIsEnabled = visibilityState.autohide;
             this._intellihideIsEnabled = visibilityState.intellihide;
-        } else if (DockManager.settings.dockFixed || DockManager.settings.manualhide) {
+        } else if (DockSurfaceManager.settings.dockFixed || DockSurfaceManager.settings.manualhide) {
             this._autohideIsEnabled = false;
             this._intellihideIsEnabled = false;
         } else {
@@ -748,7 +748,7 @@ const DockedDash = GObject.registerClass({
      * overview visibility
      */
     _updateDashVisibility() {
-        if (DockManager.settings.manualhide) {
+        if (DockSurfaceManager.settings.manualhide) {
             this._ignoreHover = true;
             this._removeAnimations();
             this._animateOut(0, 0);
@@ -758,9 +758,9 @@ const DockedDash = GObject.registerClass({
         if (Main.overview.visibleTarget)
             return;
 
-        const {settings} = DockManager;
+        const {settings} = DockSurfaceManager;
 
-        if (DockManager.settings.dockFixed) {
+        if (DockSurfaceManager.settings.dockFixed) {
             this._removeAnimations();
             this._animateIn(settings.animationTime, 0);
         } else if (this._intellihideIsEnabled) {
@@ -792,7 +792,7 @@ const DockedDash = GObject.registerClass({
         this._ignoreHover = true;
         this._intellihide.disable();
         this._removeAnimations();
-        this._animateIn(DockManager.settings.animationTime, 0);
+        this._animateIn(DockSurfaceManager.settings.animationTime, 0);
     }
 
     _onOverviewHiding() {
@@ -841,14 +841,14 @@ const DockedDash = GObject.registerClass({
                 this._removeAnimations();
 
             this.emit('showing');
-            this._animateIn(DockManager.settings.animationTime, 0);
+            this._animateIn(DockSurfaceManager.settings.animationTime, 0);
         }
     }
 
     _hide() {
         // If no hiding animation is running or queued
         if ((this._dockState === State.SHOWN) || (this._dockState === State.SHOWING)) {
-            const {settings} = DockManager;
+            const {settings} = DockSurfaceManager;
             const delay = settings.hideDelay;
 
             if (this._dockState === State.SHOWING) {
@@ -922,7 +922,7 @@ const DockedDash = GObject.registerClass({
         // to support the old tray dwelling mechanism.
         if (this._autohideIsEnabled &&
             (!Utils.supportsExtendedBarriers() ||
-             !DockManager.settings.requirePressureToShow)) {
+             !DockSurfaceManager.settings.requirePressureToShow)) {
             const pointerWatcher = PointerWatcher.getPointerWatcher();
             this._dockWatch = pointerWatcher.addWatch(
                 DOCK_DWELL_CHECK_INTERVAL, this._checkDockDwell.bind(this));
@@ -963,7 +963,7 @@ const DockedDash = GObject.registerClass({
 
                 this._dockDwellTimeoutId = GLib.timeout_add(
                     GLib.PRIORITY_DEFAULT,
-                    DockManager.settings.showDelay * 1000,
+                    DockSurfaceManager.settings.showDelay * 1000,
                     this._dockDwellTimeout.bind(this));
                 GLib.Source.set_name_by_id(this._dockDwellTimeoutId,
                     '[dash-to-dock] this._dockDwellTimeout');
@@ -985,7 +985,7 @@ const DockedDash = GObject.registerClass({
     _dockDwellTimeout() {
         this._dockDwellTimeoutId = 0;
 
-        if (!DockManager.settings.autohideInFullscreen &&
+        if (!DockSurfaceManager.settings.autohideInFullscreen &&
             this._monitor.inFullscreen)
             return GLib.SOURCE_REMOVE;
 
@@ -1008,7 +1008,7 @@ const DockedDash = GObject.registerClass({
     }
 
     _updatePressureBarrier() {
-        const {settings} = DockManager;
+        const {settings} = DockSurfaceManager;
         this._canUsePressure = Utils.supportsExtendedBarriers();
         const {pressureThreshold} = settings;
 
@@ -1026,7 +1026,7 @@ const DockedDash = GObject.registerClass({
 
         // Create new pressure barrier based on pressure threshold setting
         if (this._canUsePressure && this._autohideIsEnabled &&
-            DockManager.settings.requirePressureToShow) {
+            DockSurfaceManager.settings.requirePressureToShow) {
             this._pressureBarrier = new Layout.PressureBarrier(
                 pressureThreshold, settings.showDelay * 1000,
                 Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW);
@@ -1122,7 +1122,7 @@ const DockedDash = GObject.registerClass({
         // The barrier needs to be removed in fullscreen with autohide disabled
         // otherwise the mouse can get trapped on monitor.
         if (this._monitor.inFullscreen &&
-            !DockManager.settings.autohideInFullscreen)
+            !DockSurfaceManager.settings.autohideInFullscreen)
             return;
 
         // Manually reset pressure barrier
@@ -1138,7 +1138,7 @@ const DockedDash = GObject.registerClass({
         // conflicting with other active corners
         // Note: dash in fixed position doesn't use pressure barrier.
         if (this._canUsePressure && this._autohideIsEnabled &&
-            DockManager.settings.requirePressureToShow) {
+            DockSurfaceManager.settings.requirePressureToShow) {
             let x1, x2, y1, y2, direction;
             const workArea = Main.layoutManager.getWorkAreaForMonitor(
                 this._monitor.index);
@@ -1191,7 +1191,7 @@ const DockedDash = GObject.registerClass({
         // Ensure variables linked to settings are updated.
         this._updateVisibilityMode();
 
-        const {dockFixed: fixedIsEnabled, dockExtended: extendHeight} = DockManager.settings;
+        const {dockFixed: fixedIsEnabled, dockExtended: extendHeight} = DockSurfaceManager.settings;
 
         if (fixedIsEnabled)
             this.add_style_class_name('fixed');
@@ -1203,7 +1203,7 @@ const DockedDash = GObject.registerClass({
         // fixed dock.
         const workArea = Main.layoutManager.getWorkAreaForMonitor(this.monitorIndex);
 
-        let fraction = DockManager.settings.heightFraction;
+        let fraction = DockSurfaceManager.settings.heightFraction;
         if (extendHeight)
             fraction = 1;
         else if ((fraction < 0) || (fraction > 1))
@@ -1250,7 +1250,7 @@ const DockedDash = GObject.registerClass({
         if (!this._intellihideIsEnabled)
             return;
 
-        const {desktopIconsUsableArea} = DockManager.getDefault();
+        const {desktopIconsUsableArea} = DockSurfaceManager.getDefault();
         if (this._position === St.Side.BOTTOM)
             desktopIconsUsableArea.setMargins(this.monitorIndex, 0, this._box.height, 0, 0);
         else if (this._position === St.Side.TOP)
@@ -1280,7 +1280,7 @@ const DockedDash = GObject.registerClass({
     _onDragStart() {
         this._oldIgnoreHover = this._ignoreHover;
         this._ignoreHover = true;
-        this._animateIn(DockManager.settings.animationTime, 0);
+        this._animateIn(DockSurfaceManager.settings.animationTime, 0);
     }
 
     _onDragEnd() {
@@ -1298,7 +1298,7 @@ const DockedDash = GObject.registerClass({
         if (!Main.overview.visible)
             global.display.unset_input_focus(timestamp);
         this._box.navigate_focus(null, St.DirectionType.TAB_FORWARD, false);
-        this._animateIn(DockManager.settings.animationTime, 0);
+        this._animateIn(DockSurfaceManager.settings.animationTime, 0);
     }
 
     // Optional features to be enabled only for the main Dock
@@ -1314,7 +1314,7 @@ const DockedDash = GObject.registerClass({
      */
     _optionalScrollWorkspaceSwitch() {
         const isEnabled = () =>
-            DockManager.settings.scrollAction === scrollAction.SWITCH_WORKSPACE;
+            DockSurfaceManager.settings.scrollAction === scrollAction.SWITCH_WORKSPACE;
 
         const enable = () => {
             this._signalsHandler.removeWithLabel(Labels.WORKSPACE_SWITCH_SCROLL);
@@ -1448,12 +1448,14 @@ const DockedDash = GObject.registerClass({
     }
 });
 
-export class DockManager {
+export class DockSurfaceManager {
     constructor(extension) {
-        if (DockManager._singleton)
+        if (DockSurfaceManager._singleton)
             throw new Error('DashToDock has been already initialized');
-        DockManager._singleton = this;
+        DockSurfaceManager._singleton = this;
         this._extension = extension;
+        if (!this._extension.createDockActor)
+            throw new Error('Layout Switcher Dock actor factory is required');
         this._signalsHandler = new Utils.GlobalSignalsHandler(this);
         this._methodInjections = new Utils.InjectionsHandler(this);
         this._vfuncInjections = new Utils.VFuncInjectionsHandler(this);
@@ -1525,19 +1527,19 @@ export class DockManager {
     }
 
     static getDefault() {
-        return DockManager._singleton;
+        return DockSurfaceManager._singleton;
     }
 
     static get allDocks() {
-        return DockManager.getDefault()._allDocks;
+        return DockSurfaceManager.getDefault()._allDocks;
     }
 
     static get extension() {
-        return DockManager.getDefault().extension;
+        return DockSurfaceManager.getDefault().extension;
     }
 
     static get settings() {
-        return DockManager.getDefault().settings;
+        return DockSurfaceManager.getDefault().settings;
     }
 
     get extension() {
@@ -1549,7 +1551,7 @@ export class DockManager {
     }
 
     static get iconTheme() {
-        return DockManager.getDefault().iconTheme;
+        return DockSurfaceManager.getDefault().iconTheme;
     }
 
     get settings() { // eslint-disable-line no-dupe-class-members
@@ -1863,7 +1865,7 @@ export class DockManager {
     }
 
     _createDock(params) {
-        const dock = new DockedDash(params);
+        const dock = this._extension.createDockActor(params);
         this._allDocks.push(dock);
 
         // connect app icon into the view selector
@@ -1881,7 +1883,7 @@ export class DockManager {
     }
 
     _prepareStartupAnimation() {
-        DockManager.allDocks.forEach(dock => {
+        DockSurfaceManager.allDocks.forEach(dock => {
             const {dash} = dock;
 
             dock.opacity = 255;
@@ -1894,7 +1896,7 @@ export class DockManager {
     }
 
     _runStartupAnimation() {
-        DockManager.allDocks.forEach(dock => {
+        DockSurfaceManager.allDocks.forEach(dock => {
             const {dash} = dock;
 
             switch (dock.position) {
@@ -2092,7 +2094,7 @@ export class DockManager {
                 const box = workspaceBoxOriginFixer.call(this, originalFunction, state, ...args);
                 // GNOME 46 changes "spacing" to "_spacing".
                 const spacing = this.spacing ?? this._spacing;
-                const dock = DockManager.getDefault().getDockByMonitor(Main.layoutManager.primaryIndex);
+                const dock = DockSurfaceManager.getDefault().getDockByMonitor(Main.layoutManager.primaryIndex);
                 if (!dock)
                     return box;
                 else
@@ -2108,7 +2110,7 @@ export class DockManager {
                     return originalFunction.call(this, state, ...args);
 
                 const box = workspaceBoxOriginFixer.call(this, originalFunction, state, ...args);
-                const dock = DockManager.getDefault().getDockByMonitor(this._monitorIndex);
+                const dock = DockSurfaceManager.getDefault().getDockByMonitor(this._monitorIndex);
                 if (!dock)
                     return box;
                 if (state === OverviewControls.ControlsState.WINDOW_PICKER &&
@@ -2134,7 +2136,7 @@ export class DockManager {
             function (originalFunction, ...args) {
                 /* eslint-disable no-invalid-this */
                 if (this.constructor.name === 'CtrlAltTabPopup') {
-                    const dockManager = DockManager.getDefault();
+                    const dockManager = DockSurfaceManager.getDefault();
                     if (dockManager._inCtrlAltTabSwitcher)
                         return;
 
@@ -2183,11 +2185,11 @@ export class DockManager {
             '_getFirstFitAllWorkspaceBox', function (originalFunction, ...args) {
                 /* eslint-disable no-invalid-this */
                 const box = originalFunction.call(this, ...args);
-                if (DockManager.settings.dockFixed ||
+                if (DockSurfaceManager.settings.dockFixed ||
                     this._monitorIndex === Main.layoutManager.primaryIndex)
                     return box;
 
-                const dock = DockManager.getDefault().getDockByMonitor(this._monitorIndex);
+                const dock = DockSurfaceManager.getDefault().getDockByMonitor(this._monitorIndex);
                 if (!dock)
                     return box;
 
@@ -2355,7 +2357,7 @@ export class DockManager {
         this._desktopIconsUsableArea?.destroy();
         this._desktopIconsUsableArea = null;
         this._extension = null;
-        DockManager._singleton = null;
+        DockSurfaceManager._singleton = null;
     }
 
     /**
@@ -2390,7 +2392,7 @@ export class DockManager {
         return !!Main.panel?._rightCorner && !!Main.panel?._leftCorner;
     }
 }
-Signals.addSignalMethods(DockManager.prototype);
+Signals.addSignalMethods(DockSurfaceManager.prototype);
 
 // This class drives long-running icon animations, to keep them running in sync
 // with each other, and to save CPU by pausing them when the dock is hidden.

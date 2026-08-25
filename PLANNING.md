@@ -1,6 +1,6 @@
 # PLANNING.md — Layout Switcher Roadmap
 
-Última revisão: 2026-08-23
+Última revisão: 2026-08-25
 Versão atual: **2.18.0**
 
 ## Active roadmap — focused Shell runtime
@@ -10,14 +10,13 @@ The approved Dock and Panel simplification roadmap is maintained in
 The safe execution sequence and remaining gates are tracked in
 [`docs/SHELL_RUNTIME_REMAINING_WORK.md`](docs/SHELL_RUNTIME_REMAINING_WORK.md).
 
-Current state: Phase 2 complete; the unified runtime owns surface activation
-and per-layout indicator application. The GNOME 50/51 visual baseline and
-clean-session transition matrix are frozen. Focused Dock extraction can now
-start one accepted behavior at a time behind the compatibility-engine boundary.
-All user-facing configuration will move to Layout Switcher. A small GJS runtime
-will remain necessary because GNOME Shell actors cannot run in the GTK process.
-Each phase requires automated checks and live GNOME 50 approval before inherited
-code is removed. GNOME 51 remains a compatibility requirement.
+Current state: Dock actor construction, lifecycle, and executable modules are
+owned by the unified runtime. The standalone Community Dock engine is removed;
+its old directory is a resource and schema host only. GNOME 50/51 Dock layout
+transitions and repeated fullscreen cycles pass. Panel/Taskbar extraction,
+settings migration, upgrade/rollback coverage, and the complete monitor matrix
+remain. A small GJS runtime remains necessary because GNOME Shell actors cannot
+run in the GTK process.
 
 ## Status geral
 

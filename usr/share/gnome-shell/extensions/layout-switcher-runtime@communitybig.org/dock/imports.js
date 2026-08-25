@@ -1,11 +1,11 @@
+// Layout Switcher private Dock module.
 export * as AppIconIndicators from './appIconIndicators.js';
 export * as AppIcons from './appIcons.js';
 export * as AppIconsDecorator from './appIconsDecorator.js';
 export * as DockDash from './dash.js';
 export * as DBusMenuUtils from './dbusmenuUtils.js';
 export * as DesktopIconsIntegration from './desktopIconsIntegration.js';
-export * as Docking from './docking.js';
-export * as Extension from './extension.js';
+export * as Docking from '../dockSurface.js';
 export * as FileManager1API from './fileManager1API.js';
 export * as Intellihide from './intellihide.js';
 export * as LauncherAPI from './launcherAPI.js';

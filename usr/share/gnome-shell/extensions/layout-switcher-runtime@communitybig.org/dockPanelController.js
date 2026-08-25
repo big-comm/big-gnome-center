@@ -15,6 +15,9 @@ const VALID_VISIBILITY = new Set([
 const FULLSCREEN_EXIT_SETTLE_MS = 120;
 const FULLSCREEN_REPAIR_STAGE_TIMEOUT_MS = 500;
 const FULLSCREEN_EXIT_REPAIR_LIMIT = 3;
+const FULLSCREEN_TEXTURE_REFRESH_MS = 80;
+const FULLSCREEN_TEXTURE_REFRESH_RETRY_MS = 160;
+const FULLSCREEN_TEXTURE_REFRESH_LIMIT = 3;
 
 export class PanelController {
     constructor(extension, dockProvider = () => []) {
@@ -45,6 +48,8 @@ export class PanelController {
         this._fullscreenExitTimeout = 0;
         this._fullscreenExitRepairAttempts = 0;
         this._fullscreenExitRepairStage = null;
+        this._fullscreenTextureTimeout = 0;
+        this._fullscreenTextureRefreshAttempts = 0;
         this._normalGeometry = null;
 
         this._panel.reactive = true;
@@ -109,6 +114,7 @@ export class PanelController {
         this._cancelHide();
         this._cancelOpacityApply();
         this._cancelFullscreenExitRepair();
+        this._cancelFullscreenTextureRefresh();
         this._disconnectFocusWindow();
         for (const [object, id] of this._signals.splice(0)) {
             try {
@@ -231,10 +237,50 @@ export class PanelController {
             this._fullscreenExitRepairAttempts = 0;
             this._fullscreenExitRepairStage = null;
             this._cancelFullscreenExitRepair();
+            this._fullscreenTextureRefreshAttempts = 0;
+            this._queueFullscreenTextureRefresh();
         } else if (this._fullscreenExitArmed) {
+            this._cancelFullscreenTextureRefresh();
+            this._fullscreenTextureRefreshAttempts = 0;
             this._queueFullscreenExitRepair();
         }
         this._applyVisibility();
+    }
+
+    _queueFullscreenTextureRefresh(delay = FULLSCREEN_TEXTURE_REFRESH_MS) {
+        this._cancelFullscreenTextureRefresh();
+        this._fullscreenTextureTimeout = GLib.timeout_add(
+            GLib.PRIORITY_DEFAULT,
+            delay,
+            () => {
+                this._fullscreenTextureTimeout = 0;
+                const window = this._focusWindow;
+                if (!window?.fullscreen || !this._focusMonitor()?.inFullscreen)
+                    return GLib.SOURCE_REMOVE;
+                const actor = global.get_window_actors()
+                    .find(candidate => candidate.meta_window === window);
+                const texture = actor?.get_texture?.();
+                texture?.invalidate_size?.();
+                texture?.invalidate?.();
+                actor?.queue_relayout();
+                actor?.queue_redraw();
+                global.stage.queue_redraw();
+                this._fullscreenTextureRefreshAttempts++;
+                if (this._fullscreenTextureRefreshAttempts <
+                    FULLSCREEN_TEXTURE_REFRESH_LIMIT) {
+                    this._queueFullscreenTextureRefresh(
+                        FULLSCREEN_TEXTURE_REFRESH_RETRY_MS);
+                }
+                return GLib.SOURCE_REMOVE;
+            },
+        );
+    }
+
+    _cancelFullscreenTextureRefresh() {
+        if (!this._fullscreenTextureTimeout)
+            return;
+        GLib.Source.remove(this._fullscreenTextureTimeout);
+        this._fullscreenTextureTimeout = 0;
     }
 
     _onWindowGeometryChanged() {
@@ -612,6 +658,31 @@ export class PanelController {
             animationInfo: Boolean(actor.__animationInfo),
             resizePending: Boolean(Main.wm?._resizePending?.has(actor)),
             resizing: Boolean(Main.wm?._resizing?.has(actor)),
+            children: actor.get_children().map(child =>
+                this._childActorDiagnostics(child)),
+        };
+    }
+
+    _childActorDiagnostics(actor) {
+        const [transformedX, transformedY] = actor.get_transformed_position();
+        const [transformedWidth, transformedHeight] = actor.get_transformed_size();
+        return {
+            type: actor.constructor?.name ?? '',
+            x: Math.round(actor.x),
+            y: Math.round(actor.y),
+            width: Math.round(actor.width),
+            height: Math.round(actor.height),
+            transformedX: Math.round(transformedX),
+            transformedY: Math.round(transformedY),
+            transformedWidth: Math.round(transformedWidth),
+            transformedHeight: Math.round(transformedHeight),
+            children: actor.get_children().map(child => ({
+                type: child.constructor?.name ?? '',
+                x: Math.round(child.x),
+                y: Math.round(child.y),
+                width: Math.round(child.width),
+                height: Math.round(child.height),
+            })),
         };
     }
 }

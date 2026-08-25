@@ -5,9 +5,12 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 export class ComponentHost {
-    constructor(runtimeExtension, uuid, metadata = {}) {
+    constructor(runtimeExtension, uuid, metadata = {}, codeDirectory = null) {
         this.uuid = uuid;
         this.path = GLib.build_filenamev([runtimeExtension.path, '..', uuid]);
+        this.codePath = codeDirectory
+            ? GLib.build_filenamev([runtimeExtension.path, codeDirectory])
+            : this.path;
         this.dir = Gio.File.new_for_path(this.path);
         this.metadata = {uuid, ...metadata};
         this._stylesheets = [];

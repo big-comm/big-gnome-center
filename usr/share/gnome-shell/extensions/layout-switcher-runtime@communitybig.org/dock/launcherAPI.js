@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 import {Gio} from './dependencies/gi.js';
 import {DBusMenuUtils} from './imports.js';

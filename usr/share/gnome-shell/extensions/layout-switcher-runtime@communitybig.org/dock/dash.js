@@ -1,4 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
+// Layout Switcher private Dock module.
 
 import {
     Clutter,
@@ -52,7 +53,7 @@ class DockDashItemContainer extends Dash.DashItemContainer {
         super._init();
 
         this.label?.add_style_class_name(Theming.PositionStyleClass[position]);
-        if (Docking.DockManager.settings.customThemeShrink)
+        if (Docking.DockSurfaceManager.settings.customThemeShrink)
             this.label?.add_style_class_name('shrink');
     }
 
@@ -147,12 +148,12 @@ export const DockDash = GObject.registerClass({
 
         this._maxWidth = -1;
         this._maxHeight = -1;
-        this.iconSize = Docking.DockManager.settings.dashMaxIconSize;
+        this.iconSize = Docking.DockSurfaceManager.settings.dashMaxIconSize;
         this._availableIconSizes = baseIconSizes;
         this._shownInitially = false;
         this._initializeIconSize(this.iconSize);
         this._signalsHandler = new Utils.GlobalSignalsHandler(this);
-        this._communitySettings = Docking.DockManager.extension.getSettings(
+        this._communitySettings = Docking.DockSurfaceManager.extension.getSettings(
             COMMUNITY_SETTINGS_SCHEMA);
         this._syncHoverEffectStyle();
 
@@ -462,7 +463,7 @@ export const DockDash = GObject.registerClass({
 
     _onScrollEvent(actor, event) {
         // If scroll is not used because the icon is resized, let the scroll event propagate.
-        if (!Docking.DockManager.settings.iconSizeFixed)
+        if (!Docking.DockSurfaceManager.settings.iconSizeFixed)
             return Clutter.EVENT_PROPAGATE;
 
         // reset timeout to avid conflicts with the mousehover event
@@ -560,7 +561,7 @@ export const DockDash = GObject.registerClass({
         }, this);
 
         appIcon.connectObject('notify::focused', () => {
-            const {settings} = Docking.DockManager;
+            const {settings} = Docking.DockSurfaceManager;
             if (appIcon.focused && settings.scrollToFocusedApplication)
                 ensureActorVisibleInScrollView(this._scrollView, item);
         }, this);
@@ -568,7 +569,7 @@ export const DockDash = GObject.registerClass({
         appIcon.connectObject('notify::urgent', () => {
             if (appIcon.urgent) {
                 ensureActorVisibleInScrollView(this._scrollView, item);
-                if (Docking.DockManager.settings.showDockUrgentNotify)
+                if (Docking.DockSurfaceManager.settings.showDockUrgentNotify)
                     this._requireVisibility();
             }
         }, this);
@@ -588,7 +589,7 @@ export const DockDash = GObject.registerClass({
     }
 
     _animateAppIconHover(actor) {
-        const hoverEffects = Docking.DockManager.extension.hoverEffects;
+        const hoverEffects = Docking.DockSurfaceManager.extension.hoverEffects;
         if (hoverEffects) {
             hoverEffects.animate(actor, this._position, this.iconSize);
             return;
@@ -620,7 +621,7 @@ export const DockDash = GObject.registerClass({
     }
 
     _syncHoverEffectStyle() {
-        const hoverEffects = Docking.DockManager.extension.hoverEffects;
+        const hoverEffects = Docking.DockSurfaceManager.extension.hoverEffects;
         if (hoverEffects) {
             hoverEffects.applyStyle(this);
             return;
@@ -809,12 +810,12 @@ export const DockDash = GObject.registerClass({
     }
 
     _redisplay() {
-        const appModel = Docking.DockManager.extension.appModel;
+        const appModel = Docking.DockSurfaceManager.extension.appModel;
         const favorites = appModel?.favorites() ??
             AppFavorites.getAppFavorites().getFavoriteMap();
 
         let running = appModel?.running() ?? this._appSystem.get_running();
-        const dockManager = Docking.DockManager.getDefault();
+        const dockManager = Docking.DockSurfaceManager.getDefault();
         const {settings} = dockManager;
 
         this._scrollView.set({
@@ -1072,7 +1073,7 @@ export const DockDash = GObject.registerClass({
         const maxAllowed = baseIconSizes[baseIconSizes.length - 1];
         maxSize = Math.min(maxSize, maxAllowed);
 
-        if (Docking.DockManager.settings.iconSizeFixed) {
+        if (Docking.DockSurfaceManager.settings.iconSizeFixed) {
             this._availableIconSizes = [maxSize];
         } else {
             this._availableIconSizes = baseIconSizes.filter(val => {
@@ -1154,7 +1155,7 @@ export const DockDash = GObject.registerClass({
         if (this._showAppsIcon.get_parent() && !this._showAppsIcon.visible)
             return;
 
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
         const notifiedProperties = [];
         const showAppsContainer = settings.showAppsAlwaysInTheEdge || !settings.dockExtended
             ? this._dashContainer : this._boxContainer;
@@ -1169,7 +1170,7 @@ export const DockDash = GObject.registerClass({
         if (this._showAppsIcon.get_parent() !== showAppsContainer) {
             this._showAppsIcon.get_parent()?.remove_child(this._showAppsIcon);
 
-            if (Docking.DockManager.settings.showAppsAtTop)
+            if (Docking.DockSurfaceManager.settings.showAppsAtTop)
                 showAppsContainer.insert_child_below(this._showAppsIcon, null);
             else
                 showAppsContainer.insert_child_above(this._showAppsIcon, null);

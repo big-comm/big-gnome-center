@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 35" in controller
+    assert "RUNTIME_BUILD = 43" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -88,7 +88,8 @@ def test_runtime_owns_dock_visibility_modes():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     engine = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/docking.js"
+        / "usr/share/gnome-shell/extensions/"
+        "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
 
     assert "dock-visibility-overrides" in controller
@@ -108,7 +109,7 @@ def test_runtime_owns_accepted_dock_placement():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     utils = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/utils.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/utils.js"
     ).read_text()
 
     assert "new DockPlacement(" in dock
@@ -117,7 +118,7 @@ def test_runtime_owns_accepted_dock_placement():
     assert "set_enum('dock-position', position)" in runtime
     assert "set_boolean('extend-height', Boolean(extended))" in runtime
     assert "Clutter.TextDirection.RTL" in runtime
-    assert "Docking.DockManager.extension.placement" in utils
+    assert "Docking.DockSurfaceManager.extension.placement" in utils
 
 
 def test_unified_runtime_replaces_component_extension_activation():
@@ -132,47 +133,69 @@ def test_unified_runtime_loads_rollback_engines_behind_one_controller():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
 
-    assert "CommunityDockRuntime" in dock
+    assert "CommunityDockRuntime" not in dock
+    assert "import {DockSurfaceManager}" in dock
     assert "CommunityPanelRuntime" in taskbar
     assert "ComponentHost" in dock
     assert "ComponentHost" in taskbar
 
 
-def test_dock_lifecycle_is_owned_by_the_engine_adapter():
+def test_dock_lifecycle_is_owned_by_the_unified_runtime():
     dock = (RUNTIME / "dockRuntime.js").read_text()
+
+    assert "new DockSurfaceManager(this._host)" in dock
+    assert "this._manager = manager" in dock
+    assert "manager ?? DockSurfaceManager.getDefault()" in dock
+    assert "partialManager?.destroy()" in dock
+    assert "this._panelController?.destroy()" in dock
+    assert "this._indicatorController?.destroy()" in dock
+    assert "manager?.destroy()" in dock
+    assert dock.index("this._panelController?.destroy()") < dock.index(
+        "manager?.destroy()"
+    )
+    assert "CommunityDockRuntime" not in dock
+
+
+def test_runtime_owns_dock_actor_construction():
+    runtime = (RUNTIME / "dockRuntime.js").read_text()
+    factory = (RUNTIME / "dockActorFactory.js").read_text()
     engine = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/extension.js"
+        / "usr/share/gnome-shell/extensions/"
+        "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
 
-    assert "dockManager" not in dock
-    assert "this._engine = new CommunityDockRuntime" in dock
-    assert "this._engine.docks" in dock
-    assert "this._engine.active" in dock
-    assert "this._manager = new DockManager" not in engine
-    assert "this._manager = manager" in engine
-    assert "Community Dock lifecycle already owned" in engine
-    assert "get active()" in engine
-    assert "get docks()" in engine
+    assert "new DockActorFactory()" in runtime
+    assert "this._host.createDockActor" in runtime
+    assert "export const DockedDash" in engine
+    assert "this._extension.createDockActor(params)" in engine
+    assert "const dock = new DockedDash(params)" not in engine
+    assert "Layout Switcher Dock actor factory is required" in engine
+
+
+def test_private_dock_modules_resolve_code_from_the_unified_runtime():
+    host = (RUNTIME / "componentHost.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    locations = (RUNTIME / "dock/locations.js").read_text()
+
+    assert "this.codePath = codeDirectory" in host
+    assert "}, 'dock');" in dock
+    assert "DockSurfaceManager.extension.codePath" in locations
+    assert "DockSurfaceManager.extension.path," not in locations
 
 
 def test_runtime_owns_native_panel_controller_for_dock_layouts():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     controller = (RUNTIME / "dockPanelController.js").read_text()
-    engine = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/extension.js"
-    ).read_text()
 
     assert "this._host.createPanelController = () => new PanelController(" in dock
-    assert "() => this._engine.docks" in dock
+    assert "() => this._manager?._allDocks ?? []" in dock
     assert "Main.layoutManager.panelBox" in controller
     assert "this._applyDockFullscreen(" not in controller
     assert "this._dockActorData" not in controller
     assert "this._syncDockTracking" not in controller
     assert "'in-fullscreen-changed'" in controller
-    assert "this._extension.createPanelController()" in engine
-    assert "from './panelController.js'" not in engine
+    assert "this._host.createPanelController()" in dock
 
 
 def test_runtime_owns_the_accepted_primary_dock_app_actions():
@@ -180,7 +203,7 @@ def test_runtime_owns_the_accepted_primary_dock_app_actions():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     app_icons = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
     ).read_text()
 
     assert "new DockAppActions()" in dock
@@ -198,7 +221,7 @@ def test_runtime_owns_dock_favorites_and_running_app_order():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     dash = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/dash.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/dash.js"
     ).read_text()
 
     assert "new DockAppModel()" in dock
@@ -217,11 +240,12 @@ def test_runtime_owns_dock_notification_monitor_and_badge_count():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     manager = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/docking.js"
+        / "usr/share/gnome-shell/extensions/"
+        "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
     indicators = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIconIndicators.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIconIndicators.js"
     ).read_text()
 
     assert "new DockNotificationMonitor(" in dock
@@ -244,7 +268,7 @@ def test_runtime_owns_dock_notification_badge_actor_and_text():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     indicators = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIconIndicators.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIconIndicators.js"
     ).read_text()
 
     assert "new DockNotificationBadges()" in dock
@@ -259,19 +283,14 @@ def test_runtime_owns_dock_notification_badge_actor_and_text():
 def test_runtime_owns_dock_running_indicator_renderers():
     runtime = (RUNTIME / "dockRunningIndicators.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    extension = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/extension.js"
-    ).read_text()
     icons = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
     ).read_text()
 
     assert "new DockRunningIndicators(" in dock
-    assert "this._extension.createIndicatorController" in extension
-    assert "Layout Switcher indicator controller is required" in extension
-    assert "new IndicatorController(" not in extension
+    assert "this._host.createIndicatorController" in dock
+    assert "this._host.createIndicatorController(manager)" in dock
     assert "applyIconStyle(icon)" in runtime
     assert "applyAppearance(dot, focused, position)" in runtime
     assert "['dot', {inactive: [6, 6], active: [6, 6]" in runtime
@@ -286,7 +305,7 @@ def test_runtime_owns_dock_hover_effects():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     dash = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/dash.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/dash.js"
     ).read_text()
 
     assert "new DockHoverEffects(" in dock
@@ -305,7 +324,7 @@ def test_runtime_owns_core_dock_context_menu_actions():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     app_icons = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
     ).read_text()
 
     assert "new DockAppMenuActions()" in dock
@@ -328,7 +347,7 @@ def test_runtime_owns_dock_context_menu_construction():
     dock = (RUNTIME / "dockRuntime.js").read_text()
     app_icons = (
         ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/appIcons.js"
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
     ).read_text()
 
     assert "class DockAppIconMenu extends PopupMenu.PopupMenu" in runtime

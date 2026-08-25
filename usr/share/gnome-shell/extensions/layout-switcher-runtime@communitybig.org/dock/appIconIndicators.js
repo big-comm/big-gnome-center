@@ -1,3 +1,4 @@
+// Layout Switcher private Dock module.
 import {
     Clutter,
     Cogl,
@@ -46,14 +47,14 @@ export class AppIconIndicator {
         let runningIndicator = null;
         let runningIndicatorStyle;
 
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
         if (settings.applyCustomTheme)
             runningIndicatorStyle = RunningIndicatorStyle.DOTS;
         else
             ({runningIndicatorStyle} = settings);
 
         if (settings.showIconsEmblems &&
-            !Docking.DockManager.getDefault().notificationsMonitor.dndMode) {
+            !Docking.DockSurfaceManager.getDefault().notificationsMonitor.dndMode) {
             const unityIndicator = new UnityIndicator(source);
             this._indicators.push(unityIndicator);
         }
@@ -307,7 +308,7 @@ class RunningIndicatorDots extends RunningIndicatorBase {
 
         keys.forEach(function (key) {
             this._signalsHandler.add(
-                Docking.DockManager.settings,
+                Docking.DockSurfaceManager.settings,
                 `changed::${key}`,
                 this.update.bind(this)
             );
@@ -316,7 +317,7 @@ class RunningIndicatorDots extends RunningIndicatorBase {
         // Apply glossy background
         // TODO: move to enable/disableBacklit to apply it only to the running apps?
         // TODO: move to css class for theming support
-        const {extension} = Docking.DockManager;
+        const {extension} = Docking.DockSurfaceManager;
         this._glossyBackgroundStyle = `background-image: url('${extension.path}/media/glossy.svg');` +
                                       'background-size: contain;';
     }
@@ -325,11 +326,11 @@ class RunningIndicatorDots extends RunningIndicatorBase {
         super.update();
 
         // Enable / Disable the backlight of running apps
-        if (!Docking.DockManager.settings.applyCustomTheme &&
-            Docking.DockManager.settings.unityBacklitItems) {
+        if (!Docking.DockSurfaceManager.settings.applyCustomTheme &&
+            Docking.DockSurfaceManager.settings.unityBacklitItems) {
             const [icon] = this._source._iconContainer.get_children();
             icon.set_style(
-                Docking.DockManager.settings.applyGlossyEffect
+                Docking.DockSurfaceManager.settings.applyGlossyEffect
                     ? this._glossyBackgroundStyle : null);
             if (this._source.running)
                 this._enableBacklight();
@@ -356,7 +357,7 @@ class RunningIndicatorDots extends RunningIndicatorBase {
         this._borderWidth = themeNode.get_border_width(this._side);
         this._bodyColor = themeNode.get_background_color();
 
-        const {settings} = Docking.DockManager;
+        const {settings} = Docking.DockSurfaceManager;
         if (!settings.applyCustomTheme) {
             // Adjust for the backlit case
             const Color = Clutter.Color ?? Cogl.Color;
@@ -452,8 +453,8 @@ class RunningIndicatorCiliora extends RunningIndicatorDots {
             const lineLength = this._width - (size * (this._number - 1)) - (spacing * (this._number - 1));
             let padding = this._borderWidth;
             // For the backlit case here we don't want the outer border visible
-            if (Docking.DockManager.settings.unityBacklitItems &&
-                !Docking.DockManager.settings.customThemeCustomizeRunningDots)
+            if (Docking.DockSurfaceManager.settings.unityBacklitItems &&
+                !Docking.DockSurfaceManager.settings.customThemeCustomizeRunningDots)
                 padding = 0;
             const yOffset = this._height - padding - size;
 
@@ -485,8 +486,8 @@ class RunningIndicatorSegmented extends RunningIndicatorDots {
             const dashLength = Math.ceil((this._width - ((this._number - 1) * spacing)) / this._number);
             let padding = this._borderWidth;
             // For the backlit case here we don't want the outer border visible
-            if (Docking.DockManager.settings.unityBacklitItems &&
-                !Docking.DockManager.settings.customThemeCustomizeRunningDots)
+            if (Docking.DockSurfaceManager.settings.unityBacklitItems &&
+                !Docking.DockSurfaceManager.settings.customThemeCustomizeRunningDots)
                 padding = 0;
             const yOffset = this._height - padding - size;
 
@@ -514,8 +515,8 @@ class RunningIndicatorSolid extends RunningIndicatorDots {
             const size =  Math.max(this._width / 20, this._borderWidth);
             let padding = this._borderWidth;
             // For the backlit case here we don't want the outer border visible
-            if (Docking.DockManager.settings.unityBacklitItems &&
-                !Docking.DockManager.settings.customThemeCustomizeRunningDots)
+            if (Docking.DockSurfaceManager.settings.unityBacklitItems &&
+                !Docking.DockSurfaceManager.settings.customThemeCustomizeRunningDots)
                 padding = 0;
             const yOffset = this._height - padding - size;
 
@@ -609,8 +610,8 @@ class RunningIndicatorMetro extends RunningIndicatorDots {
             const size =  Math.max(this._width / 20, this._borderWidth);
             let padding = 0;
             // For the backlit case here we don't want the outer border visible
-            if (Docking.DockManager.settings.unityBacklitItems &&
-                !Docking.DockManager.settings.customThemeCustomizeRunningDots)
+            if (Docking.DockSurfaceManager.settings.unityBacklitItems &&
+                !Docking.DockSurfaceManager.settings.customThemeCustomizeRunningDots)
                 padding = 0;
             const yOffset = this._height - padding - size;
 
@@ -749,7 +750,7 @@ export class UnityIndicator extends IndicatorBase {
     constructor(source) {
         super(source);
 
-        const {remoteModel, notificationsMonitor} = Docking.DockManager.getDefault();
+        const {remoteModel, notificationsMonitor} = Docking.DockSurfaceManager.getDefault();
         const remoteEntry = remoteModel.lookupById(this._source.app.id);
         this._remoteEntry = remoteEntry;
 
@@ -804,7 +805,7 @@ export class UnityIndicator extends IndicatorBase {
         const defaultFontSize = fontDesc.get_size() / 1024;
         let fontSize = defaultFontSize * 0.9;
         const {iconSize} = Main.overview.dash;
-        const defaultIconSize = Docking.DockManager.settings.get_default_value(
+        const defaultIconSize = Docking.DockSurfaceManager.settings.get_default_value(
             'dash-max-icon-size').unpack();
 
         if (!fontDesc.get_size_is_absolute()) {
@@ -830,7 +831,7 @@ export class UnityIndicator extends IndicatorBase {
     }
 
     _notificationBadgeCountToText(count) {
-        const presenter = Docking.DockManager.extension.notificationBadges;
+        const presenter = Docking.DockSurfaceManager.extension.notificationBadges;
         if (presenter)
             return presenter.textForCount(count);
 
@@ -855,12 +856,12 @@ export class UnityIndicator extends IndicatorBase {
     }
 
     _updateNotificationsCount() {
-        const {notificationsMonitor} = Docking.DockManager.getDefault();
+        const {notificationsMonitor} = Docking.DockSurfaceManager.getDefault();
         if (notificationsMonitor.getBadgeCount) {
             const count = notificationsMonitor.getBadgeCount(
                 this._source.app.id,
                 this._remoteEntry,
-                Docking.DockManager.settings.applicationCounterOverridesNotifications,
+                Docking.DockSurfaceManager.settings.applicationCounterOverridesNotifications,
             );
             this.setNotificationCount(count);
             return;
@@ -870,7 +871,7 @@ export class UnityIndicator extends IndicatorBase {
             ? this._remoteEntry.count ?? 0 : 0;
 
         if (remoteCount > 0 &&
-            Docking.DockManager.settings.applicationCounterOverridesNotifications) {
+            Docking.DockSurfaceManager.settings.applicationCounterOverridesNotifications) {
             this.setNotificationCount(remoteCount);
             return;
         }
@@ -882,7 +883,7 @@ export class UnityIndicator extends IndicatorBase {
     }
 
     _updateNotificationsBadge(text) {
-        const presenter = Docking.DockManager.extension.notificationBadges;
+        const presenter = Docking.DockSurfaceManager.extension.notificationBadges;
         if (this._notificationBadgeBin) {
             if (presenter)
                 presenter.setText(this._notificationBadgeBin, text);
@@ -1161,7 +1162,7 @@ class DominantColorExtractor {
      */
     _getIconPixBuf() {
         let iconTexture = this._app.create_icon_texture(16);
-        const themeLoader = Docking.DockManager.iconTheme;
+        const themeLoader = Docking.DockSurfaceManager.iconTheme;
 
         // Unable to load the icon texture, use fallback
         if (iconTexture instanceof St.Icon === false)

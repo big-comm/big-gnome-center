@@ -1,3 +1,4 @@
+// Layout Switcher private Dock module.
 /*
  * Credits:
  * This file is based on code from the Dash to Panel extension by Jason DeRose
@@ -335,7 +336,7 @@ class WindowPreviewMenuItem extends PopupMenu.PopupBaseMenuItem {
         this.remove_child(this._ornamentIcon);
         this.add_style_class_name('dashtodock-app-well-preview-menu-item');
         this.add_style_class_name(Theming.PositionStyleClass[position]);
-        if (Docking.DockManager.settings.customThemeShrink)
+        if (Docking.DockSurfaceManager.settings.customThemeShrink)
             this.add_style_class_name('shrink');
 
         // Now we don't have to set PREVIEW_MAX_WIDTH and PREVIEW_MAX_HEIGHT as
@@ -427,7 +428,7 @@ class WindowPreviewMenuItem extends PopupMenu.PopupBaseMenuItem {
         if (!width || !height)
             return emptySize;
 
-        let {previewSizeScale: scale} = Docking.DockManager.settings;
+        let {previewSizeScale: scale} = Docking.DockSurfaceManager.settings;
         if (!scale) {
             // a simple example with 1680x1050:
             // * 250/1680 = 0,1488

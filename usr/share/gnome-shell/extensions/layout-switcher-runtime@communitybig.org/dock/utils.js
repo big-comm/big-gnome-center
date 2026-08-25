@@ -1,3 +1,4 @@
+// Layout Switcher private Dock module.
 import {
     Clutter,
     GLib,
@@ -506,11 +507,11 @@ export class PropertyInjectionsHandler extends BasicHandler {
  * Return the actual position reverseing left and right in rtl
  */
 export function getPosition() {
-    const placement = Docking.DockManager.extension.placement;
+    const placement = Docking.DockSurfaceManager.extension.placement;
     if (placement)
         return placement.position();
 
-    const position = Docking.DockManager.settings.dockPosition;
+    const position = Docking.DockSurfaceManager.settings.dockPosition;
     if (Clutter.get_default_text_direction() === Clutter.TextDirection.RTL) {
         if (position === St.Side.LEFT)
             return St.Side.RIGHT;

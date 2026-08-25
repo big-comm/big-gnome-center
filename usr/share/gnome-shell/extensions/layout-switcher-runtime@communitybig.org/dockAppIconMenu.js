@@ -5,25 +5,25 @@ import {
     GLib,
     Shell,
     St,
-} from '../community-dock@communitybig.org/dependencies/gi.js';
+} from './dock/dependencies/gi.js';
 
 import {
     AppFavorites,
     BoxPointer,
     Main,
     PopupMenu,
-} from '../community-dock@communitybig.org/dependencies/shell/ui.js';
+} from './dock/dependencies/shell/ui.js';
 
 import {
     ParentalControlsManager,
     Util,
-} from '../community-dock@communitybig.org/dependencies/shell/misc.js';
+} from './dock/dependencies/shell/misc.js';
 
-import {Extension} from '../community-dock@communitybig.org/dependencies/shell/extensions/extension.js';
-import * as DBusMenuUtils from '../community-dock@communitybig.org/dbusmenuUtils.js';
-import * as Docking from '../community-dock@communitybig.org/docking.js';
-import * as Utils from '../community-dock@communitybig.org/utils.js';
-import * as WindowPreview from '../community-dock@communitybig.org/windowPreview.js';
+import {Extension} from './dock/dependencies/shell/extensions/extension.js';
+import * as DBusMenuUtils from './dock/dbusmenuUtils.js';
+import * as Docking from './dockSurface.js';
+import * as Utils from './dock/utils.js';
+import * as WindowPreview from './dock/windowPreview.js';
 
 const {gettext: __, ngettext} = Extension;
 const DBusMenu = await DBusMenuUtils.haveDBusMenu();
@@ -51,7 +51,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
 
         Main.uiGroup.add_child(this.actor);
 
-        const {remoteModel} = Docking.DockManager.getDefault();
+        const {remoteModel} = Docking.DockSurfaceManager.getDefault();
         const remoteModelApp = remoteModel?.lookupById(this.sourceActor?.app?.id);
         if (remoteModelApp && DBusMenu) {
             const [onQuickList, onDynamicSection] = Utils.splitHandler((sender,
@@ -115,7 +115,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
 
         const {app} = this.sourceActor;
 
-        if (Docking.DockManager.settings.showWindowsPreview) {
+        if (Docking.DockSurfaceManager.settings.showWindowsPreview) {
             // Display the app windows menu items and the separator between windows
             // of the current desktop and other windows.
             const windows = this.sourceActor.getInterestingWindows();
@@ -154,7 +154,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
                 actions.indexOf('new-window') === -1) {
                 const newMenuItem = this._appendMenuItem(_('New Window'));
                 newMenuItem.connect('activate', () => {
-                    if (!Docking.DockManager.extension.appMenuActions
+                    if (!Docking.DockSurfaceManager.extension.appMenuActions
                         ?.openNewWindow(this.sourceActor)) {
                         if (app.state === Shell.AppState.STOPPED)
                             this.sourceActor.animateLaunch();
@@ -166,7 +166,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
             }
 
             if (!this.sourceActor.updating &&
-                Docking.DockManager.getDefault().discreteGpuAvailable &&
+                Docking.DockSurfaceManager.getDefault().discreteGpuAvailable &&
                 app.state === Shell.AppState.STOPPED) {
                 const appPrefersNonDefaultGPU = appInfo.get_boolean('PrefersNonDefaultGPU');
                 const gpuPref = appPrefersNonDefaultGPU
@@ -176,7 +176,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
                     ? _('Launch using Integrated Graphics Card')
                     : _('Launch using Discrete Graphics Card'));
                 gpuMenuItem.connect('activate', () => {
-                    if (!Docking.DockManager.extension.appMenuActions
+                    if (!Docking.DockSurfaceManager.extension.appMenuActions
                         ?.launchOnGpu(this.sourceActor, gpuPref)) {
                         this.sourceActor.animateLaunch();
                         app.launch(0, -1, gpuPref);
@@ -190,7 +190,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
                 const item = this._appendMenuItem(appInfo.get_action_name(action));
                 item.sensitive = !appInfo.busy;
                 item.connect('activate', (emitter, event) => {
-                    if (!Docking.DockManager.extension.appMenuActions
+                    if (!Docking.DockSurfaceManager.extension.appMenuActions
                         ?.launchDesktopAction(this.sourceActor, action, event.get_time()))
                         app.launch_action(action, event.get_time(), -1);
                     this.emit('activate-window', null);
@@ -208,7 +208,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
                 if (isFavorite) {
                     const item = this._appendMenuItem(_('Unpin'));
                     item.connect('activate', () => {
-                        if (!Docking.DockManager.extension.appMenuActions
+                        if (!Docking.DockSurfaceManager.extension.appMenuActions
                             ?.setFavorite(app.get_id(), false)) {
                             const favs = AppFavorites.getAppFavorites();
                             favs.removeFavorite(app.get_id());
@@ -217,7 +217,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
                 } else {
                     const item = this._appendMenuItem(__('Pin to Dock'));
                     item.connect('activate', () => {
-                        if (!Docking.DockManager.extension.appMenuActions
+                        if (!Docking.DockSurfaceManager.extension.appMenuActions
                             ?.setFavorite(app.get_id(), true)) {
                             const favs = AppFavorites.getAppFavorites();
                             favs.addFavorite(app.get_id());
@@ -287,7 +287,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
         this._appendSeparator();
         this._quitMenuItem = this._appendMenuItem(_('Quit'));
         this._quitMenuItem.connect('activate', () => {
-            if (!Docking.DockManager.extension.appMenuActions?.quit(this.sourceActor))
+            if (!Docking.DockSurfaceManager.extension.appMenuActions?.quit(this.sourceActor))
                 this.sourceActor.closeAllWindows();
         });
 
@@ -312,7 +312,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
             this._quitMenuItem.actor.hide();
         }
 
-        if (Docking.DockManager.settings.showWindowsPreview) {
+        if (Docking.DockSurfaceManager.settings.showWindowsPreview) {
             const windows = this.sourceActor.getInterestingWindows();
 
             // update, show, or hide the allWindows menu
@@ -341,7 +341,7 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
                 this._allWindowsMenuItem.show();
                 this._allWindowsMenuItem.setSensitive(true);
 
-                if (Docking.DockManager.settings.defaultWindowsPreviewToOpen)
+                if (Docking.DockSurfaceManager.settings.defaultWindowsPreviewToOpen)
                     this._allWindowsMenuItem.menu.open();
             }
         }
@@ -391,4 +391,3 @@ export class DockAppMenuFactory {
         return new DockAppIconMenu(source, isApplicationIcon);
     }
 }
-

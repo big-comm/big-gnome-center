@@ -287,26 +287,26 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
         _check(
             bool(dock_actors) == expected_docks,
             "dock-actors",
-            f"manager actors={len(dock_actors)}",
+            f"runtime actors={len(dock_actors)}",
             f"expected actors={int(expected_docks)}, got {len(dock_actors)}",
         ),
         _check(
             bool(taskbar_actors) == expected_taskbars,
             "taskbar-actors",
-            f"manager actors={len(taskbar_actors)}",
+            f"runtime actors={len(taskbar_actors)}",
             f"expected actors={int(expected_taskbars)}, got {len(taskbar_actors)}",
         ),
         _check(
             len(stage_docks) == len(dock_actors),
             "dock-stage-residue",
-            f"stage={len(stage_docks)}, manager={len(dock_actors)}",
-            f"stage={len(stage_docks)}, manager={len(dock_actors)}",
+            f"stage={len(stage_docks)}, runtime={len(dock_actors)}",
+            f"stage={len(stage_docks)}, runtime={len(dock_actors)}",
         ),
         _check(
             len(stage_taskbars) == len(taskbar_actors),
             "taskbar-stage-residue",
-            f"stage={len(stage_taskbars)}, manager={len(taskbar_actors)}",
-            f"stage={len(stage_taskbars)}, manager={len(taskbar_actors)}",
+            f"stage={len(stage_taskbars)}, runtime={len(taskbar_actors)}",
+            f"stage={len(stage_taskbars)}, runtime={len(taskbar_actors)}",
         ),
     ]
 
@@ -437,7 +437,7 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
     ]
 
     extension_root = root / "usr/share/gnome-shell/extensions"
-    for uuid in (RUNTIME_UUID, COMMUNITY_DOCK_UUID, COMMUNITY_PANEL_UUID, HELPER_UUID):
+    for uuid in (RUNTIME_UUID, COMMUNITY_PANEL_UUID, HELPER_UUID):
         checks.append(
             _check(
                 (extension_root / uuid / "extension.js").is_file(),

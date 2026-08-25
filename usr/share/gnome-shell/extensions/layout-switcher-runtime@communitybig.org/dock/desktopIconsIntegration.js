@@ -1,3 +1,4 @@
+// Layout Switcher private Dock module.
 /*
  * The code in this file is distributed under a "1-clause BSD license",
  * which makes it compatible with GPLv2 and GPLv3 too, and others.

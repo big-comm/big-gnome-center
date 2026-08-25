@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-import {CommunityDockRuntime} from '../community-dock@communitybig.org/extension.js';
+import {DockSurfaceManager} from './dockSurface.js';
 
 import {ComponentHost} from './componentHost.js';
+import {DockActorFactory} from './dockActorFactory.js';
 import {DockAppActions} from './dockAppActions.js';
 import {DockAppMenuFactory} from './dockAppIconMenu.js';
 import {DockAppMenuActions} from './dockAppMenuActions.js';
@@ -22,9 +23,11 @@ const PANEL_SCHEMA = 'org.communitybig.panel-and-dock';
 export class DockRuntime {
     constructor(extension) {
         this._host = new ComponentHost(extension, DOCK_UUID, {
-            name: 'Community Dock',
+            name: 'Layout Switcher Dock',
             version: 1,
-        });
+        }, 'dock');
+        this._actorFactory = new DockActorFactory();
+        this._host.createDockActor = params => this._actorFactory.create(params);
         this._host.appActions = new DockAppActions();
         this._host.appMenuFactory = new DockAppMenuFactory();
         this._host.appMenuActions = new DockAppMenuActions();
@@ -49,9 +52,8 @@ export class DockRuntime {
         };
         this._host.createPanelController = () => new PanelController(
             this._host,
-            () => this._engine.docks,
+            () => this._manager?._allDocks ?? [],
         );
-        this._engine = new CommunityDockRuntime(this._host);
     }
 
     activate(profile, indicator, hover, visibility) {
@@ -71,7 +73,7 @@ export class DockRuntime {
         );
         this._host.loadStylesheet();
         try {
-            this._engine.enable();
+            this._enableSurfaces();
             this._active = true;
         } catch (error) {
             this._host.unloadStylesheet();
@@ -82,7 +84,7 @@ export class DockRuntime {
 
     deactivate() {
         if (this._active) {
-            this._engine.disable();
+            this._disableSurfaces();
             this._active = false;
             this._host.unloadStylesheet();
         }
@@ -95,17 +97,56 @@ export class DockRuntime {
     }
 
     diagnostics() {
-        const docks = this._engine.docks;
+        const docks = this._manager?._allDocks ?? [];
         return {
-            active: Boolean(this._active && this._engine.active),
+            active: Boolean(this._active && this._manager),
             profile: this._profile?.layout ?? '',
             indicator: this._indicator ?? '',
             hover: this._hover ?? '',
             visibility: this._host.visibilityModes.mode(),
             extended: this._host.placement.extended(),
-            panel: this._engine.panelController?.diagnostics() ?? {},
+            panel: this._panelController?.diagnostics() ?? {},
             actors: docks.map(dock => this._actorDiagnostics(dock)),
         };
+    }
+
+    _enableSurfaces() {
+        if (this._manager)
+            return;
+
+        let manager = null;
+        try {
+            manager = new DockSurfaceManager(this._host);
+            this._manager = manager;
+            this._indicatorController =
+                this._host.createIndicatorController(manager);
+            this._panelController = this._host.createPanelController();
+        } catch (error) {
+            const partialManager = manager ?? DockSurfaceManager.getDefault();
+            this._panelController?.destroy();
+            this._panelController = null;
+            this._indicatorController?.destroy();
+            this._indicatorController = null;
+            try {
+                partialManager?.destroy();
+            } catch (cleanupError) {
+                console.warn(
+                    `[layout-switcher] partial Dock cleanup failed: ${cleanupError}`,
+                );
+            }
+            this._manager = null;
+            throw error;
+        }
+    }
+
+    _disableSurfaces() {
+        const manager = this._manager;
+        this._panelController?.destroy();
+        this._panelController = null;
+        this._indicatorController?.destroy();
+        this._indicatorController = null;
+        manager?.destroy();
+        this._manager = null;
     }
 
     _actorDiagnostics(dock) {
