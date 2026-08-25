@@ -240,7 +240,7 @@ def test_community_dock_owns_native_panel_runtime():
     assert "window.maximized_vertically || window.fullscreen" in controller
     assert "this._applyDockFullscreen(" not in controller
     assert "this._dockFullscreenState" not in controller
-    assert "'notify::fullscreen'" not in controller
+    assert "'notify::fullscreen'" in controller
     assert "fullscreen: Boolean(monitor?.inFullscreen)" in controller
     assert "panel: this._panelController?.diagnostics()" in dock_runtime
     assert "Main.layoutManager._findActor(this._panelBox)" in controller
@@ -268,33 +268,43 @@ def test_community_dock_owns_native_panel_runtime():
     assert "resizePending: Boolean(Main.wm?._resizePending?.has(actor))" in controller
     assert "resizing: Boolean(Main.wm?._resizing?.has(actor))" in controller
     assert "const monitorFullscreen = Boolean(" in controller
-    assert "FULLSCREEN_EXIT_SETTLE_MS = 120" in controller
-    assert "FULLSCREEN_REPAIR_STAGE_TIMEOUT_MS = 500" in controller
-    assert "FULLSCREEN_EXIT_REPAIR_LIMIT = 3" in controller
-    assert "FULLSCREEN_TEXTURE_REFRESH_MS = 80" in controller
-    assert "FULLSCREEN_TEXTURE_REFRESH_RETRY_MS = 160" in controller
-    assert "FULLSCREEN_TEXTURE_REFRESH_LIMIT = 3" in controller
-    assert "this._queueFullscreenTextureRefresh();" in controller
-    assert "texture?.invalidate_size?.();" in controller
-    assert "texture?.invalidate?.();" in controller
-    assert "actor?.queue_relayout();" in controller
-    assert "actor?.queue_redraw();" in controller
-    assert "global.stage.queue_redraw();" in controller
+    assert "this._watchFullscreenSurface(actor);" in controller
+    assert "this._watchFullscreenWindowActor(actor);" in controller
+    assert "this._ensureFullscreenSurface();" in controller
+    assert "this._focusWindow?.fullscreen ||" in controller
+    assert "'child-added'" in controller
+    assert "'child-removed'" in controller
+    assert "'notify::width'" in controller
+    assert "'notify::height'" in controller
+    assert "includes('MetaSurfaceContainerActor')" in controller
+    assert "this._watchFullscreenSurfaceChildren(actor, surface);" in controller
+    assert "'notify::allocation'" in controller
+    assert "'notify::mapped'" in controller
+    assert "child.get_allocation_box()" in controller
+    assert "if (!child.mapped)" in controller
+    assert "allocation.x2 - allocation.x1" in controller
+    assert "allocation.y2 - allocation.y1" in controller
+    assert "_repairFullscreenSurface(actor, surface) {" in controller
+    assert "surface.set_position(0, 0);" in controller
+    assert "surface.queue_relayout();" not in controller
+    assert "surface.queue_redraw();" not in controller
+    assert "this._fullscreenSurfaceRepairIdle = GLib.idle_add(" in controller
+    assert "this._cancelFullscreenSurfaceRepair();" in controller
+    assert "this._repairFullscreenSurface(\n" in controller
+    assert "actor.meta_window !== window" in controller
+    assert "frame.x === monitor.x" in controller
+    assert "buffer.x === monitor.x" in controller
+    assert "!this._fullscreenSurfaceReady(surface, monitor)" in controller
+    assert "this._disconnectFullscreenWindowActor();" in controller
     assert "() => this._onFullscreenChanged()" in controller
-    assert "this._queueFullscreenExitRepair();" in controller
-    assert "window.maximized_horizontally" in controller
-    assert "const target = normal.maximized ? workArea : normal.frame" in controller
-    assert "const targetBuffer = normal.maximized ? workArea : normal.buffer" in controller
-    assert "const actorMatches = !actor" in controller
-    assert "window.unmaximize();" in controller
-    assert "window.maximize();" in controller
-    assert "window.move_resize_frame(" in controller
-    assert "'await-temporary-maximized'" in controller
-    assert "'await-restored-normal'" in controller
-    assert "this._rememberNormalGeometry();" in controller
-    assert controller.index("window.unmaximize();") < controller.index(
-        "window.maximize();"
-    )
+    assert "fullscreenSurfaceReady:" in controller
+    assert "window.unmaximize();" not in controller
+    assert "window.maximize();" not in controller
+    assert "window.move_resize_frame(" not in controller
+    assert "invalidate_size" not in controller
+    assert "FULLSCREEN_EXIT_" not in controller
+    assert "FULLSCREEN_TEXTURE_" not in controller
+    assert "_queueFullscreenTextureRefresh" not in controller
     assert controller.count("this._queueOpacityApply()") == 4
     assert "GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE" in controller
     assert "this._cancelOpacityApply();" in controller

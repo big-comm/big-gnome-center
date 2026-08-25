@@ -12,13 +12,6 @@ const VALID_VISIBILITY = new Set([
     'always-hidden',
     'intelligent',
 ]);
-const FULLSCREEN_EXIT_SETTLE_MS = 120;
-const FULLSCREEN_REPAIR_STAGE_TIMEOUT_MS = 500;
-const FULLSCREEN_EXIT_REPAIR_LIMIT = 3;
-const FULLSCREEN_TEXTURE_REFRESH_MS = 80;
-const FULLSCREEN_TEXTURE_REFRESH_RETRY_MS = 160;
-const FULLSCREEN_TEXTURE_REFRESH_LIMIT = 3;
-
 export class PanelController {
     constructor(extension, dockProvider = () => []) {
         this._settings = extension.getSettings(SETTINGS_SCHEMA);
@@ -44,13 +37,14 @@ export class PanelController {
         this._pointerReveal = false;
         this._hideTimeout = 0;
         this._opacityIdle = 0;
-        this._fullscreenExitArmed = false;
-        this._fullscreenExitTimeout = 0;
-        this._fullscreenExitRepairAttempts = 0;
-        this._fullscreenExitRepairStage = null;
-        this._fullscreenTextureTimeout = 0;
-        this._fullscreenTextureRefreshAttempts = 0;
-        this._normalGeometry = null;
+        this._fullscreenWindowActor = null;
+        this._fullscreenWindowActorSignals = [];
+        this._fullscreenSurface = null;
+        this._fullscreenSurfaceSignals = [];
+        this._fullscreenSurfaceChildSignals = [];
+        this._fullscreenSurfaceRepairIdle = 0;
+        this._repairingFullscreenSurface = false;
+        this._fullscreenSurfaceRepairCount = 0;
 
         this._panel.reactive = true;
         this._panel.track_hover = true;
@@ -70,8 +64,10 @@ export class PanelController {
             this._watchFocusWindow();
             this._applyVisibility();
         });
-        this._connect(global.display, 'restacked',
-            () => this._applyVisibility());
+        this._connect(global.display, 'restacked', () => {
+            this._applyVisibility();
+            this._ensureFullscreenSurface();
+        });
         this._connect(global.display, 'in-fullscreen-changed',
             () => this._onFullscreenChanged());
         this._connect(global.workspace_manager, 'active-workspace-changed',
@@ -113,8 +109,7 @@ export class PanelController {
     destroy() {
         this._cancelHide();
         this._cancelOpacityApply();
-        this._cancelFullscreenExitRepair();
-        this._cancelFullscreenTextureRefresh();
+        this._disconnectFullscreenWindowActor();
         this._disconnectFocusWindow();
         for (const [object, id] of this._signals.splice(0)) {
             try {
@@ -169,10 +164,13 @@ export class PanelController {
             buffer: this._rectangleDiagnostics(buffer),
             windowActor: this._windowActorDiagnostics(windowActor),
             workArea: this._rectangleDiagnostics(workArea),
-            fullscreenExitRepairArmed: this._fullscreenExitArmed,
-            fullscreenExitRepairPending: Boolean(this._fullscreenExitTimeout),
-            fullscreenExitRepairAttempts: this._fullscreenExitRepairAttempts,
-            fullscreenExitRepairStage: this._fullscreenExitRepairStage,
+            fullscreenExitRepairArmed: false,
+            fullscreenExitRepairPending: false,
+            fullscreenExitRepairAttempts: 0,
+            fullscreenExitRepairStage: null,
+            fullscreenSurfaceRepairCount: this._fullscreenSurfaceRepairCount,
+            fullscreenSurfaceReady: this._fullscreenSurfaceReady(
+                this._fullscreenSurface, monitor),
         };
     }
 
@@ -200,11 +198,7 @@ export class PanelController {
         this._disconnectFocusWindow();
         const window = global.display.focus_window;
         if (previousWindow && previousWindow !== window) {
-            this._cancelFullscreenExitRepair();
-            this._fullscreenExitArmed = false;
-            this._fullscreenExitRepairAttempts = 0;
-            this._fullscreenExitRepairStage = null;
-            this._normalGeometry = null;
+            this._disconnectFullscreenWindowActor();
         }
         if (!window)
             return;
@@ -212,6 +206,7 @@ export class PanelController {
         for (const signal of [
             'position-changed',
             'size-changed',
+            'notify::fullscreen',
             'unmanaged',
         ]) {
             try {
@@ -223,7 +218,6 @@ export class PanelController {
                 console.warn(`[community-dock] window signal ${signal} unavailable: ${error}`);
             }
         }
-        this._rememberNormalGeometry();
     }
 
     _apply() {
@@ -232,227 +226,230 @@ export class PanelController {
     }
 
     _onFullscreenChanged() {
-        if (this._focusMonitor()?.inFullscreen) {
-            this._fullscreenExitArmed = true;
-            this._fullscreenExitRepairAttempts = 0;
-            this._fullscreenExitRepairStage = null;
-            this._cancelFullscreenExitRepair();
-            this._fullscreenTextureRefreshAttempts = 0;
-            this._queueFullscreenTextureRefresh();
-        } else if (this._fullscreenExitArmed) {
-            this._cancelFullscreenTextureRefresh();
-            this._fullscreenTextureRefreshAttempts = 0;
-            this._queueFullscreenExitRepair();
+        if (this._focusWindow?.fullscreen ||
+            this._focusMonitor()?.inFullscreen) {
+            this._fullscreenSurfaceRepairCount = 0;
+            this._ensureFullscreenSurface();
+        } else {
+            this._disconnectFullscreenWindowActor();
         }
         this._applyVisibility();
     }
 
-    _queueFullscreenTextureRefresh(delay = FULLSCREEN_TEXTURE_REFRESH_MS) {
-        this._cancelFullscreenTextureRefresh();
-        this._fullscreenTextureTimeout = GLib.timeout_add(
-            GLib.PRIORITY_DEFAULT,
-            delay,
-            () => {
-                this._fullscreenTextureTimeout = 0;
-                const window = this._focusWindow;
-                if (!window?.fullscreen || !this._focusMonitor()?.inFullscreen)
-                    return GLib.SOURCE_REMOVE;
-                const actor = global.get_window_actors()
-                    .find(candidate => candidate.meta_window === window);
-                const texture = actor?.get_texture?.();
-                texture?.invalidate_size?.();
-                texture?.invalidate?.();
-                actor?.queue_relayout();
-                actor?.queue_redraw();
-                global.stage.queue_redraw();
-                this._fullscreenTextureRefreshAttempts++;
-                if (this._fullscreenTextureRefreshAttempts <
-                    FULLSCREEN_TEXTURE_REFRESH_LIMIT) {
-                    this._queueFullscreenTextureRefresh(
-                        FULLSCREEN_TEXTURE_REFRESH_RETRY_MS);
+    _ensureFullscreenSurface() {
+        const window = this._focusWindow;
+        if (!window?.fullscreen || !this._focusMonitor()?.inFullscreen)
+            return false;
+        const actor = global.get_window_actors()
+            .find(candidate => candidate.meta_window === window);
+        this._watchFullscreenWindowActor(actor);
+        this._watchFullscreenSurface(actor);
+        this._queueFullscreenSurfaceRepair();
+        return Boolean(actor);
+    }
+
+    _watchFullscreenSurface(actor) {
+        const surface = actor?.get_children().find(child =>
+            String(child.constructor?.name)
+                .includes('MetaSurfaceContainerActor'));
+        if (!surface || surface === this._fullscreenSurface)
+            return;
+
+        this._disconnectFullscreenSurface();
+        this._fullscreenSurface = surface;
+        for (const signal of [
+            'child-added',
+            'child-removed',
+            'notify::x',
+            'notify::y',
+        ]) {
+            try {
+                this._fullscreenSurfaceSignals.push([
+                    surface,
+                    surface.connect(signal, () => {
+                        if (signal === 'child-added' || signal === 'child-removed')
+                            this._watchFullscreenSurfaceChildren(actor, surface);
+                        this._queueFullscreenSurfaceRepair();
+                    }),
+                ]);
+            } catch (error) {
+                console.warn(`[community-dock] surface signal ${signal} unavailable: ${error}`);
+            }
+        }
+        this._watchFullscreenSurfaceChildren(actor, surface);
+    }
+
+    _watchFullscreenSurfaceChildren(actor, surface) {
+        this._disconnectFullscreenSurfaceChildren();
+        for (const child of surface.get_children()) {
+            for (const signal of [
+                'notify::allocation',
+                'notify::mapped',
+                'notify::x',
+                'notify::y',
+                'notify::width',
+                'notify::height',
+            ]) {
+                try {
+                    this._fullscreenSurfaceChildSignals.push([
+                        child,
+                        child.connect(signal,
+                            () => this._queueFullscreenSurfaceRepair()),
+                    ]);
+                } catch (error) {
+                    console.warn(`[community-dock] surface child signal ${signal} unavailable: ${error}`);
                 }
+            }
+        }
+    }
+
+    _watchFullscreenWindowActor(actor) {
+        if (!actor || actor === this._fullscreenWindowActor)
+            return;
+
+        this._disconnectFullscreenWindowActor();
+        this._fullscreenWindowActor = actor;
+        const repair = () => {
+            this._watchFullscreenSurface(actor);
+            this._queueFullscreenSurfaceRepair();
+        };
+        for (const signal of [
+            'child-added',
+            'child-removed',
+            'notify::x',
+            'notify::y',
+            'notify::width',
+            'notify::height',
+        ]) {
+            try {
+                this._fullscreenWindowActorSignals.push([
+                    actor,
+                    actor.connect(signal, repair),
+                ]);
+            } catch (error) {
+                console.warn(`[community-dock] window actor signal ${signal} unavailable: ${error}`);
+            }
+        }
+    }
+
+    _disconnectFullscreenWindowActor() {
+        for (const [object, id] of
+            this._fullscreenWindowActorSignals.splice(0)) {
+            try {
+                object.disconnect(id);
+            } catch (error) {
+                // Mutter may dispose the actor during workspace teardown.
+            }
+        }
+        this._fullscreenWindowActor = null;
+        this._disconnectFullscreenSurface();
+    }
+
+    _disconnectFullscreenSurface() {
+        this._cancelFullscreenSurfaceRepair();
+        this._disconnectFullscreenSurfaceChildren();
+        for (const [object, id] of this._fullscreenSurfaceSignals.splice(0)) {
+            try {
+                object.disconnect(id);
+            } catch (error) {
+                // Mutter may dispose the surface before the window actor.
+            }
+        }
+        this._fullscreenSurface = null;
+        this._repairingFullscreenSurface = false;
+    }
+
+    _disconnectFullscreenSurfaceChildren() {
+        for (const [object, id] of
+            this._fullscreenSurfaceChildSignals.splice(0)) {
+            try {
+                object.disconnect(id);
+            } catch (error) {
+                // Mutter may replace a surface during fullscreen negotiation.
+            }
+        }
+    }
+
+    _queueFullscreenSurfaceRepair() {
+        if (this._fullscreenSurfaceRepairIdle)
+            return;
+        this._fullscreenSurfaceRepairIdle = GLib.idle_add(
+            GLib.PRIORITY_DEFAULT_IDLE,
+            () => {
+                this._fullscreenSurfaceRepairIdle = 0;
+                this._repairFullscreenSurface(
+                    this._fullscreenWindowActor,
+                    this._fullscreenSurface,
+                );
                 return GLib.SOURCE_REMOVE;
             },
         );
     }
 
-    _cancelFullscreenTextureRefresh() {
-        if (!this._fullscreenTextureTimeout)
+    _cancelFullscreenSurfaceRepair() {
+        if (!this._fullscreenSurfaceRepairIdle)
             return;
-        GLib.Source.remove(this._fullscreenTextureTimeout);
-        this._fullscreenTextureTimeout = 0;
+        GLib.Source.remove(this._fullscreenSurfaceRepairIdle);
+        this._fullscreenSurfaceRepairIdle = 0;
+    }
+
+    _fullscreenSurfaceReady(surface, monitor) {
+        if (!surface || !monitor)
+            return false;
+        try {
+            return surface.get_children().some(child => {
+                if (!child.mapped)
+                    return false;
+                const allocation = child.get_allocation_box();
+                return Math.round(allocation.x1) === 0 &&
+                    Math.round(allocation.y1) === 0 &&
+                    Math.round(allocation.x2 - allocation.x1) ===
+                        monitor.width &&
+                    Math.round(allocation.y2 - allocation.y1) ===
+                        monitor.height;
+            });
+        } catch (error) {
+            // Mutter may replace or dispose the surface during negotiation.
+            return false;
+        }
+    }
+
+    _repairFullscreenSurface(actor, surface) {
+        if (this._repairingFullscreenSurface || !actor || !surface)
+            return;
+        const window = this._focusWindow;
+        const monitor = this._focusMonitor();
+        if (!window?.fullscreen || !monitor?.inFullscreen ||
+            actor.meta_window !== window)
+            return;
+
+        const frame = window.get_frame_rect();
+        const buffer = window.get_buffer_rect();
+        const geometryReady = frame.x === monitor.x &&
+            frame.y === monitor.y && frame.width === monitor.width &&
+            frame.height === monitor.height && buffer.x === monitor.x &&
+            buffer.y === monitor.y && buffer.width === monitor.width &&
+            buffer.height === monitor.height &&
+            Math.round(actor.x) === monitor.x &&
+            Math.round(actor.y) === monitor.y &&
+            Math.round(actor.width) === monitor.width &&
+            Math.round(actor.height) === monitor.height;
+        if (!geometryReady || !this._fullscreenSurfaceReady(surface, monitor) ||
+            (Math.round(surface.x) === 0 && Math.round(surface.y) === 0))
+            return;
+
+        this._repairingFullscreenSurface = true;
+        try {
+            surface.set_position(0, 0);
+            this._fullscreenSurfaceRepairCount++;
+        } finally {
+            this._repairingFullscreenSurface = false;
+        }
     }
 
     _onWindowGeometryChanged() {
         this._applyVisibility();
-        if (this._advanceFullscreenExitRepair())
-            return;
-        if (this._fullscreenExitArmed &&
-            !this._focusWindow?.fullscreen &&
-            !this._focusMonitor()?.inFullscreen)
-            this._queueFullscreenExitRepair();
-        else
-            this._rememberNormalGeometry();
-    }
-
-    _queueFullscreenExitRepair(
-        delay = FULLSCREEN_EXIT_SETTLE_MS) {
-        this._cancelFullscreenExitRepair();
-        this._fullscreenExitTimeout = GLib.timeout_add(
-            GLib.PRIORITY_DEFAULT,
-            delay,
-            () => {
-                this._fullscreenExitTimeout = 0;
-                this._repairFullscreenExit();
-                return GLib.SOURCE_REMOVE;
-            },
-        );
-    }
-
-    _cancelFullscreenExitRepair() {
-        if (!this._fullscreenExitTimeout)
-            return;
-        GLib.Source.remove(this._fullscreenExitTimeout);
-        this._fullscreenExitTimeout = 0;
-    }
-
-    _repairFullscreenExit() {
-        const window = this._focusWindow;
-        const monitor = this._focusMonitor();
-        if (!window || !monitor || window.fullscreen || monitor.inFullscreen)
-            return;
-
-        if (this._fullscreenExitRepairStage) {
-            this._fullscreenExitRepairStage = null;
-            this._fullscreenExitArmed = false;
-            return;
-        }
-
-        const normal = this._normalGeometry;
-        if (!normal || normal.window !== window || window.minimized ||
-            !window.showing_on_its_workspace()) {
-            this._fullscreenExitArmed = false;
-            this._fullscreenExitRepairStage = null;
-            return;
-        }
-
-        const frame = window.get_frame_rect();
-        const buffer = window.get_buffer_rect();
-        const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
-        const target = normal.maximized ? workArea : normal.frame;
-        const targetBuffer = normal.maximized ? workArea : normal.buffer;
-        const actor = global.get_window_actors()
-            .find(candidate => candidate.meta_window === window);
-        const frameMatches = frame.x === target.x && frame.y === target.y &&
-            frame.width === target.width && frame.height === target.height;
-        const bufferMatches = buffer.x === targetBuffer.x &&
-            buffer.y === targetBuffer.y && buffer.width === targetBuffer.width &&
-            buffer.height === targetBuffer.height;
-        const actorMatches = !actor || (
-            Math.round(actor.x) === targetBuffer.x &&
-            Math.round(actor.y) === targetBuffer.y &&
-            Math.round(actor.width) === targetBuffer.width &&
-            Math.round(actor.height) === targetBuffer.height
-        );
-        if (frameMatches && bufferMatches && actorMatches) {
-            this._fullscreenExitArmed = false;
-            this._fullscreenExitRepairAttempts = 0;
-            this._rememberNormalGeometry();
-            return;
-        }
-
-        if (this._fullscreenExitRepairAttempts >= FULLSCREEN_EXIT_REPAIR_LIMIT) {
-            this._fullscreenExitArmed = false;
-            this._fullscreenExitRepairStage = null;
-            return;
-        }
-        this._fullscreenExitRepairAttempts++;
-
-        if (normal.maximized) {
-            this._fullscreenExitRepairStage = 'await-unmaximized';
-            window.unmaximize();
-        } else {
-            this._fullscreenExitRepairStage = 'await-temporary-maximized';
-            window.maximize();
-        }
-        this._queueFullscreenExitRepair(FULLSCREEN_REPAIR_STAGE_TIMEOUT_MS);
-    }
-
-    _advanceFullscreenExitRepair() {
-        const stage = this._fullscreenExitRepairStage;
-        const window = this._focusWindow;
-        const normal = this._normalGeometry;
-        if (!stage || !window || normal?.window !== window ||
-            window.fullscreen || this._focusMonitor()?.inFullscreen)
-            return false;
-
-        const maximized = window.maximized_horizontally &&
-            window.maximized_vertically;
-        const frame = window.get_frame_rect();
-        const workArea = Main.layoutManager.getWorkAreaForMonitor(
-            window.get_monitor());
-        const matchesWorkArea = frame.x === workArea.x &&
-            frame.y === workArea.y && frame.width === workArea.width &&
-            frame.height === workArea.height;
-        if (stage === 'await-unmaximized' && !maximized &&
-            !matchesWorkArea) {
-            this._fullscreenExitRepairStage = 'await-maximized';
-            window.maximize();
-        } else if (stage === 'await-maximized' && maximized &&
-            matchesWorkArea) {
-            this._fullscreenExitRepairStage = null;
-        } else if (stage === 'await-temporary-maximized' && maximized &&
-            matchesWorkArea) {
-            this._fullscreenExitRepairStage = 'await-restored-normal';
-            window.unmaximize();
-        } else if (stage === 'await-restored-normal' && !maximized &&
-            !matchesWorkArea) {
-            this._fullscreenExitRepairStage = null;
-            const target = normal.frame;
-            window.move_resize_frame(
-                false,
-                target.x,
-                target.y,
-                target.width,
-                target.height,
-            );
-        } else {
-            return false;
-        }
-
-        this._queueFullscreenExitRepair(
-            this._fullscreenExitRepairStage
-                ? FULLSCREEN_REPAIR_STAGE_TIMEOUT_MS
-                : FULLSCREEN_EXIT_SETTLE_MS,
-        );
-        return true;
-    }
-
-    _rememberNormalGeometry() {
-        const window = this._focusWindow;
-        if (!window || window.fullscreen || this._focusMonitor()?.inFullscreen ||
-            this._fullscreenExitArmed)
-            return;
-        const frame = window.get_frame_rect();
-        const buffer = window.get_buffer_rect();
-        this._normalGeometry = {
-            window,
-            frame: {
-                x: frame.x,
-                y: frame.y,
-                width: frame.width,
-                height: frame.height,
-            },
-            buffer: {
-                x: buffer.x,
-                y: buffer.y,
-                width: buffer.width,
-                height: buffer.height,
-            },
-            maximized: window.maximized_horizontally &&
-                window.maximized_vertically,
-        };
-        this._fullscreenExitRepairAttempts = 0;
+        this._ensureFullscreenSurface();
     }
 
     _applyOpacity() {

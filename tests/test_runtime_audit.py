@@ -59,6 +59,8 @@ def _snapshot(**changes) -> Snapshot:
         taskbar_actors = ([{"monitor": 0, "edge": edge, "width": 1920, "height": 40}]
                           if surface == "taskbar" else [])
         values["runtime_diagnostics"] = {
+            "monitors": [{"index": 0, "x": 0, "y": 0, "width": 1920, "height": 1080}],
+            "primaryMonitor": 0,
             "runtime": {
                 "build": 4,
                 "layout": layout,
@@ -281,3 +283,18 @@ def test_actor_audit_rejects_a_ghost_dock(tmp_path):
     failures = _failures(audit_snapshot(snapshot, tmp_path))
 
     assert "dock-stage-residue" in failures
+
+
+def test_actor_audit_requires_one_dock_per_logical_monitor(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    diagnostics["monitors"] = [
+        {"index": 0, "x": 0, "y": 0, "width": 1920, "height": 1080},
+        {"index": 1, "x": 1920, "y": 0, "width": 1280, "height": 1024},
+    ]
+    snapshot = _snapshot(runtime_diagnostics=diagnostics)
+
+    failures = _failures(audit_snapshot(snapshot, tmp_path))
+
+    assert failures["dock-monitor-coverage"] == "expected monitors=[0, 1], got [0]"

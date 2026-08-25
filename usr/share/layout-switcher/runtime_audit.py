@@ -254,6 +254,11 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     taskbar_actors = taskbar.get("actors") or []
     stage_docks = stage.get("dock") or []
     stage_taskbars = stage.get("taskbar") or []
+    logical_monitors = diagnostics.get("monitors") or []
+    logical_monitor_indices = sorted(
+        monitor.get("index") for monitor in logical_monitors
+        if isinstance(monitor.get("index"), int)
+    )
     surface = expected.get("surface")
     edge = expected.get("edge")
     expected_docks = surface == "dock"
@@ -311,8 +316,18 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     ]
 
     if expected_docks:
+        dock_monitor_indices = sorted(
+            actor.get("monitor") for actor in dock_actors
+            if isinstance(actor.get("monitor"), int)
+        )
         checks.extend(
             (
+                _check(
+                    dock_monitor_indices == logical_monitor_indices,
+                    "dock-monitor-coverage",
+                    f"monitors={logical_monitor_indices}",
+                    f"expected monitors={logical_monitor_indices}, got {dock_monitor_indices}",
+                ),
                 _check(
                     dock.get("visibility") == expected.get("visibility"),
                     "dock-visibility",

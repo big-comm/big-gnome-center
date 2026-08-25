@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-25
-Safe checkpoint: `8677d42`
-Status: Dock runtime extraction complete; Panel/Taskbar extraction pending
+Safe checkpoint: `aa6781b`
+Status: Dock runtime extraction and acceptance complete; Panel/Taskbar extraction pending
 
 ## Purpose
 
@@ -120,13 +120,48 @@ sessions passed 12 reference states and all eight surface-transition directions.
 - [x] Port bottom placement for BigGnome.
 - [x] Port left placement for G-Unity.
 - [x] Validate repeated slow and rapid fullscreen changes on GNOME 50 and 51.
-- [ ] Validate overview, workspace changes, and the complete monitor matrix.
+- [x] Validate overview, workspace changes, and the complete monitor matrix.
 - [x] Validate teardown/re-enable behavior on GNOME 50 and GNOME 51 after
   removing replaced inherited services.
 - [x] Remove dormant App Spread, workspace isolation, and numeric-shortcut
   services; legacy App Spread actions fall back to accepted previews.
 - [x] Move executable Dock modules into the unified runtime.
 - [x] Remove the standalone Community Dock entry point, metadata, and lifecycle.
+
+Evidence: GNOME 50.4 and GNOME 51.beta passed BigGnome and G-Unity with two
+logical monitors, both primary-monitor choices, and primary-monitor removal.
+Each layout also passed 10 slow and 25 rapid overview transitions plus 10 slow
+and 25 rapid workspace transitions on both Shell versions. Strict audits found
+one Dock actor per logical monitor and no stage residue. The complete local
+suite passed with `531 passed`.
+
+Fullscreen regression evidence: runtime build 49 passed the first F11 entry
+after moving a non-maximized Brave window, then 10 slow and 20 rapid cycles from
+both non-maximized and maximized states on GNOME 50.4 and GNOME 51.beta. Every
+accepted sample required frame, buffer, `MetaWindowActor`, and
+`MetaSurfaceContainerActorWayland` at `0,0 1280x800`, a mapped monitor-sized
+child surface, hidden Shell chrome, and no black margins. Every exit restored
+the exact original frame and buffer. Strict audits report zero failures and
+warnings; current Shell journals are clean.
+
+The root cause was a late Wayland child allocation after Mutter had centered
+the surface container over its intentional black fullscreen background. Texture
+invalidation did not change container placement. The final compatibility guard
+observes container replacement and child allocation, coalesces the real events
+through one idle, and moves only the internal container after all native
+fullscreen and exact-geometry guards pass. It never changes application window
+state or geometry. This matches the ownership boundary used by official Dash to
+Dock and Dash to Panel.
+
+Permanent F11 acceptance gate:
+
+1. Move a non-maximized window away from `0,0`; test its first F11 entry.
+2. Run 10 slow and 20 rapid cycles from non-maximized and maximized states.
+3. Repeat the complete matrix on GNOME 50 and GNOME 51.
+4. Require surface-container and mapped-child telemetry, not only window/frame
+   geometry.
+5. Require screenshots and exact exit restoration; source contracts are not
+   visual acceptance evidence.
 
 Gates:
 

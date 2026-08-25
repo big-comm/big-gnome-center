@@ -2,7 +2,7 @@
 
 > Active continuation document. Read this file before changing the repository.
 > Update the checklist and decision log after every verified task.
-> Last updated: 2026-08-22.
+> Last updated: 2026-08-25.
 
 ## Current objective
 
@@ -1439,3 +1439,84 @@ Append one entry per completed change:
 - GNOME 51 GSConnect 72 remains in its pre-existing incompatible state
   (`Cannot inherit from a final type`); its metadata supports Shell only
   through GNOME 50.
+
+## 2026-08-25 — Dock monitor, overview, and workspace matrix accepted
+
+- The live audit now requires the runtime Dock monitor set to match the logical
+  monitor set. A focused regression proves that one actor across two monitors
+  fails `dock-monitor-coverage`.
+- GNOME 50.4 and GNOME 51.beta passed BigGnome and G-Unity with two displays,
+  monitor 0 and monitor 1 as primary, and removal of the active primary. Every
+  converged state had one Dock actor per monitor and no stage residue.
+- Each Dock layout passed 10 slow and 25 rapid overview transitions on both
+  Shell versions. Rapid Super input can be coalesced and finish open; one
+  explicit final toggle closes it without actor drift.
+- Each Dock layout passed 10 slow and 25 rapid transitions between a Brave
+  workspace and an empty workspace on both Shell versions. Final strict audits
+  reported zero failures and warnings.
+- Focused suite: `58 passed`. Full suite: `531 passed`, with one known PyGI
+  deprecation warning. PKGBUILD and package versions are unchanged.
+- Current original layouts intentionally request Dock actors on every logical
+  monitor. A future primary/all-monitors product control should be implemented
+  per component after Panel migration, not inferred from GNOME display state.
+
+## 2026-08-25 — Wayland F11 regression repaired at the surface boundary
+
+- The build 43 fullscreen acceptance above was incomplete. Frame, buffer, and
+  `MetaWindowActor` telemetry did not prove rendered-surface placement. Manual
+  coverage missed the first entry after moving a non-maximized window.
+- Broken captures had frame, buffer, and window actor at `0,0 1280x800`, while
+  `MetaSurfaceContainerActorWayland` retained the normal-window offset. The
+  offset exactly matched the visible black top/side margins.
+- Mutter's `meta-window-actor-wayland.c` intentionally creates a black
+  fullscreen background and centers the surface container while the mapped
+  client surface is not an opaque monitor-sized allocation. A late Wayland
+  allocation can become monitor-sized without another geometry sync, leaving
+  the container centered.
+- Build 43 invalidated `MetaShapedTexture` at 80/240/400 ms. It could not repair
+  the container offset or a late container replacement. Builds 44/45 added
+  container tracking and the missing `notify::fullscreen` trigger, but retained
+  fullscreen-exit geometry repair. Build 46 still reproduced rapid-exit drift.
+- Official Dash to Dock and Dash to Panel source confirms the ownership
+  boundary: extensions control chrome visibility, fullscreen tracking,
+  intellihide, and struts; they do not maximize, unmaximize, move, or resize
+  application windows and do not replace Mutter's fullscreen engine.
+- A runtime-disabled GNOME 50 control passed 10 slow and 20 rapid cycles with
+  exact native exit restoration. This proved the runtime exit repair caused the
+  drift. Build 47 removed all window-state and frame-geometry manipulation plus
+  blind fullscreen timers.
+- Final runtime build 49 keeps the native `in-fullscreen-changed` path. A
+  Wayland-only compatibility guard watches actor/container replacement and
+  mapped child allocation. It coalesces signals through one idle, then sets the
+  container to `0,0` only when window and monitor fullscreen flags agree and
+  frame, buffer, actor, and a mapped child allocation exactly cover the monitor.
+  No Dock, panel, strut, maximize, unmaximize, or `move_resize_frame` operation
+  occurs in this path.
+- GNOME 51.beta BigGnome final results: moved non-maximized first entry passed;
+  non-maximized `10 slow + 20 rapid` passed; maximized `10 slow + 20 rapid`
+  passed. Every exit restored the exact original frame and buffer. The shim was
+  exercised during the maximized matrix.
+- GNOME 50.4 G-Unity final results: moved non-maximized first entry passed;
+  contained non-maximized `10 slow + 20 rapid` passed; maximized
+  `10 slow + 20 rapid` passed. Every exit restored the exact original frame and
+  buffer. The shim was exercised during the maximized matrix.
+- All accepted fullscreen samples required frame, buffer, window actor, and
+  surface container `0,0 1280x800`, a mapped monitor-sized child surface,
+  hidden panel/Dock, and a screenshot without black margins.
+- Final strict audits: zero failures and zero warnings on both VMs. Current
+  build 49 Shell PIDs have no JavaScript, surface-allocation, or compatibility
+  guard warnings. Both VMs end with exactly one `1280x800` monitor.
+- Regression gate: always test the first F11 entry after moving a non-maximized
+  window, then 10 slow and 20 rapid cycles from both maximized states on GNOME
+  50 and 51. Require surface-container telemetry and screenshots. Source-text
+  contracts alone are not behavioral or visual acceptance evidence.
+- Focused suite: `79 passed`. Full suite: `531 passed`; one known PyGI
+  deprecation warning. JavaScript syntax and `git diff --check` pass.
+- Local and both VM SHA-256: `dockPanelController.js`
+  `09b098b9249f36f816e36e14d03a6030605adcd29d2576572c42fc3b40a42900`;
+  `runtimeController.js`
+  `8ccb7fa1a884e5ed45a5d361c02c3076e5bda922991de4db3ddb838e27082dff`;
+  `runtime_audit.py`
+  `80d489697055e64e4e59e617c39364727906bba9bed9960b7a3ceb90c158d9e2`.
+  Runtime payload-tree hash:
+  `822281b9fa51a0b92b5ee20f93dbba1379677f28f286807288c7e4e6e1d71114`.

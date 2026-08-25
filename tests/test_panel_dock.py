@@ -573,10 +573,15 @@ def test_runtime_leaves_dock_fullscreen_tracking_to_native_engine():
     assert "this._restoreDockTracking" not in controller
     assert "this._applyDockFullscreen" not in controller
     assert "this._dockFullscreenState" not in controller
-    assert "notify::fullscreen" not in controller
+    assert "'notify::fullscreen'" in controller
     assert "Meta.LaterType.BEFORE_REDRAW" not in controller
     assert "Main.layoutManager._updateVisibility?.()" not in controller
     assert "'in-fullscreen-changed'" in controller
     assert "const monitorFullscreen = Boolean(" in controller
+    assert "this._watchFullscreenSurface(actor);" in controller
+    assert "this._watchFullscreenWindowActor(actor);" in controller
+    assert "this._ensureFullscreenSurface();" in controller
+    assert "surface.set_position(0, 0);" in controller
+    assert "fullscreenSurfaceRepairCount" in controller
     assert "trackFullscreen: true" in native_dock
     assert "'in-fullscreen-changed'" in native_dock
