@@ -60,7 +60,7 @@ import {
   DESKTOPSETTINGS,
   PERSISTENTSTORAGE,
   tracker,
-} from './extension.js'
+} from './runtimeContext.js'
 import {
   InjectionManager,
 } from 'resource:///org/gnome/shell/extensions/extension.js'

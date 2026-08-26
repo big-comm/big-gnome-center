@@ -95,7 +95,15 @@ def _snapshot(**changes) -> Snapshot:
                     }.get(layout),
                     "actors": dock_actors,
                 },
-                "taskbar": {"active": surface == "taskbar", "actors": taskbar_actors},
+                "taskbar": {
+                    "active": surface == "taskbar",
+                    "actors": taskbar_actors,
+                    "lifecycle": {
+                        "managerOwned": surface == "taskbar",
+                        "globalOwned": surface == "taskbar",
+                        "activationPending": False,
+                    },
+                },
             },
             "runtimeError": "",
             "stage": {
@@ -298,3 +306,45 @@ def test_actor_audit_requires_one_dock_per_logical_monitor(tmp_path):
     failures = _failures(audit_snapshot(snapshot, tmp_path))
 
     assert failures["dock-monitor-coverage"] == "expected monitors=[0, 1], got [0]"
+
+
+def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Hybrid")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    taskbar = dict(runtime["taskbar"])
+    taskbar["lifecycle"] = {
+        "managerOwned": False,
+        "globalOwned": True,
+        "activationPending": True,
+    }
+    runtime["taskbar"] = taskbar
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(active_layout="Hybrid", runtime_diagnostics=diagnostics),
+            tmp_path,
+            strict_layout=True,
+        )
+    )
+
+    assert "taskbar-manager-ownership" in failures
+    assert "taskbar-activation-settled" in failures
+
+
+def test_audit_rejects_null_and_duplicate_shell_stylesheets(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    diagnostics["shellTheme"] = {
+        "customStylesheets": ["file:///panel.css", "file:///panel.css", "<null>"],
+    }
+
+    failures = _failures(
+        audit_snapshot(_snapshot(runtime_diagnostics=diagnostics), tmp_path)
+    )
+
+    assert "shell-theme-stylesheets" in failures
+    assert "shell-theme-stylesheet-uniqueness" in failures

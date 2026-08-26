@@ -61,6 +61,7 @@
 
 /* Match Kiwi's compact status area without keeping Kiwi as a dependency. */
 #panel.layout-switcher-g-unity-panel .panel-button {
+    color: #fafafb;
     -natural-hpadding: 8px;
     -minimum-hpadding: 4px;
 }

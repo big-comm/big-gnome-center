@@ -117,7 +117,7 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 65;
+const HELPER_BUILD = 68;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -183,6 +183,9 @@ function logHelper(msg) {
 const VALID_COLOR_SCHEMES = new Set([
     'prefer-dark', 'prefer-light', 'force-dark', 'force-light',
 ]);
+const FIXED_DARK_LAYOUTS = new Set([
+    'BigGnome', 'Desk UX', 'G-Unity', 'Minimal',
+]);
 
 // The stock `light-style` extension mutates Main.sessionMode.colorScheme (it
 // sets 'prefer-light' on enable and restores a saved value on disable). Toggled
@@ -202,12 +205,15 @@ const VALID_COLOR_SCHEMES = new Set([
 // further notify to recompute the stylesheet — so checking the current scheme is
 // not enough; we must drive Main._loadDefaultStylesheet() unconditionally so
 // _defaultCssStylesheet is non-null before loadTheme() reads it.
-function ensureValidColorScheme() {
-    const repaired = !VALID_COLOR_SCHEMES.has(Main.sessionMode.colorScheme);
-    if (repaired)
+function ensureValidColorScheme(forceDark = false) {
+    const previous = Main.sessionMode.colorScheme;
+    const repaired = !VALID_COLOR_SCHEMES.has(previous);
+    if (forceDark)
+        Main.sessionMode.colorScheme = 'force-dark';
+    else if (repaired)
         Main.sessionMode.colorScheme = 'prefer-dark';
     St.Settings.get().notify('color-scheme');
-    return repaired;
+    return repaired || Main.sessionMode.colorScheme !== previous;
 }
 
 export default class LayoutSwitcherHelper extends Extension {
@@ -393,6 +399,7 @@ export default class LayoutSwitcherHelper extends Extension {
 
         return JSON.stringify({
             helperBuild: HELPER_BUILD,
+            shellTheme: this._shellThemeDiagnostics(),
             runtime,
             runtimeError,
             stage: this._runtimeActors(),
@@ -405,6 +412,18 @@ export default class LayoutSwitcherHelper extends Extension {
             })),
             primaryMonitor: Main.layoutManager.primaryIndex,
         });
+    }
+
+    _shellThemeDiagnostics() {
+        const theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
+        return {
+            sessionColorScheme: Main.sessionMode.colorScheme ?? '',
+            stylesheetName: Main.sessionMode.stylesheetName ?? '',
+            themeResourceName: Main.sessionMode.themeResourceName ?? '',
+            applicationStylesheet: Main.getThemeStylesheet()?.get_uri?.() ?? '',
+            customStylesheets: (theme?.get_custom_stylesheets?.() ?? [])
+                .map(file => file?.get_uri?.() ?? '<null>'),
+        };
     }
 
     _runtimeActors() {
@@ -2206,7 +2225,9 @@ export default class LayoutSwitcherHelper extends Extension {
         // The state is final on disk and nothing re-themes behind us: repair
         // the color scheme and rebuild the base stylesheet exactly once,
         // BEFORE the appearance extensions enable on top of it.
-        if (ensureValidColorScheme())
+        const targetLayout = this._pendingLayoutLabel ||
+            this._readActiveLayoutLabel();
+        if (ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout)))
             steps.push('fix colorScheme');
         if (req.theme_reload !== false) {
             try {
@@ -2214,6 +2235,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 steps.push('loadTheme');
             } catch (e) {
                 steps.push(`loadTheme ERR ${e}`);
+                logHelper(`loadTheme stack: ${e.stack ?? e}`);
             }
             await this._sleep(50);
         }

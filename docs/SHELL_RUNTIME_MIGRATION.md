@@ -1,7 +1,7 @@
 # Shell Runtime Migration Plan
 
-Last update: 2026-08-23
-Status: safe unified-controller checkpoint; compatibility extraction pending
+Last update: 2026-08-26
+Status: Dock extraction complete; Taskbar/Panel lifecycle extraction accepted
 
 The actionable remaining-work checklist is maintained in
 [`SHELL_RUNTIME_REMAINING_WORK.md`](SHELL_RUNTIME_REMAINING_WORK.md).
@@ -212,18 +212,20 @@ Gate: upgrade and clean-install tests accepted on GNOME 50.
 
 ### Phase 3 — Focused dock runtime
 
-- [ ] Extract only features used by BigGnome and G-Unity.
-- [ ] Preserve bottom and left placement.
+- [x] Extract only features used by BigGnome and G-Unity.
+- [x] Preserve bottom and left placement.
 - [x] Apply the layout-owned indicator profile before Dock activation.
-- [ ] Preserve favorites, running apps, badges, menus, and hiding.
-- [ ] Remove unused Dock preferences, UI, and runtime branches.
-- [ ] Compare both layouts against the accepted baseline.
+- [x] Preserve favorites, running apps, badges, menus, and hiding.
+- [x] Remove unused Dock preferences, UI, and runtime branches.
+- [x] Compare both layouts against the accepted baseline.
 
 Gate: BigGnome and G-Unity accepted before inherited Dock removal.
 
 ### Phase 4 — Focused taskbar and panel runtime
 
 - [ ] Extract only features used by Classic, Hybrid, and Desk UX.
+- [x] Own Taskbar/Panel construction, cancellation, and teardown in the unified
+  runtime.
 - [ ] Preserve system indicators, clock, taskbar boundaries, and menus.
 - [x] Apply the layout-owned indicator profile before Taskbar activation.
 - [ ] Preserve each layout's remaining icon and label rules.
@@ -286,11 +288,18 @@ Gate: user approval for testing repository publication.
   Desk UX use Desk UX; Hybrid uses Hybrid; G-Unity uses dot; Classic uses none.
 - Applying an original layout removes only that layout's runtime overrides.
   Overrides belonging to other layouts remain intact.
-- Do not construct `DockManager` directly from `DockRuntime` yet. The live
-  Classic to BigGnome transition exposed teardown callbacks that outlive their
-  cleared extension settings. Keep the `CommunityDockRuntime` rollback boundary
-  until that lifecycle is isolated.
-- Dock and Taskbar compatibility engines remain internal rollback modules.
-- Next extraction slice: move one accepted Dock behavior at a time out of the
-  compatibility engine, beginning only after this indicator checkpoint passes
-  live GNOME 50 validation.
+- Dock construction, behavior, executable modules, and reverse-order teardown
+  are owned by the unified runtime. The retired Dock directory is a resource
+  and schema host only.
+- The Taskbar compatibility engine remains the only internal rollback module.
+- Runtime build 51 owns `PanelManager` construction and teardown through
+  `TaskbarSurfaceManager`. Inherited visual modules retain their accepted
+  behavior behind a separate runtime context; the old entry point is a thin
+  rollback adapter. Component stylesheets follow Shell theme replacement and
+  unload from the current `St.Theme`, preventing duplicate/null CSS state.
+- GNOME 50.4 passed all three affected surface cycles. GNOME 51.beta passed
+  fresh activation, Taskbar-to-Dock-to-Taskbar, and direct disable/enable. The
+  corrected runner then passed all eight surface directions on both versions.
+  Strict audits require lifecycle ownership and zero actor residue.
+- Next extraction slice: preserve and port application-button behavior without
+  changing system status-area, clock, menu, indicator, or layout geometry.

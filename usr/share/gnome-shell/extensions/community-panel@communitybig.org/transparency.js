@@ -21,7 +21,7 @@ import St from 'gi://St'
 
 import * as Proximity from './proximity.js'
 import * as Utils from './utils.js'
-import { SETTINGS } from './extension.js'
+import { SETTINGS } from './runtimeContext.js'
 
 export const DynamicTransparency = class {
   constructor(dtpPanel) {

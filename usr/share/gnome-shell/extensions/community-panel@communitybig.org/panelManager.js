@@ -33,7 +33,7 @@ import * as PanelSettings from './panelSettings.js'
 import * as Proximity from './proximity.js'
 import * as Utils from './utils.js'
 import * as DesktopIconsIntegration from './desktopIconsIntegration.js'
-import { DTP_EXTENSION, SETTINGS, tracker } from './extension.js'
+import { DTP_EXTENSION, SETTINGS, tracker } from './runtimeContext.js'
 
 import GLib from 'gi://GLib'
 import GObject from 'gi://GObject'

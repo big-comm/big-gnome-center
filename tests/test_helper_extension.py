@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 65" in source
+    assert "const HELPER_BUILD = 68" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -93,7 +93,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 65" in source
+    assert "const HELPER_BUILD = 68" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -234,11 +234,33 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert ".dash-background" in stylesheet
     assert "background-color: transparent" in stylesheet
     assert "#panel.layout-switcher-g-unity-panel .panel-button" in stylesheet
+    g_unity_buttons = stylesheet.split(
+        "#panel.layout-switcher-g-unity-panel .panel-button {", 1
+    )[1].split("}", 1)[0]
+    assert "color: #fafafb;" in g_unity_buttons
     assert "-natural-hpadding: 8px" in stylesheet
     assert "Gjs_ui_dateMenu_DateMenuButton.panel-button" in stylesheet
     assert "_setupGUnityDndAction" in source
     assert "notifications-disabled-symbolic" in source
     assert "dndToggle.hide()" in source
+
+
+def test_fixed_dark_layouts_resolve_the_shell_stylesheet_before_enable():
+    source = HELPER.read_text()
+
+    assert "const FIXED_DARK_LAYOUTS = new Set([" in source
+    for layout in ("BigGnome", "Desk UX", "G-Unity", "Minimal"):
+        assert f"'{layout}'" in source.split("const FIXED_DARK_LAYOUTS", 1)[1].split(
+            "]);", 1
+        )[0]
+    assert "Main.sessionMode.colorScheme = 'force-dark'" in source
+    assert "ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout))" in source
+    color_sync = source.index(
+        "ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout))"
+    )
+    theme_load = source.index("Main.loadTheme();", color_sync)
+    first_enable = source.index("mgr.enableExtension(uuid)", theme_load)
+    assert color_sync < theme_load < first_enable
 
 
 def test_g_unity_shell_is_restored_before_extensions_are_disabled():

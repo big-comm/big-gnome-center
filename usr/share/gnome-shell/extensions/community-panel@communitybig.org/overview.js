@@ -31,7 +31,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 import * as WindowManager from 'resource:///org/gnome/shell/ui/windowManager.js'
 import { WindowPreview } from 'resource:///org/gnome/shell/ui/windowPreview.js'
 import { InjectionManager } from 'resource:///org/gnome/shell/extensions/extension.js'
-import { SETTINGS } from './extension.js'
+import { SETTINGS } from './runtimeContext.js'
 
 const GS_SWITCH_HOTKEYS_KEY = 'switch-to-application-'
 const GS_OPEN_HOTKEYS_KEY = 'open-new-window-application-'

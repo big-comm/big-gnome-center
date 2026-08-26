@@ -41,7 +41,7 @@ import * as PanelSettings from './panelSettings.js'
 import * as Pos from './panelPositions.js'
 import * as Utils from './utils.js'
 import * as WindowPreview from './windowPreview.js'
-import { SETTINGS, tracker } from './extension.js'
+import { SETTINGS, tracker } from './runtimeContext.js'
 
 const SearchController = Main.overview.searchController
 

@@ -50,7 +50,7 @@ import {
   TERMINALSETTINGS,
   EXTENSION_PATH,
   tracker,
-} from './extension.js'
+} from './runtimeContext.js'
 import { gettext as _, ngettext } from './i18n.js'
 
 //timeout names

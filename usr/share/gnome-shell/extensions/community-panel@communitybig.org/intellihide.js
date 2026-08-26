@@ -28,7 +28,7 @@ import * as PointerWatcher from 'resource:///org/gnome/shell/ui/pointerWatcher.j
 
 import * as Proximity from './proximity.js'
 import * as Utils from './utils.js'
-import { SETTINGS, NOTIFICATIONSSETTINGS } from './extension.js'
+import { SETTINGS, NOTIFICATIONSSETTINGS } from './runtimeContext.js'
 
 //timeout intervals
 const CHECK_POINTER_MS = 200

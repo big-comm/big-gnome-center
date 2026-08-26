@@ -250,11 +250,14 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     dock = runtime.get("dock") or {}
     panel = dock.get("panel") or {}
     taskbar = runtime.get("taskbar") or {}
+    taskbar_lifecycle = taskbar.get("lifecycle") or {}
     dock_actors = dock.get("actors") or []
     taskbar_actors = taskbar.get("actors") or []
     stage_docks = stage.get("dock") or []
     stage_taskbars = stage.get("taskbar") or []
     logical_monitors = diagnostics.get("monitors") or []
+    shell_theme = diagnostics.get("shellTheme") or {}
+    custom_stylesheets = shell_theme.get("customStylesheets") or []
     logical_monitor_indices = sorted(
         monitor.get("index") for monitor in logical_monitors
         if isinstance(monitor.get("index"), int)
@@ -290,6 +293,26 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"expected active={expected_taskbars}, got {bool(taskbar.get('active'))}",
         ),
         _check(
+            bool(taskbar_lifecycle.get("managerOwned")) == expected_taskbars,
+            "taskbar-manager-ownership",
+            f"owned={expected_taskbars}",
+            "expected manager ownership="
+            f"{expected_taskbars}, got {bool(taskbar_lifecycle.get('managerOwned'))}",
+        ),
+        _check(
+            bool(taskbar_lifecycle.get("globalOwned")) == expected_taskbars,
+            "taskbar-global-ownership",
+            f"owned={expected_taskbars}",
+            "expected global ownership="
+            f"{expected_taskbars}, got {bool(taskbar_lifecycle.get('globalOwned'))}",
+        ),
+        _check(
+            not taskbar_lifecycle.get("activationPending"),
+            "taskbar-activation-settled",
+            "no pending activation",
+            "Taskbar activation is still pending",
+        ),
+        _check(
             bool(dock_actors) == expected_docks,
             "dock-actors",
             f"runtime actors={len(dock_actors)}",
@@ -314,6 +337,31 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"stage={len(stage_taskbars)}, runtime={len(taskbar_actors)}",
         ),
     ]
+
+    if shell_theme:
+        checks.extend(
+            (
+                _check(
+                    "<null>" not in custom_stylesheets,
+                    "shell-theme-stylesheets",
+                    f"valid={len(custom_stylesheets)}",
+                    "Shell theme contains a null custom stylesheet",
+                ),
+                _check(
+                    len(custom_stylesheets) == len(set(custom_stylesheets)),
+                    "shell-theme-stylesheet-uniqueness",
+                    "no duplicate custom stylesheets",
+                    "duplicate custom stylesheets: "
+                    + ", ".join(
+                        sorted(
+                            path
+                            for path in set(custom_stylesheets)
+                            if custom_stylesheets.count(path) > 1
+                        )
+                    ),
+                ),
+            )
+        )
 
     if expected_docks:
         dock_monitor_indices = sorted(

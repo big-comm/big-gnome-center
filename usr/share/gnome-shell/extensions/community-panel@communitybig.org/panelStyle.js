@@ -22,7 +22,7 @@
  */
 
 import * as Utils from './utils.js'
-import { SETTINGS } from './extension.js'
+import { SETTINGS } from './runtimeContext.js'
 
 export const PanelStyle = class {
   enable(panel) {

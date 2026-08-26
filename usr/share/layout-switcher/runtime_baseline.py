@@ -155,12 +155,15 @@ def _reference_run(args, artifact_dir: Path, scheme: str) -> list[dict]:
 def _transition_run(args, artifact_dir: Path) -> list[dict]:
     results = []
     scheme = args.transition_scheme
+    current_layout = None
     _set_scheme(scheme)
     for index, (source, target, contract) in enumerate(TRANSITIONS, 1):
-        _apply(source, args.layouts_dir)
+        if current_layout != source:
+            _apply(source, args.layouts_dir)
         _set_scheme(scheme)
         time.sleep(args.scheme_settle)
         duration = _apply(target, args.layouts_dir)
+        current_layout = target
         results.append(
             _record(
                 artifact_dir,

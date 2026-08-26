@@ -21,7 +21,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js'
 import { EventEmitter } from 'resource:///org/gnome/shell/misc/signals.js'
 
-import { tracker } from './extension.js'
+import { tracker } from './runtimeContext.js'
 import * as Utils from './utils.js'
 
 const knownIdMappings = {

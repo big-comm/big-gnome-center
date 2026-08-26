@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-import {CommunityPanelRuntime} from '../community-panel@communitybig.org/extension.js';
-
 import {ComponentHost} from './componentHost.js';
+import {TaskbarSurfaceManager} from './taskbarSurface.js';
 
 const PANEL_UUID = 'community-panel@communitybig.org';
 const PANEL_SCHEMA = 'org.gnome.shell.extensions.dash-to-panel';
@@ -14,10 +13,13 @@ export class TaskbarRuntime {
             version: 73,
             url: 'https://github.com/BigCommunity/layout-switcher',
         });
-        this._runtime = new CommunityPanelRuntime(this._host);
+        this._surface = new TaskbarSurfaceManager(this._host);
+        this._activationGeneration = 0;
+        this._activating = false;
     }
 
     async activate(profile, indicator, hover) {
+        const generation = ++this._activationGeneration;
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
@@ -27,19 +29,28 @@ export class TaskbarRuntime {
         this._applyIndicator(indicator);
         this._applyHover(hover);
         this._host.loadStylesheet();
+        this._activating = true;
         try {
-            await this._runtime.enable();
+            await this._surface.enable();
+            if (generation !== this._activationGeneration)
+                return;
             this._active = true;
         } catch (error) {
+            this._surface.destroy();
             this._host.unloadStylesheet();
             throw error;
+        } finally {
+            if (generation === this._activationGeneration)
+                this._activating = false;
         }
     }
 
     deactivate() {
-        if (this._active) {
-            this._runtime.disable();
+        this._activationGeneration++;
+        if (this._active || this._activating) {
+            this._surface.destroy();
             this._active = false;
+            this._activating = false;
             this._host.unloadStylesheet();
         }
         this._profile = null;
@@ -48,12 +59,13 @@ export class TaskbarRuntime {
     }
 
     diagnostics() {
-        const panels = global.dashToPanel?.panels ?? [];
+        const panels = this._surface.panels();
         return {
-            active: Boolean(this._active),
+            active: Boolean(this._active && panels.length),
             profile: this._profile?.layout ?? '',
             indicator: this._indicator ?? '',
             hover: this._hover ?? '',
+            lifecycle: this._surface.diagnostics(),
             actors: panels.map(panel => this._panelDiagnostics(panel)),
         };
     }

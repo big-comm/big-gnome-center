@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
-Last update: 2026-08-25
-Safe checkpoint: `aa6781b`
-Status: Dock runtime extraction and acceptance complete; Panel/Taskbar extraction pending
+Last update: 2026-08-26
+Safe checkpoint: `ea0c95e`
+Status: Dock extraction accepted; Taskbar/Panel lifecycle ownership accepted
 
 ## Purpose
 
@@ -45,7 +45,8 @@ Layout Switcher GTK app
   -> helper extension for safe switch orchestration
   -> unified Shell runtime UUID
        -> owned Dock runtime for BigGnome and G-Unity
-       -> Taskbar compatibility engine for Hybrid, Desk UX, and Classic
+       -> owned Taskbar lifecycle with inherited visual modules
+          for Hybrid, Desk UX, and Classic
        -> native GNOME surface for Minimal
 ```
 
@@ -53,10 +54,10 @@ Current internal payload:
 
 | Module | Bytes | JS/CSS lines | Public UUID enabled |
 |---|---:|---:|---|
-| Unified runtime with Dock | 498,721 | 14,173 | yes |
-| Dock resource host | 178,485 | 1,713 CSS | no entry point |
-| Taskbar compatibility engine | 1,201,543 | 12,854 | no |
-| Total | 1,878,749 | 28,740 | one public runtime |
+| Unified runtime with Dock and Taskbar lifecycle | 504,427 | 14,366 | yes |
+| Dock resource host | 176,013 | 1,713 CSS | no entry point |
+| Inherited Taskbar visual modules | 1,198,149 | 12,737 | rollback adapter only |
+| Total | 1,878,589 | 28,816 | one public runtime |
 
 The size target is not a fixed percentage. Removal is allowed only when a
 replacement passes the relevant behavior contract.
@@ -171,7 +172,7 @@ Gates:
 
 ### 2. Extract the Taskbar and Panel engine incrementally
 
-- [ ] Isolate panel and taskbar lifecycle ownership.
+- [x] Isolate panel and taskbar lifecycle ownership.
 - [ ] Preserve the native status area, clock, menus, and panel interaction.
 - [ ] Port application buttons, launch, focus, minimize, grouping, and
   multiple-window behavior.
@@ -190,6 +191,67 @@ Gates:
 2. Desk UX accepted on GNOME 50, then GNOME 51.
 3. Classic accepted on GNOME 50, then GNOME 51.
 4. Taskbar compatibility engine removed only after all three gates pass.
+
+Lifecycle evidence: runtime build 50 constructs and destroys the inherited
+`PanelManager` from `TaskbarSurfaceManager`; the old extension entry point is a
+thin rollback adapter. Inherited visual modules use a separate live context and
+no longer import lifecycle globals from the entry point. Runtime diagnostics
+and the strict audit require manager ownership, global ownership, settled
+activation, exact actor count, and no stage residue.
+
+GNOME 50.4 passed fresh-session Hybrid activation; `Hybrid -> BigGnome ->
+Hybrid`, `Classic -> Minimal -> Classic`, and `Desk UX -> G-Unity -> Desk UX`;
+and direct runtime disable/enable. Hybrid and Classic produced one `1280x38`
+Taskbar; Desk UX produced one `1280x46` Taskbar. Every managed-surface exit
+released the manager, `global.dashToPanel`, and all Taskbar stage actors.
+
+GNOME 51.beta passed fresh-session Hybrid activation, `Hybrid -> BigGnome ->
+Hybrid`, and direct runtime disable/enable. The corrected transition runner then
+passed all eight surface directions on both Shell versions. Every strict audit
+had zero failures. Both VMs finished with exactly one `1280x800` monitor.
+
+Theme lifecycle evidence: runtime build 51 stores component stylesheet files,
+not the `St.Theme` instance that loaded them. Teardown unloads from the current
+Shell theme, matching GNOME Shell's `ExtensionManager`. This fixes Classic light
+-> Desk UX -> dark -> G-Unity, where a copied Community Panel stylesheet was
+previously left duplicated and then became a null custom stylesheet. Helper
+build 68 reports theme diagnostics, and strict audit rejects null or duplicate
+custom stylesheets. The exact sequence passed twice on GNOME 50.4 and GNOME
+51.beta with readable G-Unity panel icons, successful `loadTheme`, screenshots,
+zero strict-audit failures, and one monitor.
+
+Permanent theme-transition gate:
+
+1. Enter a Taskbar layout from a light native layout.
+2. Change the application color scheme while the Taskbar is active.
+3. Leave for a Dock or native layout and require `loadTheme` without `ERR`.
+4. Require no null or duplicate custom stylesheet in helper telemetry.
+5. Inspect panel foreground visually and inspect the journal on GNOME 50 and 51.
+
+Build 51 validation: focused `112 passed`; full suite `538 passed` with one
+known PyGI deprecation warning. JavaScript syntax and diff checks pass.
+
+The original monolithic transition runner stalled once in `CompleteSwitch`
+after redundantly reapplying the already verified Hybrid source. Isolated
+reapply passed on builds 49 and 50. The runner now reuses a previous verified
+target when it is the next source, avoiding redundant full dconf loads while
+preserving all eight surface-direction audits.
+
+Separate external-extension debt: Copyous callbacks at
+`lib/ui/components/clipboardItemMenu.js:58` and
+`lib/ui/items/statusItem.js:110` access `this.ext.settings` after Copyous is
+disabled during `BeginSwitch`. Fix Copyous signal/idle cleanup in its own
+repository; do not attribute these stacks to the Taskbar runtime.
+The accepted build 51 GNOME 50 run reproduced these same late callbacks at
+`clipboardItemMenu.js:58` and `statusItem.js:110`; the owning fix is signal/idle
+cancellation during Copyous disable, not a runtime transition delay.
+
+Separate AppIndicator debt on GNOME 50: its asynchronous
+`_waitForFullyReady()` can resume after `AppIndicatorsIconActor` is disposed,
+then reads a null `_indicator`. The stack reaches Panel teardown because status
+items are being restored, but the failing frames are
+`appIndicator.js:1049/1058` and `promiseUtils.js`. Fix cancellation in the
+AppIndicator extension; do not add a Taskbar teardown delay.
 
 ### 3. Finish settings ownership
 

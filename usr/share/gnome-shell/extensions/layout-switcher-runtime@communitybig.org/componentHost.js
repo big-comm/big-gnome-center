@@ -40,11 +40,15 @@ export class ComponentHost {
         const file = this.dir.get_child('stylesheet.css');
         const theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
         theme.load_stylesheet(file);
-        this._stylesheets.push([theme, file]);
+        this._stylesheets.push(file);
     }
 
     unloadStylesheet() {
-        for (const [theme, file] of this._stylesheets.splice(0)) {
+        // Main.loadTheme() copies custom stylesheets into a new St.Theme.
+        // Match GNOME Shell's ExtensionManager: unload the file from the
+        // current theme, never from the stale theme that originally loaded it.
+        const theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
+        for (const file of this._stylesheets.splice(0)) {
             try {
                 theme.unload_stylesheet(file);
             } catch (error) {

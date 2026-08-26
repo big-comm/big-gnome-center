@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 49" in controller
+    assert "RUNTIME_BUILD = 51" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -135,9 +135,62 @@ def test_unified_runtime_loads_rollback_engines_behind_one_controller():
 
     assert "CommunityDockRuntime" not in dock
     assert "import {DockSurfaceManager}" in dock
-    assert "CommunityPanelRuntime" in taskbar
+    assert "CommunityPanelRuntime" not in taskbar
+    assert "new TaskbarSurfaceManager(this._host)" in taskbar
     assert "ComponentHost" in dock
     assert "ComponentHost" in taskbar
+
+
+def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
+    taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    adapter = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/extension.js"
+    ).read_text()
+    context = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/runtimeContext.js"
+    ).read_text()
+
+    assert "new TaskbarSurfaceManager(this._host)" in taskbar
+    assert "await this._surface.enable()" in taskbar
+    assert "this._surface.destroy()" in taskbar
+    assert "new PanelManager.PanelManager()" in surface
+    assert "manager.enable();" in surface
+    assert "manager?.disable();" in surface
+    assert "Context.initializeRuntimeContext(this._host, this)" in surface
+    assert "Context.clearRuntimeContext(this);" in surface
+    assert surface.index("manager?.disable();") < surface.index(
+        "Context.clearRuntimeContext(this);"
+    )
+    assert "activationPending" in surface
+    assert "globalOwned" in surface
+    assert "TaskbarSurfaceManager" in adapter
+    assert "PanelManager" not in adapter
+    assert "initializeRuntimeContext" in context
+    assert "clearRuntimeContext" in context
+
+
+def test_inherited_taskbar_modules_use_the_separate_runtime_context():
+    panel = ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org"
+    consumers = [
+        "appIcons.js",
+        "intellihide.js",
+        "notificationsMonitor.js",
+        "overview.js",
+        "panel.js",
+        "panelManager.js",
+        "panelStyle.js",
+        "taskbar.js",
+        "transparency.js",
+        "windowPreview.js",
+    ]
+
+    for name in consumers:
+        source = (panel / name).read_text()
+        assert "from './extension.js'" not in source
+        assert "from './runtimeContext.js'" in source
 
 
 def test_dock_lifecycle_is_owned_by_the_unified_runtime():
@@ -182,6 +235,17 @@ def test_private_dock_modules_resolve_code_from_the_unified_runtime():
     assert "}, 'dock');" in dock
     assert "DockSurfaceManager.extension.codePath" in locations
     assert "DockSurfaceManager.extension.path," not in locations
+
+
+def test_component_stylesheets_unload_from_the_current_shell_theme():
+    host = (RUNTIME / "componentHost.js").read_text()
+
+    load = host.split("loadStylesheet()", 1)[1].split("unloadStylesheet()", 1)[0]
+    unload = host.split("unloadStylesheet()", 1)[1]
+    assert "this._stylesheets.push(file)" in load
+    assert "this._stylesheets.push([theme, file])" not in load
+    assert "const theme = St.ThemeContext.get_for_stage(global.stage).get_theme()" in unload
+    assert "for (const file of this._stylesheets.splice(0))" in unload
 
 
 def test_runtime_owns_native_panel_controller_for_dock_layouts():

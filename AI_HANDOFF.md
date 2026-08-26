@@ -1520,3 +1520,103 @@ Append one entry per completed change:
   `80d489697055e64e4e59e617c39364727906bba9bed9960b7a3ceb90c158d9e2`.
   Runtime payload-tree hash:
   `822281b9fa51a0b92b5ee20f93dbba1379677f28f286807288c7e4e6e1d71114`.
+
+## 2026-08-26 — Taskbar/Panel lifecycle ownership accepted
+
+- Runtime build 50 moves Taskbar lifecycle ownership into the unified runtime.
+  `TaskbarSurfaceManager` owns context initialization, `global.dashToPanel`,
+  settings initialization, overview state, global styles, Ubuntu Dock settling,
+  `PanelManager` construction, cancellation, and reverse-order teardown.
+- The inherited visual modules no longer import live globals from their old
+  extension entry point. `runtimeContext.js` provides the compatibility context;
+  `community-panel/extension.js` is now only a thin rollback adapter.
+- The strict runtime audit now requires Taskbar manager ownership, global
+  ownership, settled activation, exact actor count, and no stage residue.
+- GNOME 50.4 passed fresh-session Hybrid; `Hybrid -> BigGnome -> Hybrid`,
+  `Classic -> Minimal -> Classic`, and `Desk UX -> G-Unity -> Desk UX`; plus
+  direct disable/enable. Hybrid and Classic had one `1280x38` Taskbar; Desk UX
+  had one `1280x46` Taskbar. Managed-surface exits left no Taskbar actor,
+  manager, or global.
+- GNOME 51.beta passed fresh-session Hybrid, `Hybrid -> BigGnome -> Hybrid`,
+  and direct disable/enable. Hybrid had one `1280x38` Taskbar. The corrected
+  runner subsequently passed all eight surface directions on both GNOME 50 and
+  51. Final strict audits had zero failures on both VMs; their session-type
+  probe reports the known SSH `tty` warning. Both VMs retained exactly one
+  `1280x800` monitor.
+- One monolithic transition run stalled in helper `CompleteSwitch` after it
+  redundantly reapplied Hybrid as the next source. Hybrid reapply then passed
+  in isolation on build 50/GNOME 50 and build 49/GNOME 51. The baseline runner
+  now reuses a previous verified target when it is the next source, preserving
+  all eight transition directions without redundant full dconf loads.
+- Separate Copyous debt: during `BeginSwitch`, late callbacks in
+  `lib/ui/components/clipboardItemMenu.js:58` and
+  `lib/ui/items/statusItem.js:110` access `this.ext.settings` after disable.
+  Fix Copyous signal/idle cleanup in its own repository. These stacks do not
+  originate in the unified runtime or Taskbar modules.
+- Separate AppIndicator debt on GNOME 50: asynchronous
+  `_waitForFullyReady()` resumes after its `AppIndicatorsIconActor` is disposed
+  and reads null `_indicator` (`appIndicator.js:1049/1058`,
+  `promiseUtils.js`). The inherited panel teardown appears below the failing
+  frames because it restores status items. Fix cancellation in AppIndicator;
+  do not add a blind Taskbar teardown delay.
+- Local tests: focused `56 passed`; full `535 passed`. The final run reported
+  the known PyGI deprecation plus two headless Adw/GTK warnings from
+  `test_theme_manager`; no test failed. JavaScript syntax, focused Ruff, and
+  `git diff --check` pass. Full Ruff still reports eight pre-existing findings
+  outside this slice. PKGBUILD and package versions are unchanged.
+- Final 17-file aggregate SHA-256 on local staging and both VMs:
+  `cccc0d91fa3d319aff705c12a261a4a45edcbd1f852dc05ef1eb9f4828e119c6`.
+  `runtime_baseline.py` source SHA-256:
+  `79bb891ec5c84a3bee84b5b3a108a8cd97af176ea05673fc1935445d76f715d0`.
+- Local and both VM payload-tree hashes: unified runtime
+  `24814a606c714e8d2b5825bf6146ca9102b470b94cff4fe77ab923aad4e0e6de`;
+  Panel host `8781ff9afea0d4844d4a67d4e07092bfcc1520ce9f6c24373941fd47bb03992d`;
+  audit tool `b67a401dc7e8d164d769500528cd349038db1a746534c4af8326656588b1ad05`;
+  baseline tool `53aa658b72b0df01a25465bf90254d26ca18df61226b4e3a2476a3e042e9f65e`.
+- Next implementation slice: port Taskbar application-button behavior while
+  preserving the inherited status area, clock, menus, indicators, and exact
+  layout geometry.
+
+## 2026-08-26 — Shell stylesheet lifecycle regression repaired
+
+- Reproduction: Classic light -> Desk UX -> dark scheme -> G-Unity left dark
+  top-panel icons on the dark G-Unity panel. The helper also returned
+  `loadTheme ERR Error: Argument file may not be null`.
+- G-Unity now explicitly owns a `#fafafb` panel-button foreground. This prevents
+  inherited light-layout foreground colors from leaking into its fixed dark
+  panel.
+- Root cause of the theme error was runtime `ComponentHost` retaining the
+  original `St.Theme` object with each component stylesheet. `Main.loadTheme()`
+  replaces that object and copies custom stylesheets. Later teardown unloaded
+  from the stale theme, leaving a duplicated and eventually null stylesheet in
+  the current theme.
+- Runtime build 51 follows GNOME Shell 50's `ExtensionManager`: retain the
+  `Gio.File`, then unload it from the current `St.Theme`. Helper build 68 exposes
+  session-theme diagnostics. Strict audit rejects null and duplicate custom
+  stylesheets.
+- Helper fixed-dark targets use the Shell's documented `force-dark` session
+  mode before the clean-room `loadTheme()`. This is a deterministic theme
+  resolution guard, not a timer or a replacement theme engine.
+- GNOME 50.4 and GNOME 51.beta both passed the exact reproduction twice. Every
+  G-Unity completion reported `loadTheme` without `ERR`; screenshots show white
+  top-panel icons. Strict audits report zero failures and stylesheet lists stay
+  unique. GNOME 50 ends in G-Unity; GNOME 51 ends in BigGnome. Both retain one
+  `1280x800` monitor.
+- GNOME 50 journal contains only the separately documented Copyous late
+  callbacks. GNOME 51 journal is clean for this run. No theme/runtime error is
+  present after the accepted transitions.
+- Focused tests: `112 passed`. Full suite: `538 passed`, with one known PyGI
+  deprecation warning. JavaScript syntax and `git diff --check` pass.
+- Local and both VM payload-tree hashes: runtime
+  `3c3b0c95f62992e6d7be66790aaf066bfec37f26eda2e3daf0d65c1cb61701e9`;
+  helper
+  `a93a4dbb67d8e727092b8f5875ed56f4265fb52875e7ee4b66ebb2a6876d6558`;
+  Panel host
+  `8781ff9afea0d4844d4a67d4e07092bfcc1520ce9f6c24373941fd47bb03992d`;
+  audit tool
+  `2004d517a1dcb1cbec1772f48dddd254239089cec6879ec7409381fe79c1a35f`.
+- Regression gate: apply a Taskbar layout, change the application color scheme,
+  then leave for a Dock/native layout. Require successful `loadTheme`, readable
+  panel foreground, no null stylesheet, no duplicate stylesheet, screenshot,
+  strict audit, and journal inspection on GNOME 50 and 51. Source-text tests are
+  not visual acceptance evidence.

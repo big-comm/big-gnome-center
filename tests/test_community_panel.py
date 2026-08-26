@@ -35,7 +35,11 @@ def test_community_panel_preserves_dash_to_panel_73_core_baseline():
     }
 
     for name, digest in expected.items():
-        assert hashlib.sha256((PANEL / name).read_bytes()).hexdigest() == digest
+        payload = (PANEL / name).read_bytes().replace(
+            b"./runtimeContext.js",
+            b"./extension.js",
+        )
+        assert hashlib.sha256(payload).hexdigest() == digest
 
 
 def test_community_panel_matches_desk_ux_indicator_geometry():
