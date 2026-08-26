@@ -174,13 +174,13 @@ Gates:
 
 - [x] Isolate panel and taskbar lifecycle ownership.
 - [ ] Preserve the native status area, clock, menus, and panel interaction.
-- [ ] Port application buttons, launch, focus, minimize, grouping, and
+- [x] Port application buttons, launch, focus, minimize, grouping, and
   multiple-window behavior.
-- [ ] Port Hybrid, Desk UX, and no-indicator renderers with exact geometry.
-- [ ] Port Classic labels without changing its no-indicator contract.
-- [ ] Port always visible, always hidden, and intelligent hiding as an overlay;
+- [x] Port Hybrid, Desk UX, and no-indicator renderers with exact geometry.
+- [x] Port Classic labels without changing its no-indicator contract.
+- [x] Port always visible, always hidden, and intelligent hiding as an overlay;
   maximized windows must use the released work area.
-- [ ] Preserve open menus while the pointer leaves the panel.
+- [x] Preserve open menus while the pointer leaves the panel.
 - [ ] Validate Quick Settings, date menu, AppIndicator, JamesDSP, GSConnect,
   removable drives, notifications, and fullscreen transitions.
 - [ ] Remove each inherited Panel branch only after its replacement is accepted.
@@ -230,6 +230,31 @@ Permanent theme-transition gate:
 
 Build 51 validation: focused `112 passed`; full suite `538 passed` with one
 known PyGI deprecation warning. JavaScript syntax and diff checks pass.
+
+Taskbar behavior evidence: builds 52-57 own app action policy, popup lifecycle,
+layout-specific indicators, and visibility selection. GNOME 50 and 51 passed
+launch/focus/minimize, grouped multi-window preview, context menu, Hybrid,
+Desk UX, Classic, always visible, always hidden, intelligent overlay, and menu
+hold checks. Exact geometry was `1280x38` for Hybrid/Classic and `1280x46` for
+Desk UX. Both final Hybrid audits reported zero failures.
+
+Official Dash-to-Panel master `1c0c1f1` confirms that intellihide changes
+tracked chrome struts and queues Shell regions; it does not resize application
+windows. A GNOME 50 `1280x838` regression came from runtime Taskbar teardown:
+the stock top panel was restored for the 200 ms Ubuntu Dock settle before the
+bottom Taskbar returned. Build 57 keeps one `PanelManager` alive across
+Hybrid/Desk UX/Classic and only tears it down for Taskbar <-> Dock changes.
+No geometry repair shim or blind timer remains. GNOME 50 and 51 passed
+intelligent `1280x800` -> visible `1280x762` and two minimize/reactivate cycles;
+GNOME 50 preserved the exact normal frame `60,116 1160x530`.
+
+Build 57 validation: focused `88 passed`; layout-applier `102 passed`; full
+suite `544 passed`, with one known PyGI deprecation warning. Runtime payload
+SHA-256 is
+`223230c6be0b8fde7355746923ca1bd2d0a23d23f5111012cd125fb40aead8cb`
+locally and on both VMs. Both VMs finish on Hybrid with one monitor. Remaining
+Panel gate: user visual acceptance of native status menus and the full manual
+button/layout matrix before inherited branches are removed.
 
 The original monolithic transition runner stalled once in `CompleteSwitch`
 after redundantly reapplying the already verified Hybrid source. Isolated

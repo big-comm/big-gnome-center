@@ -232,6 +232,9 @@ dynamic-workspaces=true
 edge-tiling=true
 overlay-key='Super_L'
 
+[org/gnome/nautilus/icon-view]
+captions=['size', 'none', 'none']
+
 [org/gnome/nautilus/list-view]
 use-tree-view=true
 

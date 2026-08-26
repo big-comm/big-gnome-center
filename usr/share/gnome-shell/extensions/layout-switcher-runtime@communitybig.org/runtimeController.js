@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 51;
+export const RUNTIME_BUILD = 57;
 
 export class RuntimeController {
     constructor(extension) {
@@ -72,14 +72,16 @@ export class RuntimeController {
         const indicator = this._indicatorForProfile(profile);
         const hover = this._hoverForProfile(profile);
         const visibility = this._visibilityForProfile(profile);
-        this._dock.deactivate();
-        this._taskbar.deactivate();
+        const panelVisibility = this._panelVisibilityForProfile(profile);
         this._activeProfile = profile;
 
         if (profile.surface === RuntimeSurface.DOCK) {
+            this._taskbar.deactivate();
+            this._dock.deactivate();
             this._dock.activate(profile, indicator, hover, visibility);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
-            await this._taskbar.activate(profile, indicator, hover);
+            this._dock.deactivate();
+            await this._taskbar.activate(profile, indicator, hover, panelVisibility);
             if (!this._enabled || generation !== this._syncGeneration)
                 this._taskbar.deactivate();
         }
@@ -106,6 +108,13 @@ export class RuntimeController {
         return overrides[profile.layout] ?? profile.visibility ?? 'intelligent';
     }
 
+    _panelVisibilityForProfile(profile) {
+        const overrides = this._settings
+            .get_value('panel-visibility-overrides')
+            .deep_unpack();
+        return overrides[profile.layout] ?? profile.panelVisibility ?? 'always-visible';
+    }
+
     diagnostics() {
         const profile = this._activeProfile ??
             profileForLayout(this._settings?.get_string('active-layout') ?? '');
@@ -117,9 +126,13 @@ export class RuntimeController {
                 surface: profile.surface,
                 edge: profile.edge,
                 extended: profile.extended,
+                labels: profile.labels,
                 indicator: this._indicatorForProfile(profile),
                 hover: this._hoverForProfile(profile),
-                visibility: this._visibilityForProfile(profile),
+                visibility: profile.surface === RuntimeSurface.TASKBAR
+                    ? this._panelVisibilityForProfile(profile)
+                    : this._visibilityForProfile(profile),
+                actorHeight: profile.actorHeight,
             },
             dock: this._dock?.diagnostics() ?? {active: false, actors: []},
             taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},

@@ -2,6 +2,7 @@
 
 import {ComponentHost} from './componentHost.js';
 import {TaskbarSurfaceManager} from './taskbarSurface.js';
+import {TaskbarVisibilityModes} from './taskbarVisibilityModes.js';
 
 const PANEL_UUID = 'community-panel@communitybig.org';
 const PANEL_SCHEMA = 'org.gnome.shell.extensions.dash-to-panel';
@@ -14,20 +15,28 @@ export class TaskbarRuntime {
             url: 'https://github.com/BigCommunity/layout-switcher',
         });
         this._surface = new TaskbarSurfaceManager(this._host);
+        this._visibilityModes = new TaskbarVisibilityModes(
+            this._host.getSettings(PANEL_SCHEMA));
         this._activationGeneration = 0;
         this._activating = false;
     }
 
-    async activate(profile, indicator, hover) {
+    async activate(profile, indicator, hover, visibility) {
         const generation = ++this._activationGeneration;
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
-        if (this._active)
+        this._visibility = visibility;
+        if (this._active) {
+            this._applyIndicator(indicator);
+            this._applyHover(hover);
+            this._visibilityModes.apply(visibility);
             return;
+        }
 
         this._applyIndicator(indicator);
         this._applyHover(hover);
+        this._visibilityModes.apply(visibility);
         this._host.loadStylesheet();
         this._activating = true;
         try {
@@ -56,6 +65,7 @@ export class TaskbarRuntime {
         this._profile = null;
         this._indicator = null;
         this._hover = null;
+        this._visibility = null;
     }
 
     diagnostics() {
@@ -65,6 +75,8 @@ export class TaskbarRuntime {
             profile: this._profile?.layout ?? '',
             indicator: this._indicator ?? '',
             hover: this._hover ?? '',
+            visibility: this._visibilityModes.mode(),
+            window: this._windowDiagnostics(),
             lifecycle: this._surface.diagnostics(),
             actors: panels.map(panel => this._panelDiagnostics(panel)),
         };
@@ -86,6 +98,35 @@ export class TaskbarRuntime {
             height: Math.round(actor?.height ?? 0),
             visible: Boolean(actor?.visible),
             mapped: Boolean(actor?.mapped),
+            grouped: Boolean(panel?.taskbar?.isGroupApps),
+            ...this._visibilityModes.panelState(panel),
+        };
+    }
+
+    _windowDiagnostics() {
+        const window = global.display.focus_window;
+        if (!window)
+            return {};
+        const monitor = window.get_monitor();
+        const workspace = window.get_workspace();
+        return {
+            monitor,
+            maximized: Boolean(
+                window.maximized_horizontally && window.maximized_vertically),
+            fullscreen: Boolean(window.fullscreen),
+            frame: this._rect(window.get_frame_rect()),
+            workArea: this._rect(workspace?.get_work_area_for_monitor(monitor)),
+        };
+    }
+
+    _rect(rect) {
+        if (!rect)
+            return null;
+        return {
+            x: Math.round(rect.x),
+            y: Math.round(rect.y),
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
         };
     }
 

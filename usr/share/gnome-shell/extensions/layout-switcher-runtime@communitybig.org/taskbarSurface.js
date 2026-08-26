@@ -6,10 +6,12 @@ import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {EventEmitter} from 'resource:///org/gnome/shell/misc/signals.js';
 
-import * as AppIcons from '../community-panel@communitybig.org/appIcons.js';
 import * as PanelManager from '../community-panel@communitybig.org/panelManager.js';
 import * as PanelSettings from '../community-panel@communitybig.org/panelSettings.js';
 import * as Context from '../community-panel@communitybig.org/runtimeContext.js';
+import {TaskbarAppActions} from './taskbarAppActions.js';
+import {TaskbarInteractions} from './taskbarInteractions.js';
+import {TaskbarIndicatorRenderer} from './taskbarIndicatorRenderer.js';
 
 const UBUNTU_DOCK_UUID = 'ubuntu-dock@ubuntu.com';
 const UBUNTU_DOCK_SETTLE_MS = 200;
@@ -25,6 +27,9 @@ export class TaskbarSurfaceManager {
         this._ubuntuDockDelayId = 0;
         this._ubuntuDockDelayResolve = null;
         this._global = null;
+        this.appActions = null;
+        this.interactions = null;
+        this.indicatorRenderer = null;
     }
 
     async enable() {
@@ -33,6 +38,9 @@ export class TaskbarSurfaceManager {
 
         const generation = ++this._generation;
         Context.initializeRuntimeContext(this._host, this);
+        this.appActions = new TaskbarAppActions(Context.SETTINGS);
+        this.interactions = new TaskbarInteractions();
+        this.indicatorRenderer = new TaskbarIndicatorRenderer(Context.SETTINGS);
         this._global = new EventEmitter();
         global.dashToPanel = this._global;
 
@@ -70,7 +78,12 @@ export class TaskbarSurfaceManager {
 
         PanelSettings.clearCache();
         this.disableGlobalStyles();
-        AppIcons.resetRecentlyClickedApp();
+        this.appActions?.destroy();
+        this.appActions = null;
+        this.interactions?.destroy();
+        this.interactions = null;
+        this.indicatorRenderer?.destroy();
+        this.indicatorRenderer = null;
 
         if (this._startupCompleteHandler) {
             try {
@@ -96,6 +109,12 @@ export class TaskbarSurfaceManager {
     diagnostics() {
         return {
             managerOwned: Boolean(this._manager),
+            appActionsOwned: Boolean(this.appActions),
+            appActions: this.appActions?.diagnostics() ?? {},
+            interactionsOwned: Boolean(this.interactions),
+            interactions: this.interactions?.diagnostics() ?? {},
+            indicatorRendererOwned: Boolean(this.indicatorRenderer),
+            indicatorRenderer: this.indicatorRenderer?.diagnostics() ?? {},
             activationPending: Boolean(this._ubuntuDockDelayId),
             globalOwned: Boolean(
                 this._global && global.dashToPanel === this._global),
@@ -180,5 +199,7 @@ export class TaskbarSurfaceManager {
         const manager = new PanelManager.PanelManager();
         this._manager = manager;
         manager.enable();
+        for (const panel of manager.allPanels)
+            this.interactions.adoptPreviewMenu(panel, panel.taskbar.previewMenu);
     }
 }

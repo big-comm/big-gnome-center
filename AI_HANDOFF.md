@@ -1620,3 +1620,59 @@ Append one entry per completed change:
   panel foreground, no null stylesheet, no duplicate stylesheet, screenshot,
   strict audit, and journal inspection on GNOME 50 and 51. Source-text tests are
   not visual acceptance evidence.
+
+## 2026-08-26 — Taskbar behavior, rendering, and visibility ownership
+
+- Runtime builds 52-57 move application actions, preview/context-menu
+  coordination, Hybrid/Desk UX indicators, and Panel visibility modes behind
+  Layout Switcher-owned controllers. The inherited Panel remains the rollback
+  renderer; its status area and native menu implementations are unchanged.
+- Application action telemetry covered launch, focus, minimize, active-app
+  cycling, grouped multi-window previews, and context menus. Menu ownership
+  holds intelligent hiding with a dedicated `Hold.MENU` bit until the popup
+  closes.
+- Hybrid uses the owned segmented indicator, Desk UX uses focused Metro and
+  unfocused dashes, and Classic remains ungrouped with labels and no indicator.
+  Strict geometry is Hybrid/Classic `1280x38` and Desk UX `1280x46`.
+- Always visible owns a strut. Always hidden and intelligent modes are overlays
+  and release the full work area. Intelligent mode uses the inherited official
+  Dash-to-Panel `FOCUSED_WINDOWS` and pointer-reveal paths.
+- Official Dash-to-Panel master `1c0c1f1` was compared directly. Its
+  `intellihide.js` matches the bundled Community Panel implementation except
+  for runtime-context import and `Hold.MENU`; it changes `affectsStruts` and
+  queues Shell regions, but never moves or resizes application windows.
+- GNOME 50 exposed `1280x838` after intelligent -> always-visible when the
+  runtime destroyed the Taskbar, temporarily restored the stock top panel,
+  then waited 200 ms before rebuilding the bottom panel. The intermediate
+  top/bottom strut transition corrupted Mutter's maximized allocation.
+- Build 57 fixes the lifecycle cause: Taskbar profiles reuse the same
+  `PanelManager`; only Taskbar <-> Dock transitions destroy the surface. No
+  maximize, unmaximize, `move_resize_frame`, blind timer, or work-area repair
+  shim is used.
+- GNOME 50 and 51 both passed intelligent `1280x800` -> always-visible
+  `1280x762`, then two minimize/reactivate cycles at `1280x762`. GNOME 50 also
+  restored the exact saved normal frame `60,116 1160x530`. Action telemetry
+  survived profile changes, proving that the Taskbar manager remained alive.
+- Desk UX and Classic strict audits passed on both Shell versions before the
+  final lifecycle change. Hybrid build 57 strict audits passed with zero
+  failures on both versions; the only warning is the known SSH `tty` session
+  probe. Both VMs finish on Hybrid with one `1280x800` monitor and empty Panel
+  visibility overrides.
+- GNOME 50 journal is clean for runtime/Panel errors. GNOME 51 contains the
+  separate known GSConnect `wl_clipboard.js:56` final-type error; no runtime or
+  Panel frame appears in that stack.
+- All six layout snapshots set Nautilus grid captions to
+  `['size', 'none', 'none']`. Legacy standalone Panel/Dock test contracts now
+  assert migration to the unified runtime rather than standalone restart.
+- Focused suite: `88 passed`. Layout-applier suite: `102 passed`. Full suite:
+  `544 passed`, with one known PyGI deprecation warning. JavaScript syntax and
+  `git diff --check` pass. PKGBUILD and package versions are unchanged.
+- Local and VM payload hashes: runtime
+  `223230c6be0b8fde7355746923ca1bd2d0a23d23f5111012cd125fb40aead8cb`;
+  Panel host
+  `26684b222aa2e59dec86b3e7a74ba6e8d36c2ec74d47ecca1e819613723b596d`;
+  audit tool
+  `4f67c0a922c7087f813fb95ed453fdbfed3bbf61976572d5aa680e0072a17a6d`.
+- Remaining acceptance is user visual coverage of native status menus and the
+  complete manual application-button/layout matrix. Do not remove inherited
+  Panel branches before that approval.

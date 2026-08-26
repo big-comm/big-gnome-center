@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 51" in controller
+    assert "RUNTIME_BUILD = 57" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -71,7 +71,7 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
     assert "indicator-style-overrides" in controller
     assert "dock-hover-overrides" in controller
     assert "this._dock.activate(profile, indicator, hover, visibility)" in controller
-    assert "this._taskbar.activate(profile, indicator, hover)" in controller
+    assert "this._taskbar.activate(profile, indicator, hover, panelVisibility)" in controller
     assert "set_string('indicator-style', style)" in dock
     assert "set_string('dock-hover-effect', effect)" in dock
     assert "this._host.placement.apply(profile?.edge, profile?.extended)" in dock
@@ -102,6 +102,44 @@ def test_runtime_owns_dock_visibility_modes():
     assert "set_boolean('intellihide', selected === 'intelligent')" in runtime
     assert "set_boolean('autohide', selected !== 'always-visible')" in runtime
     assert "visibilityModes?.runtimeState()" in engine
+
+
+def test_runtime_owns_taskbar_visibility_modes_and_strut_telemetry():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    runtime = (RUNTIME / "taskbarRuntime.js").read_text()
+    visibility = (RUNTIME / "taskbarVisibilityModes.js").read_text()
+
+    assert "panel-visibility-overrides" in controller
+    assert "new TaskbarVisibilityModes(" in runtime
+    assert "this._visibilityModes.apply(visibility)" in runtime
+    assert "intellihide-only-secondary" in visibility
+    assert "intellihide-hide-from-windows" in visibility
+    assert "FOCUSED_WINDOWS" in visibility
+    assert "affectsStruts" in visibility
+    assert "window: this._windowDiagnostics()" in runtime
+    assert "get_work_area_for_monitor" in runtime
+    for mode in ("always-visible", "always-hidden", "intelligent"):
+        assert mode in visibility
+
+
+def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    runtime = (RUNTIME / "taskbarRuntime.js").read_text()
+    branch_start = controller.index("profile.surface === RuntimeSurface.TASKBAR")
+    taskbar_branch = controller[branch_start:controller.index(
+        "    _indicatorForProfile", branch_start
+    )]
+
+    assert taskbar_branch.count("this._taskbar.deactivate()") == 1
+    assert "generation !== this._syncGeneration" in taskbar_branch
+    assert "await this._taskbar.activate(" in taskbar_branch
+    assert taskbar_branch.index("await this._taskbar.activate(") < taskbar_branch.index(
+        "this._taskbar.deactivate()"
+    )
+    active_branch = runtime[runtime.index("if (this._active) {"):]
+    assert active_branch.index("this._applyIndicator(indicator)") < active_branch.index("return;")
+    assert active_branch.index("this._applyHover(hover)") < active_branch.index("return;")
+    assert active_branch.index("this._visibilityModes.apply(visibility)") < active_branch.index("return;")
 
 
 def test_runtime_owns_accepted_dock_placement():
@@ -165,11 +203,93 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
         "Context.clearRuntimeContext(this);"
     )
     assert "activationPending" in surface
+    assert "appActionsOwned" in surface
+    assert "interactionsOwned" in surface
+    assert "indicatorRendererOwned" in surface
     assert "globalOwned" in surface
     assert "TaskbarSurfaceManager" in adapter
     assert "PanelManager" not in adapter
     assert "initializeRuntimeContext" in context
     assert "clearRuntimeContext" in context
+
+
+def test_taskbar_app_actions_are_owned_with_a_rollback_fallback():
+    actions = (RUNTIME / "taskbarAppActions.js").read_text()
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    app_icons = (
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/appIcons.js"
+    ).read_text()
+
+    assert "new TaskbarAppActions(Context.SETTINGS)" in surface
+    assert "this.appActions?.destroy()" in surface
+    assert "appActions: this.appActions?.diagnostics()" in surface
+    assert "DTP_EXTENSION?.appActions" in app_icons
+    assert "DTP_EXTENSION.appActions.activate(" in app_icons
+    for behavior in (
+        "launchNewInstance",
+        "minimizeWindow",
+        "activateAllWindows",
+        "activateFirstWindow",
+        "cycleThroughWindows",
+        "getInterestingWindows",
+        "closeAllWindows",
+    ):
+        assert f"{behavior}(" in actions
+    for action in (
+        "'RAISE'",
+        "'LAUNCH'",
+        "'MINIMIZE'",
+        "'CYCLE'",
+        "'CYCLE-MIN'",
+        "'TOGGLE-SHOWPREVIEW'",
+        "'TOGGLE-CYCLE'",
+        "'QUIT'",
+        "'TOGGLE-SPREAD'",
+    ):
+        assert action in actions
+    assert "actionCounts" in actions
+    assert "lastAction" in actions
+
+
+def test_taskbar_previews_and_context_menus_are_runtime_owned_with_fallbacks():
+    interactions = (RUNTIME / "taskbarInteractions.js").read_text()
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    taskbar = (
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/taskbar.js"
+    ).read_text()
+    app_icons = (
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/appIcons.js"
+    ).read_text()
+    intellihide = (
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/intellihide.js"
+    ).read_text()
+
+    assert "new TaskbarInteractions()" in surface
+    assert "this.interactions?.destroy()" in surface
+    assert "new WindowPreview.PreviewMenu(panel)" in taskbar
+    assert "adoptPreviewMenu(" in interactions
+    assert "this.interactions.adoptPreviewMenu(" in surface
+    assert "createContextMenu(" in app_icons
+    assert "new TaskbarSecondaryMenu(" in app_icons
+    assert "MENU: 8" in intellihide
+    assert "revealAndHold(Hold.MENU)" in interactions
+    assert "release(Hold.MENU)" in interactions
+
+
+def test_taskbar_layout_indicators_are_runtime_rendered_with_fallbacks():
+    renderer = (RUNTIME / "taskbarIndicatorRenderer.js").read_text()
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    app_icons = (
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/appIcons.js"
+    ).read_text()
+
+    assert "new TaskbarIndicatorRenderer(Context.SETTINGS)" in surface
+    assert "this.indicatorRenderer?.destroy()" in surface
+    assert "DTP_EXTENSION?.indicatorRenderer?.style()" in app_icons
+    assert "DTP_EXTENSION?.indicatorRenderer?.draw(" in app_icons
+    assert "if (communityStyle)" in app_icons
+    assert "style === 'hybrid' || isFocused ? 18 : 8" in renderer
+    assert "drawCounts" in renderer
 
 
 def test_inherited_taskbar_modules_use_the_separate_runtime_context():

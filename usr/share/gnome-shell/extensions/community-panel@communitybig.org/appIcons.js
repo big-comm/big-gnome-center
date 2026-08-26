@@ -889,7 +889,10 @@ export const TaskbarAppIcon = GObject.registerClass(
       this.fake_release()
 
       if (!this._menu) {
-        this._menu = new TaskbarSecondaryMenu(this, this.dtpPanel.geom.position)
+        this._menu = DTP_EXTENSION?.interactions?.createContextMenu(
+          this,
+          () => new TaskbarSecondaryMenu(this, this.dtpPanel.geom.position),
+        ) ?? new TaskbarSecondaryMenu(this, this.dtpPanel.geom.position)
         this._menu.setApp(this.app)
 
         this._signalsHandler.add(
@@ -1109,6 +1112,9 @@ export const TaskbarAppIcon = GObject.registerClass(
     }
 
     _getCommunityIndicatorStyle() {
+      let runtimeStyle = DTP_EXTENSION?.indicatorRenderer?.style()
+      if (runtimeStyle) return runtimeStyle
+
       let focusedStyle = SETTINGS.get_string('dot-style-focused')
       let unfocusedStyle = SETTINGS.get_string('dot-style-unfocused')
 
@@ -1135,6 +1141,14 @@ export const TaskbarAppIcon = GObject.registerClass(
     }
 
     activate(button, modifiers, handleAsGrouped) {
+      if (DTP_EXTENSION?.appActions)
+        return DTP_EXTENSION.appActions.activate(
+          this,
+          button,
+          modifiers,
+          handleAsGrouped,
+        )
+
       let event = Clutter.get_current_event()
 
       modifiers = event ? event.get_state() : modifiers || 0
@@ -1479,6 +1493,21 @@ export const TaskbarAppIcon = GObject.registerClass(
 
       // Keep custom indicator geometry aligned with Community Dock.
       let communityStyle = this._getCommunityIndicatorStyle()
+      if (
+        communityStyle &&
+        DTP_EXTENSION?.indicatorRenderer?.draw(area, cr, {
+          isFocused,
+          isHorizontal: isHorizontalDots,
+          areaSize,
+          size,
+          startX,
+          startY,
+          color: bodyColor,
+        })
+      ) {
+        cr.$dispose()
+        return
+      }
       if (communityStyle) {
         let scaleFactor = Utils.getScaleFactor()
         let targetLength =
@@ -1822,6 +1851,9 @@ TaskbarAppIcon.prototype.scaleAndFade =
   TaskbarAppIcon.prototype.undoScaleAndFade = () => {}
 
 export function minimizeWindow(app, param, monitor) {
+  if (DTP_EXTENSION?.appActions)
+    return DTP_EXTENSION.appActions.minimizeWindow(app, param, monitor)
+
   // Param true make all app windows minimize
   let windows = getInterestingWindows(app, monitor)
   let current_workspace =
@@ -1845,6 +1877,9 @@ export function minimizeWindow(app, param, monitor) {
  * This activates all windows in the current workspace.
  */
 export function activateAllWindows(app, monitor) {
+  if (DTP_EXTENSION?.appActions)
+    return DTP_EXTENSION.appActions.activateAllWindows(app, monitor)
+
   // First activate first window so workspace is switched if needed,
   // then activate all other app windows in the current workspace.
   let windows = getInterestingWindows(app, monitor)
@@ -1863,11 +1898,22 @@ export function activateAllWindows(app, monitor) {
 }
 
 export function activateFirstWindow(app, monitor) {
+  if (DTP_EXTENSION?.appActions)
+    return DTP_EXTENSION.appActions.activateFirstWindow(app, monitor)
+
   let windows = getInterestingWindows(app, monitor)
   Main.activateWindow(windows[0])
 }
 
 export function cycleThroughWindows(app, reversed, shouldMinimize, monitor) {
+  if (DTP_EXTENSION?.appActions)
+    return DTP_EXTENSION.appActions.cycleThroughWindows(
+      app,
+      reversed,
+      shouldMinimize,
+      monitor,
+    )
+
   // Store for a little amount of time last clicked app and its windows
   // since the order changes upon window interaction
   let MEMORY_TIME = 3000
@@ -1913,6 +1959,9 @@ export function cycleThroughWindows(app, reversed, shouldMinimize, monitor) {
 }
 
 export function resetRecentlyClickedApp() {
+  if (DTP_EXTENSION?.appActions)
+    return DTP_EXTENSION.appActions.resetRecentlyClickedApp()
+
   if (recentlyClickedAppLoopId > 0) GLib.Source.remove(recentlyClickedAppLoopId)
 
   recentlyClickedAppLoopId = 0
@@ -1925,6 +1974,9 @@ export function resetRecentlyClickedApp() {
 }
 
 export function closeAllWindows(app, monitor) {
+  if (DTP_EXTENSION?.appActions)
+    return DTP_EXTENSION.appActions.closeAllWindows(app, monitor)
+
   let windows = getInterestingWindows(app, monitor)
   for (let i = 0; i < windows.length; i++)
     windows[i].delete(global.get_current_time())
@@ -1933,6 +1985,13 @@ export function closeAllWindows(app, monitor) {
 // Filter out unnecessary windows, for instance
 // nautilus desktop window.
 export function getInterestingWindows(app, monitor, isolateMonitors) {
+  if (DTP_EXTENSION?.appActions)
+    return DTP_EXTENSION.appActions.getInterestingWindows(
+      app,
+      monitor,
+      isolateMonitors,
+    )
+
   let windows = (app ? app.get_windows() : Utils.getAllMetaWindows()).filter(
     (w) => !w.skip_taskbar,
   )

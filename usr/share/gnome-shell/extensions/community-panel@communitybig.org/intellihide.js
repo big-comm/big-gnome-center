@@ -51,6 +51,7 @@ export const Hold = {
   TEMPORARY: 1,
   PERMANENT: 2,
   NOTIFY: 4,
+  MENU: 8,
 }
 
 export const Intellihide = class {

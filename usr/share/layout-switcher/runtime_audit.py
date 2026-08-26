@@ -307,6 +307,30 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{expected_taskbars}, got {bool(taskbar_lifecycle.get('globalOwned'))}",
         ),
         _check(
+            bool(taskbar_lifecycle.get("appActionsOwned")) == expected_taskbars,
+            "taskbar-app-actions-ownership",
+            f"owned={expected_taskbars}",
+            "expected app-action ownership="
+            f"{expected_taskbars}, got "
+            f"{bool(taskbar_lifecycle.get('appActionsOwned'))}",
+        ),
+        _check(
+            bool(taskbar_lifecycle.get("interactionsOwned")) == expected_taskbars,
+            "taskbar-interactions-ownership",
+            f"owned={expected_taskbars}",
+            "expected interaction ownership="
+            f"{expected_taskbars}, got "
+            f"{bool(taskbar_lifecycle.get('interactionsOwned'))}",
+        ),
+        _check(
+            bool(taskbar_lifecycle.get("indicatorRendererOwned")) == expected_taskbars,
+            "taskbar-indicator-renderer-ownership",
+            f"owned={expected_taskbars}",
+            "expected indicator-renderer ownership="
+            f"{expected_taskbars}, got "
+            f"{bool(taskbar_lifecycle.get('indicatorRendererOwned'))}",
+        ),
+        _check(
             not taskbar_lifecycle.get("activationPending"),
             "taskbar-activation-settled",
             "no pending activation",
@@ -412,6 +436,57 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             )
         )
 
+    if expected_taskbars:
+        expected_visible = expected.get("visibility") == "always-visible"
+        taskbar_window = taskbar.get("window") or {}
+        checks.append(
+            _check(
+                taskbar.get("visibility") == expected.get("visibility"),
+                "taskbar-visibility",
+                str(expected.get("visibility")),
+                "expected "
+                f"{expected.get('visibility')}, got {taskbar.get('visibility')}",
+            )
+        )
+        if taskbar_window.get("maximized"):
+            checks.append(
+                _check(
+                    taskbar_window.get("frame") == taskbar_window.get("workArea"),
+                    "taskbar-maximized-work-area",
+                    f"frame={taskbar_window.get('workArea')}",
+                    f"frame={taskbar_window.get('frame')}, "
+                    f"workArea={taskbar_window.get('workArea')}",
+                )
+            )
+        for actor in taskbar_actors:
+            monitor = next(
+                (item for item in logical_monitors
+                 if item.get("index") == actor.get("monitor")),
+                {},
+            )
+            checks.extend(
+                (
+                    _check(
+                        actor.get("width") == monitor.get("width") and
+                        actor.get("height") == expected.get("actorHeight"),
+                        "taskbar-exact-geometry",
+                        f"{monitor.get('width')}x{expected.get('actorHeight')}",
+                        f"got {actor.get('width')}x{actor.get('height')}",
+                    ),
+                    _check(
+                        bool(actor.get("grouped")) != bool(expected.get("labels")),
+                        "taskbar-grouping-labels",
+                        "labels" if expected.get("labels") else "grouped",
+                        f"grouped={actor.get('grouped')}",
+                    ),
+                    _check(
+                        bool(actor.get("affectsStruts")) == expected_visible,
+                        "taskbar-struts",
+                        f"affectsStruts={expected_visible}",
+                        f"got {bool(actor.get('affectsStruts'))}",
+                    ),
+                )
+            )
     active_actors = dock_actors if expected_docks else taskbar_actors if expected_taskbars else []
     if active_actors:
         actual_edges = {actor.get("edge") for actor in active_actors}

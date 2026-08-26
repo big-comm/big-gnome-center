@@ -8,6 +8,8 @@ import pytest
 
 from layout_applier import _HELPER_PERSIST_UUIDS, LayoutApplier
 
+ROOT = Path(__file__).resolve().parents[1]
+
 CURRENT_DCONF = """\
 [org/gnome/desktop/input-sources]
 sources=[('xkb', 'br')]
@@ -38,6 +40,15 @@ def required_helper_available():
 
 
 class TestLayoutApplier:
+    def test_all_layouts_show_file_size_as_the_first_grid_caption(self):
+        layouts_dir = ROOT / "usr/share/layout-switcher/layouts"
+        for layout in layouts_dir.glob("*.txt"):
+            icon_view = LayoutApplier._section_key_values(
+                layout.read_text(),
+                "/org/gnome/nautilus/icon-view",
+            )
+            assert icon_view["captions"] == "['size', 'none', 'none']", layout.name
+
     def test_layout_big_shot_falls_back_to_installed_legacy_uuid(self):
         data = """\
 [org/gnome/shell]
@@ -856,7 +867,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_restarts_staying_dash_to_panel_before_other_leavers(
+    def test_load_migrates_staying_legacy_panel_before_other_leavers(
         self,
         _mock_run,
         _has,
@@ -868,7 +879,7 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_restart_dtp,
         mock_sleep,
     ):
-        """Protect staying dash-to-panel from Shell rebase during removals."""
+        """Retire a live legacy panel without restarting it after migration."""
         data = (
             "[org/gnome/shell]\n"
             "enabled-extensions=['stay@ext', 'community-panel@communitybig.org']\n"
@@ -884,12 +895,9 @@ disabled-extensions=['community-menu@communitybig.org']
         )
 
         assert ok is True
-        assert mock_disable.call_args.args[0] == [
-            "community-panel@communitybig.org",
-            "leave@ext",
-        ]
+        assert mock_disable.call_args.args[0] == ["community-panel@communitybig.org"]
         assert mock_disable.call_args.kwargs == {"sort": False}
-        mock_restart_dtp.assert_called_once_with(["stay@ext", "community-panel@communitybig.org"])
+        mock_restart_dtp.assert_not_called()
         mock_sleep.assert_any_call(LayoutApplier._SETTLE_SEC)
 
     @patch("layout_applier.time.sleep")
@@ -904,7 +912,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_restarts_dash_to_panel_when_reapplying_same_layout(
+    def test_load_retires_legacy_panel_when_reapplying_saved_layout(
         self,
         _mock_run,
         _has,
@@ -916,7 +924,7 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_restart_dtp,
         mock_sleep,
     ):
-        """Reapplying a DTP layout must rebuild DTP panel actors."""
+        """Saved standalone-panel layouts migrate to the unified runtime."""
         data = "[org/gnome/shell]\nenabled-extensions=['community-panel@communitybig.org']\n"
 
         ok, _ = LayoutApplier.load_dconf_safely(
@@ -929,7 +937,7 @@ disabled-extensions=['community-menu@communitybig.org']
             "community-panel@communitybig.org",
         ]
         assert mock_disable.call_args.kwargs == {"sort": False}
-        mock_restart_dtp.assert_called_once_with(["community-panel@communitybig.org"])
+        mock_restart_dtp.assert_not_called()
         mock_sleep.assert_any_call(LayoutApplier._SETTLE_SEC)
 
     @patch("layout_applier.time.sleep")
@@ -945,7 +953,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_restarts_dash_to_panel_after_layout_load(
+    def test_load_starts_runtime_instead_of_legacy_panel_after_layout_load(
         self,
         _mock_run,
         _has,
@@ -958,15 +966,18 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_enable_after_load,
         mock_sleep,
     ):
-        """DTP is rebuilt after its target settings are loaded."""
+        """A standalone-panel target is migrated before extension startup."""
         data = "[org/gnome/shell]\nenabled-extensions=['community-panel@communitybig.org']\n"
 
         ok, _ = LayoutApplier.load_dconf_safely(data, before_uuids=[])
 
         assert ok is True
         mock_disable_batch.assert_not_called()
-        mock_restart_dtp.assert_called_once_with(["community-panel@communitybig.org"])
+        mock_restart_dtp.assert_not_called()
         mock_enable_after_load.assert_not_called()
+        switch_data = _mock_run.call_args_list[1].kwargs["stdin_text"]
+        assert "'layout-switcher-runtime@communitybig.org'" in switch_data
+        assert "'community-panel@communitybig.org'" not in switch_data
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._enable_user_theme_after_load", return_value=True)
@@ -1152,7 +1163,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_stages_new_dash_to_panel_after_settings_load(
+    def test_load_migrates_new_dash_to_panel_to_runtime_in_switch_data(
         self,
         mock_run,
         _has,
@@ -1166,7 +1177,7 @@ disabled-extensions=['community-menu@communitybig.org']
         _wait_live,
         _sleep,
     ):
-        """New DTP starts first; ArcMenu starts after the DTP panel exists."""
+        """Legacy panel targets start through the unified runtime."""
         arcmenu = "arcmenu@arcmenu.com"
         dash_to_panel = "community-panel@communitybig.org"
         data = (
@@ -1180,14 +1191,11 @@ disabled-extensions=['community-menu@communitybig.org']
         assert ok is True
         mock_disable.assert_not_called()
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert (
-            "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
-            in switch_data
-        )
-        assert f"'{arcmenu}'" not in switch_data
+        assert "'layout-switcher-runtime@communitybig.org'" in switch_data
+        assert f"'{arcmenu}'" in switch_data
         assert f"'{dash_to_panel}'" not in switch_data
-        mock_restart_dtp.assert_called_once_with(["stay@ext"])
-        mock_enable_after_load.assert_called_once_with([arcmenu])
+        mock_restart_dtp.assert_not_called()
+        mock_enable_after_load.assert_not_called()
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._wait_extension_live", return_value=True)
@@ -1210,7 +1218,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_keeps_light_style_stable_before_dash_to_panel_enters(
+    def test_load_keeps_light_style_with_migrated_panel_runtime(
         self,
         _mock_run,
         _has,
@@ -1224,7 +1232,7 @@ disabled-extensions=['community-menu@communitybig.org']
         _wait_live,
         _sleep,
     ):
-        """Light DTP layouts start DTP after light-style is already active."""
+        """Light layouts migrate their panel without a standalone restart."""
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         dash_to_panel = "community-panel@communitybig.org"
         data = (
@@ -1236,7 +1244,7 @@ disabled-extensions=['community-menu@communitybig.org']
         ok, _ = LayoutApplier.load_dconf_safely(data, before_uuids=["stay@ext"])
 
         assert ok is True
-        mock_restart_dtp.assert_called_once_with(["stay@ext", light_style])
+        mock_restart_dtp.assert_not_called()
         _enable_after_load.assert_not_called()
 
     @patch("layout_applier.time.sleep")
@@ -1249,7 +1257,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_still_enables_target_panel_after_disable_timeout(
+    def test_load_still_writes_migrated_runtime_after_disable_timeout(
         self,
         _mock_run,
         _has,
@@ -1262,7 +1270,7 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_enable_after_load,
         _sleep,
     ):
-        """Target panel extensions are required even after secondary DBus timeouts."""
+        """A DBus timeout does not restore the retired standalone panel."""
         arcmenu = "arcmenu@arcmenu.com"
         dash_to_panel = "community-panel@communitybig.org"
         data = (
@@ -1277,11 +1285,9 @@ disabled-extensions=['community-menu@communitybig.org']
         )
 
         assert ok is True
-        mock_disable.assert_not_called()
-        mock_restart_dtp.assert_called_once_with(
-            ["layout-switcher-helper@communitybig.org", "stay@ext"]
-        )
-        mock_enable_after_load.assert_called_once_with([arcmenu])
+        mock_disable.assert_called_once_with(["leave@ext"], sort=False)
+        mock_restart_dtp.assert_not_called()
+        mock_enable_after_load.assert_not_called()
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.ShellReloader.get_extension_state", return_value=1)
@@ -1390,7 +1396,7 @@ disabled-extensions=['community-menu@communitybig.org']
         _wait_not_live,
         _sleep,
     ):
-        """Classic -> G-Unity starts Kiwi/Community Dock after light-style leaves."""
+        """Classic -> G-Unity starts Kiwi after Shell mode settles."""
         arcmenu = "arcmenu@arcmenu.com"
         dash_to_panel = "community-panel@communitybig.org"
         community_dock = "community-dock@communitybig.org"
@@ -1418,9 +1424,10 @@ disabled-extensions=['community-menu@communitybig.org']
         )
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
         assert f"'{community_dock}'" not in switch_data
+        assert "'layout-switcher-runtime@communitybig.org'" in switch_data
         assert f"'{kiwi}'" not in switch_data
         assert f"'{light_style}'" in switch_data
-        mock_enable_after_load.assert_called_once_with([community_dock, kiwi])
+        mock_enable_after_load.assert_called_once_with([kiwi])
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._enable_user_theme_after_load", return_value=True)

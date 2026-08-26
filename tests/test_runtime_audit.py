@@ -56,8 +56,16 @@ def _snapshot(**changes) -> Snapshot:
         }[layout]
         dock_actors = ([{"monitor": 0, "edge": edge, "width": 420, "height": 48}]
                        if surface == "dock" else [])
-        taskbar_actors = ([{"monitor": 0, "edge": edge, "width": 1920, "height": 40}]
-                          if surface == "taskbar" else [])
+        actor_height = {"Hybrid": 38, "Desk UX": 46, "Classic": 38}.get(layout)
+        taskbar_actors = ([{
+            "monitor": 0,
+            "edge": edge,
+            "width": 1920,
+            "height": actor_height,
+            "grouped": layout != "Classic",
+            "intellihideEnabled": False,
+            "affectsStruts": True,
+        }] if surface == "taskbar" else [])
         values["runtime_diagnostics"] = {
             "monitors": [{"index": 0, "x": 0, "y": 0, "width": 1920, "height": 1080}],
             "primaryMonitor": 0,
@@ -75,7 +83,9 @@ def _snapshot(**changes) -> Snapshot:
                     "visibility": {
                         "BigGnome": "intelligent",
                         "G-Unity": "always-visible",
-                    }.get(layout),
+                    }.get(layout, "always-visible" if surface == "taskbar" else None),
+                    "labels": layout == "Classic",
+                    "actorHeight": actor_height,
                 },
                 "dock": {
                     "active": surface == "dock",
@@ -97,10 +107,14 @@ def _snapshot(**changes) -> Snapshot:
                 },
                 "taskbar": {
                     "active": surface == "taskbar",
+                    "visibility": "always-visible",
                     "actors": taskbar_actors,
                     "lifecycle": {
                         "managerOwned": surface == "taskbar",
                         "globalOwned": surface == "taskbar",
+                        "appActionsOwned": surface == "taskbar",
+                        "interactionsOwned": surface == "taskbar",
+                        "indicatorRendererOwned": surface == "taskbar",
                         "activationPending": False,
                     },
                 },
@@ -317,6 +331,9 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     taskbar["lifecycle"] = {
         "managerOwned": False,
         "globalOwned": True,
+        "appActionsOwned": False,
+        "interactionsOwned": False,
+        "indicatorRendererOwned": False,
         "activationPending": True,
     }
     runtime["taskbar"] = taskbar
@@ -331,6 +348,9 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     )
 
     assert "taskbar-manager-ownership" in failures
+    assert "taskbar-app-actions-ownership" in failures
+    assert "taskbar-interactions-ownership" in failures
+    assert "taskbar-indicator-renderer-ownership" in failures
     assert "taskbar-activation-settled" in failures
 
 

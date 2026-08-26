@@ -34,6 +34,8 @@ const LAYOUT_PROFILES = new Map([
         labels: false,
         indicator: 'hybrid',
         hover: 'lift',
+        panelVisibility: 'always-visible',
+        actorHeight: 38,
     })],
     ['Desk UX', Object.freeze({
         layout: 'Desk UX',
@@ -42,6 +44,8 @@ const LAYOUT_PROFILES = new Map([
         labels: false,
         indicator: 'desk-ux',
         hover: 'default',
+        panelVisibility: 'always-visible',
+        actorHeight: 46,
     })],
     ['Classic', Object.freeze({
         layout: 'Classic',
@@ -50,6 +54,8 @@ const LAYOUT_PROFILES = new Map([
         labels: true,
         indicator: 'none',
         hover: 'default',
+        panelVisibility: 'always-visible',
+        actorHeight: 38,
     })],
     ['Minimal', Object.freeze({
         layout: 'Minimal',
