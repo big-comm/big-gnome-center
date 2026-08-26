@@ -286,10 +286,11 @@ class PanelDockSettings:
         self._remember("panel-visibility", mode)
         if self.community_panel_active:
             intelligent = mode == "intelligent"
-            self.community_panel.set_boolean("intellihide", mode != "always-visible")
+            self.community_panel.set_int("intellihide-enable-start-delay", 0)
             self.community_panel.set_boolean("intellihide-hide-from-windows", intelligent)
             self.community_panel.set_boolean("intellihide-hide-from-monitor-windows", False)
             self.community_panel.set_string("intellihide-behaviour", "FOCUSED_WINDOWS")
             self.community_panel.set_boolean("intellihide-use-pointer", True)
+            self.community_panel.set_boolean("intellihide", mode != "always-visible")
             return
         self.panel.set_string("panel-visibility", mode)

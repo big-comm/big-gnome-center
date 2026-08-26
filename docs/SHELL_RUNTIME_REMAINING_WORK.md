@@ -256,6 +256,24 @@ locally and on both VMs. Both VMs finish on Hybrid with one monitor. Remaining
 Panel gate: user visual acceptance of native status menus and the full manual
 button/layout matrix before inherited branches are removed.
 
+Manual follow-up build 59 closes three Taskbar defects found in that matrix.
+The vertical line beside a two-window Hybrid icon was Dash-to-Panel's legacy
+Metro stacked-window SVG leaking through when the user selected the Desk UX
+indicator; the owned renderer suppresses that decoration without changing the
+horizontal indicator or grouping behavior. Explicit always-hidden changes no
+longer inherit the upstream 2000 ms startup delay. Both runtime activation and
+the live settings backend configure intellihide before enabling it. Community
+Menu uses native `St.Icon` sizing and follows the live Panel allocation.
+
+Telemetry now derives expected Taskbar actor height from
+`panel-height-overrides`, including Desk UX's six external margin pixels.
+GNOME 51 passed live 38 -> 56 -> 38 menu scaling and Hybrid + Desk UX indicator
+with two Nautilus windows without the vertical edge. GNOME 50 passed the 56 px
+menu check. Both versions completed always-visible -> always-hidden within the
+350 ms observation window. Final strict audits report zero failures and only
+the known SSH `tty` warning; each VM has one `1280x800` monitor. Focused tests:
+`111 passed`; full suite: `547 passed` with the known PyGI warning.
+
 The original monolithic transition runner stalled once in `CompleteSwitch`
 after redundantly reapplying the already verified Hybrid source. Isolated
 reapply passed on builds 49 and 50. The runner now reuses a previous verified

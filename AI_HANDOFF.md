@@ -1676,3 +1676,33 @@ Append one entry per completed change:
 - Remaining acceptance is user visual coverage of native status menus and the
   complete manual application-button/layout matrix. Do not remove inherited
   Panel branches before that approval.
+
+## 2026-08-26 — Manual Taskbar follow-up, build 59
+
+- Hybrid plus the Desk UX indicator exposed Dash-to-Panel's legacy
+  `highlight_stacked_bg.svg` edge when a grouped application had two windows.
+  The owned renderer now suppresses only that legacy edge. Grouping, previews,
+  focus highlighting, and the horizontal runtime indicator remain unchanged.
+- The two-second visibility lag was the inherited
+  `intellihide-enable-start-delay=2000`. Runtime activation and the live Python
+  settings path now set it to zero, configure behavior first, and enable
+  intellihide last. GNOME 50 and 51 reached the hidden translation within the
+  350 ms observation window.
+- Community Menu now follows the allocated Panel size through native
+  `St.Icon.set_icon_size()`. It passed live 38 -> 56 -> 38 scaling on GNOME 51
+  and a 56 px confirmation on GNOME 50.
+- Runtime build 59 reports `panel-height-overrides` in expected actor geometry.
+  Desk UX includes its six external margin pixels. Strict audit therefore
+  accepts supported custom heights instead of comparing them with fixed layout
+  defaults.
+- GNOME 51 reproduced Hybrid + Desk UX indicator + two Nautilus windows without
+  the vertical edge. GNOME 50 and 51 passed always-visible -> always-hidden in
+  350 ms. Final strict audits: zero failures and the known SSH `tty` warning.
+  GNOME 51 ends Hybrid at `1280x38`; GNOME 50 ends Classic at its preserved
+  `1280x56` override. Both have one `1280x800` monitor.
+- Journal review found no Layout Switcher, Community Panel, or Community Menu
+  exception. GNOME 51 retains the external GSConnect final-type failure. Both
+  versions log the known retired Community Dock metadata lookup during Shell
+  startup; runtime ownership and stage-residue checks pass.
+- Focused suite: `111 passed`. Full suite: `547 passed`, with one known PyGI
+  deprecation warning. PKGBUILD and package versions are unchanged.

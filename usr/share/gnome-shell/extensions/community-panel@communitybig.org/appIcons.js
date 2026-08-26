@@ -810,7 +810,13 @@ export const TaskbarAppIcon = GObject.registerClass(
           )
             highlightMargin += 1
 
-          if (this._nWindows > 1 && focusedDotStyle == DOT_STYLE.METRO) {
+          // The runtime renderer already owns grouped-app indicator geometry.
+          // Do not add Dash-to-Panel's legacy stacked-window edge beside it.
+          if (
+            !this._getCommunityIndicatorStyle() &&
+            this._nWindows > 1 &&
+            focusedDotStyle == DOT_STYLE.METRO
+          ) {
             let bgSvg = '/img/highlight_stacked_bg'
 
             if (pos == DOT_POSITION.LEFT || pos == DOT_POSITION.RIGHT) {

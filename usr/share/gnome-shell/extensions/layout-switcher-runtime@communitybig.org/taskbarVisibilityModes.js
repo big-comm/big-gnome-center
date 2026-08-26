@@ -12,12 +12,15 @@ export class TaskbarVisibilityModes {
     apply(mode) {
         const selected = MODES.has(mode) ? mode : 'always-visible';
         const intelligent = selected === 'intelligent';
+        // Explicit runtime changes must not inherit the upstream startup delay.
+        this._settings.set_int('intellihide-enable-start-delay', 0);
         this._settings.set_boolean('intellihide-only-secondary', false);
-        this._settings.set_boolean('intellihide', selected !== 'always-visible');
         this._settings.set_boolean('intellihide-hide-from-windows', intelligent);
         this._settings.set_boolean('intellihide-hide-from-monitor-windows', false);
         this._settings.set_string('intellihide-behaviour', 'FOCUSED_WINDOWS');
         this._settings.set_boolean('intellihide-use-pointer', true);
+        // Enable last: Intellihide reads the delay and behavior during enable().
+        this._settings.set_boolean('intellihide', selected !== 'always-visible');
     }
 
     mode() {

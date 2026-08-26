@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 57" in controller
+    assert "RUNTIME_BUILD = 59" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -59,6 +59,8 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert profiles.count("hover: 'default'") == 5
     assert "visibility: 'intelligent'" in profiles
     assert "visibility: 'always-visible'" in profiles
+    assert "panelHeight: 38" in profiles
+    assert "panelHeight: 40" in profiles
     assert "extended: false" in profiles
     assert "extended: true" in profiles
 
@@ -113,13 +115,26 @@ def test_runtime_owns_taskbar_visibility_modes_and_strut_telemetry():
     assert "new TaskbarVisibilityModes(" in runtime
     assert "this._visibilityModes.apply(visibility)" in runtime
     assert "intellihide-only-secondary" in visibility
+    assert "set_int('intellihide-enable-start-delay', 0)" in visibility
     assert "intellihide-hide-from-windows" in visibility
     assert "FOCUSED_WINDOWS" in visibility
     assert "affectsStruts" in visibility
+    delay = visibility.index("set_int('intellihide-enable-start-delay', 0)")
+    enable = visibility.index("set_boolean('intellihide', selected !== 'always-visible')")
+    assert delay < enable
     assert "window: this._windowDiagnostics()" in runtime
     assert "get_work_area_for_monitor" in runtime
     for mode in ("always-visible", "always-hidden", "intelligent"):
         assert mode in visibility
+
+
+def test_runtime_telemetry_accounts_for_panel_height_overrides():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+
+    assert "_panelActorHeightForProfile(profile)" in controller
+    assert "get_value('panel-height-overrides')" in controller
+    assert "panelHeight + profile.actorHeight - profile.panelHeight" in controller
+    assert "actorHeight: this._panelActorHeightForProfile(profile)" in controller
 
 
 def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():

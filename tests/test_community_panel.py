@@ -65,6 +65,14 @@ def test_community_panel_keeps_hybrid_indicator_at_fixed_length():
     assert "area.set_pivot_point(0.5, 0.5)" in source
 
 
+def test_runtime_indicator_suppresses_legacy_grouped_window_edge():
+    source = (PANEL / "appIcons.js").read_text()
+    stacked = source[source.index("let bgSvg = '/img/highlight_stacked_bg'") - 260:]
+
+    assert "!this._getCommunityIndicatorStyle()" in stacked
+    assert "this._nWindows > 1" in stacked
+
+
 def test_community_panel_preserves_license_provenance_schema_and_translations():
     assert "GNU GENERAL PUBLIC LICENSE" in (PANEL / "COPYING").read_text()
     upstream = (PANEL / "UPSTREAM.md").read_text()

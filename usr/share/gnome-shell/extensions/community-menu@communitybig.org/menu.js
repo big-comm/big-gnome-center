@@ -260,7 +260,28 @@ export const ApplicationsButton = GObject.registerClass({
         this._menuButton = new MenuButton.MenuButton();
         this.add_child(this._menuButton);
 
+        this.panel.connectObject('notify::height', () => {
+            this._syncMenuIconSize();
+        }, this);
+        this._syncMenuIconSize();
         this._syncArrowSide();
+    }
+
+    _syncMenuIconSize() {
+        const runtimePanel = global.dashToPanel?.panels
+            ?.find(panel => panel?.panel === this.panel ||
+                panel?.panel?.contains?.(this));
+        const physicalPanelSize = runtimePanel?.geom?.iconSize;
+        const scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+        const panelSize = physicalPanelSize
+            ? physicalPanelSize / scaleFactor
+            : this.panel?.height;
+        if (!panelSize) {
+            this._menuButton.setIconSize(Constants.MENU_BUTTON_ICON_SIZE);
+            return;
+        }
+
+        this._menuButton.setIconSize(Math.max(16, Math.round(panelSize) - 2));
     }
 
     _syncArrowSide() {

@@ -14,11 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 class FakeSettings:
     def __init__(self, values):
         self.values = dict(values)
+        self.calls = []
 
     def get_boolean(self, key):
         return self.values[key]
 
     def set_boolean(self, key, value):
+        self.calls.append(("set_boolean", key, value))
         self.values[key] = value
 
     def get_double(self, key):
@@ -40,12 +42,14 @@ class FakeSettings:
         return self.values[key]
 
     def set_int(self, key, value):
+        self.calls.append(("set_int", key, value))
         self.values[key] = value
 
     def get_string(self, key):
         return self.values[key]
 
     def set_string(self, key, value):
+        self.calls.append(("set_string", key, value))
         self.values[key] = value
 
     def get_value(self, key):
@@ -439,7 +443,15 @@ def test_community_panel_visibility_maps_all_three_modes():
     settings.set_panel_visibility("always-hidden")
     assert settings.panel_visibility() == "always-hidden"
     assert settings.community_panel.values["intellihide"] is True
+    assert settings.community_panel.values["intellihide-enable-start-delay"] == 0
     assert settings.community_panel.values["intellihide-hide-from-windows"] is False
+    delay = settings.community_panel.calls.index(
+        ("set_int", "intellihide-enable-start-delay", 0)
+    )
+    enable = settings.community_panel.calls.index(
+        ("set_boolean", "intellihide", True)
+    )
+    assert delay < enable
 
     settings.set_panel_visibility("intelligent")
     assert settings.panel_visibility() == "intelligent"

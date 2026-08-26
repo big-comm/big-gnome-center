@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 57;
+export const RUNTIME_BUILD = 59;
 
 export class RuntimeController {
     constructor(extension) {
@@ -115,6 +115,16 @@ export class RuntimeController {
         return overrides[profile.layout] ?? profile.panelVisibility ?? 'always-visible';
     }
 
+    _panelActorHeightForProfile(profile) {
+        const overrides = this._settings
+            .get_value('panel-height-overrides')
+            .deep_unpack();
+        const panelHeight = overrides[profile.layout];
+        if (panelHeight === undefined || profile.panelHeight === undefined)
+            return profile.actorHeight;
+        return panelHeight + profile.actorHeight - profile.panelHeight;
+    }
+
     diagnostics() {
         const profile = this._activeProfile ??
             profileForLayout(this._settings?.get_string('active-layout') ?? '');
@@ -132,7 +142,7 @@ export class RuntimeController {
                 visibility: profile.surface === RuntimeSurface.TASKBAR
                     ? this._panelVisibilityForProfile(profile)
                     : this._visibilityForProfile(profile),
-                actorHeight: profile.actorHeight,
+                actorHeight: this._panelActorHeightForProfile(profile),
             },
             dock: this._dock?.diagnostics() ?? {active: false, actors: []},
             taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},

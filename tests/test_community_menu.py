@@ -63,6 +63,20 @@ def test_menu_button_uses_bundled_community_icon():
     assert "style_class: 'popup-menu-icon'" not in source
 
 
+def test_menu_button_tracks_runtime_panel_size():
+    menu = (EXTENSION_DIR / "menu.js").read_text()
+    button = (EXTENSION_DIR / "widgets/menuButton.js").read_text()
+
+    assert "this.panel.connectObject('notify::height'" in menu
+    assert "global.dashToPanel?.panels" in menu
+    assert "runtimePanel?.geom?.iconSize" in menu
+    assert "physicalPanelSize / scaleFactor" in menu
+    assert "this.panel?.height" in menu
+    assert "Math.round(panelSize) - 2" in menu
+    assert "setIconSize(size)" in button
+    assert "this._icon.set_icon_size(size)" in button
+
+
 def test_secondary_menu_has_no_panel_preferences_entry():
     secondary_menu = (EXTENSION_DIR / "widgets/secondaryMenu.js").read_text()
     utils = (EXTENSION_DIR / "utils.js").read_text()

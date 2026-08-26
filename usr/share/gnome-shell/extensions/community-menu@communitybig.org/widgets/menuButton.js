@@ -28,6 +28,10 @@ export const MenuButton = GObject.registerClass({
         this._icon.set_gicon(Gio.icon_new_for_string(menu_icon));
     }
 
+    setIconSize(size) {
+        this._icon.set_icon_size(size);
+    }
+
     _onDestroy() {
         this._icon?.destroy();
         this._icon = null;
