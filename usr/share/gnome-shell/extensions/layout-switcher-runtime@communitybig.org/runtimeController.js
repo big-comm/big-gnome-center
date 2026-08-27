@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 61;
+export const RUNTIME_BUILD = 62;
 
 export class RuntimeController {
     constructor(extension) {
@@ -33,6 +33,7 @@ export class RuntimeController {
         this._settings = new Gio.Settings({settings_schema: schema});
         this._settingsChangedIds = [
             'active-layout',
+            'panel-height-overrides',
             'panel-visibility-overrides',
         ].map(key => this._settings.connect(
             `changed::${key}`,
@@ -76,6 +77,7 @@ export class RuntimeController {
         const hover = this._hoverForProfile(profile);
         const visibility = this._visibilityForProfile(profile);
         const panelVisibility = this._panelVisibilityForProfile(profile);
+        const panelHeight = this._panelHeightForProfile(profile);
         this._activeProfile = profile;
 
         if (profile.surface === RuntimeSurface.DOCK) {
@@ -84,7 +86,8 @@ export class RuntimeController {
             this._dock.activate(profile, indicator, hover, visibility);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             this._dock.deactivate();
-            await this._taskbar.activate(profile, indicator, hover, panelVisibility);
+            await this._taskbar.activate(
+                profile, indicator, hover, panelVisibility, panelHeight);
             if (!this._enabled || generation !== this._syncGeneration)
                 this._taskbar.deactivate();
         }
@@ -118,12 +121,19 @@ export class RuntimeController {
         return overrides[profile.layout] ?? profile.panelVisibility ?? 'always-visible';
     }
 
-    _panelActorHeightForProfile(profile) {
+    _panelHeightForProfile(profile) {
+        if (profile.panelHeight === undefined)
+            return undefined;
         const overrides = this._settings
             .get_value('panel-height-overrides')
             .deep_unpack();
-        const panelHeight = overrides[profile.layout];
-        if (panelHeight === undefined || profile.panelHeight === undefined)
+        const panelHeight = overrides[profile.layout] ?? profile.panelHeight;
+        return Math.max(32, Math.min(56, panelHeight));
+    }
+
+    _panelActorHeightForProfile(profile) {
+        const panelHeight = this._panelHeightForProfile(profile);
+        if (panelHeight === undefined)
             return profile.actorHeight;
         return panelHeight + profile.actorHeight - profile.panelHeight;
     }

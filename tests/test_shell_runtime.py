@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 61" in controller
+    assert "RUNTIME_BUILD = 62" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -73,7 +73,7 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
     assert "indicator-style-overrides" in controller
     assert "dock-hover-overrides" in controller
     assert "this._dock.activate(profile, indicator, hover, visibility)" in controller
-    assert "this._taskbar.activate(profile, indicator, hover, panelVisibility)" in controller
+    assert "profile, indicator, hover, panelVisibility, panelHeight" in controller
     assert "set_string('indicator-style', style)" in dock
     assert "set_string('dock-hover-effect', effect)" in dock
     assert "this._host.placement.apply(profile?.edge, profile?.extended)" in dock
@@ -133,11 +133,18 @@ def test_runtime_owns_taskbar_visibility_modes_and_strut_telemetry():
 
 def test_runtime_telemetry_accounts_for_panel_height_overrides():
     controller = (RUNTIME / "runtimeController.js").read_text()
+    runtime = (RUNTIME / "taskbarRuntime.js").read_text()
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
 
+    assert "'panel-height-overrides'," in controller
+    assert "_panelHeightForProfile(profile)" in controller
     assert "_panelActorHeightForProfile(profile)" in controller
     assert "get_value('panel-height-overrides')" in controller
     assert "panelHeight + profile.actorHeight - profile.panelHeight" in controller
     assert "actorHeight: this._panelActorHeightForProfile(profile)" in controller
+    assert "this._surface.setPanelHeight(panelHeight)" in runtime
+    assert "await this._surface.enable(panelHeight)" in runtime
+    assert "PanelSettings.setPanelSize(Context.SETTINGS, index, panelHeight)" in surface
 
 
 def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
@@ -210,7 +217,7 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
     ).read_text()
 
     assert "new TaskbarSurfaceManager(this._host)" in taskbar
-    assert "await this._surface.enable()" in taskbar
+    assert "await this._surface.enable(panelHeight)" in taskbar
     assert "this._surface.destroy()" in taskbar
     assert "new PanelManager.PanelManager()" in surface
     assert "manager.enable();" in surface

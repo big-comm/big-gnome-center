@@ -128,7 +128,7 @@ class PanelDockSettings:
             self._remember("panel-visibility", panel_visibility)
             self._remember("indicator-style", self.indicator_style())
         if self.community_panel_active:
-            self._remember("panel-height", self.panel_height())
+            self._remember("panel-height", self._legacy_panel_height())
         self.runtime.mark_imported(layout)
 
     def dock_opacity(self) -> int:
@@ -248,6 +248,16 @@ class PanelDockSettings:
         self.panel.set_uint("panel-opacity", percent)
 
     def panel_height(self) -> int:
+        if (
+            self.runtime_active
+            and self.community_panel_active
+            and self.runtime.supports_layout(self.active_layout)
+        ):
+            height = int(self.runtime.get(self.active_layout, "panel-height", 38))
+            return max(PANEL_HEIGHT_RANGE[0], min(PANEL_HEIGHT_RANGE[1], height))
+        return self._legacy_panel_height()
+
+    def _legacy_panel_height(self) -> int:
         if not self.community_panel_active:
             default = self.runtime.default(self.active_layout, "panel-height", 38)
             return int(default)
@@ -260,6 +270,12 @@ class PanelDockSettings:
     def set_panel_height(self, height: int) -> None:
         height = max(PANEL_HEIGHT_RANGE[0], min(PANEL_HEIGHT_RANGE[1], int(height)))
         self._remember("panel-height", height)
+        if (
+            self.runtime_active
+            and self.community_panel_active
+            and self.runtime.supports_layout(self.active_layout)
+        ):
+            return
         if not self.community_panel_active:
             return
         try:

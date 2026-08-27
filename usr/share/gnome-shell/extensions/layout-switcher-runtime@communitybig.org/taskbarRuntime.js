@@ -21,16 +21,18 @@ export class TaskbarRuntime {
         this._activating = false;
     }
 
-    async activate(profile, indicator, hover, visibility) {
+    async activate(profile, indicator, hover, visibility, panelHeight) {
         const generation = ++this._activationGeneration;
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
         this._visibility = visibility;
+        this._panelHeight = panelHeight;
         if (this._active) {
             this._applyIndicator(indicator);
             this._applyHover(hover);
             this._visibilityModes.apply(visibility);
+            this._surface.setPanelHeight(panelHeight);
             return;
         }
 
@@ -40,7 +42,7 @@ export class TaskbarRuntime {
         this._host.loadStylesheet();
         this._activating = true;
         try {
-            await this._surface.enable();
+            await this._surface.enable(panelHeight);
             if (generation !== this._activationGeneration)
                 return;
             this._active = true;
@@ -66,6 +68,7 @@ export class TaskbarRuntime {
         this._indicator = null;
         this._hover = null;
         this._visibility = null;
+        this._panelHeight = null;
     }
 
     diagnostics() {

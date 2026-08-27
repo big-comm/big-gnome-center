@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-26
-Safe checkpoint: `5014b7e`
-Status: Taskbar visibility setting ownership started; lifecycle accepted
+Safe checkpoint: `5c01c96`
+Status: Taskbar visibility and height setting ownership accepted
 
 ## Purpose
 
@@ -336,10 +336,46 @@ Ruff, and diff checks pass. Final local/VM file SHA-256 values:
 - Panel/Dock page:
   `d9196a2711bc0741a4f796c13d7cb1ed7998abbeb9190e0bc781723f019eefcd`.
 
-Next slice: move Taskbar Panel height to exclusive owned-schema control using
-the same import/runtime/standalone boundary. Do not remove all inherited schema
-adapters until every required setting and the stable/testing upgrade matrix are
-accepted.
+Build 62 adds Taskbar Panel height to the exclusive owned-setting boundary. The
+GTK backend reads/writes only `panel-height-overrides` while the unified runtime
+is active. One-time import still reads the inherited `panel-sizes`, and the
+standalone compatibility path still mirrors it. Runtime changes are clamped to
+32-56 px and applied through Dash-to-Panel's official per-monitor
+`PanelSettings.setPanelSize()` API. This keeps monitor IDs and native
+`changed::panel-sizes` geometry resets instead of duplicating its JSON logic.
+
+GNOME 51 passed 38 -> 56 -> 32 -> 38 with a maximized Brave window. Exact
+frame/work-area geometry followed each visible Panel height: `1280x744` at 56,
+`1280x768` at 32, and `1280x762` at the restored 38. GNOME 50 passed 56 and 32
+in intelligent overlay mode; at 56 the normal Brave frame remained
+`60,135 1160x530`, work area remained `1280x800`, and `affectsStruts` remained
+false. Both versions passed 10 slow and 20 rapid cycles without rebuilding the
+Taskbar manager.
+
+Final maps were restored exactly: GNOME 51 height/visibility maps are empty;
+GNOME 50 retains `{'Classic': 36}` for height and
+`{'Classic': 'always-visible', 'Hybrid': 'intelligent'}` for visibility. Both
+use monitor ID `RHT-0x00000000` internally at 38 px, retain one `1280x800`
+monitor, and pass strict audit with zero failures and only the SSH `tty`
+warning. The GNOME Shell journals contain no runtime/Panel exception; GNOME 51
+still has the separate GSConnect final-type error.
+
+Build 62 validation: focused `95 passed`; full suite `552 passed`, with one
+known PyGI warning. JavaScript syntax, focused Ruff, and diff checks pass.
+Final local/VM SHA-256 values:
+
+- runtime controller:
+  `a1b41da01a840e02b0ab7abcad710310288f0a50f3d6d6152c30ccd42294c753`;
+- Taskbar runtime:
+  `8f9068c8889c98cee78efb5fb8b378f38964a11af98613ddb0d4816c431cb69a`;
+- Taskbar surface:
+  `386e61b153d174986e79dc35c024e07cee2f1c6db8d8d6092a9edf392c1464d0`;
+- settings backend:
+  `97055a24a14dfb5b32d24215856e0ab268cc967be6e0595a2f3a6184ff6a347c`.
+
+Next slice: move Taskbar Panel opacity to exclusive owned-schema control. Do
+not remove all inherited schema adapters until every required setting and the
+stable/testing upgrade matrix are accepted.
 
 - [ ] Stop mirroring new writes to inherited Dock and Panel schemas.
 - [ ] Move every required runtime key to the Layout Switcher-owned schema.

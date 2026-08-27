@@ -1749,3 +1749,46 @@ Append one entry per completed change:
 - Next implementation slice: move Taskbar Panel height to exclusive owned
   schema control. Keep inherited adapters until the remaining setting slices
   and stable/testing upgrade matrix pass.
+
+## 2026-08-26 — Taskbar height setting ownership, build 62
+
+- Taskbar Panel height now uses the same exclusive owned-setting boundary as
+  visibility. With unified runtime active, the GTK backend reads/writes only
+  `panel-height-overrides`. One-time import reads inherited `panel-sizes`; the
+  standalone compatibility path still mirrors for upgrade rollback.
+- Runtime build 62 listens to `changed::panel-height-overrides`, clamps values
+  to 32-56 px, and applies them without rebuilding `PanelManager`.
+- The adapter uses Dash-to-Panel's official per-monitor
+  `PanelSettings.setPanelSize()` API after monitor initialization. It therefore
+  preserves real monitor IDs and native `changed::panel-sizes` geometry resets
+  instead of reimplementing its JSON storage.
+- GNOME 51 passed live 38 -> 56 -> 32 -> 38 with maximized Brave. Exact
+  frame/work-area geometry was `1280x744` at 56, `1280x768` at 32, and
+  `1280x762` after restoring 38.
+- GNOME 50 passed 56 and 32 in intelligent overlay mode. At 56, normal Brave
+  remained `60,135 1160x530`, work area remained `1280x800`, and
+  `affectsStruts=false`.
+- Both Shell versions passed 10 slow and 20 rapid height cycles. Taskbar
+  manager/action/menu ownership remained active and stage actor count remained
+  exact.
+- Final state: both VMs use Hybrid and one `1280x800` monitor. GNOME 51 retains
+  empty height/visibility maps. GNOME 50 retains height
+  `{'Classic': 36}` and visibility
+  `{'Classic': 'always-visible', 'Hybrid': 'intelligent'}`. Internal
+  `panel-sizes` uses monitor ID `RHT-0x00000000` at 38 on both.
+- Strict audits: zero failures, only the expected SSH `tty` warning. GNOME
+  Shell journals contain no Layout Switcher or Community Panel exception.
+  GNOME 51 retains the external GSConnect final-type error.
+- Focused tests: `95 passed`. Full suite: `552 passed`, with one known PyGI
+  warning. JavaScript syntax, focused Ruff, and `git diff --check` pass.
+  PKGBUILD and package versions are unchanged.
+- Local and both VM hashes: runtime controller
+  `a1b41da01a840e02b0ab7abcad710310288f0a50f3d6d6152c30ccd42294c753`;
+  Taskbar runtime
+  `8f9068c8889c98cee78efb5fb8b378f38964a11af98613ddb0d4816c431cb69a`;
+  Taskbar surface
+  `386e61b153d174986e79dc35c024e07cee2f1c6db8d8d6092a9edf392c1464d0`;
+  settings backend
+  `97055a24a14dfb5b32d24215856e0ab268cc967be6e0595a2f3a6184ff6a347c`.
+- Next implementation slice: move Taskbar Panel opacity to exclusive owned
+  schema control. Keep inherited adapters through the upgrade matrix.

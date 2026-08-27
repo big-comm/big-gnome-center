@@ -32,7 +32,7 @@ export class TaskbarSurfaceManager {
         this.indicatorRenderer = null;
     }
 
-    async enable() {
+    async enable(panelHeight) {
         if (this._manager)
             return;
 
@@ -50,6 +50,7 @@ export class TaskbarSurfaceManager {
                 return;
 
             PanelSettings.adjustMonitorSettings(Context.SETTINGS);
+            this.setPanelHeight(panelHeight);
             this._configureOverview();
             this.enableGlobalStyles();
 
@@ -104,6 +105,16 @@ export class TaskbarSurfaceManager {
 
     panels() {
         return this._manager?.allPanels ?? [];
+    }
+
+    setPanelHeight(panelHeight) {
+        if (!Number.isInteger(panelHeight))
+            return;
+        const indexes = this._manager
+            ? this._manager.allPanels.map(panel => panel.monitor.index)
+            : Main.layoutManager.monitors.map((_monitor, index) => index);
+        for (const index of new Set(indexes))
+            PanelSettings.setPanelSize(Context.SETTINGS, index, panelHeight);
     }
 
     diagnostics() {

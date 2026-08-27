@@ -275,6 +275,21 @@ def test_compatibility_adapter_imports_legacy_taskbar_visibility_once():
     assert settings.runtime.values[("Hybrid", "panel-visibility")] == "always-hidden"
 
 
+def test_compatibility_adapter_imports_legacy_taskbar_height_once():
+    settings = settings_fixture()
+    settings.active_layout = "Hybrid"
+    settings.dock_active = False
+    settings.community_panel_active = True
+    settings.runtime_active = True
+    settings.community_panel.values["panel-sizes"] = '{"0":46}'
+
+    settings._import_active_layout_once()
+    settings.community_panel.values["panel-sizes"] = '{"0":52}'
+    settings._import_active_layout_once()
+
+    assert settings.runtime.values[("Hybrid", "panel-height")] == 46
+
+
 def test_live_writes_are_mirrored_to_layout_owned_runtime_settings():
     settings = settings_fixture()
     settings.active_layout = "Desk UX"
@@ -486,7 +501,25 @@ def test_standalone_taskbar_visibility_keeps_compatibility_mirror():
     assert settings.community_panel.values["intellihide-hide-from-windows"] is False
 
 
-def test_community_panel_height_preserves_monitor_map_and_clamps():
+def test_taskbar_height_writes_only_layout_owned_settings():
+    settings = settings_fixture()
+    settings.active_layout = "Hybrid"
+    settings.community_panel_active = True
+    settings.runtime_active = True
+    legacy_values = dict(settings.community_panel.values)
+
+    settings.set_panel_height(18)
+
+    assert settings.panel_height() == 32
+    assert settings.runtime.values[("Hybrid", "panel-height")] == 32
+    assert settings.community_panel.values == legacy_values
+    assert settings.community_panel.calls == []
+
+    settings.runtime.values[("Hybrid", "panel-height")] = 100
+    assert settings.panel_height() == 56
+
+
+def test_standalone_taskbar_height_preserves_monitor_map_and_clamps():
     settings = settings_fixture()
     settings.active_layout = "Hybrid"
     settings.community_panel_active = True
