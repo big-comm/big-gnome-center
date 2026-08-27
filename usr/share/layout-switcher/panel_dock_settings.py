@@ -119,7 +119,12 @@ class PanelDockSettings:
         elif self.community_panel_active:
             self._remember("dock-hover", self.dock_hover_effect())
         if self.dock_active or self.community_panel_active:
-            self._remember("panel-opacity", self.panel_opacity())
+            panel_opacity = (
+                self._legacy_panel_opacity()
+                if self.community_panel_active
+                else self.panel_opacity()
+            )
+            self._remember("panel-opacity", panel_opacity)
             panel_visibility = (
                 self._legacy_panel_visibility()
                 if self.community_panel_active
@@ -233,6 +238,16 @@ class PanelDockSettings:
         self.panel.set_string("indicator-style", style)
 
     def panel_opacity(self) -> int:
+        if (
+            self.runtime_active
+            and self.community_panel_active
+            and self.runtime.supports_layout(self.active_layout)
+        ):
+            opacity = int(self.runtime.get(self.active_layout, "panel-opacity", 70))
+            return max(0, min(100, opacity))
+        return self._legacy_panel_opacity()
+
+    def _legacy_panel_opacity(self) -> int:
         if self.community_panel_active:
             return round(self.community_panel.get_double("trans-panel-opacity") * 100)
         return self.panel.get_uint("panel-opacity")
@@ -240,6 +255,12 @@ class PanelDockSettings:
     def set_panel_opacity(self, percent: int) -> None:
         percent = max(0, min(100, int(percent)))
         self._remember("panel-opacity", percent)
+        if (
+            self.runtime_active
+            and self.community_panel_active
+            and self.runtime.supports_layout(self.active_layout)
+        ):
+            return
         if self.community_panel_active:
             self.community_panel.set_boolean("trans-use-custom-opacity", True)
             self.community_panel.set_boolean("trans-use-dynamic-opacity", False)

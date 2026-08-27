@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 62" in controller
+    assert "RUNTIME_BUILD = 64" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -61,6 +61,8 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert "visibility: 'always-visible'" in profiles
     assert "panelHeight: 38" in profiles
     assert "panelHeight: 40" in profiles
+    assert profiles.count("panelOpacity: 70") == 2
+    assert profiles.count("panelOpacity: 65") == 1
     assert "extended: false" in profiles
     assert "extended: true" in profiles
 
@@ -73,7 +75,8 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
     assert "indicator-style-overrides" in controller
     assert "dock-hover-overrides" in controller
     assert "this._dock.activate(profile, indicator, hover, visibility)" in controller
-    assert "profile, indicator, hover, panelVisibility, panelHeight" in controller
+    assert "profile, indicator, hover, panelOpacity," in controller
+    assert "panelVisibility, panelHeight);" in controller
     assert "set_string('indicator-style', style)" in dock
     assert "set_string('dock-hover-effect', effect)" in dock
     assert "this._host.placement.apply(profile?.edge, profile?.extended)" in dock
@@ -147,6 +150,21 @@ def test_runtime_telemetry_accounts_for_panel_height_overrides():
     assert "PanelSettings.setPanelSize(Context.SETTINGS, index, panelHeight)" in surface
 
 
+def test_runtime_owns_taskbar_opacity_and_reports_effective_alpha():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    runtime = (RUNTIME / "taskbarRuntime.js").read_text()
+
+    assert "'panel-opacity-overrides'," in controller
+    assert "_panelOpacityForProfile(profile)" in controller
+    assert "get_value('panel-opacity-overrides')" in controller
+    assert "opacity: this._panelOpacityForProfile(profile)" in controller
+    assert "this._applyOpacity(opacity)" in runtime
+    assert "set_boolean('trans-use-custom-opacity', true)" in runtime
+    assert "set_boolean('trans-use-dynamic-opacity', false)" in runtime
+    assert "set_double('trans-panel-opacity', opacity / 100)" in runtime
+    assert "Math.round(panel.dynamicTransparency.alpha * 100)" in runtime
+
+
 def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
     controller = (RUNTIME / "runtimeController.js").read_text()
     runtime = (RUNTIME / "taskbarRuntime.js").read_text()
@@ -164,6 +182,9 @@ def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
     active_branch = runtime[runtime.index("if (this._active) {"):]
     assert active_branch.index("this._applyIndicator(indicator)") < active_branch.index("return;")
     assert active_branch.index("this._applyHover(hover)") < active_branch.index("return;")
+    assert active_branch.index("this._applyOpacity(opacity)") < active_branch.index(
+        "return;"
+    )
     assert active_branch.index("this._visibilityModes.apply(visibility)") < active_branch.index("return;")
 
 
@@ -274,6 +295,11 @@ def test_taskbar_app_actions_are_owned_with_a_rollback_fallback():
         assert action in actions
     assert "actionCounts" in actions
     assert "lastAction" in actions
+    assert "import GObject from 'gi://GObject';" in actions
+    assert "GObject.signal_lookup(" in actions
+    assert "GObject.signal_query(signalId)" in actions
+    assert "signalQuery.param_types.map(() => null)" in actions
+    assert "emit('grab-op-begin', null, null)" not in actions
 
 
 def test_taskbar_previews_and_context_menus_are_runtime_owned_with_fallbacks():

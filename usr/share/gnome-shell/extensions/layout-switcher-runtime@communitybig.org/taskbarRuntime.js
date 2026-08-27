@@ -21,16 +21,18 @@ export class TaskbarRuntime {
         this._activating = false;
     }
 
-    async activate(profile, indicator, hover, visibility, panelHeight) {
+    async activate(profile, indicator, hover, opacity, visibility, panelHeight) {
         const generation = ++this._activationGeneration;
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
+        this._opacity = opacity;
         this._visibility = visibility;
         this._panelHeight = panelHeight;
         if (this._active) {
             this._applyIndicator(indicator);
             this._applyHover(hover);
+            this._applyOpacity(opacity);
             this._visibilityModes.apply(visibility);
             this._surface.setPanelHeight(panelHeight);
             return;
@@ -38,6 +40,7 @@ export class TaskbarRuntime {
 
         this._applyIndicator(indicator);
         this._applyHover(hover);
+        this._applyOpacity(opacity);
         this._visibilityModes.apply(visibility);
         this._host.loadStylesheet();
         this._activating = true;
@@ -67,6 +70,7 @@ export class TaskbarRuntime {
         this._profile = null;
         this._indicator = null;
         this._hover = null;
+        this._opacity = null;
         this._visibility = null;
         this._panelHeight = null;
     }
@@ -78,6 +82,7 @@ export class TaskbarRuntime {
             profile: this._profile?.layout ?? '',
             indicator: this._indicator ?? '',
             hover: this._hover ?? '',
+            opacity: this._opacity ?? null,
             visibility: this._visibilityModes.mode(),
             window: this._windowDiagnostics(),
             lifecycle: this._surface.diagnostics(),
@@ -102,6 +107,9 @@ export class TaskbarRuntime {
             visible: Boolean(actor?.visible),
             mapped: Boolean(actor?.mapped),
             grouped: Boolean(panel?.taskbar?.isGroupApps),
+            opacity: Number.isFinite(panel?.dynamicTransparency?.alpha)
+                ? Math.round(panel.dynamicTransparency.alpha * 100)
+                : null,
             ...this._visibilityModes.panelState(panel),
         };
     }
@@ -153,5 +161,14 @@ export class TaskbarRuntime {
     _applyHover(hover) {
         const settings = this._host.getSettings(PANEL_SCHEMA);
         settings.set_boolean('animate-appicon-hover', hover === 'lift');
+    }
+
+    _applyOpacity(opacity) {
+        if (!Number.isInteger(opacity))
+            return;
+        const settings = this._host.getSettings(PANEL_SCHEMA);
+        settings.set_boolean('trans-use-custom-opacity', true);
+        settings.set_boolean('trans-use-dynamic-opacity', false);
+        settings.set_double('trans-panel-opacity', opacity / 100);
     }
 }

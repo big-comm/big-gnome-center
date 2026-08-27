@@ -57,12 +57,14 @@ def _snapshot(**changes) -> Snapshot:
         dock_actors = ([{"monitor": 0, "edge": edge, "width": 420, "height": 48}]
                        if surface == "dock" else [])
         actor_height = {"Hybrid": 38, "Desk UX": 46, "Classic": 38}.get(layout)
+        panel_opacity = {"Hybrid": 70, "Desk UX": 65, "Classic": 70}.get(layout)
         taskbar_actors = ([{
             "monitor": 0,
             "edge": edge,
             "width": 1920,
             "height": actor_height,
             "grouped": layout != "Classic",
+            "opacity": panel_opacity,
             "intellihideEnabled": False,
             "affectsStruts": True,
         }] if surface == "taskbar" else [])
@@ -86,6 +88,7 @@ def _snapshot(**changes) -> Snapshot:
                     }.get(layout, "always-visible" if surface == "taskbar" else None),
                     "labels": layout == "Classic",
                     "actorHeight": actor_height,
+                    "opacity": panel_opacity,
                 },
                 "dock": {
                     "active": surface == "dock",
@@ -107,6 +110,7 @@ def _snapshot(**changes) -> Snapshot:
                 },
                 "taskbar": {
                     "active": surface == "taskbar",
+                    "opacity": panel_opacity,
                     "visibility": "always-visible",
                     "actors": taskbar_actors,
                     "lifecycle": {
@@ -212,6 +216,28 @@ def test_audit_rejects_dock_visibility_drift(tmp_path):
     )
 
     assert "dock-visibility" in failures
+
+
+def test_audit_rejects_taskbar_opacity_drift(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Hybrid")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    taskbar = dict(runtime["taskbar"], opacity=42)
+    actors = [dict(actor) for actor in taskbar["actors"]]
+    actors[0]["opacity"] = 43
+    taskbar["actors"] = actors
+    runtime["taskbar"] = taskbar
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(active_layout="Hybrid", runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
+
+    assert {"taskbar-opacity-setting", "taskbar-opacity"} <= failures.keys()
 
 
 def test_audit_rejects_panel_visible_over_fullscreen_window(tmp_path):

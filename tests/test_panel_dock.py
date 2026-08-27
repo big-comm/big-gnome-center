@@ -275,6 +275,21 @@ def test_compatibility_adapter_imports_legacy_taskbar_visibility_once():
     assert settings.runtime.values[("Hybrid", "panel-visibility")] == "always-hidden"
 
 
+def test_compatibility_adapter_imports_legacy_taskbar_opacity_once():
+    settings = settings_fixture()
+    settings.active_layout = "Hybrid"
+    settings.dock_active = False
+    settings.community_panel_active = True
+    settings.runtime_active = True
+    settings.community_panel.values["trans-panel-opacity"] = 0.46
+
+    settings._import_active_layout_once()
+    settings.community_panel.values["trans-panel-opacity"] = 0.52
+    settings._import_active_layout_once()
+
+    assert settings.runtime.values[("Hybrid", "panel-opacity")] == 46
+
+
 def test_compatibility_adapter_imports_legacy_taskbar_height_once():
     settings = settings_fixture()
     settings.active_layout = "Hybrid"
@@ -458,7 +473,7 @@ def test_panel_settings_clamp_opacity_and_validate_visibility():
     assert settings.panel_visibility() == "intelligent"
 
 
-def test_community_panel_opacity_maps_to_dash_to_panel_schema():
+def test_standalone_taskbar_opacity_keeps_compatibility_mirror():
     settings = settings_fixture()
     settings.community_panel_active = True
 
@@ -467,6 +482,24 @@ def test_community_panel_opacity_maps_to_dash_to_panel_schema():
     assert settings.panel_opacity() == 43
     assert settings.community_panel.values["trans-use-custom-opacity"] is True
     assert settings.community_panel.values["trans-use-dynamic-opacity"] is False
+
+
+def test_taskbar_opacity_writes_only_layout_owned_settings():
+    settings = settings_fixture()
+    settings.active_layout = "Hybrid"
+    settings.community_panel_active = True
+    settings.runtime_active = True
+    legacy_values = dict(settings.community_panel.values)
+
+    settings.set_panel_opacity(43)
+
+    assert settings.panel_opacity() == 43
+    assert settings.runtime.values[("Hybrid", "panel-opacity")] == 43
+    assert settings.community_panel.values == legacy_values
+    assert settings.community_panel.calls == []
+
+    settings.runtime.values[("Hybrid", "panel-opacity")] = 130
+    assert settings.panel_opacity() == 100
 
 
 def test_taskbar_visibility_writes_only_layout_owned_settings():

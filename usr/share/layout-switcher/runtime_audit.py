@@ -448,6 +448,14 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 f"{expected.get('visibility')}, got {taskbar.get('visibility')}",
             )
         )
+        checks.append(
+            _check(
+                taskbar.get("opacity") == expected.get("opacity"),
+                "taskbar-opacity-setting",
+                f"{expected.get('opacity')}%",
+                f"expected {expected.get('opacity')}%, got {taskbar.get('opacity')}%",
+            )
+        )
         if taskbar_window.get("maximized"):
             checks.append(
                 _check(
@@ -478,6 +486,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                         "taskbar-grouping-labels",
                         "labels" if expected.get("labels") else "grouped",
                         f"grouped={actor.get('grouped')}",
+                    ),
+                    _check(
+                        actor.get("opacity") == expected.get("opacity"),
+                        "taskbar-opacity",
+                        f"{expected.get('opacity')}%",
+                        f"expected {expected.get('opacity')}%, got "
+                        f"{actor.get('opacity')}%",
                     ),
                     _check(
                         bool(actor.get("affectsStruts")) == expected_visible,

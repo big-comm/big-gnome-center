@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
-Last update: 2026-08-26
-Safe checkpoint: `5c01c96`
-Status: Taskbar visibility and height setting ownership accepted
+Last update: 2026-08-27
+Safe checkpoint: `0414ae5`
+Status: Taskbar visibility, height, and opacity setting ownership accepted
 
 ## Purpose
 
@@ -373,9 +373,55 @@ Final local/VM SHA-256 values:
 - settings backend:
   `97055a24a14dfb5b32d24215856e0ab268cc967be6e0595a2f3a6184ff6a347c`.
 
-Next slice: move Taskbar Panel opacity to exclusive owned-schema control. Do
-not remove all inherited schema adapters until every required setting and the
-stable/testing upgrade matrix are accepted.
+Build 64 moves Taskbar Panel opacity to the exclusive owned-setting boundary.
+The GTK backend reads and writes only `panel-opacity-overrides` while the
+unified runtime is active. One-time import still reads inherited opacity, and
+the standalone compatibility path still mirrors it. Runtime updates use the
+inherited Dash-to-Panel renderer with custom static opacity enabled and dynamic
+opacity disabled. Audit telemetry compares the configured value with every
+effective actor alpha.
+
+GNOME 50.4 and 51.beta each passed 20% and 90% extremes, 10 slow transitions,
+and 20 rapid transitions without rebuilding `PanelManager` or duplicating the
+Taskbar actor. A maximized Brave window remained exactly `1280x762` while
+opacity changed 90 -> 20 -> 70. GNOME 50 retained its original empty opacity
+map; GNOME 51 retained `{'Hybrid': 70}`. Both finish on Hybrid with one
+`1280x800` monitor.
+
+GNOME 51 launch-by-number testing also exposed an upstream compatibility
+boundary: Mutter 51 adds a `ClutterSprite` parameter to
+`MetaDisplay::grab-op-begin`, while current Dash-to-Panel code emits the GNOME
+50 two-parameter form. Runtime build 64 queries the loaded GObject signal and
+emits its exact parameter count. `Super+2`, launch, focus, overview exit, and
+maximize pass on both Shell versions without a runtime JS exception.
+
+Strict audits report zero failures and only the expected SSH `tty` warning.
+Shell journals contain no Layout Switcher or Community Panel exception after
+the build 64 session restart. Known external warnings remain: Copyous and
+GSConnect on GNOME 51, retired Community Dock metadata lookup, KMS priority,
+and Brave's corrected invalid Wayland geometry warning.
+
+Build 64 validation: focused `98 passed`; full suite `557 passed`, with one
+known PyGI warning. All runtime JavaScript syntax, strict schema compilation,
+and `git diff --check` pass. Ruff remains blocked by nine pre-existing findings
+outside this slice. Final local and both-VM SHA-256 values:
+
+- layout profiles:
+  `0638c8f91382071fa7aaf08b889ebbacdd6991b1dfcfd26ecfe9e9f19bd84c32`;
+- runtime controller:
+  `64576aee4a6fee6ccbe59d64a5f6083f18b79b373d0cd6e0b28c31205ddac2c2`;
+- Taskbar runtime:
+  `66b386dca89c2b6ac72c586fa2235e4358195fce0ae3572cb2ac01e1431419e7`;
+- Taskbar application actions:
+  `3b6e4d51e6c4b69f110a6f1ef08bab6388e5841b4fe9c9839ad37d447f778961`;
+- settings backend:
+  `335c4f6aadc76cdf84b92c27f40a8ca0b45125eb60aab6b0b52149bd41d5f7a2`;
+- runtime audit:
+  `99df26dc744f920e3fbf946e3b14b10e50a896ebe1b7dfa5f23177557c467af1`.
+
+Next slice: move Taskbar indicator style to the exclusive owned-schema
+boundary. Do not remove inherited schema adapters until every required setting
+and the stable/testing upgrade matrix are accepted.
 
 - [ ] Stop mirroring new writes to inherited Dock and Panel schemas.
 - [ ] Move every required runtime key to the Layout Switcher-owned schema.

@@ -2,6 +2,7 @@
 
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
 import Shell from 'gi://Shell';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -90,7 +91,12 @@ export class TaskbarAppActions {
             this.launchNewInstance(icon);
         }
 
-        global.display.emit('grab-op-begin', null, null);
+        const signalId = GObject.signal_lookup(
+            'grab-op-begin', global.display.constructor);
+        const signalQuery = signalId && GObject.signal_query(signalId);
+        if (signalQuery)
+            global.display.emit(
+                'grab-op-begin', ...signalQuery.param_types.map(() => null));
         Main.overview.hide();
         return undefined;
     }

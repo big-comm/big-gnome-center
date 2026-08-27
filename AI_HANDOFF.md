@@ -2,13 +2,13 @@
 
 > Active continuation document. Read this file before changing the repository.
 > Update the checklist and decision log after every verified task.
-> Last updated: 2026-08-25.
+> Last updated: 2026-08-27.
 
 ## Current objective
 
-Stabilize and polish the application on GNOME 50 first. GNOME 51 work is
-deferred until its expected release on 2026-09-15 unless the user explicitly
-changes the priority.
+Finish the unified Shell runtime migration with GNOME 50 and GNOME 51 parity.
+Validate each bounded slice on GNOME 50 before GNOME 51 unless the user changes
+the order explicitly.
 
 The local repository is always the source of truth. Changes are made locally,
 checked locally, and only then copied to the target VM for live validation.
@@ -26,7 +26,7 @@ checked locally, and only then copied to the target VM for live validation.
 - Do not use destructive `rsync --delete` deployment commands.
 - Copy only reviewed files to a VM. Confirm destination paths before privileged writes.
 - Treat a VM deployment as incomplete until the deployed files match the local hashes.
-- Do not begin GNOME 51 compatibility changes while GNOME 50 is the active target.
+- Preserve GNOME 50 behavior while adding GNOME 51 compatibility.
 
 ## Test environments
 
@@ -34,7 +34,7 @@ checked locally, and only then copied to the target VM for live validation.
 |---|---|---:|---|
 | GNOME 50 | `tales@192.168.128.230` | Active | Current validation target |
 | GNOME 50 clean migration | `tales@192.168.128.206` | Verified | Stable Hybrid upgraded in place; automatic migration accepted |
-| GNOME 51 | `tales@192.168.128.114` | Deferred | Revisit on/after 2026-09-15 |
+| GNOME 51 | `tales@192.168.128.114` | Active | Compatibility validation target |
 
 Credentials are supplied out of band by the user and intentionally omitted here.
 
@@ -1792,3 +1792,38 @@ Append one entry per completed change:
   `97055a24a14dfb5b32d24215856e0ab268cc967be6e0595a2f3a6184ff6a347c`.
 - Next implementation slice: move Taskbar Panel opacity to exclusive owned
   schema control. Keep inherited adapters through the upgrade matrix.
+
+## 2026-08-27 — Taskbar opacity ownership and Mutter 51 signal compatibility, build 64
+
+- Taskbar opacity now reads and writes only `panel-opacity-overrides` while the
+  unified runtime is active. Legacy import and standalone mirroring remain.
+- Runtime uses Dash-to-Panel's static opacity renderer and reports configured
+  and effective actor alpha. GNOME 50.4 and 51.beta passed 20%/90% extremes,
+  10 slow transitions, 20 rapid transitions, and maximized 90 -> 20 -> 70.
+- Both versions preserved exact `1280x762` maximized geometry, one 1280x38
+  Taskbar actor, and one `1280x800` monitor. Original opacity maps were
+  restored: empty on GNOME 50 and `{'Hybrid': 70}` on GNOME 51.
+- GNOME 51 exposed Dash-to-Panel's two-argument `grab-op-begin` emission against
+  Mutter 51's three-argument signal. Runtime now queries `GObject.signal_query`
+  and emits the loaded signature. Launch-by-number passes on GNOME 50 and 51
+  without a runtime JS error.
+- Strict audits: zero failures; only the SSH `tty` warning. Known external
+  journal warnings remain for Copyous, GSConnect, retired Community Dock
+  metadata, KMS priority, and Brave invalid geometry recovery.
+- Focused tests: `98 passed`. Full suite: `557 passed`, with one known PyGI
+  warning. JavaScript syntax, strict schemas, and diff checks pass. Ruff still
+  reports nine pre-existing findings outside this slice.
+- Final local and VM hashes: layout profiles
+  `0638c8f91382071fa7aaf08b889ebbacdd6991b1dfcfd26ecfe9e9f19bd84c32`;
+  runtime controller
+  `64576aee4a6fee6ccbe59d64a5f6083f18b79b373d0cd6e0b28c31205ddac2c2`;
+  Taskbar runtime
+  `66b386dca89c2b6ac72c586fa2235e4358195fce0ae3572cb2ac01e1431419e7`;
+  Taskbar actions
+  `3b6e4d51e6c4b69f110a6f1ef08bab6388e5841b4fe9c9839ad37d447f778961`;
+  settings backend
+  `335c4f6aadc76cdf84b92c27f40a8ca0b45125eb60aab6b0b52149bd41d5f7a2`;
+  runtime audit
+  `99df26dc744f920e3fbf946e3b14b10e50a896ebe1b7dfa5f23177557c467af1`.
+- Next slice: move Taskbar indicator style to exclusive owned-schema control.
+  Keep inherited adapters through the upgrade matrix.

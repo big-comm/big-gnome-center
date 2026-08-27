@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 62;
+export const RUNTIME_BUILD = 64;
 
 export class RuntimeController {
     constructor(extension) {
@@ -34,6 +34,7 @@ export class RuntimeController {
         this._settingsChangedIds = [
             'active-layout',
             'panel-height-overrides',
+            'panel-opacity-overrides',
             'panel-visibility-overrides',
         ].map(key => this._settings.connect(
             `changed::${key}`,
@@ -76,6 +77,7 @@ export class RuntimeController {
         const indicator = this._indicatorForProfile(profile);
         const hover = this._hoverForProfile(profile);
         const visibility = this._visibilityForProfile(profile);
+        const panelOpacity = this._panelOpacityForProfile(profile);
         const panelVisibility = this._panelVisibilityForProfile(profile);
         const panelHeight = this._panelHeightForProfile(profile);
         this._activeProfile = profile;
@@ -87,7 +89,8 @@ export class RuntimeController {
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             this._dock.deactivate();
             await this._taskbar.activate(
-                profile, indicator, hover, panelVisibility, panelHeight);
+                profile, indicator, hover, panelOpacity,
+                panelVisibility, panelHeight);
             if (!this._enabled || generation !== this._syncGeneration)
                 this._taskbar.deactivate();
         }
@@ -121,6 +124,16 @@ export class RuntimeController {
         return overrides[profile.layout] ?? profile.panelVisibility ?? 'always-visible';
     }
 
+    _panelOpacityForProfile(profile) {
+        if (profile.panelOpacity === undefined)
+            return undefined;
+        const overrides = this._settings
+            .get_value('panel-opacity-overrides')
+            .deep_unpack();
+        const opacity = overrides[profile.layout] ?? profile.panelOpacity;
+        return Math.max(0, Math.min(100, opacity));
+    }
+
     _panelHeightForProfile(profile) {
         if (profile.panelHeight === undefined)
             return undefined;
@@ -152,6 +165,7 @@ export class RuntimeController {
                 labels: profile.labels,
                 indicator: this._indicatorForProfile(profile),
                 hover: this._hoverForProfile(profile),
+                opacity: this._panelOpacityForProfile(profile),
                 visibility: profile.surface === RuntimeSurface.TASKBAR
                     ? this._panelVisibilityForProfile(profile)
                     : this._visibilityForProfile(profile),
