@@ -408,6 +408,32 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     f"{expected.get('visibility')}, got {dock.get('visibility')}",
                 ),
                 _check(
+                    dock.get("indicator") == expected.get("indicator"),
+                    "dock-indicator",
+                    str(expected.get("indicator")),
+                    "expected "
+                    f"{expected.get('indicator')}, got {dock.get('indicator')}",
+                ),
+                _check(
+                    dock.get("hover") == expected.get("hover"),
+                    "dock-hover",
+                    str(expected.get("hover")),
+                    f"expected {expected.get('hover')}, got {dock.get('hover')}",
+                ),
+                _check(
+                    dock.get("opacity") == expected.get("opacity"),
+                    "dock-opacity-setting",
+                    f"{expected.get('opacity')}%",
+                    f"expected {expected.get('opacity')}%, got {dock.get('opacity')}%",
+                ),
+                _check(
+                    dock.get("iconSize") == expected.get("iconSize"),
+                    "dock-size-setting",
+                    f"{expected.get('iconSize')} px",
+                    "expected "
+                    f"{expected.get('iconSize')} px, got {dock.get('iconSize')} px",
+                ),
+                _check(
                     not panel.get("fullscreen") or not panel.get("visible"),
                     "fullscreen-panel",
                     "hidden while the focused window is fullscreen"
@@ -435,10 +461,56 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 ),
             )
         )
+        for actor in dock_actors:
+            checks.extend(
+                (
+                    _check(
+                        actor.get("opacity") == expected.get("opacity"),
+                        "dock-opacity",
+                        f"{expected.get('opacity')}%",
+                        f"expected {expected.get('opacity')}%, got "
+                        f"{actor.get('opacity')}%",
+                    ),
+                    _check(
+                        actor.get("iconSize") == expected.get("iconSize"),
+                        "dock-size",
+                        f"{expected.get('iconSize')} px",
+                        f"expected {expected.get('iconSize')} px, got "
+                        f"{actor.get('iconSize')} px",
+                    ),
+                )
+            )
 
     if expected_taskbars:
         expected_visible = expected.get("visibility") == "always-visible"
         taskbar_window = taskbar.get("window") or {}
+        indicator_renderer = taskbar_lifecycle.get("indicatorRenderer") or {}
+        checks.append(
+            _check(
+                taskbar.get("indicator") == expected.get("indicator"),
+                "taskbar-indicator-setting",
+                str(expected.get("indicator")),
+                "expected "
+                f"{expected.get('indicator')}, got {taskbar.get('indicator')}",
+            )
+        )
+        checks.append(
+            _check(
+                indicator_renderer.get("style") == expected.get("indicator"),
+                "taskbar-indicator",
+                str(expected.get("indicator")),
+                "expected "
+                f"{expected.get('indicator')}, got {indicator_renderer.get('style')}",
+            )
+        )
+        checks.append(
+            _check(
+                taskbar.get("hover") == expected.get("hover"),
+                "taskbar-hover",
+                str(expected.get("hover")),
+                f"expected {expected.get('hover')}, got {taskbar.get('hover')}",
+            )
+        )
         checks.append(
             _check(
                 taskbar.get("visibility") == expected.get("visibility"),
@@ -637,6 +709,11 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
         menu_expected = layout in MENU_LAYOUTS
         icons_expected = layout in DESKTOP_ICON_LAYOUTS
         actual_indicator = snapshot.indicator_overrides.get(layout, INDICATOR_DEFAULTS[layout])
+        actual_hover = (
+            (snapshot.runtime_diagnostics.get("runtime") or {})
+            .get("expected", {})
+            .get("hover")
+        )
         checks.extend(
             (
                 _check(
@@ -658,15 +735,10 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
                     f"expected {INDICATOR_DEFAULTS[layout]}, got {actual_indicator}",
                 ),
                 _check(
-                    (snapshot.runtime_diagnostics.get("runtime") or {})
-                    .get("expected", {})
-                    .get("hover")
-                    == HOVER_DEFAULTS[layout],
+                    actual_hover == HOVER_DEFAULTS[layout],
                     "layout-hover",
                     HOVER_DEFAULTS[layout],
-                    "expected "
-                    f"{HOVER_DEFAULTS[layout]}, got "
-                    f"{(snapshot.runtime_diagnostics.get('runtime') or {}).get('expected', {}).get('hover')}",
+                    f"expected {HOVER_DEFAULTS[layout]}, got {actual_hover}",
                 ),
             )
         )

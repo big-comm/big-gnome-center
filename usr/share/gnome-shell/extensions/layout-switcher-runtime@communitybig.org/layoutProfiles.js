@@ -15,6 +15,8 @@ const LAYOUT_PROFILES = new Map([
         labels: false,
         indicator: 'desk-ux',
         hover: 'default',
+        dockOpacity: 77,
+        dockSize: 39,
         visibility: 'intelligent',
     })],
     ['G-Unity', Object.freeze({
@@ -25,6 +27,8 @@ const LAYOUT_PROFILES = new Map([
         labels: false,
         indicator: 'dot',
         hover: 'default',
+        dockOpacity: 70,
+        dockSize: 39,
         visibility: 'always-visible',
     })],
     ['Hybrid', Object.freeze({

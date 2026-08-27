@@ -16,12 +16,11 @@ const STYLE_GEOMETRY = new Map([
 ]);
 
 export class DockRunningIndicators {
-    constructor(settings, dockSettings, dockManager) {
-        this._settings = settings;
+    constructor(dockSettings, dockManager, style = 'dot') {
         this._dockSettings = dockSettings;
         this._dockManager = dockManager;
+        this._style = this._normalizeStyle(style);
         this._signals = [
-            [settings, settings.connect('changed::indicator-style', () => this._apply())],
             [dockSettings, dockSettings.connect(
                 'changed::running-indicator-style', () => this._apply())],
             [dockManager, dockManager.connect('docks-ready', () => this._apply())],
@@ -60,12 +59,20 @@ export class DockRunningIndicators {
             'border-color: transparent; border-width: 0;');
     }
 
+    setStyle(style) {
+        this._style = this._normalizeStyle(style);
+        this._apply();
+    }
+
+    style() {
+        return this._style;
+    }
+
     destroy() {
         for (const dock of this._dockManager?._allDocks ?? [])
             this._clearClasses(dock);
         for (const [object, id] of this._signals.splice(0))
             object.disconnect(id);
-        this._settings = null;
         this._dockSettings = null;
         this._dockManager = null;
     }
@@ -79,20 +86,21 @@ export class DockRunningIndicators {
         for (const dock of this._dockManager._allDocks) {
             this._clearClasses(dock);
             dock.add_style_class_name(this._styleClass());
+            for (const icon of dock?.dash?._appIcons ?? [])
+                icon._syncCommunityIndicatorStyle();
         }
     }
 
-    _style() {
-        const configured = this._settings.get_string('indicator-style');
-        return STYLE_CLASSES.has(configured) ? configured : 'dot';
+    _normalizeStyle(style) {
+        return STYLE_CLASSES.has(style) ? style : 'dot';
     }
 
     _styleClass() {
-        return STYLE_CLASSES.get(this._style());
+        return STYLE_CLASSES.get(this._style);
     }
 
     _geometry() {
-        return STYLE_GEOMETRY.get(this._style());
+        return STYLE_GEOMETRY.get(this._style);
     }
 
     _clearClasses(actor) {

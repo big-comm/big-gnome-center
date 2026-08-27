@@ -1827,3 +1827,43 @@ Append one entry per completed change:
   `99df26dc744f920e3fbf946e3b14b10e50a896ebe1b7dfa5f23177557c467af1`.
 - Next slice: move Taskbar indicator style to exclusive owned-schema control.
   Keep inherited adapters through the upgrade matrix.
+
+## 2026-08-27 — Remaining supported-setting ownership, build 65
+
+- Indicator style and hover now persist only in owned per-layout overrides
+  while the unified runtime owns Dock or Taskbar. Legacy custom schemas are
+  read only for one-time import and standalone rollback.
+- Dock opacity, icon size, and visibility now use the same exclusive UI
+  boundary. Their inherited Dash-to-Dock settings remain private renderer
+  adapters, not user-facing persistence.
+- Classic rejects stale indicator overrides and remains label-only. Taskbar
+  lift applies the complete accepted SIMPLE animation profile internally.
+- Active Dock setting changes update indicator, hover, opacity, size, and
+  visibility without rebuilding the Dock manager. Telemetry exposes manager
+  generation and configured/effective opacity and icon size.
+- GNOME 50.4 and 51.beta each passed Taskbar 10 slow plus 20 rapid
+  indicator/hover cycles, Classic no-indicator, and Dock 10 slow plus 20 rapid
+  combined cycles. Dock covered 20%/90% opacity, 28/64 px icons, and always
+  visible/hidden/intelligent modes. Manager generation stayed `1`.
+- Original override maps were restored exactly. Legacy custom indicator/hover
+  values were unchanged. Both VMs finish Hybrid with one `1280x800` monitor.
+- Strict audits: zero failures and the expected SSH `tty` warning. Current
+  Shell journals contain no runtime, Dock, or Panel exception.
+- Focused tests: `106 passed`. Full suite: `565 passed`, with the known PyGI
+  and two headless Adwaita warnings. JavaScript syntax, strict schemas, focused
+  Ruff, and diff checks pass. PKGBUILD and package versions are unchanged.
+- Final local and both-VM hashes: runtime tree
+  `5675f1c607206569d9ecd060a522935ddab196c08f4e173aee0cd30a741169d7`;
+  runtime controller
+  `036bef314b23fb17646a4646feac5d2f7d24c3a52e2e9f8145b8a0e632db5c25`;
+  Dock runtime
+  `d0684de8766306a7f0f03fe54da04261dbd1ca9dab194449def7438202145065`;
+  Taskbar runtime
+  `a6b96e8e49dfbb1b384e7d769d9c7181165b9305374e69a7108f907066f5f4e2`;
+  settings backend
+  `0d643b27939331b290d485ca23d3d3492e66b32ac97bb043ef721c747439856c`;
+  runtime audit
+  `3cba44badea074f415a6956bda5b9c9225182d0053d275958c7399eab70302f9`.
+- Next gate: user visual acceptance of the five live controls. Then run clean,
+  stable, testing, intermediate-UUID, and rollback upgrade matrices before
+  deleting inherited schema or renderer adapters.

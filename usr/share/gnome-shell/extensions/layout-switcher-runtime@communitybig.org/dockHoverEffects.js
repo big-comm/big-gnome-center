@@ -6,13 +6,16 @@ import St from 'gi://St';
 const LIFT_STYLE_CLASS = 'community-dock-hover-lift';
 
 export class DockHoverEffects {
-    constructor(settings) {
-        this._settings = settings;
+    constructor() {
         this._effect = 'default';
     }
 
     setEffect(effect) {
         this._effect = effect === 'lift' ? 'lift' : 'default';
+    }
+
+    effect() {
+        return this._effect;
     }
 
     applyStyle(actor) {
@@ -48,9 +51,6 @@ export class DockHoverEffects {
     }
 
     _currentEffect() {
-        const configured = this._settings?.get_string('dock-hover-effect');
-        if (configured === 'lift' || configured === 'default')
-            return configured;
         return this._effect;
     }
 }

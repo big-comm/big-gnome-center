@@ -260,6 +260,39 @@ def test_compatibility_adapter_imports_active_layout_once():
     assert settings.runtime.values == first_values
 
 
+def test_compatibility_adapter_imports_all_legacy_dock_settings_once():
+    settings = settings_fixture()
+    settings.active_layout = "BigGnome"
+    settings.runtime_active = True
+    settings.dock.values["background-opacity"] = 0.44
+    settings.dock.values["dash-max-icon-size"] = 52
+    settings.dock.values["intellihide"] = False
+    settings.panel.values["indicator-style"] = "hybrid"
+    settings.panel.values["dock-hover-effect"] = "lift"
+
+    settings._import_active_layout_once()
+    settings.dock.values["background-opacity"] = 0.12
+    settings._import_active_layout_once()
+
+    assert settings.runtime.values[("BigGnome", "dock-opacity")] == 44
+    assert settings.runtime.values[("BigGnome", "dock-size")] == 52
+    assert settings.runtime.values[("BigGnome", "dock-visibility")] == "always-hidden"
+    assert settings.runtime.values[("BigGnome", "indicator-style")] == "hybrid"
+    assert settings.runtime.values[("BigGnome", "dock-hover")] == "lift"
+
+
+def test_compatibility_adapter_does_not_import_classic_indicator():
+    settings = settings_fixture()
+    settings.active_layout = "Classic"
+    settings.dock_active = False
+    settings.community_panel_active = True
+    settings.runtime_active = True
+
+    settings._import_active_layout_once()
+
+    assert ("Classic", "indicator-style") not in settings.runtime.values
+
+
 def test_compatibility_adapter_imports_legacy_taskbar_visibility_once():
     settings = settings_fixture()
     settings.active_layout = "Hybrid"
@@ -433,6 +466,33 @@ def test_dock_hover_effect_is_validated_and_mirrored_per_layout():
     assert settings.runtime.values[("G-Unity", "dock-hover")] == "lift"
 
 
+def test_unified_dock_settings_write_only_layout_owned_overrides():
+    settings = settings_fixture()
+    settings.active_layout = "BigGnome"
+    settings.runtime_active = True
+    legacy_dock = dict(settings.dock.values)
+    legacy_panel = dict(settings.panel.values)
+
+    settings.set_dock_opacity(42)
+    settings.set_dock_size(90)
+    settings.set_dock_visibility("always-visible")
+    settings.set_dock_hover_effect("lift")
+    settings.set_indicator_style("hybrid")
+
+    assert settings.dock_opacity() == 42
+    assert settings.dock_size() == 64
+    assert settings.dock_visibility() == "always-visible"
+    assert settings.dock_hover_effect() == "lift"
+    assert settings.indicator_style() == "hybrid"
+    assert settings.runtime.values[("BigGnome", "dock-opacity")] == 42
+    assert settings.runtime.values[("BigGnome", "dock-size")] == 64
+    assert settings.runtime.values[("BigGnome", "dock-visibility")] == "always-visible"
+    assert settings.runtime.values[("BigGnome", "dock-hover")] == "lift"
+    assert settings.runtime.values[("BigGnome", "indicator-style")] == "hybrid"
+    assert settings.dock.values == legacy_dock
+    assert settings.panel.values == legacy_panel
+
+
 def test_taskbar_hover_effect_uses_the_same_curated_lift_profile():
     settings = settings_fixture()
     settings.active_layout = "Desk UX"
@@ -461,6 +521,25 @@ def test_taskbar_hover_effect_uses_the_same_curated_lift_profile():
         == 1.08
     )
     assert settings.runtime.values[("Desk UX", "dock-hover")] == "lift"
+
+
+def test_unified_taskbar_indicator_and_hover_are_layout_owned_only():
+    settings = settings_fixture()
+    settings.active_layout = "Desk UX"
+    settings.dock_active = False
+    settings.community_panel_active = True
+    settings.runtime_active = True
+    legacy_values = dict(settings.community_panel.values)
+
+    settings.set_indicator_style("hybrid")
+    settings.set_dock_hover_effect("lift")
+
+    assert settings.indicator_style() == "hybrid"
+    assert settings.dock_hover_effect() == "lift"
+    assert settings.runtime.values[("Desk UX", "indicator-style")] == "hybrid"
+    assert settings.runtime.values[("Desk UX", "dock-hover")] == "lift"
+    assert settings.community_panel.values == legacy_values
+    assert settings.community_panel.calls == []
 
 
 def test_panel_settings_clamp_opacity_and_validate_visibility():

@@ -54,8 +54,24 @@ def _snapshot(**changes) -> Snapshot:
             "Classic": ("taskbar", "bottom"),
             "Minimal": ("native", "top"),
         }[layout]
-        dock_actors = ([{"monitor": 0, "edge": edge, "width": 420, "height": 48}]
-                       if surface == "dock" else [])
+        indicator = {
+            "BigGnome": "desk-ux",
+            "G-Unity": "dot",
+            "Hybrid": "hybrid",
+            "Desk UX": "desk-ux",
+            "Classic": "none",
+            "Minimal": "none",
+        }[layout]
+        dock_opacity = {"BigGnome": 77, "G-Unity": 70}.get(layout)
+        dock_size = 39 if surface == "dock" else None
+        dock_actors = ([{
+            "monitor": 0,
+            "edge": edge,
+            "width": 420,
+            "height": 48,
+            "opacity": dock_opacity,
+            "iconSize": dock_size,
+        }] if surface == "dock" else [])
         actor_height = {"Hybrid": 38, "Desk UX": 46, "Classic": 38}.get(layout)
         panel_opacity = {"Hybrid": 70, "Desk UX": 65, "Classic": 70}.get(layout)
         taskbar_actors = ([{
@@ -82,13 +98,15 @@ def _snapshot(**changes) -> Snapshot:
                         "G-Unity": True,
                     }.get(layout),
                     "hover": "lift" if layout == "Hybrid" else "default",
+                    "indicator": indicator,
                     "visibility": {
                         "BigGnome": "intelligent",
                         "G-Unity": "always-visible",
                     }.get(layout, "always-visible" if surface == "taskbar" else None),
                     "labels": layout == "Classic",
                     "actorHeight": actor_height,
-                    "opacity": panel_opacity,
+                    "opacity": dock_opacity if surface == "dock" else panel_opacity,
+                    "iconSize": dock_size,
                 },
                 "dock": {
                     "active": surface == "dock",
@@ -102,6 +120,10 @@ def _snapshot(**changes) -> Snapshot:
                         "BigGnome": False,
                         "G-Unity": True,
                     }.get(layout),
+                    "indicator": indicator if surface == "dock" else "",
+                    "hover": "default" if surface == "dock" else "",
+                    "opacity": dock_opacity,
+                    "iconSize": dock_size,
                     "visibility": {
                         "BigGnome": "intelligent",
                         "G-Unity": "always-visible",
@@ -110,6 +132,8 @@ def _snapshot(**changes) -> Snapshot:
                 },
                 "taskbar": {
                     "active": surface == "taskbar",
+                    "indicator": indicator if surface == "taskbar" else "",
+                    "hover": "lift" if layout == "Hybrid" else "default",
                     "opacity": panel_opacity,
                     "visibility": "always-visible",
                     "actors": taskbar_actors,
@@ -119,6 +143,9 @@ def _snapshot(**changes) -> Snapshot:
                         "appActionsOwned": surface == "taskbar",
                         "interactionsOwned": surface == "taskbar",
                         "indicatorRendererOwned": surface == "taskbar",
+                        "indicatorRenderer": {
+                            "style": indicator if surface == "taskbar" else "none"
+                        },
                         "activationPending": False,
                     },
                 },
@@ -218,6 +245,39 @@ def test_audit_rejects_dock_visibility_drift(tmp_path):
     assert "dock-visibility" in failures
 
 
+def test_audit_rejects_owned_dock_setting_drift(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    dock = dict(
+        runtime["dock"],
+        indicator="dot",
+        hover="lift",
+        opacity=20,
+        iconSize=64,
+    )
+    dock["actors"] = [dict(dock["actors"][0], opacity=21, iconSize=63)]
+    runtime["dock"] = dock
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
+
+    assert {
+        "dock-indicator",
+        "dock-hover",
+        "dock-opacity-setting",
+        "dock-size-setting",
+        "dock-opacity",
+        "dock-size",
+    } <= failures.keys()
+
+
 def test_audit_rejects_taskbar_opacity_drift(tmp_path):
     _payload(tmp_path)
     snapshot = _snapshot(active_layout="Hybrid")
@@ -238,6 +298,32 @@ def test_audit_rejects_taskbar_opacity_drift(tmp_path):
     )
 
     assert {"taskbar-opacity-setting", "taskbar-opacity"} <= failures.keys()
+
+
+def test_audit_rejects_taskbar_indicator_and_hover_drift(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Hybrid")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    taskbar = dict(runtime["taskbar"], indicator="desk-ux", hover="default")
+    lifecycle = dict(taskbar["lifecycle"])
+    lifecycle["indicatorRenderer"] = {"style": "desk-ux"}
+    taskbar["lifecycle"] = lifecycle
+    runtime["taskbar"] = taskbar
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(active_layout="Hybrid", runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
+
+    assert {
+        "taskbar-indicator-setting",
+        "taskbar-indicator",
+        "taskbar-hover",
+    } <= failures.keys()
 
 
 def test_audit_rejects_panel_visible_over_fullscreen_window(tmp_path):

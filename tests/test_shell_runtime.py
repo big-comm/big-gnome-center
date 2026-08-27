@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 64" in controller
+    assert "RUNTIME_BUILD = 65" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -63,6 +63,9 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert "panelHeight: 40" in profiles
     assert profiles.count("panelOpacity: 70") == 2
     assert profiles.count("panelOpacity: 65") == 1
+    assert "dockOpacity: 77" in profiles
+    assert "dockOpacity: 70" in profiles
+    assert profiles.count("dockSize: 39") == 2
     assert "extended: false" in profiles
     assert "extended: true" in profiles
 
@@ -74,17 +77,61 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
 
     assert "indicator-style-overrides" in controller
     assert "dock-hover-overrides" in controller
-    assert "this._dock.activate(profile, indicator, hover, visibility)" in controller
+    assert "profile, indicator, hover, dockOpacity, dockSize, visibility" in controller
     assert "profile, indicator, hover, panelOpacity," in controller
     assert "panelVisibility, panelHeight);" in controller
-    assert "set_string('indicator-style', style)" in dock
-    assert "set_string('dock-hover-effect', effect)" in dock
+    assert "this._host.runningIndicators?.setStyle(style)" in dock
+    assert "this._host.hoverEffects.setEffect(effect)" in dock
+    assert "set_string('indicator-style', style)" not in dock
+    assert "set_string('dock-hover-effect', effect)" not in dock
     assert "this._host.placement.apply(profile?.edge, profile?.extended)" in dock
     assert "dot: ['DOTS', 'DOTS', 6]" in taskbar
     assert "hybrid: ['SEGMENTED', 'SEGMENTED', 3]" in taskbar
     assert "'desk-ux': ['METRO', 'DASHES', 3]" in taskbar
     assert "settings.set_int('dot-size', 0)" in taskbar
-    assert "settings.set_boolean('animate-appicon-hover', hover === 'lift')" in taskbar
+    assert "settings.set_boolean('animate-appicon-hover', lift)" in taskbar
+    assert "new GLib.Variant(variantType, values)" in taskbar
+
+
+def test_runtime_listens_to_every_owned_visual_setting():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+
+    for key in (
+        "dock-hover-overrides",
+        "dock-opacity-overrides",
+        "dock-size-overrides",
+        "dock-visibility-overrides",
+        "indicator-style-overrides",
+        "panel-height-overrides",
+        "panel-opacity-overrides",
+        "panel-visibility-overrides",
+    ):
+        assert f"'{key}'," in controller
+    assert "const dockProfileChanged" in controller
+    assert "if (dockProfileChanged)" in controller
+
+
+def test_runtime_applies_owned_dock_settings_without_rebuilding_active_surface():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+
+    assert "_dockOpacityForProfile(profile)" in controller
+    assert "_dockSizeForProfile(profile)" in controller
+    assert "this._applyOpacity(opacity)" in dock
+    assert "this._applyIconSize(iconSize)" in dock
+    assert "set_double('background-opacity', opacity / 100)" in dock
+    assert "set_int('dash-max-icon-size', iconSize)" in dock
+    assert "managerGeneration: this._managerGeneration" in dock
+    assert "this._managerGeneration++" in dock
+    active_branch = dock[dock.index("if (this._active) {"):]
+    for application in (
+        "this._applyIndicator(indicator)",
+        "this._applyHover(hover)",
+        "this._applyOpacity(opacity)",
+        "this._applyIconSize(iconSize)",
+        "this._host.visibilityModes.apply(visibility)",
+    ):
+        assert active_branch.index(application) < active_branch.index("return;")
 
 
 def test_runtime_owns_dock_visibility_modes():
@@ -157,7 +204,8 @@ def test_runtime_owns_taskbar_opacity_and_reports_effective_alpha():
     assert "'panel-opacity-overrides'," in controller
     assert "_panelOpacityForProfile(profile)" in controller
     assert "get_value('panel-opacity-overrides')" in controller
-    assert "opacity: this._panelOpacityForProfile(profile)" in controller
+    assert "? this._dockOpacityForProfile(profile)" in controller
+    assert ": this._panelOpacityForProfile(profile)" in controller
     assert "this._applyOpacity(opacity)" in runtime
     assert "set_boolean('trans-use-custom-opacity', true)" in runtime
     assert "set_boolean('trans-use-dynamic-opacity', false)" in runtime
@@ -533,6 +581,8 @@ def test_runtime_owns_dock_running_indicator_renderers():
     assert "['desk-ux', {inactive: [8, 3], active: [18, 3]" in runtime
     assert "controller.applyIconStyle(this)" in icons
     assert "controller.applyAppearance(this._dot, this.focused, position)" in icons
+    assert "setStyle(style)" in runtime
+    assert "get_string('indicator-style')" not in runtime
 
 
 def test_runtime_owns_dock_hover_effects():
@@ -545,10 +595,10 @@ def test_runtime_owns_dock_hover_effects():
 
     assert "new DockHoverEffects(" in dock
     assert "this._host.hoverEffects.setEffect(effect)" in dock
-    assert "getSettings(PANEL_SCHEMA)" in dock
     assert "applyStyle(actor)" in runtime
     assert "animate(actor, position, iconSize)" in runtime
-    assert "get_string('dock-hover-effect')" in runtime
+    assert "get_string('dock-hover-effect')" not in runtime
+    assert "return this._effect" in runtime
     assert "scale_x: lift ? 1.08 : 1" in runtime
     assert "hoverEffects.animate(actor, this._position, this.iconSize)" in dash
     assert "hoverEffects.applyStyle(this)" in dash

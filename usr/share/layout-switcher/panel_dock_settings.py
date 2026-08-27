@@ -66,6 +66,20 @@ class PanelDockSettings:
         if self.active_layout and not getattr(self, "_restoring", False):
             self.runtime.set(self.active_layout, setting, value)
 
+    def _runtime_owns_active_component(self) -> bool:
+        return (
+            self.runtime_active
+            and (self.dock_active or self.community_panel_active)
+            and self.runtime.supports_layout(self.active_layout)
+        )
+
+    def _runtime_owns_dock(self) -> bool:
+        return (
+            self.runtime_active
+            and self.dock_active
+            and self.runtime.supports_layout(self.active_layout)
+        )
+
     def restore_layout_defaults(self) -> None:
         if not self.runtime.supports_layout(self.active_layout):
             return
@@ -112,12 +126,12 @@ class PanelDockSettings:
         if self.runtime.is_imported(layout):
             return
         if self.dock_active:
-            self._remember("dock-opacity", self.dock_opacity())
-            self._remember("dock-visibility", self.dock_visibility())
-            self._remember("dock-size", self.dock_size())
-            self._remember("dock-hover", self.dock_hover_effect())
+            self._remember("dock-opacity", self._legacy_dock_opacity())
+            self._remember("dock-visibility", self._legacy_dock_visibility())
+            self._remember("dock-size", self._legacy_dock_size())
+            self._remember("dock-hover", self._legacy_dock_hover_effect())
         elif self.community_panel_active:
-            self._remember("dock-hover", self.dock_hover_effect())
+            self._remember("dock-hover", self._legacy_dock_hover_effect())
         if self.dock_active or self.community_panel_active:
             panel_opacity = (
                 self._legacy_panel_opacity()
@@ -131,30 +145,53 @@ class PanelDockSettings:
                 else self.panel_visibility()
             )
             self._remember("panel-visibility", panel_visibility)
-            self._remember("indicator-style", self.indicator_style())
+            if layout != "Classic":
+                self._remember("indicator-style", self._legacy_indicator_style())
         if self.community_panel_active:
             self._remember("panel-height", self._legacy_panel_height())
         self.runtime.mark_imported(layout)
 
     def dock_opacity(self) -> int:
+        if self._runtime_owns_dock():
+            opacity = int(self.runtime.get(self.active_layout, "dock-opacity", 77))
+            return max(0, min(100, opacity))
+        return self._legacy_dock_opacity()
+
+    def _legacy_dock_opacity(self) -> int:
         return round(self.dock.get_double("background-opacity") * 100)
 
     def set_dock_opacity(self, percent: int) -> None:
         percent = max(0, min(100, int(percent)))
         self._remember("dock-opacity", percent)
+        if self._runtime_owns_dock():
+            return
         self.dock.set_boolean("custom-background-color", True)
         self.dock.set_enum("transparency-mode", 1)  # FIXED
         self.dock.set_double("background-opacity", percent / 100)
 
     def dock_size(self) -> int:
+        if self._runtime_owns_dock():
+            size = int(self.runtime.get(self.active_layout, "dock-size", 39))
+            return max(DOCK_SIZE_RANGE[0], min(DOCK_SIZE_RANGE[1], size))
+        return self._legacy_dock_size()
+
+    def _legacy_dock_size(self) -> int:
         return self.dock.get_int("dash-max-icon-size")
 
     def set_dock_size(self, size: int) -> None:
         size = max(DOCK_SIZE_RANGE[0], min(DOCK_SIZE_RANGE[1], int(size)))
         self._remember("dock-size", size)
+        if self._runtime_owns_dock():
+            return
         self.dock.set_int("dash-max-icon-size", size)
 
     def dock_hover_effect(self) -> str:
+        if self._runtime_owns_active_component():
+            effect = self.runtime.get(self.active_layout, "dock-hover", "default")
+            return effect if effect in DOCK_HOVER_EFFECTS else "default"
+        return self._legacy_dock_hover_effect()
+
+    def _legacy_dock_hover_effect(self) -> str:
         if self.community_panel_active:
             return (
                 "lift"
@@ -168,6 +205,8 @@ class PanelDockSettings:
         if effect not in DOCK_HOVER_EFFECTS:
             raise ValueError(f"invalid dock hover effect: {effect}")
         self._remember("dock-hover", effect)
+        if self._runtime_owns_active_component():
+            return
         if self.community_panel_active:
             self.community_panel.set_boolean("animate-appicon-hover", effect == "lift")
             if effect == "lift":
@@ -193,6 +232,14 @@ class PanelDockSettings:
             self.community_panel.set_value(key, GLib.Variant(variant_type, values))
 
     def dock_visibility(self) -> str:
+        if self._runtime_owns_dock():
+            mode = self.runtime.get(
+                self.active_layout, "dock-visibility", "intelligent"
+            )
+            return mode if mode in VISIBILITY_MODES else "intelligent"
+        return self._legacy_dock_visibility()
+
+    def _legacy_dock_visibility(self) -> str:
         if self.dock.get_boolean("dock-fixed"):
             return "always-visible"
         if self.dock.get_boolean("manualhide") or not self.dock.get_boolean("intellihide"):
@@ -203,12 +250,20 @@ class PanelDockSettings:
         if mode not in VISIBILITY_MODES:
             raise ValueError(f"invalid dock visibility: {mode}")
         self._remember("dock-visibility", mode)
+        if self._runtime_owns_dock():
+            return
         self.dock.set_boolean("manualhide", False)
         self.dock.set_boolean("dock-fixed", mode == "always-visible")
         self.dock.set_boolean("intellihide", mode == "intelligent")
         self.dock.set_boolean("autohide", mode != "always-visible")
 
     def indicator_style(self) -> str:
+        if self._runtime_owns_active_component():
+            style = self.runtime.get(self.active_layout, "indicator-style", "dot")
+            return style if style in INDICATOR_STYLES else "dot"
+        return self._legacy_indicator_style()
+
+    def _legacy_indicator_style(self) -> str:
         if self.community_panel_active:
             focused = self.community_panel.get_string("dot-style-focused")
             unfocused = self.community_panel.get_string("dot-style-unfocused")
@@ -224,6 +279,8 @@ class PanelDockSettings:
         if style not in INDICATOR_STYLES:
             raise ValueError(f"invalid indicator style: {style}")
         self._remember("indicator-style", style)
+        if self._runtime_owns_active_component():
+            return
         if self.community_panel_active:
             focused, unfocused, size = {
                 "dot": ("DOTS", "DOTS", 6),

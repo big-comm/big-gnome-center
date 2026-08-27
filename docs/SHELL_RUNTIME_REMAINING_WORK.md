@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-27
-Safe checkpoint: `0414ae5`
-Status: Taskbar visibility, height, and opacity setting ownership accepted
+Safe checkpoint: `f515902`
+Status: All supported settings owned; build 65 awaits user visual acceptance
 
 ## Purpose
 
@@ -419,15 +419,59 @@ outside this slice. Final local and both-VM SHA-256 values:
 - runtime audit:
   `99df26dc744f920e3fbf946e3b14b10e50a896ebe1b7dfa5f23177557c467af1`.
 
-Next slice: move Taskbar indicator style to the exclusive owned-schema
-boundary. Do not remove inherited schema adapters until every required setting
-and the stable/testing upgrade matrix are accepted.
+Build 65 completes the supported-setting ownership boundary. Indicator style
+and hover now read and write only owned per-layout overrides while the unified
+runtime is active. Dock opacity, size, and visibility use the same boundary.
+The GTK backend reads legacy values only for one-time import or standalone
+rollback. Classic ignores stale indicator overrides and remains label-only.
 
-- [ ] Stop mirroring new writes to inherited Dock and Panel schemas.
-- [ ] Move every required runtime key to the Layout Switcher-owned schema.
-- [ ] Keep one-time import for existing stable and testing users.
-- [ ] Preserve unrelated extensions and user settings during migration.
-- [ ] Make `Restore layout defaults` clear only the active layout overrides.
+Dock updates are live. Indicator, hover, opacity, icon size, and visibility no
+longer destroy and reconstruct an active Dock. Runtime telemetry reports a
+manager generation plus configured and effective Dock opacity and icon size.
+The owned Dock indicator and hover controllers no longer read the old custom
+Community schema. Inherited Dash-to-Dock and Dash-to-Panel settings remain only
+as private renderer adapters; they are not the Layout Switcher persistence
+contract.
+
+GNOME 50.4 and 51.beta each passed Taskbar indicator/hover 10 slow and 20
+rapid cycles, the Classic no-indicator guard, and Dock indicator/hover/opacity/
+size/visibility 10 slow and 20 rapid cycles. Dock extremes were 20%/90%,
+28/64 px, and all three visibility modes. `managerGeneration` remained `1`
+through every same-layout Dock update. Legacy custom indicator and hover
+values were unchanged. Original override maps were restored exactly.
+
+Both VMs pass strict audit with zero failures and only the expected SSH `tty`
+warning. Their Shell journals contain no runtime, Dock, or Panel exception.
+Each finishes on Hybrid with one `1280x800` monitor. Focused tests:
+`106 passed`; full suite: `565 passed`, with the known PyGI and two headless
+Adwaita warnings. JavaScript syntax, strict schemas, focused Ruff, and diff
+checks pass. Final local and both-VM SHA-256 values:
+
+- unified runtime tree:
+  `5675f1c607206569d9ecd060a522935ddab196c08f4e173aee0cd30a741169d7`;
+- runtime controller:
+  `036bef314b23fb17646a4646feac5d2f7d24c3a52e2e9f8145b8a0e632db5c25`;
+- Dock runtime:
+  `d0684de8766306a7f0f03fe54da04261dbd1ca9dab194449def7438202145065`;
+- Taskbar runtime:
+  `a6b96e8e49dfbb1b384e7d769d9c7181165b9305374e69a7108f907066f5f4e2`;
+- settings backend:
+  `0d643b27939331b290d485ca23d3d3492e66b32ac97bb043ef721c747439856c`;
+- runtime audit:
+  `3cba44badea074f415a6956bda5b9c9225182d0053d275958c7399eab70302f9`;
+- runtime audit payload:
+  `16aed076c4f97263fa237fbf131b2cbdc83bf882419ad57fe8e61de1fbadd344`.
+
+User visual acceptance remains required. Direct owned-schema cycles prove the
+runtime and renderer contract, but do not replace checking the GTK controls,
+indicator pixels, hover motion, and visibility transitions by eye.
+
+- [x] Stop mirroring new writes to inherited Dock and Panel schemas while the
+  unified runtime owns the active component.
+- [x] Move every supported runtime key to the Layout Switcher-owned schema.
+- [x] Keep one-time import for existing stable and testing users.
+- [x] Preserve unrelated extensions and user settings during migration.
+- [x] Make `Restore layout defaults` clear only the active layout overrides.
 - [ ] Remove obsolete schema adapters after upgrade validation.
 - [ ] Remove dormant Dash to Dock and Dash to Panel sections from saved layouts
   only after the owned schema contains every required value.

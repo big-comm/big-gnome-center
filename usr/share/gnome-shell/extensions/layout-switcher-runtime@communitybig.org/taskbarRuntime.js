@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+import GLib from 'gi://GLib';
+
 import {ComponentHost} from './componentHost.js';
 import {TaskbarSurfaceManager} from './taskbarSurface.js';
 import {TaskbarVisibilityModes} from './taskbarVisibilityModes.js';
@@ -77,11 +79,14 @@ export class TaskbarRuntime {
 
     diagnostics() {
         const panels = this._surface.panels();
+        const settings = this._host.getSettings(PANEL_SCHEMA);
         return {
             active: Boolean(this._active && panels.length),
             profile: this._profile?.layout ?? '',
             indicator: this._indicator ?? '',
-            hover: this._hover ?? '',
+            hover: settings.get_boolean('animate-appicon-hover')
+                ? 'lift'
+                : 'default',
             opacity: this._opacity ?? null,
             visibility: this._visibilityModes.mode(),
             window: this._windowDiagnostics(),
@@ -144,6 +149,8 @@ export class TaskbarRuntime {
     _applyIndicator(indicator) {
         const settings = this._host.getSettings(PANEL_SCHEMA);
         if (indicator === 'none') {
+            settings.set_string('dot-style-focused', 'DOTS');
+            settings.set_string('dot-style-unfocused', 'DOTS');
             settings.set_int('dot-size', 0);
             return;
         }
@@ -160,7 +167,25 @@ export class TaskbarRuntime {
 
     _applyHover(hover) {
         const settings = this._host.getSettings(PANEL_SCHEMA);
-        settings.set_boolean('animate-appicon-hover', hover === 'lift');
+        const lift = hover === 'lift';
+        settings.set_boolean('animate-appicon-hover', lift);
+        if (!lift)
+            return;
+
+        settings.set_string('animate-appicon-hover-animation-type', 'SIMPLE');
+        const profile = [
+            ['animate-appicon-hover-animation-convexity', 'a{sd}', 0.0],
+            ['animate-appicon-hover-animation-duration', 'a{su}', 220],
+            ['animate-appicon-hover-animation-extent', 'a{si}', 1],
+            ['animate-appicon-hover-animation-rotation', 'a{si}', 0],
+            ['animate-appicon-hover-animation-travel', 'a{sd}', 0.08],
+            ['animate-appicon-hover-animation-zoom', 'a{sd}', 1.08],
+        ];
+        for (const [key, variantType, value] of profile) {
+            const values = settings.get_value(key).deep_unpack();
+            values.SIMPLE = value;
+            settings.set_value(key, new GLib.Variant(variantType, values));
+        }
     }
 
     _applyOpacity(opacity) {

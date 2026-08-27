@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 64;
+export const RUNTIME_BUILD = 65;
 
 export class RuntimeController {
     constructor(extension) {
@@ -33,6 +33,11 @@ export class RuntimeController {
         this._settings = new Gio.Settings({settings_schema: schema});
         this._settingsChangedIds = [
             'active-layout',
+            'dock-hover-overrides',
+            'dock-opacity-overrides',
+            'dock-size-overrides',
+            'dock-visibility-overrides',
+            'indicator-style-overrides',
             'panel-height-overrides',
             'panel-opacity-overrides',
             'panel-visibility-overrides',
@@ -77,15 +82,20 @@ export class RuntimeController {
         const indicator = this._indicatorForProfile(profile);
         const hover = this._hoverForProfile(profile);
         const visibility = this._visibilityForProfile(profile);
+        const dockOpacity = this._dockOpacityForProfile(profile);
+        const dockSize = this._dockSizeForProfile(profile);
         const panelOpacity = this._panelOpacityForProfile(profile);
         const panelVisibility = this._panelVisibilityForProfile(profile);
         const panelHeight = this._panelHeightForProfile(profile);
+        const dockProfileChanged = this._activeProfile?.layout !== profile.layout;
         this._activeProfile = profile;
 
         if (profile.surface === RuntimeSurface.DOCK) {
             this._taskbar.deactivate();
-            this._dock.deactivate();
-            this._dock.activate(profile, indicator, hover, visibility);
+            if (dockProfileChanged)
+                this._dock.deactivate();
+            this._dock.activate(
+                profile, indicator, hover, dockOpacity, dockSize, visibility);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             this._dock.deactivate();
             await this._taskbar.activate(
@@ -97,6 +107,8 @@ export class RuntimeController {
     }
 
     _indicatorForProfile(profile) {
+        if (profile.indicator === 'none')
+            return 'none';
         const overrides = this._settings
             .get_value('indicator-style-overrides')
             .deep_unpack();
@@ -115,6 +127,26 @@ export class RuntimeController {
             .get_value('dock-visibility-overrides')
             .deep_unpack();
         return overrides[profile.layout] ?? profile.visibility ?? 'intelligent';
+    }
+
+    _dockOpacityForProfile(profile) {
+        if (profile.dockOpacity === undefined)
+            return undefined;
+        const overrides = this._settings
+            .get_value('dock-opacity-overrides')
+            .deep_unpack();
+        const opacity = overrides[profile.layout] ?? profile.dockOpacity;
+        return Math.max(0, Math.min(100, opacity));
+    }
+
+    _dockSizeForProfile(profile) {
+        if (profile.dockSize === undefined)
+            return undefined;
+        const overrides = this._settings
+            .get_value('dock-size-overrides')
+            .deep_unpack();
+        const size = overrides[profile.layout] ?? profile.dockSize;
+        return Math.max(28, Math.min(64, size));
     }
 
     _panelVisibilityForProfile(profile) {
@@ -165,7 +197,10 @@ export class RuntimeController {
                 labels: profile.labels,
                 indicator: this._indicatorForProfile(profile),
                 hover: this._hoverForProfile(profile),
-                opacity: this._panelOpacityForProfile(profile),
+                opacity: profile.surface === RuntimeSurface.DOCK
+                    ? this._dockOpacityForProfile(profile)
+                    : this._panelOpacityForProfile(profile),
+                iconSize: this._dockSizeForProfile(profile),
                 visibility: profile.surface === RuntimeSurface.TASKBAR
                     ? this._panelVisibilityForProfile(profile)
                     : this._visibilityForProfile(profile),
