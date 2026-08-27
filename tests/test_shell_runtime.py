@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 65" in controller
+    assert "RUNTIME_BUILD = 68" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -288,7 +288,7 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
     assert "new TaskbarSurfaceManager(this._host)" in taskbar
     assert "await this._surface.enable(panelHeight)" in taskbar
     assert "this._surface.destroy()" in taskbar
-    assert "new PanelManager.PanelManager()" in surface
+    assert "new PanelManager.PanelManager(this.panelHost)" in surface
     assert "manager.enable();" in surface
     assert "manager?.disable();" in surface
     assert "Context.initializeRuntimeContext(this._host, this)" in surface
@@ -389,6 +389,51 @@ def test_taskbar_layout_indicators_are_runtime_rendered_with_fallbacks():
     assert "if (communityStyle)" in app_icons
     assert "style === 'hybrid' || isFocused ? 18 : 8" in renderer
     assert "drawCounts" in renderer
+
+
+def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    status = (RUNTIME / "taskbarStatusArea.js").read_text()
+    host = (RUNTIME / "taskbarPanelHost.js").read_text()
+    panel = (
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panel.js"
+    ).read_text()
+    manager = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
+    ).read_text()
+
+    assert "new TaskbarStatusAreaHost()" in surface
+    assert "new TaskbarPanelHost(this.statusAreaHost)" in surface
+    assert "panelHost: this.panelHost.diagnostics()" in surface
+    assert "statusArea: this.statusAreaHost.diagnostics(" in surface
+    assert "this.panelHost.create(this, monitor, isStandalone)" in manager
+    assert "this.panelHost.release(p)" in manager
+    assert "this._statusAreaHost.adopt(this)" in panel
+    assert "this._statusAreaHost.restore(this)" in panel
+    assert "_dtpOriginalParent" not in panel
+    assert "panelBox.remove_child(Main.panel)" in host
+    assert "panelBox.add_child(Main.panel)" in host
+    assert "_rollbackCreate(" in host
+    assert "this.panelHost.releaseAll()" in surface
+    assert "Object.entries(panel?.statusArea ?? {})" in status
+    assert "panel?.statusArea?.dateMenu" in status
+    assert "panel?.statusArea?.quickSettings" in status
+    assert "quickSettings?.menu?._grid?.get_children?.()" in status
+    assert "openMenus" in status
+    assert "orphanRoles" in status
+    assert "nativeMenuManagerPreserved" in status
+    assert "get_transformed_position()" in status
+    assert "addToStatusArea" not in status
+    assert "destroy()" not in status
+
+
+def test_taskbar_window_telemetry_distinguishes_normal_and_desktop_windows():
+    taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
+
+    assert "windowType = window.get_window_type()" in taskbar
+    assert "normal: windowType === Meta.WindowType.NORMAL" in taskbar
+    assert "wmClass: window.get_wm_class()" in taskbar
 
 
 def test_inherited_taskbar_modules_use_the_separate_runtime_context():

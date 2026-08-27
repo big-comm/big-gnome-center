@@ -57,7 +57,8 @@ import {
 } from 'resource:///org/gnome/shell/ui/workspacesView.js'
 
 export const PanelManager = class {
-  constructor() {
+  constructor(panelHost) {
+    this.panelHost = panelHost
     this.overview = new Overview.Overview(this)
     this._injectionManager = new InjectionManager()
   }
@@ -347,29 +348,7 @@ export const PanelManager = class {
       this._removePanelBarriers(p)
 
       p.disable()
-
-      Main.layoutManager._untrackActor(p)
-      Main.layoutManager._untrackActor(p.panelBox)
-
-      if (p.isStandalone) {
-        p.panelBox.destroy()
-      } else {
-        p.panelBox.remove_child(p)
-        p.remove_child(p.panel)
-        p.panelBox.add_child(p.panel)
-
-        p.panelBox.set_position(p.clipContainer.x, p.clipContainer.y)
-
-        delete p.panelBox._dtpIndex
-
-        p.clipContainer.remove_child(p.panelBox)
-        Utils.addChrome(p.panelBox, {
-          affectsStruts: true,
-          trackFullscreen: true,
-        })
-      }
-
-      Main.layoutManager.removeChrome(p.clipContainer)
+      this.panelHost.release(p)
     })
 
     if (Main.layoutManager.primaryMonitor) {
@@ -668,50 +647,9 @@ export const PanelManager = class {
   }
 
   _createPanel(monitor, isStandalone) {
-    let panelBox
-    let panel
-    let clipContainer = new Clutter.Actor()
+    let panel = this.panelHost.create(this, monitor, isStandalone)
 
-    if (isStandalone) {
-      panelBox = new Utils.createBoxLayout({ name: 'panelBox' })
-    } else {
-      panelBox = Main.layoutManager.panelBox
-      Main.layoutManager._untrackActor(panelBox)
-      panelBox.remove_child(Main.panel)
-      Main.layoutManager.removeChrome(panelBox)
-    }
-
-    Utils.addChrome(clipContainer, { affectsInputRegion: false })
-    clipContainer.add_child(panelBox)
-
-    panel = new Panel.Panel(
-      this,
-      monitor,
-      clipContainer,
-      panelBox,
-      isStandalone,
-    )
-    panelBox.add_child(panel)
-    panel.enable()
-
-    panelBox._dtpIndex = monitor.index
-    panelBox.set_position(0, 0)
-    panelBox.set_width(-1)
-
-    Utils.trackChrome(panel, {
-      affectsInputRegion: true,
-      affectsStruts: false,
-    })
-
-    Utils.trackChrome(panelBox, {
-      trackFullscreen: true,
-      affectsStruts: true,
-    })
-
-    // intellihide changes the chrome when enabled, so init after setting initial chrome params
-    panel.intellihide.init()
-
-    this._findPanelMenuButtons(panelBox).forEach((pmb) =>
+    this._findPanelMenuButtons(panel.panelBox).forEach((pmb) =>
       this._adjustPanelMenuButton(pmb, monitor, panel.geom.position),
     )
 

@@ -12,6 +12,8 @@ import * as Context from '../community-panel@communitybig.org/runtimeContext.js'
 import {TaskbarAppActions} from './taskbarAppActions.js';
 import {TaskbarInteractions} from './taskbarInteractions.js';
 import {TaskbarIndicatorRenderer} from './taskbarIndicatorRenderer.js';
+import {TaskbarPanelHost} from './taskbarPanelHost.js';
+import {TaskbarStatusAreaHost} from './taskbarStatusArea.js';
 
 const UBUNTU_DOCK_UUID = 'ubuntu-dock@ubuntu.com';
 const UBUNTU_DOCK_SETTLE_MS = 200;
@@ -30,6 +32,8 @@ export class TaskbarSurfaceManager {
         this.appActions = null;
         this.interactions = null;
         this.indicatorRenderer = null;
+        this.statusAreaHost = new TaskbarStatusAreaHost();
+        this.panelHost = new TaskbarPanelHost(this.statusAreaHost);
     }
 
     async enable(panelHeight) {
@@ -75,6 +79,9 @@ export class TaskbarSurfaceManager {
             console.warn(
                 `[layout-switcher-runtime] Taskbar manager cleanup failed: ${error}`,
             );
+        } finally {
+            this.panelHost.releaseAll();
+            this.statusAreaHost.restore();
         }
 
         PanelSettings.clearCache();
@@ -126,6 +133,9 @@ export class TaskbarSurfaceManager {
             interactions: this.interactions?.diagnostics() ?? {},
             indicatorRendererOwned: Boolean(this.indicatorRenderer),
             indicatorRenderer: this.indicatorRenderer?.diagnostics() ?? {},
+            panelHost: this.panelHost.diagnostics(),
+            statusArea: this.statusAreaHost.diagnostics(
+                this.panels().map(panel => panel.panelBox)),
             activationPending: Boolean(this._ubuntuDockDelayId),
             globalOwned: Boolean(
                 this._global && global.dashToPanel === this._global),
@@ -207,7 +217,7 @@ export class TaskbarSurfaceManager {
     }
 
     _createManager() {
-        const manager = new PanelManager.PanelManager();
+        const manager = new PanelManager.PanelManager(this.panelHost);
         this._manager = manager;
         manager.enable();
         for (const panel of manager.allPanels)

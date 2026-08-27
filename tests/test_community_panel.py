@@ -25,10 +25,10 @@ def test_community_panel_has_distinct_identity_and_shell_support():
     assert metadata["fork-version"] == 1
 
 
-def test_community_panel_preserves_dash_to_panel_73_core_baseline():
+def test_community_panel_pins_the_reviewed_dash_to_panel_73_core():
     expected = {
-        "panel.js": "8dd0d19610f82568a1d539dc36766d1c5f0109babd632f506409a23bb0cfc1c2",
-        "panelManager.js": "0be559edf513ed68791ef0fb55d776f18f5a0de7a57959f90ab124e979db9d87",
+        "panel.js": "22c5336a72101a9541ba3cea7e70086bb1eadd246501c0ce5639b49c49934b27",
+        "panelManager.js": "c4ef02f5e60c9a0c011ec23d2027d706890100e6add2e13cf6627d5e1b165466",
         "taskbar.js": "3b70a094b701291c2b6360d0105e8801610fe841c2120076e94fd1d5091fe427",
         "windowPreview.js": "0b61a11adad74464800bc63cefd2846faddb4bb969096a6dd99f2df1f4f92fb7",
         "stylesheet.css": "be6dbf8d2d8247a29200a7c8279e647018dfe501b713ec3e3c32a8204d512165",

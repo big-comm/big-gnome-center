@@ -11,6 +11,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Sequence
@@ -136,21 +137,28 @@ def _extension_state_from_output(output: str, uuid: str) -> int:
 
 
 def _extension_state(uuid: str) -> int:
-    output = _run(
-        (
-            "gdbus",
-            "call",
-            "--session",
-            "--dest",
-            "org.gnome.Shell.Extensions",
-            "--object-path",
-            "/org/gnome/Shell/Extensions",
-            "--method",
-            "org.gnome.Shell.Extensions.GetExtensionInfo",
-            uuid,
-        )
-    )
-    return _extension_state_from_output(output, uuid)
+    for attempt in range(3):
+        try:
+            output = _run(
+                (
+                    "gdbus",
+                    "call",
+                    "--session",
+                    "--dest",
+                    "org.gnome.Shell.Extensions",
+                    "--object-path",
+                    "/org/gnome/Shell/Extensions",
+                    "--method",
+                    "org.gnome.Shell.Extensions.GetExtensionInfo",
+                    uuid,
+                )
+            )
+            return _extension_state_from_output(output, uuid)
+        except AuditEnvironmentError as error:
+            if "NoReply" not in str(error) or attempt == 2:
+                raise
+            time.sleep(0.2)
+    raise AssertionError("unreachable")
 
 
 def _helper_json(method: str) -> dict:
@@ -251,6 +259,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     panel = dock.get("panel") or {}
     taskbar = runtime.get("taskbar") or {}
     taskbar_lifecycle = taskbar.get("lifecycle") or {}
+    panel_host = taskbar_lifecycle.get("panelHost") or {}
+    status_area = taskbar_lifecycle.get("statusArea") or {}
     dock_actors = dock.get("actors") or []
     taskbar_actors = taskbar.get("actors") or []
     stage_docks = stage.get("dock") or []
@@ -331,6 +341,32 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{bool(taskbar_lifecycle.get('indicatorRendererOwned'))}",
         ),
         _check(
+            bool(panel_host.get("owned")) == expected_taskbars,
+            "taskbar-panel-host-ownership",
+            f"owned={expected_taskbars}",
+            "expected panel-host ownership="
+            f"{expected_taskbars}, got {bool(panel_host.get('owned'))}",
+        ),
+        _check(
+            panel_host.get("activePanels", 0) == len(taskbar_actors),
+            "taskbar-panel-host-count",
+            f"active={len(taskbar_actors)}",
+            f"host={panel_host.get('activePanels')}, actors={len(taskbar_actors)}",
+        ),
+        _check(
+            bool(status_area.get("hostOwned")) == expected_taskbars,
+            "taskbar-status-host-ownership",
+            f"owned={expected_taskbars}",
+            "expected status-host ownership="
+            f"{expected_taskbars}, got {bool(status_area.get('hostOwned'))}",
+        ),
+        _check(
+            bool(status_area.get("nativeMenuManagerPreserved")),
+            "taskbar-native-menu-manager",
+            "native manager preserved",
+            "native panel menu manager was replaced",
+        ),
+        _check(
             not taskbar_lifecycle.get("activationPending"),
             "taskbar-activation-settled",
             "no pending activation",
@@ -361,6 +397,51 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"stage={len(stage_taskbars)}, runtime={len(taskbar_actors)}",
         ),
     ]
+
+    checks.extend(
+        (
+            _check(
+                not status_area.get("orphanRoles"),
+                "taskbar-status-actors",
+                f"roles={status_area.get('roleCount', 0)}, no orphans",
+                f"orphan roles={status_area.get('orphanRoles')}",
+            ),
+            _check(
+                bool((status_area.get("dateMenu") or {}).get("present"))
+                and bool((status_area.get("dateMenu") or {}).get("onStage")),
+                "taskbar-date-menu",
+                "native date menu on stage",
+                f"dateMenu={status_area.get('dateMenu')}",
+            ),
+            _check(
+                bool((status_area.get("quickSettings") or {}).get("present"))
+                and bool((status_area.get("quickSettings") or {}).get("onStage")),
+                "taskbar-quick-settings",
+                "native quick settings on stage",
+                f"quickSettings={status_area.get('quickSettings')}",
+            ),
+            _check(
+                bool(status_area.get("restorationPending")) == expected_taskbars,
+                "taskbar-status-restoration",
+                f"pending={expected_taskbars}",
+                "expected restoration pending="
+                f"{expected_taskbars}, got "
+                f"{bool(status_area.get('restorationPending'))}",
+            ),
+        )
+    )
+
+    if expected_taskbars:
+        adopted_roles = set(status_area.get("adoptedRoles") or [])
+        checks.append(
+                _check(
+                    {"activities", "quickSettings", "dateMenu"}
+                    <= adopted_roles,
+                    "taskbar-native-status-adoption",
+                    "activities/date/quick settings adopted",
+                    f"adopted roles={sorted(adopted_roles)}",
+                )
+        )
 
     if shell_theme:
         checks.extend(
@@ -528,7 +609,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 f"expected {expected.get('opacity')}%, got {taskbar.get('opacity')}%",
             )
         )
-        if taskbar_window.get("maximized"):
+        if taskbar_window.get("normal", True) and taskbar_window.get("maximized"):
             checks.append(
                 _check(
                     taskbar_window.get("frame") == taskbar_window.get("workArea"),

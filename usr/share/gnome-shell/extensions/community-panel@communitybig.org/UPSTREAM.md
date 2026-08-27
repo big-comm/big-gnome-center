@@ -18,6 +18,10 @@ Local runtime changes:
 
 - Desk UX indicators use the same fixed geometry as Community Dock: 8 x 3 px
   when unfocused and 18 x 3 px when focused.
+- `PanelManager` delegates physical panel creation and release to the unified
+  runtime host.
+- The primary `Panel` delegates native status-area adoption and restoration to
+  the unified runtime host. Native Shell actors and its menu manager remain
+  authoritative.
 
-GNOME 50 is the live acceptance target. GNOME 51 is declared for the later
-compatibility phase and still requires a live smoke test before release.
+GNOME 50 and GNOME 51 are live acceptance targets.

@@ -3,7 +3,9 @@
 
 from pathlib import Path
 
+import runtime_audit
 from runtime_audit import (
+    AuditEnvironmentError,
     COMMUNITY_DOCK_UUID,
     COMMUNITY_MENU_UUID,
     COMMUNITY_PANEL_UUID,
@@ -137,6 +139,7 @@ def _snapshot(**changes) -> Snapshot:
                     "opacity": panel_opacity,
                     "visibility": "always-visible",
                     "actors": taskbar_actors,
+                    "window": {"normal": True},
                     "lifecycle": {
                         "managerOwned": surface == "taskbar",
                         "globalOwned": surface == "taskbar",
@@ -145,6 +148,23 @@ def _snapshot(**changes) -> Snapshot:
                         "indicatorRendererOwned": surface == "taskbar",
                         "indicatorRenderer": {
                             "style": indicator if surface == "taskbar" else "none"
+                        },
+                        "panelHost": {
+                            "owned": surface == "taskbar",
+                            "activePanels": len(taskbar_actors),
+                        },
+                        "statusArea": {
+                            "hostOwned": surface == "taskbar",
+                            "nativeMenuManagerPreserved": True,
+                            "restorationPending": surface == "taskbar",
+                            "adoptedRoles": (
+                                ["activities", "quickSettings", "dateMenu"]
+                                if surface == "taskbar" else []
+                            ),
+                            "roleCount": 9,
+                            "orphanRoles": [],
+                            "dateMenu": {"present": True, "onStage": True},
+                            "quickSettings": {"present": True, "onStage": True},
                         },
                         "activationPending": False,
                     },
@@ -326,6 +346,56 @@ def test_audit_rejects_taskbar_indicator_and_hover_drift(tmp_path):
     } <= failures.keys()
 
 
+def test_audit_ignores_desktop_window_work_area_geometry(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Hybrid")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    taskbar = dict(runtime["taskbar"])
+    taskbar["window"] = {
+        "normal": False,
+        "maximized": True,
+        "frame": {"x": 0, "y": 0, "width": 1920, "height": 1118},
+        "workArea": {"x": 0, "y": 0, "width": 1920, "height": 1042},
+    }
+    runtime["taskbar"] = taskbar
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(active_layout="Hybrid", runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
+
+    assert "taskbar-maximized-work-area" not in failures
+
+
+def test_audit_rejects_normal_maximized_window_outside_work_area(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Hybrid")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    taskbar = dict(runtime["taskbar"])
+    taskbar["window"] = {
+        "normal": True,
+        "maximized": True,
+        "frame": {"x": 0, "y": 0, "width": 1920, "height": 1080},
+        "workArea": {"x": 0, "y": 0, "width": 1920, "height": 1042},
+    }
+    runtime["taskbar"] = taskbar
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(active_layout="Hybrid", runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
+
+    assert "taskbar-maximized-work-area" in failures
+
+
 def test_audit_rejects_panel_visible_over_fullscreen_window(tmp_path):
     _payload(tmp_path)
     snapshot = _snapshot()
@@ -407,6 +477,26 @@ def test_extension_state_parser_accepts_gnome_50_and_typed_variants():
     assert _extension_state_from_output("({'state': <uint32 2>},)", RUNTIME_UUID) == 2
 
 
+def test_extension_state_retries_a_transient_dbus_no_reply(monkeypatch):
+    responses = iter(
+        [
+            AuditEnvironmentError("GDBus.Error:org.freedesktop.DBus.Error.NoReply"),
+            "({'state': <1.0>},)",
+        ]
+    )
+
+    def fake_run(_args):
+        response = next(responses)
+        if isinstance(response, Exception):
+            raise response
+        return response
+
+    monkeypatch.setattr(runtime_audit, "_run", fake_run)
+    monkeypatch.setattr(runtime_audit.time, "sleep", lambda _delay: None)
+
+    assert runtime_audit._extension_state(RUNTIME_UUID) == 1
+
+
 def test_actor_audit_rejects_a_ghost_dock(tmp_path):
     _payload(tmp_path)
     snapshot = _snapshot()
@@ -446,6 +536,11 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
         "appActionsOwned": False,
         "interactionsOwned": False,
         "indicatorRendererOwned": False,
+        "panelHost": {"owned": False, "activePanels": 0},
+        "statusArea": {
+            "hostOwned": False,
+            "nativeMenuManagerPreserved": False,
+        },
         "activationPending": True,
     }
     runtime["taskbar"] = taskbar
@@ -463,6 +558,10 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-app-actions-ownership" in failures
     assert "taskbar-interactions-ownership" in failures
     assert "taskbar-indicator-renderer-ownership" in failures
+    assert "taskbar-panel-host-ownership" in failures
+    assert "taskbar-panel-host-count" in failures
+    assert "taskbar-status-host-ownership" in failures
+    assert "taskbar-native-menu-manager" in failures
     assert "taskbar-activation-settled" in failures
 
 

@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-27
-Safe checkpoint: `f515902`
-Status: All supported settings owned; build 65 awaits user visual acceptance
+Safe checkpoint: `6e77d2d`
+Status: Build 68 owns the physical Taskbar host and native status lifecycle
 
 ## Purpose
 
@@ -45,7 +45,7 @@ Layout Switcher GTK app
   -> helper extension for safe switch orchestration
   -> unified Shell runtime UUID
        -> owned Dock runtime for BigGnome and G-Unity
-       -> owned Taskbar lifecycle with inherited visual modules
+       -> owned Taskbar physical/status host with inherited visual modules
           for Hybrid, Desk UX, and Classic
        -> native GNOME surface for Minimal
 ```
@@ -173,7 +173,7 @@ Gates:
 ### 2. Extract the Taskbar and Panel engine incrementally
 
 - [x] Isolate panel and taskbar lifecycle ownership.
-- [ ] Preserve the native status area, clock, menus, and panel interaction.
+- [x] Preserve the native status area, clock, menus, and panel interaction.
 - [x] Port application buttons, launch, focus, minimize, grouping, and
   multiple-window behavior.
 - [x] Port Hybrid, Desk UX, and no-indicator renderers with exact geometry.
@@ -295,6 +295,58 @@ then reads a null `_indicator`. The stack reaches Panel teardown because status
 items are being restored, but the failing frames are
 `appIndicator.js:1049/1058` and `promiseUtils.js`. Fix cancellation in the
 AppIndicator extension; do not add a Taskbar teardown delay.
+
+Build 68 owns the primary physical Panel host and native status-area lifecycle.
+`TaskbarPanelHost` detaches/restores `Main.panel`, owns chrome tracking, and
+rolls back partial construction. `TaskbarStatusAreaHost` stores exact
+parent/index state for Activities, Date Menu, and Quick Settings inside the
+runtime; it no longer writes `_dtpOriginalParent` fields on Shell actors. The
+native `Main.panel.statusArea` actors and popup-menu manager remain
+authoritative. Two narrow reviewed bridges remain in inherited `panel.js` and
+`panelManager.js`; the active module map is in
+`docs/COMMUNITY_PANEL_RUNTIME_MAP.md`.
+
+Telemetry and strict audit now cover physical-host generation/count, adoption
+and restoration state, all status roles, orphans, clock, Quick Settings, open
+menus, and transformed status geometry. Window telemetry distinguishes normal
+applications from the DING desktop window so only real maximized applications
+are compared with the work area. The extension-state audit retries only a
+transient D-Bus `NoReply`.
+
+GNOME 50.4 (`Classic`) and GNOME 51.beta (`Hybrid`) each passed 10 slow and 20
+rapid Taskbar/Dock cycles. Final strict audits had zero failures, one Taskbar
+actor, zero stage residue, and one `1280x800` monitor. Maximized Brave matched
+the work area at `1280x768` on GNOME 50 and `1280x762` on GNOME 51. Quick
+Settings opened through `Super+S` and remained open after the pointer left the
+Panel. `Super+V` is Copyous and must not be used as a status-menu test.
+
+Manual status acceptance still required: open Date Menu by click, exercise
+AppIndicator/Copyous/removable-drive menus, inspect the clock, and repeat after
+a full layout application rather than only an owned-schema lifecycle cycle.
+GNOME 51 retains the external GSConnect `wl_clipboard.js:56` final-type restart
+loop. The filtered `gnome-shell` journal contains no build 68 exception.
+
+Build 68 validation: final focused `74 passed`; full suite `570 passed` with
+the known PyGI and two headless Adwaita warnings. JavaScript syntax and diff
+checks pass. PKGBUILD and package versions are unchanged. Final local and both
+VM SHA-256 values:
+
+- runtime controller:
+  `27b7411b0558adfa7c0dc74b790e415f3ea88408419743feab1fce0c9a27fe27`;
+- Taskbar runtime:
+  `f13adc8bfe8e9217b9dad0de6beac9950fb4e8f3af78c043f490888b8b54c283`;
+- Taskbar surface:
+  `0308f10e05869cc48f0c1e74b8b26dc2c66182324aa7b36e24de28c0408799a9`;
+- physical Panel host:
+  `62b1746b2c1308f96b4c4d32d2ce5516376153649dc7826be96d012111a3edf9`;
+- native status host:
+  `2db448de623a9a1748e1818a4557cb56a0754d53947ad6bd77ebbab3fdea34b2`;
+- inherited Panel bridge:
+  `608ad91c1fcf4187f134f4c686cdec113a67cdcd36a63869f9c6936acb4f2ff2`;
+- inherited Panel manager bridge:
+  `6dd90d1eff9015c502b5e6f7d65782b7d3350d4a64559b68af4474a874c8fb37`;
+- runtime audit:
+  `0c3535990ac5035b174677a3f7debe6d4f94c0abd394179c23ce5610d9360dd8`.
 
 ### 3. Finish settings ownership
 

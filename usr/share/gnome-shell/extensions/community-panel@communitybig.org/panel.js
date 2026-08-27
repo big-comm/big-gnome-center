@@ -81,7 +81,14 @@ export const GS_PANEL_SIZE = 32
 export const Panel = GObject.registerClass(
   {},
   class Panel extends St.Widget {
-    _init(panelManager, monitor, clipContainer, panelBox, isStandalone) {
+    _init(
+      panelManager,
+      monitor,
+      clipContainer,
+      panelBox,
+      isStandalone,
+      statusAreaHost,
+    ) {
       super._init({
         style_class: 'dashtopanelPanel',
         layout_manager: new Clutter.BinLayout(),
@@ -168,32 +175,9 @@ export const Panel = GObject.registerClass(
         this.panel = Main.panel
         this.statusArea = Main.panel.statusArea
         this.menuManager = Main.panel.menuManager
-
-        this.panel._toggleMenu = (indicator) => {
-          if (
-            !indicator ||
-            (!this.intellihide.enabled && !indicator.mapped) ||
-            !indicator.reactive
-          )
-            return
-
-          this.intellihide.revealAndHold(0, true)
-          Object.getPrototypeOf(this.panel)._toggleMenu(indicator)
-        }
-
         panelBoxes.forEach((p) => (this[p] = Main.panel[p]))
-        ;['activities', systemMenuInfo.name, 'dateMenu'].forEach((b) => {
-          let container = this.statusArea[b].container
-          let parent = container.get_parent()
-          let siblings = parent.get_children()
-          let index = siblings.indexOf(container)
-
-          container._dtpOriginalParent = parent
-          container._dtpOriginalIndex =
-            index && index == siblings.length - 1 ? -1 : index
-          parent ? parent.remove_child(container) : null
-          this.panel.add_child(container)
-        })
+        this._statusAreaHost = statusAreaHost
+        this._statusAreaHost.adopt(this)
       }
 
       this.geom = this.getGeometry()
@@ -470,38 +454,10 @@ export const Panel = GObject.registerClass(
           this.panel.remove_style_class_name(c),
         )
 
-        if (!Main.sessionMode.isLocked) {
-          ;['activities', systemMenuName, 'dateMenu'].forEach((b) => {
-            let container = this.statusArea[b].container
-            let originalParent = container._dtpOriginalParent
-
-            this.panel.remove_child(container)
-
-            if (originalParent) {
-              originalParent.visible = true
-
-              originalParent.insert_child_at_index(
-                container,
-                Math.min(
-                  container._dtpOriginalIndex,
-                  originalParent.get_children().length - 1,
-                ),
-              )
-            }
-
-            delete container._dtpOriginalParent
-            delete container._dtpOriginalIndex
-          })
-        }
-
-        if (this.statusArea.quickSettings?.menu) {
-          this.statusArea.quickSettings.menu._arrowSide = St.Side.TOP
-          this.statusArea.quickSettings.menu._arrowAlignment = 0
-        }
+        this._statusAreaHost.restore(this)
 
         this._setShowDesktopButton(false)
 
-        delete this.panel._toggleMenu
         delete Utils.getIndicators(
           this.statusArea[systemMenuName]._volumeOutput,
         )._dtpIgnoreScroll

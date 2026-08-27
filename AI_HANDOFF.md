@@ -1867,3 +1867,52 @@ Append one entry per completed change:
 - Next gate: user visual acceptance of the five live controls. Then run clean,
   stable, testing, intermediate-UUID, and rollback upgrade matrices before
   deleting inherited schema or renderer adapters.
+
+## 2026-08-27 — Physical Taskbar and native status host, build 68
+
+- Added `docs/COMMUNITY_PANEL_RUNTIME_MAP.md` from the live import graph and
+  compared GNOME Shell 50.4/current Panel contracts with official
+  Dash-to-Panel master. The accepted boundary reuses `Main.panel`,
+  `Main.panel.statusArea`, native status actors, and the native menu manager.
+- `TaskbarPanelHost` now owns physical detach/create/chrome/release and partial
+  construction rollback. `TaskbarStatusAreaHost` owns exact status actor
+  parent/index restoration and the intellihide menu bridge. Shell actors no
+  longer receive `_dtpOriginalParent` state.
+- Diagnostics cover host generation/count, adopted/external/orphan roles,
+  clock, Quick Settings, open menus, menu mapping, and transformed geometry.
+  Audit distinguishes normal windows from the DING desktop and retries only a
+  transient extension-service `NoReply`.
+- GNOME 50.4 preserved `Classic`: 12 status roles, zero orphans, maximized
+  Brave/work area `1280x768`, Quick Settings open and pointer-leave hold, 10
+  slow plus 20 rapid `Classic <-> BigGnome` cycles, strict audit zero failures.
+- GNOME 51.beta preserved `Hybrid`: 10 status roles, zero orphans, maximized
+  Brave/work area `1280x762`, Quick Settings open and pointer-leave hold, 10
+  slow plus 20 rapid `Hybrid <-> BigGnome` cycles, strict audit zero failures.
+  Both VMs end with one `1280x800` monitor.
+- Filtered `gnome-shell` journals contain no build 68 exception. GNOME 50
+  emitted two transient Clutter allocation warnings during rapid Dock churn,
+  with zero final residue. GNOME 51 retains the unrelated GSConnect
+  `wl_clipboard.js:56` final-type service restart loop.
+- Final focused tests: `74 passed`. Full suite: `570 passed`, with the known
+  PyGI and two headless Adwaita warnings. All runtime/inherited JavaScript
+  syntax and `git diff --check` pass. PKGBUILD/pkgver/pkgrel are unchanged.
+- Final local/GNOME 50/GNOME 51 SHA-256: runtime controller
+  `27b7411b0558adfa7c0dc74b790e415f3ea88408419743feab1fce0c9a27fe27`;
+  Taskbar runtime
+  `f13adc8bfe8e9217b9dad0de6beac9950fb4e8f3af78c043f490888b8b54c283`;
+  Taskbar surface
+  `0308f10e05869cc48f0c1e74b8b26dc2c66182324aa7b36e24de28c0408799a9`;
+  physical host
+  `62b1746b2c1308f96b4c4d32d2ce5516376153649dc7826be96d012111a3edf9`;
+  status host
+  `2db448de623a9a1748e1818a4557cb56a0754d53947ad6bd77ebbab3fdea34b2`;
+  inherited Panel
+  `608ad91c1fcf4187f134f4c686cdec113a67cdcd36a63869f9c6936acb4f2ff2`;
+  inherited PanelManager
+  `6dd90d1eff9015c502b5e6f7d65782b7d3350d4a64559b68af4474a874c8fb37`;
+  audit
+  `0c3535990ac5035b174677a3f7debe6d4f94c0abd394179c23ce5610d9360dd8`.
+- Manual gate: click Date Menu; exercise AppIndicator, Copyous, removable-drive,
+  and other status menus. `Super+V` opens Copyous; use `Super+S` only for Quick
+  Settings. Then continue inherited PanelManager injections/monitor lifecycle
+  extraction and the clean/stable/testing/rollback matrix.

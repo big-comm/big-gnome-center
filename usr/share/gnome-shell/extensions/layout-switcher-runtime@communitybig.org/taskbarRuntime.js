@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 import GLib from 'gi://GLib';
+import Meta from 'gi://Meta';
 
 import {ComponentHost} from './componentHost.js';
 import {TaskbarSurfaceManager} from './taskbarSurface.js';
@@ -125,8 +126,13 @@ export class TaskbarRuntime {
             return {};
         const monitor = window.get_monitor();
         const workspace = window.get_workspace();
+        const windowType = window.get_window_type();
         return {
             monitor,
+            title: window.get_title() ?? '',
+            wmClass: window.get_wm_class() ?? '',
+            windowType,
+            normal: windowType === Meta.WindowType.NORMAL,
             maximized: Boolean(
                 window.maximized_horizontally && window.maximized_vertically),
             fullscreen: Boolean(window.fullscreen),
