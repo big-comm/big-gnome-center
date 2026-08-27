@@ -295,6 +295,25 @@ def test_normal_layout_switch_uses_only_shell_curtain():
     assert "icon_to=str(to_icon)" in apply_source
 
 
+def test_layout_confirmation_dialog_uses_wide_horizontal_actions():
+    source = (
+        Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/ui/page_layouts.py"
+    ).read_text()
+
+    assert "_LAYOUT_DIALOG_WIDTH = 520" in source
+    assert "d.set_follows_content_size(False)" in source
+    assert "d.set_content_width(_LAYOUT_DIALOG_WIDTH)" in source
+    assert "actions = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL" in source
+    assert "actions.set_halign(Gtk.Align.END)" in source
+    assert 'header_icon.add_css_class("accent")' in source
+    assert 'modified.add_css_class("caption-heading")' in source
+    assert "body.set_justify(Gtk.Justification.LEFT)" in source
+    assert "button.set_size_request(-1, 44)" in source
+    assert "set_height_request(" not in source
+    assert 'button.add_css_class("suggested-action")' in source
+    assert "d.set_default_widget(default_button)" in source
+
+
 def test_only_desk_ux_uses_floating_panel_geometry():
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         values = _section_key_values(

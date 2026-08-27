@@ -36,6 +36,8 @@ _PROGRESS_TRANSLATION_KEYS = (
     tr("Reloading components…"),
 )
 
+_LAYOUT_DIALOG_WIDTH = 520
+
 
 class LayoutsPage(Gtk.Box):
     """Pagina de Layouts com grid de cards + Resume/Original."""
@@ -229,35 +231,9 @@ class LayoutsPage(Gtk.Box):
         has_snapshot = SnapshotManager.has(target_id)
 
         parent = self.get_root()
-        d = Adw.AlertDialog(heading=name)
+        d = Adw.Dialog(title=name)
 
-        if has_snapshot:
-            d.set_body(
-                tr(
-                    "You have previously modified this layout. Apply the "
-                    "original system default or resume your changes?"
-                )
-            )
-            d.add_response("cancel", tr("Cancel"))
-            d.add_response("resume", tr("Resume my changes"))
-            d.add_response("original", tr("Apply original"))
-            d.set_response_appearance("original", Adw.ResponseAppearance.SUGGESTED)
-            d.set_default_response("original")
-        else:
-            d.set_body(
-                tr(
-                    "Apply this layout? A backup of your current "
-                    "configuration will be created automatically."
-                )
-            )
-            d.add_response("cancel", tr("Cancel"))
-            d.add_response("apply", tr("Apply"))
-            d.set_response_appearance("apply", Adw.ResponseAppearance.SUGGESTED)
-            d.set_default_response("apply")
-
-        d.set_close_response("cancel")
-
-        def on_r(_dlg, r):
+        def on_r(r):
             if r == "cancel":
                 return
             ok_bk, info = BackupManager.create()
@@ -271,7 +247,89 @@ class LayoutsPage(Gtk.Box):
             use_snapshot = r == "resume"
             self._apply(name, cfg, use_snapshot=use_snapshot)
 
-        d.connect("response", on_r)
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        content.set_margin_top(30)
+        content.set_margin_bottom(26)
+        content.set_margin_start(28)
+        content.set_margin_end(28)
+
+        header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        header.set_halign(Gtk.Align.START)
+        header_icon = Gtk.Image.new_from_icon_name(
+            "document-edit-symbolic" if has_snapshot else "view-grid-symbolic"
+        )
+        header_icon.set_pixel_size(24)
+        header_icon.add_css_class("accent")
+        header.append(header_icon)
+
+        header_text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        heading = Gtk.Label(label=name)
+        heading.add_css_class("title-2")
+        heading.set_halign(Gtk.Align.START)
+        heading.set_xalign(0)
+        header_text.append(heading)
+        if has_snapshot:
+            modified = Gtk.Label(label=tr("Modified"))
+            modified.add_css_class("accent")
+            modified.add_css_class("caption-heading")
+            modified.set_halign(Gtk.Align.START)
+            modified.set_xalign(0)
+            header_text.append(modified)
+        header.append(header_text)
+        content.append(header)
+
+        if has_snapshot:
+            body_text = tr(
+                "You have previously modified this layout. Apply the "
+                "original system default or resume your changes?"
+            )
+            responses = (
+                ("cancel", tr("Cancel"), False),
+                ("resume", tr("Resume my changes"), False),
+                ("original", tr("Apply original"), True),
+            )
+        else:
+            body_text = tr(
+                "Apply this layout? A backup of your current "
+                "configuration will be created automatically."
+            )
+            responses = (
+                ("cancel", tr("Cancel"), False),
+                ("apply", tr("Apply"), True),
+            )
+
+        body = Gtk.Label(label=body_text)
+        body.set_justify(Gtk.Justification.LEFT)
+        body.set_max_width_chars(60)
+        body.set_wrap(True)
+        body.set_xalign(0)
+        content.append(body)
+
+        actions = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        actions.set_halign(Gtk.Align.END)
+        actions.set_margin_top(14)
+        default_button = None
+        for response, label, suggested in responses:
+            button = Gtk.Button(label=label)
+            button.set_size_request(-1, 44)
+            if suggested:
+                button.add_css_class("suggested-action")
+                default_button = button
+
+            def respond(_button, selected=response):
+                d.close()
+                on_r(selected)
+
+            button.connect("clicked", respond)
+            actions.append(button)
+        content.append(actions)
+
+        d.set_follows_content_size(False)
+        d.set_content_width(_LAYOUT_DIALOG_WIDTH)
+        d.set_child(content)
+        if default_button is not None:
+            d.set_default_widget(default_button)
+            d.set_focus(default_button)
         d.present(parent)
 
     def _save_current_snapshot(self) -> None:
