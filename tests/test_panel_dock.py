@@ -71,6 +71,12 @@ class FakeRuntime:
     def set(self, layout, setting, value):
         self.values[(layout, setting)] = value
 
+    def get(self, layout, setting, fallback=None):
+        return self.values.get(
+            (layout, setting),
+            LAYOUT_DEFAULTS.get(layout, {}).get(setting, fallback),
+        )
+
     def is_imported(self, layout):
         return layout in self.imported
 
@@ -136,6 +142,7 @@ def settings_fixture():
     settings.active_layout = ""
     settings.dock_active = True
     settings.community_panel_active = False
+    settings.runtime_active = False
     settings.runtime = FakeRuntime()
     settings.dock = FakeSettings(
         {
@@ -251,6 +258,21 @@ def test_compatibility_adapter_imports_active_layout_once():
     assert settings.runtime.imported == {"BigGnome"}
     assert first_values[("BigGnome", "dock-opacity")] == 77
     assert settings.runtime.values == first_values
+
+
+def test_compatibility_adapter_imports_legacy_taskbar_visibility_once():
+    settings = settings_fixture()
+    settings.active_layout = "Hybrid"
+    settings.dock_active = False
+    settings.community_panel_active = True
+    settings.community_panel.values["intellihide"] = True
+    settings.community_panel.values["intellihide-hide-from-windows"] = False
+
+    settings._import_active_layout_once()
+    settings.community_panel.values["intellihide-hide-from-windows"] = True
+    settings._import_active_layout_once()
+
+    assert settings.runtime.values[("Hybrid", "panel-visibility")] == "always-hidden"
 
 
 def test_live_writes_are_mirrored_to_layout_owned_runtime_settings():
@@ -432,31 +454,36 @@ def test_community_panel_opacity_maps_to_dash_to_panel_schema():
     assert settings.community_panel.values["trans-use-dynamic-opacity"] is False
 
 
-def test_community_panel_visibility_maps_all_three_modes():
+def test_taskbar_visibility_writes_only_layout_owned_settings():
     settings = settings_fixture()
+    settings.active_layout = "Hybrid"
     settings.community_panel_active = True
+    settings.runtime_active = True
+    legacy_values = dict(settings.community_panel.values)
 
     settings.set_panel_visibility("always-visible")
     assert settings.panel_visibility() == "always-visible"
-    assert settings.community_panel.values["intellihide"] is False
 
     settings.set_panel_visibility("always-hidden")
     assert settings.panel_visibility() == "always-hidden"
-    assert settings.community_panel.values["intellihide"] is True
-    assert settings.community_panel.values["intellihide-enable-start-delay"] == 0
-    assert settings.community_panel.values["intellihide-hide-from-windows"] is False
-    delay = settings.community_panel.calls.index(
-        ("set_int", "intellihide-enable-start-delay", 0)
-    )
-    enable = settings.community_panel.calls.index(
-        ("set_boolean", "intellihide", True)
-    )
-    assert delay < enable
 
     settings.set_panel_visibility("intelligent")
     assert settings.panel_visibility() == "intelligent"
-    assert settings.community_panel.values["intellihide-hide-from-windows"] is True
-    assert settings.community_panel.values["intellihide-use-pointer"] is True
+    assert settings.runtime.values[("Hybrid", "panel-visibility")] == "intelligent"
+    assert settings.community_panel.values == legacy_values
+    assert settings.community_panel.calls == []
+
+
+def test_standalone_taskbar_visibility_keeps_compatibility_mirror():
+    settings = settings_fixture()
+    settings.active_layout = "Hybrid"
+    settings.community_panel_active = True
+
+    settings.set_panel_visibility("always-hidden")
+
+    assert settings.runtime.values[("Hybrid", "panel-visibility")] == "always-hidden"
+    assert settings.community_panel.values["intellihide"] is True
+    assert settings.community_panel.values["intellihide-hide-from-windows"] is False
 
 
 def test_community_panel_height_preserves_monitor_map_and_clamps():
@@ -554,6 +581,7 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert 'RUNTIME_DOCK_LAYOUTS = frozenset(("BigGnome", "G-Unity"))' in page
     assert 'RUNTIME_TASKBAR_LAYOUTS = frozenset(("Hybrid", "Desk UX", "Classic"))' in page
     assert "runtime_active = ExtMgr.is_enabled(RUNTIME_UUID)" in page
+    assert "runtime_active=runtime_active" in page
     assert "dock_available" in page
     assert "panel_available" in page
     assert "indicator_available" in page

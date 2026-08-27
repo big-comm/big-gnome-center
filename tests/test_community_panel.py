@@ -73,6 +73,15 @@ def test_runtime_indicator_suppresses_legacy_grouped_window_edge():
     assert "this._nWindows > 1" in stacked
 
 
+def test_intellihide_restores_actor_before_enabling_panel_strut():
+    source = (PANEL / "intellihide.js").read_text()
+    disable = source[source.index("  disable(reset) {"):source.index("  destroy() {")]
+
+    assert disable.index("this._revealPanel(!reset)") < disable.index(
+        "this._setTrackPanel(false)"
+    )
+
+
 def test_community_panel_preserves_license_provenance_schema_and_translations():
     assert "GNU GENERAL PUBLIC LICENSE" in (PANEL / "COPYING").read_text()
     upstream = (PANEL / "UPSTREAM.md").read_text()

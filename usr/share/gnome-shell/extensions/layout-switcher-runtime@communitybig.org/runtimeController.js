@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 59;
+export const RUNTIME_BUILD = 61;
 
 export class RuntimeController {
     constructor(extension) {
@@ -31,10 +31,13 @@ export class RuntimeController {
         this._enabled = true;
         this._syncPromise = Promise.resolve();
         this._settings = new Gio.Settings({settings_schema: schema});
-        this._layoutChangedId = this._settings.connect(
-            'changed::active-layout',
+        this._settingsChangedIds = [
+            'active-layout',
+            'panel-visibility-overrides',
+        ].map(key => this._settings.connect(
+            `changed::${key}`,
             () => this._queueSync(),
-        );
+        ));
         this._queueSync();
         console.info(`[layout-switcher-runtime] build ${RUNTIME_BUILD} ready`);
     }
@@ -42,9 +45,9 @@ export class RuntimeController {
     disable() {
         this._enabled = false;
         this._syncGeneration = (this._syncGeneration ?? 0) + 1;
-        if (this._layoutChangedId && this._settings)
-            this._settings.disconnect(this._layoutChangedId);
-        this._layoutChangedId = 0;
+        for (const id of this._settingsChangedIds ?? [])
+            this._settings?.disconnect(id);
+        this._settingsChangedIds = [];
         this._dock?.deactivate();
         this._taskbar?.deactivate();
         this._activeProfile = null;

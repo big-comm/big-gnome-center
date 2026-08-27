@@ -386,6 +386,7 @@ class PanelDockPage(Gtk.Box):
                     active_layout=active_layout,
                     dock_active=dock_active,
                     community_panel_active=community_panel_active,
+                    runtime_active=runtime_active,
                 )
                 if dock_active or community_panel_active
                 else None

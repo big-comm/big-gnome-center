@@ -1706,3 +1706,46 @@ Append one entry per completed change:
   startup; runtime ownership and stage-residue checks pass.
 - Focused suite: `111 passed`. Full suite: `547 passed`, with one known PyGI
   deprecation warning. PKGBUILD and package versions are unchanged.
+
+## 2026-08-26 — Taskbar visibility setting ownership, build 61
+
+- Taskbar Panel visibility is the first exclusive owned-setting slice. With the
+  unified runtime active, the GTK backend reads/writes only
+  `panel-visibility-overrides`; it does not mirror live changes to Community
+  Panel. One-time legacy import remains. The standalone compatibility path
+  still mirrors until upgrade coverage permits adapter removal.
+- Runtime build 61 listens to `changed::panel-visibility-overrides` and applies
+  the active layout live without rebuilding its `PanelManager`.
+- Live testing found a Dash-to-Panel ordering defect in `Intellihide.disable()`:
+  it restored the strut while the Panel actor was still translated off-screen.
+  Mutter could retain a maximized `1280x838` allocation after returning to
+  always visible. The root fix reveals the actor before enabling its strut.
+  There is no blind timer, window resize, or compositor repair shim.
+- GNOME 50.4 and 51.beta passed 10 slow and 20 rapid owned-schema cycles while
+  maximized. Final frame/work-area geometry was `1280x745` with a 55 px Panel
+  on GNOME 50 and `1280x762` with a 38 px Panel on GNOME 51.
+- Controlled non-maximized cycles preserved exact frames
+  `60,107 1160x530` (GNOME 50) and `38,59 1106x556` (GNOME 51). GNOME 51 also
+  passed maximized minimize/restore at `1280x762`. A transient `1280x838`
+  reading belonged to the still-minimized window; restoration recomposed it to
+  the current work area.
+- Strict audits: zero failures on both VMs; only the expected SSH `tty` warning.
+  Both finish on Hybrid with one `1280x800` monitor. GNOME 50 preserved
+  `{'Desk UX': 'always-hidden', 'Classic': 'always-visible'}`; GNOME 51
+  preserved an empty visibility map.
+- Journal: no Layout Switcher or Community Panel exception. GNOME 51 retains
+  the external GSConnect `wl_clipboard.js:56` final-type error.
+- Focused tests: `93 passed`. Full suite: `550 passed`, with the known PyGI
+  warning and two headless Adwaita warnings. JavaScript syntax, focused Ruff,
+  and `git diff --check` pass. PKGBUILD and package versions are unchanged.
+- Local and both VM file hashes: runtime controller
+  `1aad43cf7213c1de0ab11f2788698a51bc0f25bee7fdb7e891031a39af4d1619`;
+  Panel intellihide
+  `aa9de9b7b7274c20de02f224afbd40c7c35e5d88c0622417b1d2ada97b6dbd08`;
+  settings backend
+  `730a16681a92137974390688da2ad095586be85756b4ccbdf95b3b61af08e04d`;
+  Panel/Dock page
+  `d9196a2711bc0741a4f796c13d7cb1ed7998abbeb9190e0bc781723f019eefcd`.
+- Next implementation slice: move Taskbar Panel height to exclusive owned
+  schema control. Keep inherited adapters until the remaining setting slices
+  and stable/testing upgrade matrix pass.

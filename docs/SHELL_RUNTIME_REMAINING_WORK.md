@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-26
-Safe checkpoint: `ea0c95e`
-Status: Dock extraction accepted; Taskbar/Panel lifecycle ownership accepted
+Safe checkpoint: `5014b7e`
+Status: Taskbar visibility setting ownership started; lifecycle accepted
 
 ## Purpose
 
@@ -297,6 +297,49 @@ items are being restored, but the failing frames are
 AppIndicator extension; do not add a Taskbar teardown delay.
 
 ### 3. Finish settings ownership
+
+Build 61 completes the first exclusive owned-setting slice. While the unified
+Taskbar runtime is active, Panel visibility reads and writes only
+`panel-visibility-overrides`; it no longer mirrors live writes to the inherited
+Community Panel schema. Existing users retain a one-time legacy import, and the
+standalone compatibility path still mirrors until upgrade coverage permits its
+removal. The runtime listens to the owned override key and applies changes
+without rebuilding the Taskbar.
+
+Live validation exposed an inherited Dash-to-Panel ordering defect when leaving
+intellihide: `disable()` restored the strut before revealing the translated
+Panel actor. Mutter could therefore retain a maximized `1280x838` allocation
+after returning to always visible. Build 61 restores the actor first, then its
+strut, following the actual geometry dependency. It adds no timer, window
+resize, or compositor repair shim.
+
+GNOME 50.4 and 51.beta each passed 10 slow and 20 rapid owned-schema visibility
+cycles with a maximized Brave window. Final visible frame/work-area geometry
+was respectively `1280x745` with a 55 px Panel and `1280x762` with a 38 px
+Panel. Controlled non-maximized cycles preserved exact frames
+`60,107 1160x530` and `38,59 1106x556`. GNOME 51 also passed a subsequent
+maximized minimize/restore cycle at `1280x762`. Strict audits report zero
+failures and only the SSH `tty` warning. Both VMs retain one `1280x800` monitor;
+GNOME 50 retained its pre-existing Desk UX/Classic visibility overrides and
+GNOME 51 retained an empty map.
+
+Build 61 validation: focused `93 passed`; full suite `550 passed`, with the
+known PyGI warning and two headless Adwaita warnings. JavaScript syntax, focused
+Ruff, and diff checks pass. Final local/VM file SHA-256 values:
+
+- runtime controller:
+  `1aad43cf7213c1de0ab11f2788698a51bc0f25bee7fdb7e891031a39af4d1619`;
+- Panel intellihide:
+  `aa9de9b7b7274c20de02f224afbd40c7c35e5d88c0622417b1d2ada97b6dbd08`;
+- settings backend:
+  `730a16681a92137974390688da2ad095586be85756b4ccbdf95b3b61af08e04d`;
+- Panel/Dock page:
+  `d9196a2711bc0741a4f796c13d7cb1ed7998abbeb9190e0bc781723f019eefcd`.
+
+Next slice: move Taskbar Panel height to exclusive owned-schema control using
+the same import/runtime/standalone boundary. Do not remove all inherited schema
+adapters until every required setting and the stable/testing upgrade matrix are
+accepted.
 
 - [ ] Stop mirroring new writes to inherited Dock and Panel schemas.
 - [ ] Move every required runtime key to the Layout Switcher-owned schema.

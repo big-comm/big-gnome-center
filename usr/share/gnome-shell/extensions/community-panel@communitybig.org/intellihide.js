@@ -152,10 +152,11 @@ export const Intellihide = class {
       this._proximityManager.removeWatch(this._proximityWatchId)
     }
 
+    // Restore the actor before its strut. Mutter otherwise applies the new
+    // work area while the panel is still translated outside the monitor.
+    this._revealPanel(!reset)
     this._setTrackPanel(false)
     this._removeRevealMechanism()
-
-    this._revealPanel(!reset)
 
     this._signalsHandler.destroy()
     this._timeoutsHandler.destroy()

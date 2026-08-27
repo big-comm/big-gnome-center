@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 59" in controller
+    assert "RUNTIME_BUILD = 61" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -112,6 +112,9 @@ def test_runtime_owns_taskbar_visibility_modes_and_strut_telemetry():
     visibility = (RUNTIME / "taskbarVisibilityModes.js").read_text()
 
     assert "panel-visibility-overrides" in controller
+    assert "'panel-visibility-overrides'," in controller
+    assert "`changed::${key}`" in controller
+    assert "this._settingsChangedIds" in controller
     assert "new TaskbarVisibilityModes(" in runtime
     assert "this._visibilityModes.apply(visibility)" in runtime
     assert "intellihide-only-secondary" in visibility

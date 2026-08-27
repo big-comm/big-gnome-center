@@ -45,12 +45,14 @@ class PanelDockSettings:
         active_layout: str = "",
         dock_active: bool = True,
         community_panel_active: bool = False,
+        runtime_active: bool = False,
         runtime=None,
     ) -> None:
         self.active_layout = active_layout
         self._restoring = False
         self.dock_active = dock_active
         self.community_panel_active = community_panel_active
+        self.runtime_active = runtime_active
         self.runtime = runtime or RuntimeSettings()
         self.dock = _extension_settings(DOCK_SCHEMA, COMMUNITY_DOCK_UUID)
         self.panel = _extension_settings(PANEL_SCHEMA, COMMUNITY_DOCK_UUID)
@@ -118,7 +120,12 @@ class PanelDockSettings:
             self._remember("dock-hover", self.dock_hover_effect())
         if self.dock_active or self.community_panel_active:
             self._remember("panel-opacity", self.panel_opacity())
-            self._remember("panel-visibility", self.panel_visibility())
+            panel_visibility = (
+                self._legacy_panel_visibility()
+                if self.community_panel_active
+                else self.panel_visibility()
+            )
+            self._remember("panel-visibility", panel_visibility)
             self._remember("indicator-style", self.indicator_style())
         if self.community_panel_active:
             self._remember("panel-height", self.panel_height())
@@ -269,6 +276,18 @@ class PanelDockSettings:
         )
 
     def panel_visibility(self) -> str:
+        if (
+            self.runtime_active
+            and self.community_panel_active
+            and self.runtime.supports_layout(self.active_layout)
+        ):
+            mode = self.runtime.get(
+                self.active_layout, "panel-visibility", "always-visible"
+            )
+            return mode if mode in VISIBILITY_MODES else "always-visible"
+        return self._legacy_panel_visibility()
+
+    def _legacy_panel_visibility(self) -> str:
         if self.community_panel_active:
             if not self.community_panel.get_boolean("intellihide"):
                 return "always-visible"
@@ -284,6 +303,12 @@ class PanelDockSettings:
         if mode not in VISIBILITY_MODES:
             raise ValueError(f"invalid panel visibility: {mode}")
         self._remember("panel-visibility", mode)
+        if (
+            self.runtime_active
+            and self.community_panel_active
+            and self.runtime.supports_layout(self.active_layout)
+        ):
+            return
         if self.community_panel_active:
             intelligent = mode == "intelligent"
             self.community_panel.set_int("intellihide-enable-start-delay", 0)
