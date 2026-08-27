@@ -12,7 +12,9 @@ import * as Context from '../community-panel@communitybig.org/runtimeContext.js'
 import {TaskbarAppActions} from './taskbarAppActions.js';
 import {TaskbarInteractions} from './taskbarInteractions.js';
 import {TaskbarIndicatorRenderer} from './taskbarIndicatorRenderer.js';
+import {TaskbarMonitorHost} from './taskbarMonitorHost.js';
 import {TaskbarPanelHost} from './taskbarPanelHost.js';
+import {TaskbarShellHooks} from './taskbarShellHooks.js';
 import {TaskbarStatusAreaHost} from './taskbarStatusArea.js';
 
 const UBUNTU_DOCK_UUID = 'ubuntu-dock@ubuntu.com';
@@ -34,6 +36,8 @@ export class TaskbarSurfaceManager {
         this.indicatorRenderer = null;
         this.statusAreaHost = new TaskbarStatusAreaHost();
         this.panelHost = new TaskbarPanelHost(this.statusAreaHost);
+        this.monitorHost = new TaskbarMonitorHost();
+        this.shellHooks = new TaskbarShellHooks();
     }
 
     async enable(panelHeight) {
@@ -73,6 +77,7 @@ export class TaskbarSurfaceManager {
 
         const manager = this._manager;
         this._manager = null;
+        this.monitorHost.destroy(manager);
         try {
             manager?.disable();
         } catch (error) {
@@ -80,6 +85,7 @@ export class TaskbarSurfaceManager {
                 `[layout-switcher-runtime] Taskbar manager cleanup failed: ${error}`,
             );
         } finally {
+            this.shellHooks.destroy(manager);
             this.panelHost.releaseAll();
             this.statusAreaHost.restore();
         }
@@ -134,6 +140,8 @@ export class TaskbarSurfaceManager {
             indicatorRendererOwned: Boolean(this.indicatorRenderer),
             indicatorRenderer: this.indicatorRenderer?.diagnostics() ?? {},
             panelHost: this.panelHost.diagnostics(),
+            monitorHost: this.monitorHost.diagnostics(),
+            shellHooks: this.shellHooks.diagnostics(),
             statusArea: this.statusAreaHost.diagnostics(
                 this.panels().map(panel => panel.panelBox)),
             activationPending: Boolean(this._ubuntuDockDelayId),
@@ -217,9 +225,11 @@ export class TaskbarSurfaceManager {
     }
 
     _createManager() {
-        const manager = new PanelManager.PanelManager(this.panelHost);
+        const manager = new PanelManager.PanelManager(
+            this.panelHost, this.monitorHost, this.shellHooks);
         this._manager = manager;
         manager.enable();
+        this.monitorHost.bind(manager);
         for (const panel of manager.allPanels)
             this.interactions.adoptPreviewMenu(panel, panel.taskbar.previewMenu);
     }

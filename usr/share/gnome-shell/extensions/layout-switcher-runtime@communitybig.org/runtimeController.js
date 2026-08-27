@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 68;
+export const RUNTIME_BUILD = 69;
 
 export class RuntimeController {
     constructor(extension) {
@@ -103,6 +103,11 @@ export class RuntimeController {
                 panelVisibility, panelHeight);
             if (!this._enabled || generation !== this._syncGeneration)
                 this._taskbar.deactivate();
+        } else if (profile.surface === RuntimeSurface.NATIVE) {
+            this._dock.deactivate();
+            this._taskbar.deactivate();
+        } else {
+            throw new Error(`Unsupported runtime surface: ${profile.surface}`);
         }
     }
 

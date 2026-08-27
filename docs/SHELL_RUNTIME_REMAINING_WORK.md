@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-27
-Safe checkpoint: `6e77d2d`
-Status: Build 68 owns the physical Taskbar host and native status lifecycle
+Safe checkpoint: `3eed87f`
+Status: Build 69 owns Taskbar monitor topology and Shell hook lifecycle
 
 ## Purpose
 
@@ -45,8 +45,8 @@ Layout Switcher GTK app
   -> helper extension for safe switch orchestration
   -> unified Shell runtime UUID
        -> owned Dock runtime for BigGnome and G-Unity
-       -> owned Taskbar physical/status host with inherited visual modules
-          for Hybrid, Desk UX, and Classic
+       -> owned Taskbar physical/status/topology/hook hosts with inherited
+          visual modules for Hybrid, Desk UX, and Classic
        -> native GNOME surface for Minimal
 ```
 
@@ -54,10 +54,10 @@ Current internal payload:
 
 | Module | Bytes | JS/CSS lines | Public UUID enabled |
 |---|---:|---:|---|
-| Unified runtime with Dock and Taskbar lifecycle | 504,427 | 14,366 | yes |
+| Unified runtime with Dock and Taskbar lifecycle | 570,297 | 16,226 | yes |
 | Dock resource host | 176,013 | 1,713 CSS | no entry point |
-| Inherited Taskbar visual modules | 1,198,149 | 12,737 | rollback adapter only |
-| Total | 1,878,589 | 28,816 | one public runtime |
+| Inherited Taskbar visual modules | 1,189,609 | 12,474 | rollback adapter only |
+| Total | 1,935,919 | 30,413 | one public runtime |
 
 The size target is not a fixed percentage. Removal is allowed only when a
 replacement passes the relevant behavior contract.
@@ -181,6 +181,9 @@ Gates:
 - [x] Port always visible, always hidden, and intelligent hiding as an overlay;
   maximized windows must use the released work area.
 - [x] Preserve open menus while the pointer leaves the panel.
+- [x] Own monitor selection, panel creation, topology signals, and reset
+  serialization.
+- [x] Own installation and exact restoration of Shell prototype/global hooks.
 - [ ] Validate Quick Settings, date menu, AppIndicator, JamesDSP, GSConnect,
   removable drives, notifications, and fullscreen transitions.
 - [ ] Remove each inherited Panel branch only after its replacement is accepted.
@@ -347,6 +350,60 @@ VM SHA-256 values:
   `6dd90d1eff9015c502b5e6f7d65782b7d3350d4a64559b68af4474a874c8fb37`;
 - runtime audit:
   `0c3535990ac5035b174677a3f7debe6d4f94c0abd394179c23ce5610d9360dd8`.
+
+Build 69 moves monitor topology and Shell hook lifecycle out of inherited
+`PanelManager`. `TaskbarMonitorHost` now selects the primary monitor, creates
+the exact panel set, owns topology settings and `monitors-changed`, rejects
+stale asynchronous refreshes, and serializes resets. `TaskbarShellHooks` owns
+the 15 inherited Shell shims/injections, stores exact original property
+descriptors, and restores only properties still owned by the runtime. External
+replacement is reported as a conflict instead of being overwritten.
+
+The behavior callbacks remain inherited and unchanged. Official Dash-to-Panel
+master still installs the same private Shell hooks and has no newer public
+GNOME API for these integrations. This slice therefore changes lifecycle
+ownership, not behavior. A missing explicit native-surface branch in
+`RuntimeController` was found by the first live `Hybrid -> Minimal` check: the
+expected profile changed but the active Taskbar remained. Build 69 now always
+deactivates both managed surfaces for `Minimal` and rejects unknown surfaces.
+
+GNOME 50.4 passed a real topology-setting reset, 10 slow and 20 rapid
+`Hybrid <-> Minimal` cycles, and finished in its original `Minimal` state.
+GNOME 51.beta passed the same topology reset and cycle matrix and finished in
+its original `Hybrid` state. Every accepted endpoint had one `1280x800`
+monitor, exact actor count, settled monitor ownership, all hooks either fully
+owned or fully restored, zero reset failures, zero restoration conflicts, and
+zero stage residue. Maximized GNOME 51 Brave retained the exact
+`1280x762` work area with a `1280x38` Panel.
+
+Strict audits on both VMs report zero failures and only the SSH `tty` warning.
+GNOME Shell journals contain no build 69 exception. GNOME 51 separately logs
+Copyous startup rejection at `extension.js:5` followed by enable failure at
+`clipboardItem.js:283`, plus the known GSConnect final-type failure and retired
+Community Dock metadata lookup. These are external extension debt; do not add
+Panel delays or teardown workarounds.
+
+Build 69 validation: focused `133 passed`; full suite `573 passed`, with one
+known PyGI warning. All runtime/inherited JavaScript syntax and diff checks
+pass. PKGBUILD and package versions are unchanged. Final local and both-VM
+SHA-256 values:
+
+- runtime controller:
+  `f45321369b3d696b2b80975eccc005287620de931a5672cbcf53031f8d493a31`;
+- Taskbar surface:
+  `02dd68de36c24cd6e66e8f55f3a6260b2fd94bcac3abfa0045e94c63953a9dde`;
+- monitor host:
+  `fb1acb42dae183f4a2e06a8f8f06a769d952b34daf1b8ff6564da2746491f932`;
+- Shell hook host:
+  `a70b54574623f38c19224cd328478aa12aad59e1756a6a70209c5072b80b106e`;
+- inherited Panel manager:
+  `5d0ea06fe3740b1fd0219850d3dff0a65fb8b35738977826bb099c83c3f0b4aa`;
+- runtime audit:
+  `ab808accf2ef5d9437b827c4dcd8da28a0184d41d2e52f8fc80311f5d89740e4`.
+
+Next Panel slice: move the remaining manager-owned notification, desktop-icon,
+overview, and keybinding services behind focused runtime hosts. Keep inherited
+behavior callbacks until each replacement passes the same restoration matrix.
 
 ### 3. Finish settings ownership
 

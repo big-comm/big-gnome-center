@@ -23,5 +23,9 @@ Local runtime changes:
 - The primary `Panel` delegates native status-area adoption and restoration to
   the unified runtime host. Native Shell actors and its menu manager remain
   authoritative.
+- `PanelManager` delegates monitor selection, topology signals, and serialized
+  panel resets to the unified runtime monitor host.
+- Shell prototype/global hook installation and exact restoration belong to the
+  unified runtime hook host. Inherited behavior callbacks remain unchanged.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

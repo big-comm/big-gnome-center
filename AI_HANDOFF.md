@@ -1916,3 +1916,50 @@ Append one entry per completed change:
   and other status menus. `Super+V` opens Copyous; use `Super+S` only for Quick
   Settings. Then continue inherited PanelManager injections/monitor lifecycle
   extraction and the clean/stable/testing/rollback matrix.
+
+## 2026-08-27 — Taskbar topology and Shell hook ownership, build 69
+
+- `TaskbarMonitorHost` owns primary-monitor selection, physical panel creation,
+  topology settings, `monitors-changed`, serialized reset, stale refresh
+  rejection, and monitor diagnostics. `PanelManager` no longer owns topology.
+- `TaskbarShellHooks` owns 15 AppDisplay/layout/overview/BoxPointer/workspace/
+  Looking Glass/message-tray/native-panel/shutdown hooks. Exact descriptors are
+  restored only while still owned; external replacement becomes telemetry,
+  never a clobbered property.
+- Official Dash-to-Panel master still uses the same private Shell integrations
+  and explicit teardown. Build 69 preserves its behavior callbacks and moves
+  only installation/restoration ownership.
+- The first live `Hybrid -> Minimal` check exposed a missing native-surface
+  branch: expected telemetry changed while Taskbar stayed active. The controller
+  now deactivates Dock and Taskbar explicitly for `Minimal` and rejects unknown
+  surfaces.
+- GNOME 50.4 passed a topology-setting reset, 10 slow and 20 rapid
+  `Hybrid <-> Minimal` cycles, and finished in its original `Minimal` state.
+  GNOME 51.beta passed the same matrix and finished in its original `Hybrid`
+  state. Both retain one `1280x800` monitor.
+- Every endpoint had exact actor coverage, zero stage residue, zero monitor
+  reset failures, and zero hook restoration conflicts. GNOME 51 maximized
+  Brave remained `1280x762` with a `1280x38` Panel. Strict audits report zero
+  failures and only the SSH `tty` warning.
+- GNOME 51 journal has no build 69 exception. Separate startup debt remains:
+  Copyous rejects `heavyDepsReady` at `extension.js:5` and then fails at
+  `clipboardItem.js:283`; GSConnect still hits a final type; retired Community
+  Dock metadata is absent. Do not add Taskbar timing workarounds for them.
+- Focused tests: `133 passed`. Full suite: `573 passed`, with one known PyGI
+  warning. Runtime/inherited JavaScript syntax and diff checks pass. PKGBUILD
+  and package versions are unchanged.
+- Final local/GNOME 50/GNOME 51 SHA-256: runtime controller
+  `f45321369b3d696b2b80975eccc005287620de931a5672cbcf53031f8d493a31`;
+  Taskbar surface
+  `02dd68de36c24cd6e66e8f55f3a6260b2fd94bcac3abfa0045e94c63953a9dde`;
+  monitor host
+  `fb1acb42dae183f4a2e06a8f8f06a769d952b34daf1b8ff6564da2746491f932`;
+  Shell hook host
+  `a70b54574623f38c19224cd328478aa12aad59e1756a6a70209c5072b80b106e`;
+  inherited PanelManager
+  `5d0ea06fe3740b1fd0219850d3dff0a65fb8b35738977826bb099c83c3f0b4aa`;
+  audit
+  `ab808accf2ef5d9437b827c4dcd8da28a0184d41d2e52f8fc80311f5d89740e4`.
+- Next slice: extract remaining manager-owned notification, desktop-icon,
+  overview, and keybinding services behind focused runtime hosts. Keep behavior
+  callbacks inherited until their live restoration matrices pass.

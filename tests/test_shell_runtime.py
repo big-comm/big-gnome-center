@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 68" in controller
+    assert "RUNTIME_BUILD = 69" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -91,6 +91,18 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
     assert "settings.set_int('dot-size', 0)" in taskbar
     assert "settings.set_boolean('animate-appicon-hover', lift)" in taskbar
     assert "new GLib.Variant(variantType, values)" in taskbar
+
+
+def test_native_profile_explicitly_releases_all_managed_surfaces():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    branch_start = controller.index(
+        "profile.surface === RuntimeSurface.NATIVE")
+    native = controller[branch_start:controller.index(
+        "    _indicatorForProfile", branch_start)]
+
+    assert "this._dock.deactivate();" in native
+    assert "this._taskbar.deactivate();" in native
+    assert "Unsupported runtime surface" in native
 
 
 def test_runtime_listens_to_every_owned_visual_setting():
@@ -218,7 +230,7 @@ def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
     runtime = (RUNTIME / "taskbarRuntime.js").read_text()
     branch_start = controller.index("profile.surface === RuntimeSurface.TASKBAR")
     taskbar_branch = controller[branch_start:controller.index(
-        "    _indicatorForProfile", branch_start
+        "profile.surface === RuntimeSurface.NATIVE", branch_start
     )]
 
     assert taskbar_branch.count("this._taskbar.deactivate()") == 1
@@ -288,7 +300,8 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
     assert "new TaskbarSurfaceManager(this._host)" in taskbar
     assert "await this._surface.enable(panelHeight)" in taskbar
     assert "this._surface.destroy()" in taskbar
-    assert "new PanelManager.PanelManager(this.panelHost)" in surface
+    assert "new PanelManager.PanelManager(" in surface
+    assert "this.panelHost, this.monitorHost" in surface
     assert "manager.enable();" in surface
     assert "manager?.disable();" in surface
     assert "Context.initializeRuntimeContext(this._host, this)" in surface
@@ -426,6 +439,62 @@ def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
     assert "get_transformed_position()" in status
     assert "addToStatusArea" not in status
     assert "destroy()" not in status
+
+
+def test_taskbar_monitor_topology_is_owned_outside_panel_manager():
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    host = (RUNTIME / "taskbarMonitorHost.js").read_text()
+    manager = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
+    ).read_text()
+
+    assert "new TaskbarMonitorHost()" in surface
+    assert "this.monitorHost.bind(manager)" in surface
+    assert "this.monitorHost.destroy(manager)" in surface
+    assert "monitorHost: this.monitorHost.diagnostics()" in surface
+    assert "this.monitorHost.createPanels(this)" in manager
+    assert "changed::primary-monitor" in host
+    assert "changed::multi-monitors" in host
+    assert "monitors-changed" in host
+    assert "PanelSettings.setMonitorsInfo(SETTINGS)" in host
+    assert "manager.disable(true)" in host
+    assert "manager.enable(true)" in host
+    assert "changed::primary-monitor" not in manager
+    assert "changed::multi-monitors" not in manager
+    assert "monitors-changed" not in manager
+    assert "  _reset()" not in manager
+    assert "global.disconnect(this._shutdownId)" not in manager
+
+
+def test_taskbar_global_shell_hooks_have_owned_transactional_lifecycle():
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    hooks = (RUNTIME / "taskbarShellHooks.js").read_text()
+    manager = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
+    ).read_text()
+
+    assert "new TaskbarShellHooks()" in surface
+    assert "this.shellHooks.destroy(manager)" in surface
+    assert "shellHooks: this.shellHooks.diagnostics()" in surface
+    assert "this.shellHooks.prepare(this)" in manager
+    assert "this.shellHooks.activate(this," in manager
+    assert "this.shellHooks.finish(this)" in manager
+    assert "this.shellHooks.destroy(this)" in manager
+    assert "Object.getOwnPropertyDescriptor(object, key)" in hooks
+    assert "_descriptorsMatch(current, record.installed)" in hooks
+    assert "Shell hook changed externally" in hooks
+    assert "restoreConflicts" in hooks
+    assert "new InjectionManager()" in hooks
+    assert "changed::stockgs-force-hotcorner" in hooks
+    assert "message-banner-offset" in hooks
+    assert "shutdown-cleanup" in hooks
+    assert "AppDisplay.AppIcon.prototype" not in manager
+    assert "LookingGlass.LookingGlass.prototype" not in manager
+    assert "Main.messageTray._bannerBin.ease =" not in manager
+    assert "delete Main.layoutManager.findIndexForActor" not in manager
+    assert "Object.defineProperty(Main.panel, 'style'" not in manager
 
 
 def test_taskbar_window_telemetry_distinguishes_normal_and_desktop_windows():

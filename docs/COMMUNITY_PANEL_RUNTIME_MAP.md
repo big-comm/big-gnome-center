@@ -1,7 +1,7 @@
 # Community Panel Runtime Map
 
 Last update: 2026-08-27
-Baseline: `6e77d2d`, runtime build 68
+Baseline: `3eed87f`, runtime build 69
 
 ## Scope
 
@@ -13,6 +13,10 @@ lifecycle owner. `TaskbarSurfaceManager` constructs `PanelManager` directly.
 
 ```text
 taskbarSurface.js
+  -> taskbarPanelHost.js
+  -> taskbarStatusAreaHost.js
+  -> taskbarMonitorHost.js
+  -> taskbarShellHooks.js
   -> panelManager.js
      -> panel.js
         -> taskbar.js
@@ -35,7 +39,7 @@ taskbarSurface.js
 
 | Module | Live responsibility | Current owner | Migration action |
 |---|---|---|---|
-| `panelManager.js` | Shell injections and monitor lifecycle | mixed | physical lifecycle delegated to owned host |
+| `panelManager.js` | behavior callbacks, services, and keybindings | mixed | topology and hook lifecycle delegated to owned hosts |
 | `panel.js` | allocation and inherited styling | mixed | native status lifecycle delegated to owned host |
 | `taskbar.js` | application actor layout and inherited adapters | mixed | retain until host accepted |
 | `appIcons.js` | application actors and renderer hooks | mixed | owned policies already injected |
@@ -73,14 +77,35 @@ through two reviewed bridges in the inherited renderer:
 Telemetry reports host generation and count, adopted and orphan roles, menu
 state, native clock and Quick Settings state, and transformed actor geometry.
 
+## Monitor and Shell-hook boundary
+
+Runtime build 69 adds two more narrow lifecycle owners:
+
+1. `TaskbarMonitorHost` selects primary/secondary monitors, creates the panel
+   set through the physical host, owns topology settings and
+   `monitors-changed`, and serializes resets with stale-generation rejection;
+2. `TaskbarShellHooks` installs the inherited AppDisplay, layout, overview,
+   BoxPointer, workspace-indicator, Looking Glass, message-tray, native-panel,
+   and shutdown hooks;
+3. hook restoration uses exact saved property descriptors and never overwrites
+   a property replaced by another extension after activation;
+4. `PanelManager` retains the accepted behavior callbacks, notification and
+   desktop-icon services, overview integration, signals, and keybindings.
+
+Telemetry reports topology generations, monitor coverage, reset failures, the
+installed hook set, injection ownership, shutdown connection, pending
+restoration, and restoration conflicts.
+
 ## Upstream reference
 
 - GNOME Shell 50.4 `js/ui/panel.js`, tag target
   `233322b9b675b0385767147c1a6cfc6ff7325160`.
 - GNOME Shell main `js/ui/panel.js`, retrieved 2026-08-27.
 - Dash-to-Panel master `src/panel.js` and `src/panelManager.js`, retrieved
-  2026-08-27. The bundled copies differ only by the accepted local runtime
-  compatibility patches.
+  2026-08-27. Current upstream still owns these integrations through private
+  Shell overrides and explicit teardown; it exposes no newer public GNOME API.
+  The bundled copy delegates their lifecycle to the runtime hosts while
+  retaining the accepted upstream callbacks.
 
 GNOME 50.4 and current main retain the same central contracts used here:
 `Main.panel.statusArea`, `addToStatusArea()`, `_addToPanelBox()`, the left,

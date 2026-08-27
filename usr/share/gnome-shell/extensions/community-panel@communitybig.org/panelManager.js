@@ -42,72 +42,30 @@ import Meta from 'gi://Meta'
 import Shell from 'gi://Shell'
 import St from 'gi://St'
 
-import * as AppDisplay from 'resource:///org/gnome/shell/ui/appDisplay.js'
-import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js'
-import * as LookingGlass from 'resource:///org/gnome/shell/ui/lookingGlass.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
 import { NotificationsMonitor } from './notificationsMonitor.js'
 import { Workspace } from 'resource:///org/gnome/shell/ui/workspace.js'
 import * as Layout from 'resource:///org/gnome/shell/ui/layout.js'
-import { InjectionManager } from 'resource:///org/gnome/shell/extensions/extension.js'
 import {
   SecondaryMonitorDisplay,
   WorkspacesView,
 } from 'resource:///org/gnome/shell/ui/workspacesView.js'
 
 export const PanelManager = class {
-  constructor(panelHost) {
+  constructor(panelHost, monitorHost, shellHooks) {
     this.panelHost = panelHost
+    this.monitorHost = monitorHost
+    this.shellHooks = shellHooks
     this.overview = new Overview.Overview(this)
-    this._injectionManager = new InjectionManager()
   }
 
   enable(reset) {
-    let dtpPrimaryIndex = PanelSettings.getPrimaryIndex(
-      SETTINGS.get_string('primary-monitor'),
-    )
-
-    this.allPanels = []
-    this.dtpPrimaryMonitor =
-      Main.layoutManager.monitors[dtpPrimaryIndex] ||
-      Main.layoutManager.primaryMonitor
     this.proximityManager = new Proximity.ProximityManager()
 
-    // g-s version 49 switched to clutter gestures
-    if (!AppDisplay.AppIcon.prototype._removeMenuTimeout)
-      AppDisplay.AppIcon.prototype._setPopupTimeout =
-        AppDisplay.AppIcon.prototype._removeMenuTimeout = this._emptyFunc
+    this.shellHooks.prepare(this)
 
-    Main.layoutManager.findIndexForActor = (actor) =>
-      '_dtpIndex' in actor
-        ? actor._dtpIndex
-        : Layout.LayoutManager.prototype.findIndexForActor.call(
-            Main.layoutManager,
-            actor,
-          )
-
-    if (this.dtpPrimaryMonitor) {
-      this.primaryPanel = this._createPanel(
-        this.dtpPrimaryMonitor,
-        SETTINGS.get_boolean('stockgs-keep-top-panel'),
-      )
-      this.allPanels.push(this.primaryPanel)
-      this.overview.enable(this.primaryPanel)
-
-      this.setFocusedMonitor(this.dtpPrimaryMonitor)
-    }
-
-    if (SETTINGS.get_boolean('multi-monitors')) {
-      Main.layoutManager.monitors
-        .filter((m) => m != this.dtpPrimaryMonitor)
-        .forEach((m) => {
-          this.allPanels.push(this._createPanel(m, true))
-        })
-    }
-
-    global.dashToPanel.panels = this.allPanels
-    global.dashToPanel.emit('panels-created')
+    this.monitorHost.createPanels(this)
 
     this._setDesktopIconsMargins()
 
@@ -120,111 +78,14 @@ export const PanelManager = class {
     this._desktopIconsUsableArea =
       new DesktopIconsIntegration.DesktopIconsUsableAreaClass()
 
-    this._oldUpdatePanelBarrier = Main.layoutManager._updatePanelBarrier
-    Main.layoutManager._updatePanelBarrier = (panel) => {
-      let panelUpdates = panel ? [panel] : this.allPanels
-
-      panelUpdates.forEach((p) =>
-        newUpdatePanelBarrier.call(Main.layoutManager, p),
-      )
-    }
-    Main.layoutManager._updatePanelBarrier()
-
-    this._oldUpdateHotCorners = Main.layoutManager._updateHotCorners
-    Main.layoutManager._updateHotCorners = newUpdateHotCorners.bind(
-      Main.layoutManager,
-    )
-    Main.layoutManager._updateHotCorners()
-
-    this._forceHotCornerId = SETTINGS.connect(
-      'changed::stockgs-force-hotcorner',
-      () => Main.layoutManager._updateHotCorners(),
-    )
-
-    if (Main.layoutManager._interfaceSettings) {
-      this._enableHotCornersId = Main.layoutManager._interfaceSettings.connect(
-        'changed::enable-hot-corners',
-        () => Main.layoutManager._updateHotCorners(),
-      )
-    }
-
-    this._oldUpdateWorkspacesViews =
-      Main.overview._overview._controls._workspacesDisplay._updateWorkspacesViews
-    Main.overview._overview._controls._workspacesDisplay._updateWorkspacesViews =
-      this._newUpdateWorkspacesViews.bind(
-        Main.overview._overview._controls._workspacesDisplay,
-      )
-
-    this._oldSetPrimaryWorkspaceVisible =
-      Main.overview._overview._controls._workspacesDisplay.setPrimaryWorkspaceVisible
-    Main.overview._overview._controls._workspacesDisplay.setPrimaryWorkspaceVisible =
-      this._newSetPrimaryWorkspaceVisible.bind(
-        Main.overview._overview._controls._workspacesDisplay,
-      )
-
-    let panelManager = this
-    this._injectionManager.overrideMethod(
-      BoxPointer.BoxPointer.prototype,
-      'vfunc_get_preferred_height',
-      () =>
-        function (forWidth) {
-          let alloc = { min_size: 0, natural_size: 0 }
-
-          ;[alloc.min_size, alloc.natural_size] =
-            this.vfunc_get_preferred_height(forWidth)
-
-          return panelManager._getBoxPointerPreferredHeight(this, alloc)
-        },
-    )
-
-    let activitiesChild = Main.panel.statusArea.activities.get_first_child()
-
-    if (activitiesChild?.constructor.name == 'WorkspaceIndicators') {
-      this._injectionManager.overrideMethod(
-        Object.getPrototypeOf(
-          // WorkspaceDot in activities button
-          activitiesChild.get_first_child(),
-        ),
-        'vfunc_get_preferred_width',
-        (get_preferred_width) =>
-          function (forHeight) {
-            return Utils.getBoxLayoutVertical(this.get_parent())
-              ? [0, forHeight]
-              : get_preferred_width.call(this, forHeight)
-          },
-      )
-    }
-
-    if (Main.panel._clickGesture) Main.panel._clickGesture.set_enabled(false)
-
-    LookingGlass.LookingGlass.prototype._oldResize =
-      LookingGlass.LookingGlass.prototype._resize
-    LookingGlass.LookingGlass.prototype._resize = _newLookingGlassResize
-
-    LookingGlass.LookingGlass.prototype._oldOpen =
-      LookingGlass.LookingGlass.prototype.open
-    LookingGlass.LookingGlass.prototype.open = _newLookingGlassOpen
-
-    Main.messageTray._bannerBin.ease = (params) => {
-      if (params.y === 0) {
-        let panelOnPrimary = this.allPanels.find(
-          (p) => p.monitor == Main.layoutManager.primaryMonitor,
-        )
-
-        if (
-          panelOnPrimary &&
-          panelOnPrimary.intellihide?.enabled &&
-          panelOnPrimary.geom.position == St.Side.TOP &&
-          panelOnPrimary.panelBox.visible
-        )
-          params.y += panelOnPrimary.geom.outerSize
-      }
-
-      Object.getPrototypeOf(Main.messageTray._bannerBin).ease.call(
-        Main.messageTray._bannerBin,
-        params,
-      )
-    }
+    this.shellHooks.activate(this, {
+      updatePanelBarrier: newUpdatePanelBarrier,
+      updateHotCorners: newUpdateHotCorners,
+      updateWorkspacesViews: this._newUpdateWorkspacesViews,
+      setPrimaryWorkspaceVisible: this._newSetPrimaryWorkspaceVisible,
+      resizeLookingGlass: _newLookingGlassResize,
+      openLookingGlass: _newLookingGlassOpen,
+    })
 
     this._signalsHandler = new Utils.GlobalSignalsHandler()
 
@@ -234,22 +95,6 @@ export const PanelManager = class {
         SETTINGS,
         'changed::global-border-radius',
         () => DTP_EXTENSION.resetGlobalStyles(),
-      ],
-      [
-        SETTINGS,
-        [
-          'changed::primary-monitor',
-          'changed::multi-monitors',
-          'changed::isolate-monitors',
-          'changed::panel-positions',
-          'changed::panel-lengths',
-          'changed::panel-anchors',
-          'changed::stockgs-keep-top-panel',
-        ],
-        (settings, settingChanged) => {
-          PanelSettings.clearCache(settingChanged)
-          this._reset()
-        },
       ],
       [
         SETTINGS,
@@ -274,18 +119,6 @@ export const PanelManager = class {
           })
         },
       ],
-      [
-        Utils.DisplayWrapper.getMonitorManager(),
-        'monitors-changed',
-        async () => {
-          if (Main.layoutManager.primaryMonitor) {
-            await PanelSettings.setMonitorsInfo(SETTINGS).catch((e) =>
-              console.log(e),
-            )
-            this._reset()
-          }
-        },
-      ],
     )
 
     Panel.panelBoxes.forEach((c) =>
@@ -306,29 +139,13 @@ export const PanelManager = class {
 
     this._setKeyBindings(true)
 
-    // keep GS overview.js from blowing away custom panel styles
-    if (!SETTINGS.get_boolean('stockgs-keep-top-panel'))
-      Object.defineProperty(Main.panel, 'style', {
-        configurable: true,
-        set() {},
-      })
+    this.shellHooks.finish(this)
 
-      this._shutdownId = global.connect('shutdown', () => {
-        this.allPanels.forEach(p => {
-          this._removePanelBarriers(p);
-        });
-      });
   }
 
   disable(reset) {
-    global.disconnect(this._shutdownId);
     this.primaryPanel && this.overview.disable()
     this.proximityManager.destroy()
-
-    if (AppDisplay.AppIcon.prototype._removeMenuTimeout == this._emptyFunc) {
-      delete AppDisplay.AppIcon.prototype._setPopupTimeout
-      delete AppDisplay.AppIcon.prototype._removeMenuTimeout
-    }
 
     this.allPanels.forEach((p) => {
       p.taskbar.iconAnimator.pause()
@@ -364,51 +181,16 @@ export const PanelManager = class {
 
     if (reset) return
 
-    this._injectionManager.clear()
-
     this._setKeyBindings(false)
 
     this.notificationsMonitor.destroy()
 
     this._signalsHandler.destroy()
 
-    Main.layoutManager._updateHotCorners = this._oldUpdateHotCorners
-    Main.layoutManager._updateHotCorners()
-
-    delete Main.layoutManager.findIndexForActor
-
-    SETTINGS.disconnect(this._forceHotCornerId)
-
-    if (this._enableHotCornersId) {
-      Main.layoutManager._interfaceSettings.disconnect(this._enableHotCornersId)
-    }
-
-    Main.layoutManager._updatePanelBarrier = this._oldUpdatePanelBarrier
-    Main.layoutManager._updatePanelBarrier()
-
-    Main.overview._overview._controls._workspacesDisplay._updateWorkspacesViews =
-      this._oldUpdateWorkspacesViews
-    Main.overview._overview._controls._workspacesDisplay.setPrimaryWorkspaceVisible =
-      this._oldSetPrimaryWorkspaceVisible
-
-    if (Main.panel._clickGesture) Main.panel._clickGesture.set_enabled(true)
-
-    LookingGlass.LookingGlass.prototype._resize =
-      LookingGlass.LookingGlass.prototype._oldResize
-    delete LookingGlass.LookingGlass.prototype._oldResize
-
-    LookingGlass.LookingGlass.prototype.open =
-      LookingGlass.LookingGlass.prototype._oldOpen
-    delete LookingGlass.LookingGlass.prototype._oldOpen
-
-    delete Main.messageTray._bannerBin.ease
-
-    delete Main.panel.style
+    this.shellHooks.destroy(this)
     this._desktopIconsUsableArea.destroy()
     this._desktopIconsUsableArea = null
   }
-
-  _emptyFunc() {}
 
   _setDesktopIconsMargins() {
     this._desktopIconsUsableArea?.resetMargins()
@@ -656,12 +438,6 @@ export const PanelManager = class {
     panel.taskbar.iconAnimator.start()
 
     return panel
-  }
-
-  _reset() {
-    this.disable(true)
-    this.allPanels = []
-    this.enable(true)
   }
 
   _updatePanelElementPositions() {
@@ -1048,7 +824,7 @@ function newUpdatePanelBarrier(panel) {
   })
 }
 
-function _newLookingGlassResize() {
+function _newLookingGlassResize(originalResize) {
   let primaryMonitorPanel = Utils.find(
     global.dashToPanel.panels,
     (p) => p.monitor == Main.layoutManager.primaryMonitor,
@@ -1062,7 +838,7 @@ function _newLookingGlassResize() {
         8
       : Panel.GS_PANEL_SIZE
 
-  this._oldResize()
+  originalResize.call(this)
 
   this._hiddenY = Main.layoutManager.primaryMonitor.y + topOffset - this.height
   this._targetY = this._hiddenY + this.height
@@ -1074,9 +850,9 @@ function _newLookingGlassResize() {
   )
 }
 
-function _newLookingGlassOpen() {
+function _newLookingGlassOpen(originalOpen) {
   if (this._open) return
 
   this._resize()
-  this._oldOpen()
+  originalOpen.call(this)
 }

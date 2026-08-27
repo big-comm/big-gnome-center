@@ -260,6 +260,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     taskbar = runtime.get("taskbar") or {}
     taskbar_lifecycle = taskbar.get("lifecycle") or {}
     panel_host = taskbar_lifecycle.get("panelHost") or {}
+    monitor_host = taskbar_lifecycle.get("monitorHost") or {}
+    shell_hooks = taskbar_lifecycle.get("shellHooks") or {}
     status_area = taskbar_lifecycle.get("statusArea") or {}
     dock_actors = dock.get("actors") or []
     taskbar_actors = taskbar.get("actors") or []
@@ -354,6 +356,70 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"host={panel_host.get('activePanels')}, actors={len(taskbar_actors)}",
         ),
         _check(
+            bool(monitor_host.get("owned")) == expected_taskbars,
+            "taskbar-monitor-host-ownership",
+            f"owned={expected_taskbars}",
+            "expected monitor-host ownership="
+            f"{expected_taskbars}, got {bool(monitor_host.get('owned'))}",
+        ),
+        _check(
+            not monitor_host.get("resetting"),
+            "taskbar-monitor-host-settled",
+            "monitor host settled",
+            "monitor host is resetting",
+        ),
+        _check(
+            monitor_host.get("signalGroups", 0) == (2 if expected_taskbars else 0),
+            "taskbar-monitor-signals",
+            f"signal groups={2 if expected_taskbars else 0}",
+            "expected signal groups="
+            f"{2 if expected_taskbars else 0}, got "
+            f"{monitor_host.get('signalGroups')}",
+        ),
+        _check(
+            monitor_host.get("monitorCount") == len(logical_monitors),
+            "taskbar-monitor-count",
+            f"logical monitors={len(logical_monitors)}",
+            f"host={monitor_host.get('monitorCount')}, "
+            f"logical={len(logical_monitors)}",
+        ),
+        _check(
+            not monitor_host.get("resetFailures"),
+            "taskbar-monitor-reset-failures",
+            "no monitor reset failures",
+            f"failures={monitor_host.get('resetFailures')}, "
+            f"last={monitor_host.get('lastError')}",
+        ),
+        _check(
+            bool(shell_hooks.get("owned")) == expected_taskbars,
+            "taskbar-shell-hooks-ownership",
+            f"owned={expected_taskbars}",
+            "expected Shell-hook ownership="
+            f"{expected_taskbars}, got {bool(shell_hooks.get('owned'))}",
+        ),
+        _check(
+            bool(shell_hooks.get("active")) == expected_taskbars,
+            "taskbar-shell-hooks-active",
+            f"active={expected_taskbars}",
+            "expected Shell hooks active="
+            f"{expected_taskbars}, got {bool(shell_hooks.get('active'))}",
+        ),
+        _check(
+            bool(shell_hooks.get("restorationPending")) == expected_taskbars,
+            "taskbar-shell-hooks-restoration",
+            f"pending={expected_taskbars}",
+            "expected Shell-hook restoration pending="
+            f"{expected_taskbars}, got "
+            f"{bool(shell_hooks.get('restorationPending'))}",
+        ),
+        _check(
+            not shell_hooks.get("restoreConflicts"),
+            "taskbar-shell-hooks-conflicts",
+            "no restoration conflicts",
+            f"conflicts={shell_hooks.get('restoreConflicts')}, "
+            f"last={shell_hooks.get('lastConflict')}",
+        ),
+        _check(
             bool(status_area.get("hostOwned")) == expected_taskbars,
             "taskbar-status-host-ownership",
             f"owned={expected_taskbars}",
@@ -433,14 +499,67 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
 
     if expected_taskbars:
         adopted_roles = set(status_area.get("adoptedRoles") or [])
-        checks.append(
+        installed_hooks = set(shell_hooks.get("installedHooks") or [])
+        required_hooks = {
+            "actor-monitor-index",
+            "panel-barriers",
+            "hot-corners",
+            "overview-workspace-views",
+            "overview-primary-workspace",
+            "box-pointer-height",
+            "looking-glass-resize",
+            "looking-glass-open",
+            "message-banner-offset",
+            "shutdown-cleanup",
+        }
+        taskbar_monitor_indices = sorted(
+            actor.get("monitor") for actor in taskbar_actors
+            if isinstance(actor.get("monitor"), int)
+        )
+        checks.extend(
+            (
+                _check(
+                    sorted(monitor_host.get("panelMonitors") or [])
+                    == taskbar_monitor_indices,
+                    "taskbar-monitor-coverage",
+                    f"panel monitors={taskbar_monitor_indices}",
+                    f"host={monitor_host.get('panelMonitors')}, "
+                    f"actors={taskbar_monitor_indices}",
+                ),
+                _check(
+                    monitor_host.get("primaryMonitor")
+                    in logical_monitor_indices,
+                    "taskbar-primary-monitor",
+                    f"primary={monitor_host.get('primaryMonitor')}",
+                    f"primary={monitor_host.get('primaryMonitor')}, "
+                    f"logical={logical_monitor_indices}",
+                ),
+                _check(
+                    required_hooks <= installed_hooks,
+                    "taskbar-shell-hooks-installed",
+                    f"required hooks={len(required_hooks)}",
+                    f"missing hooks={sorted(required_hooks - installed_hooks)}",
+                ),
+                _check(
+                    bool(shell_hooks.get("injectionManagerOwned")),
+                    "taskbar-shell-injections",
+                    "injection manager owned",
+                    "Shell injection manager is not owned",
+                ),
+                _check(
+                    bool(shell_hooks.get("shutdownConnected")),
+                    "taskbar-shell-shutdown-hook",
+                    "shutdown cleanup connected",
+                    "shutdown cleanup is not connected",
+                ),
                 _check(
                     {"activities", "quickSettings", "dateMenu"}
                     <= adopted_roles,
                     "taskbar-native-status-adoption",
                     "activities/date/quick settings adopted",
                     f"adopted roles={sorted(adopted_roles)}",
-                )
+                ),
+            )
         )
 
     if shell_theme:

@@ -153,6 +153,38 @@ def _snapshot(**changes) -> Snapshot:
                             "owned": surface == "taskbar",
                             "activePanels": len(taskbar_actors),
                         },
+                        "monitorHost": {
+                            "owned": surface == "taskbar",
+                            "resetting": False,
+                            "signalGroups": 2 if surface == "taskbar" else 0,
+                            "monitorCount": 1,
+                            "primaryMonitor": 0,
+                            "panelMonitors": [0] if surface == "taskbar" else [],
+                            "resetFailures": 0,
+                        },
+                        "shellHooks": {
+                            "owned": surface == "taskbar",
+                            "active": surface == "taskbar",
+                            "restorationPending": surface == "taskbar",
+                            "injectionManagerOwned": surface == "taskbar",
+                            "shutdownConnected": surface == "taskbar",
+                            "restoreConflicts": 0,
+                            "installedHooks": (
+                                [
+                                    "actor-monitor-index",
+                                    "panel-barriers",
+                                    "hot-corners",
+                                    "overview-workspace-views",
+                                    "overview-primary-workspace",
+                                    "box-pointer-height",
+                                    "looking-glass-resize",
+                                    "looking-glass-open",
+                                    "message-banner-offset",
+                                    "shutdown-cleanup",
+                                ]
+                                if surface == "taskbar" else []
+                            ),
+                        },
                         "statusArea": {
                             "hostOwned": surface == "taskbar",
                             "nativeMenuManagerPreserved": True,
@@ -537,6 +569,23 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
         "interactionsOwned": False,
         "indicatorRendererOwned": False,
         "panelHost": {"owned": False, "activePanels": 0},
+        "monitorHost": {
+            "owned": False,
+            "resetting": True,
+            "signalGroups": 0,
+            "monitorCount": 0,
+            "panelMonitors": [],
+            "resetFailures": 1,
+        },
+        "shellHooks": {
+            "owned": False,
+            "active": False,
+            "restorationPending": False,
+            "injectionManagerOwned": False,
+            "shutdownConnected": False,
+            "restoreConflicts": 1,
+            "installedHooks": [],
+        },
         "statusArea": {
             "hostOwned": False,
             "nativeMenuManagerPreserved": False,
@@ -560,6 +609,20 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-indicator-renderer-ownership" in failures
     assert "taskbar-panel-host-ownership" in failures
     assert "taskbar-panel-host-count" in failures
+    assert "taskbar-monitor-host-ownership" in failures
+    assert "taskbar-monitor-host-settled" in failures
+    assert "taskbar-monitor-signals" in failures
+    assert "taskbar-monitor-count" in failures
+    assert "taskbar-monitor-reset-failures" in failures
+    assert "taskbar-monitor-coverage" in failures
+    assert "taskbar-primary-monitor" in failures
+    assert "taskbar-shell-hooks-ownership" in failures
+    assert "taskbar-shell-hooks-active" in failures
+    assert "taskbar-shell-hooks-restoration" in failures
+    assert "taskbar-shell-hooks-conflicts" in failures
+    assert "taskbar-shell-hooks-installed" in failures
+    assert "taskbar-shell-injections" in failures
+    assert "taskbar-shell-shutdown-hook" in failures
     assert "taskbar-status-host-ownership" in failures
     assert "taskbar-native-menu-manager" in failures
     assert "taskbar-activation-settled" in failures
