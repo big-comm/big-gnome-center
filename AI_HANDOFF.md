@@ -1963,3 +1963,51 @@ Append one entry per completed change:
 - Next slice: extract remaining manager-owned notification, desktop-icon,
   overview, and keybinding services behind focused runtime hosts. Keep behavior
   callbacks inherited until their live restoration matrices pass.
+
+## 2026-08-27 — Taskbar manager-service ownership, build 70
+
+- `TaskbarServiceHost` now owns the remaining service lifecycle formerly in
+  inherited `PanelManager`: Overview, notification monitor, DING usable area,
+  seven manager signal groups, and the intellihide toggle keybinding.
+- Activation preserves upstream ordering: Overview starts after primary-panel
+  creation; long-lived services survive monitor-only resets; panel references
+  are released before physical actors. Full teardown unbinds and destroys in
+  reverse order.
+- Pending DING margin idles are cancelled. Partial activation failures clean up
+  transactionally. Compatibility manager properties are cleared only if still
+  owned by the host.
+- This slice ports lifecycle ownership only. Official Dash-to-Panel master
+  still owns the same private integrations directly and exposes no newer public
+  Shell API. Inherited Overview, notification, and DING behavior modules remain
+  loaded until separately replaced and accepted.
+- Telemetry and strict audit now require service ownership/activation, Overview,
+  notifications, LauncherAPI and Unity D-Bus, DING ownership and settled exact
+  margins, seven signal groups, keybinding ownership, and zero activation
+  failures.
+- GNOME 50.4 retained Classic. GNOME 51.beta retained Hybrid. Each passed 10
+  slow and 20 rapid Taskbar-to-Minimal lifecycle cycles plus 10 slow and 20
+  rapid native Overview cycles. Both finish with one `1280x800` monitor.
+- Both VMs passed a real notification, 38 -> 56 -> 38 px DING margin update,
+  and intelligent-hide `Super+I`: hidden at `translationY=38`, retained visible
+  at `translationY=0` with `holdStatus=2`, then released. Original empty height,
+  visibility, and Overview-keybinding maps were restored.
+- Final strict audits: zero failures and only the SSH `tty` warning. GNOME 50
+  and GNOME 51 journals contain no build 70 JavaScript exception.
+- Final validation: focused `78 passed`; full suite `574 passed`, with one
+  known PyGI warning and two headless Adwaita warnings. JavaScript syntax and
+  diff checks pass. PKGBUILD and package versions are unchanged.
+- Final local/GNOME 50/GNOME 51 SHA-256: runtime controller
+  `6282781a48fe0f859cbfd2156d7125ef0ec749f5cc5030a994b8140cf98f178c`;
+  Taskbar surface
+  `2daa153ffde844a3f80376b8717fbb1f00c8a4a86ec52a9a5fe16211d1a5e3a2`;
+  monitor host
+  `e1820ef3f9827c9eacd16045334d78e53827a94885da70d6ea629ff5c6b4217d`;
+  service host
+  `4fa9f070c8a7c27f0b9d03c8bf1d32807d8ad15106e900218ac9c62a76945e28`;
+  inherited PanelManager
+  `fb25771f6ce5964489047071c6f2d6b232c3125f332a660def545c63142045b8`;
+  audit
+  `64c8346bdf418c73714e09fa05f4c701e34ddd0ddd480c681632d7ecf1cc7f0e`.
+- Next slice: inventory the behavior callbacks and inherited service
+  implementations still loaded from Community Panel. Replace and accept one
+  boundary at a time before deleting any compatibility module.

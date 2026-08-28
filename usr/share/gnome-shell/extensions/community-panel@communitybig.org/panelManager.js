@@ -27,24 +27,18 @@
  * Some code was also adapted from the upstream Gnome Shell source code.
  */
 
-import * as Overview from './overview.js'
 import * as Panel from './panel.js'
-import * as PanelSettings from './panelSettings.js'
 import * as Proximity from './proximity.js'
 import * as Utils from './utils.js'
-import * as DesktopIconsIntegration from './desktopIconsIntegration.js'
-import { DTP_EXTENSION, SETTINGS, tracker } from './runtimeContext.js'
+import { SETTINGS, tracker } from './runtimeContext.js'
 
-import GLib from 'gi://GLib'
 import GObject from 'gi://GObject'
 import Clutter from 'gi://Clutter'
 import Meta from 'gi://Meta'
-import Shell from 'gi://Shell'
 import St from 'gi://St'
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
-import { NotificationsMonitor } from './notificationsMonitor.js'
 import { Workspace } from 'resource:///org/gnome/shell/ui/workspace.js'
 import * as Layout from 'resource:///org/gnome/shell/ui/layout.js'
 import {
@@ -53,30 +47,28 @@ import {
 } from 'resource:///org/gnome/shell/ui/workspacesView.js'
 
 export const PanelManager = class {
-  constructor(panelHost, monitorHost, shellHooks) {
+  constructor(panelHost, monitorHost, shellHooks, serviceHost) {
     this.panelHost = panelHost
     this.monitorHost = monitorHost
     this.shellHooks = shellHooks
-    this.overview = new Overview.Overview(this)
+    this.serviceHost = serviceHost
   }
 
   enable(reset) {
     this.proximityManager = new Proximity.ProximityManager()
 
     this.shellHooks.prepare(this)
+    this.serviceHost.prepare(this)
 
     this.monitorHost.createPanels(this)
 
-    this._setDesktopIconsMargins()
+    this.serviceHost.updateDesktopIconsMargins(this)
 
     this._updatePanelElementPositions()
 
     if (reset) return
 
-    this.notificationsMonitor = new NotificationsMonitor()
-
-    this._desktopIconsUsableArea =
-      new DesktopIconsIntegration.DesktopIconsUsableAreaClass()
+    this.serviceHost.activate(this)
 
     this.shellHooks.activate(this, {
       updatePanelBarrier: newUpdatePanelBarrier,
@@ -87,64 +79,14 @@ export const PanelManager = class {
       openLookingGlass: _newLookingGlassOpen,
     })
 
-    this._signalsHandler = new Utils.GlobalSignalsHandler()
-
-    //listen settings
-    this._signalsHandler.add(
-      [
-        SETTINGS,
-        'changed::global-border-radius',
-        () => DTP_EXTENSION.resetGlobalStyles(),
-      ],
-      [
-        SETTINGS,
-        'changed::panel-element-positions',
-        () => {
-          PanelSettings.clearCache('panel-element-positions')
-          this._updatePanelElementPositions()
-        },
-      ],
-      [
-        SETTINGS,
-        'changed::intellihide-key-toggle-text',
-        () => this._setKeyBindings(true),
-      ],
-      [
-        SETTINGS,
-        'changed::panel-sizes',
-        () => {
-          GLib.idle_add(GLib.PRIORITY_LOW, () => {
-            this._setDesktopIconsMargins()
-            return GLib.SOURCE_REMOVE
-          })
-        },
-      ],
-    )
-
-    Panel.panelBoxes.forEach((c) =>
-      this._signalsHandler.add([
-        Main.panel[c],
-        'child-added',
-        (parent, child) => {
-          this.primaryPanel &&
-            child instanceof St.Bin &&
-            this._adjustPanelMenuButton(
-              this._getPanelMenuButton(child.get_first_child()),
-              this.primaryPanel.monitor,
-              this.primaryPanel.geom.position,
-            )
-        },
-      ]),
-    )
-
-    this._setKeyBindings(true)
+    this.serviceHost.bind(this)
 
     this.shellHooks.finish(this)
 
   }
 
   disable(reset) {
-    this.primaryPanel && this.overview.disable()
+    this.serviceHost.releasePanels(this)
     this.proximityManager.destroy()
 
     this.allPanels.forEach((p) => {
@@ -181,59 +123,9 @@ export const PanelManager = class {
 
     if (reset) return
 
-    this._setKeyBindings(false)
-
-    this.notificationsMonitor.destroy()
-
-    this._signalsHandler.destroy()
-
+    this.serviceHost.unbind(this)
     this.shellHooks.destroy(this)
-    this._desktopIconsUsableArea.destroy()
-    this._desktopIconsUsableArea = null
-  }
-
-  _setDesktopIconsMargins() {
-    this._desktopIconsUsableArea?.resetMargins()
-    this.allPanels.forEach((p) => {
-      switch (p.geom.position) {
-        case St.Side.TOP:
-          this._desktopIconsUsableArea?.setMargins(
-            p.monitor.index,
-            p.geom.outerSize,
-            0,
-            0,
-            0,
-          )
-          break
-        case St.Side.BOTTOM:
-          this._desktopIconsUsableArea?.setMargins(
-            p.monitor.index,
-            0,
-            p.geom.outerSize,
-            0,
-            0,
-          )
-          break
-        case St.Side.LEFT:
-          this._desktopIconsUsableArea?.setMargins(
-            p.monitor.index,
-            0,
-            0,
-            p.geom.outerSize,
-            0,
-          )
-          break
-        case St.Side.RIGHT:
-          this._desktopIconsUsableArea?.setMargins(
-            p.monitor.index,
-            0,
-            0,
-            0,
-            p.geom.outerSize,
-          )
-          break
-      }
-    })
+    this.serviceHost.destroy(this)
   }
 
   setFocusedMonitor(monitor) {
@@ -524,20 +416,6 @@ export const PanelManager = class {
     return obj instanceof PanelMenu.Button && obj.menu?._boxPointer ? obj : 0
   }
 
-  _setKeyBindings(enable) {
-    let keys = {
-      'intellihide-key-toggle': () =>
-        this.allPanels.forEach((p) => p.intellihide.toggle()),
-    }
-
-    Object.keys(keys).forEach((k) => {
-      Utils.removeKeybinding(k)
-
-      if (enable) {
-        Utils.addKeybinding(k, SETTINGS, keys[k], Shell.ActionMode.NORMAL)
-      }
-    })
-  }
 }
 
 // This class drives long-running icon animations, to keep them running in sync

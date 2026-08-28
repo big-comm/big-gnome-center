@@ -48,7 +48,8 @@ export class TaskbarMonitorHost {
                 SETTINGS.get_boolean('stockgs-keep-top-panel'),
             );
             manager.allPanels.push(manager.primaryPanel);
-            manager.overview.enable(manager.primaryPanel);
+            manager.serviceHost.activateOverview(
+                manager, manager.primaryPanel);
             manager.setFocusedMonitor(primaryMonitor);
         }
 

@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-27
-Safe checkpoint: `3eed87f`
-Status: Build 69 owns Taskbar monitor topology and Shell hook lifecycle
+Safe checkpoint: `0f9c4a9`
+Status: Build 70 owns remaining Taskbar manager-service lifecycle
 
 ## Purpose
 
@@ -54,10 +54,10 @@ Current internal payload:
 
 | Module | Bytes | JS/CSS lines | Public UUID enabled |
 |---|---:|---:|---|
-| Unified runtime with Dock and Taskbar lifecycle | 570,297 | 16,226 | yes |
+| Unified runtime with Dock and Taskbar lifecycle | 581,690 | 16,557 | yes |
 | Dock resource host | 176,013 | 1,713 CSS | no entry point |
-| Inherited Taskbar visual modules | 1,189,609 | 12,474 | rollback adapter only |
-| Total | 1,935,919 | 30,413 | one public runtime |
+| Inherited Taskbar visual modules | 1,186,762 | 12,352 | rollback adapter only |
+| Total | 1,944,465 | 30,622 | one public runtime |
 
 The size target is not a fixed percentage. Removal is allowed only when a
 replacement passes the relevant behavior contract.
@@ -184,6 +184,8 @@ Gates:
 - [x] Own monitor selection, panel creation, topology signals, and reset
   serialization.
 - [x] Own installation and exact restoration of Shell prototype/global hooks.
+- [x] Own Overview, notification monitor, desktop usable-area, manager-signal,
+  and intellihide-keybinding lifecycle.
 - [ ] Validate Quick Settings, date menu, AppIndicator, JamesDSP, GSConnect,
   removable drives, notifications, and fullscreen transitions.
 - [ ] Remove each inherited Panel branch only after its replacement is accepted.
@@ -401,9 +403,62 @@ SHA-256 values:
 - runtime audit:
   `ab808accf2ef5d9437b827c4dcd8da28a0184d41d2e52f8fc80311f5d89740e4`.
 
-Next Panel slice: move the remaining manager-owned notification, desktop-icon,
-overview, and keybinding services behind focused runtime hosts. Keep inherited
-behavior callbacks until each replacement passes the same restoration matrix.
+Build 70 moves the remaining manager-service lifecycle behind
+`TaskbarServiceHost`. The host owns construction, activation order, binding,
+panel release, and reverse-order teardown for inherited Overview and
+notification services, DING usable-area integration, the seven manager signal
+groups, and the intellihide keybinding. `PanelManager` keeps its accepted
+behavior callbacks and compatibility references, but no longer constructs or
+destroys these services directly.
+
+This is a lifecycle boundary, not an implementation rewrite. Official
+Dash-to-Panel master still constructs the same private services directly and
+does not expose a newer public GNOME API. The inherited `overview.js`,
+`notificationsMonitor.js`, and `desktopIconsIntegration.js` implementations
+remain loaded behind the owned host until their individual replacements pass
+the behavior and restoration gates.
+
+`TaskbarServiceHost` cancels pending DING margin idles and performs
+transactional partial cleanup after activation errors. Compatibility references
+are cleared only if they still point to the owned instance. Telemetry records
+ownership and activation, launcher subscription, Unity D-Bus ownership,
+notification applications, exact per-monitor desktop margins, pending margin
+work, seven signal groups, keybinding ownership, failures, and the last error.
+The strict audit requires one-monitor margin coverage and exact equality between
+the bottom DING margin and physical Taskbar height.
+
+GNOME 50.4 retained its original Classic layout; GNOME 51.beta retained Hybrid.
+Each passed 10 slow and 20 rapid Taskbar-to-Minimal lifecycle cycles, 10 slow
+and 20 rapid native Overview cycles, one real notification, a 38 -> 56 -> 38 px
+DING margin cycle, and intelligent-hide `Super+I` reveal/release. Final strict
+audits report zero failures and only the SSH `tty` warning. Both finish with one
+`1280x800` monitor, empty height and visibility override maps, and the original
+empty Overview keybinding. GNOME 50 and GNOME 51 journals contain no build 70
+JavaScript exception.
+
+Build 70 final validation: focused `78 passed`; full suite
+`574 passed`, with one known PyGI warning and two headless Adwaita warnings.
+Runtime and inherited JavaScript syntax and diff checks pass. PKGBUILD and
+package versions are unchanged. Final
+local and both-VM SHA-256 values:
+
+- runtime controller:
+  `6282781a48fe0f859cbfd2156d7125ef0ec749f5cc5030a994b8140cf98f178c`;
+- Taskbar surface:
+  `2daa153ffde844a3f80376b8717fbb1f00c8a4a86ec52a9a5fe16211d1a5e3a2`;
+- monitor host:
+  `e1820ef3f9827c9eacd16045334d78e53827a94885da70d6ea629ff5c6b4217d`;
+- service host:
+  `4fa9f070c8a7c27f0b9d03c8bf1d32807d8ad15106e900218ac9c62a76945e28`;
+- inherited Panel manager:
+  `fb25771f6ce5964489047071c6f2d6b232c3125f332a660def545c63142045b8`;
+- runtime audit:
+  `64c8346bdf418c73714e09fa05f4c701e34ddd0ddd480c681632d7ecf1cc7f0e`.
+
+Next Panel slice: inventory the behavior callbacks and service implementations
+still imported from Community Panel. Replace one behavior boundary at a time;
+remove no inherited module until notifications, Overview, DING, status menus,
+fullscreen, and exact teardown pass on both Shell versions.
 
 ### 3. Finish settings ownership
 

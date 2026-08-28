@@ -162,6 +162,30 @@ def _snapshot(**changes) -> Snapshot:
                             "panelMonitors": [0] if surface == "taskbar" else [],
                             "resetFailures": 0,
                         },
+                        "serviceHost": {
+                            "owned": surface == "taskbar",
+                            "active": surface == "taskbar",
+                            "overviewOwned": surface == "taskbar",
+                            "overviewActive": surface == "taskbar",
+                            "notificationsOwned": surface == "taskbar",
+                            "launcherSubscriptionOwned": surface == "taskbar",
+                            "unityBusOwned": surface == "taskbar",
+                            "desktopIconsOwned": surface == "taskbar",
+                            "desktopMargins": (
+                                {"0": {
+                                    "top": 0,
+                                    "bottom": actor_height,
+                                    "left": 0,
+                                    "right": 0,
+                                }}
+                                if surface == "taskbar" else {}
+                            ),
+                            "desktopMarginsPending": False,
+                            "signalsOwned": surface == "taskbar",
+                            "signalGroups": 7 if surface == "taskbar" else 0,
+                            "keybindingOwned": surface == "taskbar",
+                            "activationFailures": 0,
+                        },
                         "shellHooks": {
                             "owned": surface == "taskbar",
                             "active": surface == "taskbar",
@@ -577,6 +601,22 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
             "panelMonitors": [],
             "resetFailures": 1,
         },
+        "serviceHost": {
+            "owned": False,
+            "active": False,
+            "overviewOwned": False,
+            "overviewActive": False,
+            "notificationsOwned": False,
+            "launcherSubscriptionOwned": False,
+            "unityBusOwned": False,
+            "desktopIconsOwned": False,
+            "desktopMargins": {},
+            "desktopMarginsPending": True,
+            "signalsOwned": False,
+            "signalGroups": 0,
+            "keybindingOwned": False,
+            "activationFailures": 1,
+        },
         "shellHooks": {
             "owned": False,
             "active": False,
@@ -616,6 +656,19 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-monitor-reset-failures" in failures
     assert "taskbar-monitor-coverage" in failures
     assert "taskbar-primary-monitor" in failures
+    assert "taskbar-service-host-ownership" in failures
+    assert "taskbar-service-host-active" in failures
+    assert "taskbar-overview-service" in failures
+    assert "taskbar-notification-service" in failures
+    assert "taskbar-desktop-icons-service" in failures
+    assert "taskbar-manager-signals" in failures
+    assert "taskbar-manager-signal-groups" in failures
+    assert "taskbar-keybinding-service" in failures
+    assert "taskbar-desktop-margins-settled" in failures
+    assert "taskbar-service-activation-failures" in failures
+    assert "taskbar-notification-subscriptions" in failures
+    assert "taskbar-desktop-margin-coverage" in failures
+    assert "taskbar-desktop-margin-geometry" in failures
     assert "taskbar-shell-hooks-ownership" in failures
     assert "taskbar-shell-hooks-active" in failures
     assert "taskbar-shell-hooks-restoration" in failures

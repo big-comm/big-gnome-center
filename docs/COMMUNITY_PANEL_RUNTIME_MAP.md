@@ -1,7 +1,7 @@
 # Community Panel Runtime Map
 
 Last update: 2026-08-27
-Baseline: `3eed87f`, runtime build 69
+Baseline: `0f9c4a9`, runtime build 70
 
 ## Scope
 
@@ -17,6 +17,10 @@ taskbarSurface.js
   -> taskbarStatusAreaHost.js
   -> taskbarMonitorHost.js
   -> taskbarShellHooks.js
+  -> taskbarServiceHost.js
+     -> overview.js
+     -> notificationsMonitor.js
+     -> desktopIconsIntegration.js
   -> panelManager.js
      -> panel.js
         -> taskbar.js
@@ -28,9 +32,6 @@ taskbarSurface.js
         -> panelStyle.js
         -> panelSettings.js
         -> panelPositions.js
-     -> overview.js
-     -> notificationsMonitor.js
-     -> desktopIconsIntegration.js
      -> runtimeContext.js
      -> utils.js
 ```
@@ -39,7 +40,7 @@ taskbarSurface.js
 
 | Module | Live responsibility | Current owner | Migration action |
 |---|---|---|---|
-| `panelManager.js` | behavior callbacks, services, and keybindings | mixed | topology and hook lifecycle delegated to owned hosts |
+| `panelManager.js` | behavior callbacks and service coordination | mixed | service lifecycle delegated to owned hosts |
 | `panel.js` | allocation and inherited styling | mixed | native status lifecycle delegated to owned host |
 | `taskbar.js` | application actor layout and inherited adapters | mixed | retain until host accepted |
 | `appIcons.js` | application actors and renderer hooks | mixed | owned policies already injected |
@@ -47,10 +48,10 @@ taskbarSurface.js
 | `intellihide.js` | overlap and reveal renderer | mixed | owned mode selection already active |
 | `transparency.js` | effective Panel alpha | inherited | owned opacity is the source of truth |
 | `panelStyle.js` | native box and status actor styling | inherited | retain until status host accepted |
-| `overview.js` | Taskbar/overview integration | inherited | audit before removal |
+| `overview.js` | Taskbar/overview integration | inherited | lifecycle owned by service host; replace behavior separately |
 | `proximity.js` | window overlap watches | inherited | retain with intellihide |
-| `notificationsMonitor.js` | application notification counts | inherited | audit against owned app model |
-| `desktopIconsIntegration.js` | desktop usable-area bridge | inherited | remove if inactive for accepted layouts |
+| `notificationsMonitor.js` | application notification counts | inherited | lifecycle owned by service host; port implementation separately |
+| `desktopIconsIntegration.js` | desktop usable-area bridge | inherited | lifecycle and exact margins owned by service host |
 | `panelSettings.js` | renderer settings and monitor maps | adapter | remove after upgrade matrix |
 | `panelPositions.js` | renderer position constants | adapter | replace with layout profiles |
 | `runtimeContext.js` | compatibility dependency injection | adapter | remove last |
@@ -95,6 +96,25 @@ Runtime build 69 adds two more narrow lifecycle owners:
 Telemetry reports topology generations, monitor coverage, reset failures, the
 installed hook set, injection ownership, shutdown connection, pending
 restoration, and restoration conflicts.
+
+## Manager-service boundary
+
+Runtime build 70 adds `TaskbarServiceHost` as the lifecycle owner for services
+previously constructed directly by `PanelManager`:
+
+1. inherited Overview construction and activation after primary-panel creation;
+2. inherited notification monitor, launcher subscription, and Unity D-Bus name;
+3. inherited DING usable-area bridge with exact per-monitor margins;
+4. four root settings groups and three panel-box signal groups;
+5. the inherited intellihide toggle keybinding;
+6. pending DING idle cancellation and transactional partial cleanup.
+
+Compatibility properties remain on `PanelManager` only for inherited behavior
+callbacks and are cleared only while still owned. This boundary does not claim
+that the inherited service implementations have been ported. Telemetry reports
+service generations, ownership and activation, subscription and bus ownership,
+notification application count, exact desktop margins, pending work, signal
+groups, keybinding ownership, failures, and last error.
 
 ## Upstream reference
 

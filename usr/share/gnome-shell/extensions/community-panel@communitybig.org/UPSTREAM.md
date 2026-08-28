@@ -27,5 +27,8 @@ Local runtime changes:
   panel resets to the unified runtime monitor host.
 - Shell prototype/global hook installation and exact restoration belong to the
   unified runtime hook host. Inherited behavior callbacks remain unchanged.
+- Overview, notification-monitor, desktop usable-area, manager-signal, and
+  intellihide-keybinding lifecycle belongs to the unified runtime service host.
+  Their inherited behavior implementations remain compatibility modules.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

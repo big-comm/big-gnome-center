@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 69" in controller
+    assert "RUNTIME_BUILD = 70" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -495,6 +495,45 @@ def test_taskbar_global_shell_hooks_have_owned_transactional_lifecycle():
     assert "Main.messageTray._bannerBin.ease =" not in manager
     assert "delete Main.layoutManager.findIndexForActor" not in manager
     assert "Object.defineProperty(Main.panel, 'style'" not in manager
+
+
+def test_taskbar_manager_services_have_owned_transactional_lifecycle():
+    surface = (RUNTIME / "taskbarSurface.js").read_text()
+    services = (RUNTIME / "taskbarServiceHost.js").read_text()
+    monitor = (RUNTIME / "taskbarMonitorHost.js").read_text()
+    manager = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
+    ).read_text()
+
+    assert "new TaskbarServiceHost()" in surface
+    assert "this.serviceHost.destroy(manager)" in surface
+    assert surface.index("this.serviceHost.destroy(manager)") < surface.index(
+        "this.shellHooks.destroy(manager)"
+    )
+    assert "serviceHost: this.serviceHost.diagnostics()" in surface
+    assert "this.serviceHost" in surface
+    assert "this.serviceHost.prepare(this)" in manager
+    assert "this.serviceHost.activate(this)" in manager
+    assert "this.serviceHost.bind(this)" in manager
+    assert "this.serviceHost.releasePanels(this)" in manager
+    assert "this.serviceHost.unbind(this)" in manager
+    assert "this.serviceHost.destroy(this)" in manager
+    assert "manager.serviceHost.activateOverview(" in monitor
+    assert "new Overview.Overview(manager)" in services
+    assert "new NotificationsMonitor()" in services
+    assert "new DesktopIconsIntegration.DesktopIconsUsableAreaClass()" in services
+    assert "INTELLIHIDE_KEYBINDING" in services
+    assert "GLib.Source.remove(this._desktopMarginsIdleId)" in services
+    assert "changed::panel-sizes" in services
+    assert "changed::panel-element-positions" in services
+    assert "desktopMarginsPending" in services
+    assert "activationFailures" in services
+    assert "new Overview.Overview" not in manager
+    assert "new NotificationsMonitor" not in manager
+    assert "DesktopIconsIntegration" not in manager
+    assert "_setKeyBindings(" not in manager
+    assert "GLib.idle_add" not in manager
 
 
 def test_taskbar_window_telemetry_distinguishes_normal_and_desktop_windows():

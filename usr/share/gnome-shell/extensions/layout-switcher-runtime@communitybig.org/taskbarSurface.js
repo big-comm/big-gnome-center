@@ -14,6 +14,7 @@ import {TaskbarInteractions} from './taskbarInteractions.js';
 import {TaskbarIndicatorRenderer} from './taskbarIndicatorRenderer.js';
 import {TaskbarMonitorHost} from './taskbarMonitorHost.js';
 import {TaskbarPanelHost} from './taskbarPanelHost.js';
+import {TaskbarServiceHost} from './taskbarServiceHost.js';
 import {TaskbarShellHooks} from './taskbarShellHooks.js';
 import {TaskbarStatusAreaHost} from './taskbarStatusArea.js';
 
@@ -37,6 +38,7 @@ export class TaskbarSurfaceManager {
         this.statusAreaHost = new TaskbarStatusAreaHost();
         this.panelHost = new TaskbarPanelHost(this.statusAreaHost);
         this.monitorHost = new TaskbarMonitorHost();
+        this.serviceHost = new TaskbarServiceHost();
         this.shellHooks = new TaskbarShellHooks();
     }
 
@@ -85,6 +87,7 @@ export class TaskbarSurfaceManager {
                 `[layout-switcher-runtime] Taskbar manager cleanup failed: ${error}`,
             );
         } finally {
+            this.serviceHost.destroy(manager);
             this.shellHooks.destroy(manager);
             this.panelHost.releaseAll();
             this.statusAreaHost.restore();
@@ -141,6 +144,7 @@ export class TaskbarSurfaceManager {
             indicatorRenderer: this.indicatorRenderer?.diagnostics() ?? {},
             panelHost: this.panelHost.diagnostics(),
             monitorHost: this.monitorHost.diagnostics(),
+            serviceHost: this.serviceHost.diagnostics(),
             shellHooks: this.shellHooks.diagnostics(),
             statusArea: this.statusAreaHost.diagnostics(
                 this.panels().map(panel => panel.panelBox)),
@@ -226,7 +230,8 @@ export class TaskbarSurfaceManager {
 
     _createManager() {
         const manager = new PanelManager.PanelManager(
-            this.panelHost, this.monitorHost, this.shellHooks);
+            this.panelHost, this.monitorHost, this.shellHooks,
+            this.serviceHost);
         this._manager = manager;
         manager.enable();
         this.monitorHost.bind(manager);

@@ -261,6 +261,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     taskbar_lifecycle = taskbar.get("lifecycle") or {}
     panel_host = taskbar_lifecycle.get("panelHost") or {}
     monitor_host = taskbar_lifecycle.get("monitorHost") or {}
+    service_host = taskbar_lifecycle.get("serviceHost") or {}
     shell_hooks = taskbar_lifecycle.get("shellHooks") or {}
     status_area = taskbar_lifecycle.get("statusArea") or {}
     dock_actors = dock.get("actors") or []
@@ -391,6 +392,81 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"last={monitor_host.get('lastError')}",
         ),
         _check(
+            bool(service_host.get("owned")) == expected_taskbars,
+            "taskbar-service-host-ownership",
+            f"owned={expected_taskbars}",
+            "expected service-host ownership="
+            f"{expected_taskbars}, got {bool(service_host.get('owned'))}",
+        ),
+        _check(
+            bool(service_host.get("active")) == expected_taskbars,
+            "taskbar-service-host-active",
+            f"active={expected_taskbars}",
+            "expected service host active="
+            f"{expected_taskbars}, got {bool(service_host.get('active'))}",
+        ),
+        _check(
+            bool(service_host.get("overviewOwned")) == expected_taskbars
+            and bool(service_host.get("overviewActive")) == expected_taskbars,
+            "taskbar-overview-service",
+            f"owned/active={expected_taskbars}",
+            f"overviewOwned={service_host.get('overviewOwned')}, "
+            f"overviewActive={service_host.get('overviewActive')}",
+        ),
+        _check(
+            bool(service_host.get("notificationsOwned")) == expected_taskbars,
+            "taskbar-notification-service",
+            f"owned={expected_taskbars}",
+            "expected notification ownership="
+            f"{expected_taskbars}, got "
+            f"{bool(service_host.get('notificationsOwned'))}",
+        ),
+        _check(
+            bool(service_host.get("desktopIconsOwned")) == expected_taskbars,
+            "taskbar-desktop-icons-service",
+            f"owned={expected_taskbars}",
+            "expected desktop-icons ownership="
+            f"{expected_taskbars}, got "
+            f"{bool(service_host.get('desktopIconsOwned'))}",
+        ),
+        _check(
+            bool(service_host.get("signalsOwned")) == expected_taskbars,
+            "taskbar-manager-signals",
+            f"owned={expected_taskbars}",
+            "expected manager-signal ownership="
+            f"{expected_taskbars}, got {bool(service_host.get('signalsOwned'))}",
+        ),
+        _check(
+            service_host.get("signalGroups", 0)
+            == (7 if expected_taskbars else 0),
+            "taskbar-manager-signal-groups",
+            f"signal groups={7 if expected_taskbars else 0}",
+            "expected signal groups="
+            f"{7 if expected_taskbars else 0}, got "
+            f"{service_host.get('signalGroups')}",
+        ),
+        _check(
+            bool(service_host.get("keybindingOwned")) == expected_taskbars,
+            "taskbar-keybinding-service",
+            f"owned={expected_taskbars}",
+            "expected keybinding ownership="
+            f"{expected_taskbars}, got "
+            f"{bool(service_host.get('keybindingOwned'))}",
+        ),
+        _check(
+            not service_host.get("desktopMarginsPending"),
+            "taskbar-desktop-margins-settled",
+            "desktop margins settled",
+            "desktop margin update is pending",
+        ),
+        _check(
+            not service_host.get("activationFailures"),
+            "taskbar-service-activation-failures",
+            "no service activation failures",
+            f"failures={service_host.get('activationFailures')}, "
+            f"last={service_host.get('lastError')}",
+        ),
+        _check(
             bool(shell_hooks.get("owned")) == expected_taskbars,
             "taskbar-shell-hooks-ownership",
             f"owned={expected_taskbars}",
@@ -516,6 +592,22 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             actor.get("monitor") for actor in taskbar_actors
             if isinstance(actor.get("monitor"), int)
         )
+        desktop_margin_indices = sorted(
+            int(index) for index in (service_host.get("desktopMargins") or {})
+            if str(index).isdigit()
+        )
+        desktop_margins = service_host.get("desktopMargins") or {}
+        desktop_margin_geometry = all(
+            (desktop_margins.get(str(actor.get("monitor")))
+             or desktop_margins.get(actor.get("monitor")))
+            == {
+                "top": 0,
+                "bottom": actor.get("height"),
+                "left": 0,
+                "right": 0,
+            }
+            for actor in taskbar_actors
+        )
         checks.extend(
             (
                 _check(
@@ -551,6 +643,28 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     "taskbar-shell-shutdown-hook",
                     "shutdown cleanup connected",
                     "shutdown cleanup is not connected",
+                ),
+                _check(
+                    bool(service_host.get("launcherSubscriptionOwned"))
+                    and bool(service_host.get("unityBusOwned")),
+                    "taskbar-notification-subscriptions",
+                    "launcher subscription and Unity bus owned",
+                    "launcherSubscriptionOwned="
+                    f"{service_host.get('launcherSubscriptionOwned')}, "
+                    f"unityBusOwned={service_host.get('unityBusOwned')}",
+                ),
+                _check(
+                    desktop_margin_indices == taskbar_monitor_indices,
+                    "taskbar-desktop-margin-coverage",
+                    f"margin monitors={taskbar_monitor_indices}",
+                    f"margins={desktop_margin_indices}, "
+                    f"actors={taskbar_monitor_indices}",
+                ),
+                _check(
+                    desktop_margin_geometry,
+                    "taskbar-desktop-margin-geometry",
+                    "desktop bottom margins match Taskbar actors",
+                    f"margins={desktop_margins}, actors={taskbar_actors}",
                 ),
                 _check(
                     {"activities", "quickSettings", "dateMenu"}
