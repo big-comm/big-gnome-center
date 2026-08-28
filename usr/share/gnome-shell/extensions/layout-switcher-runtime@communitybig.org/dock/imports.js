@@ -4,7 +4,7 @@ export * as AppIcons from './appIcons.js';
 export * as AppIconsDecorator from './appIconsDecorator.js';
 export * as DockDash from './dash.js';
 export * as DBusMenuUtils from './dbusmenuUtils.js';
-export * as DesktopIconsIntegration from './desktopIconsIntegration.js';
+export * as DesktopIconsIntegration from '../desktopIconsUsableArea.js';
 export * as Docking from '../dockSurface.js';
 export * as FileManager1API from './fileManager1API.js';
 export * as Intellihide from './intellihide.js';

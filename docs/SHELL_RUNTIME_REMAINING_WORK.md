@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-27
-Safe checkpoint: `0f9c4a9`
-Status: Build 70 owns remaining Taskbar manager-service lifecycle
+Safe checkpoint: `70212c9`
+Status: Build 71 owns the shared DING usable-area implementation
 
 ## Purpose
 
@@ -455,10 +455,73 @@ local and both-VM SHA-256 values:
 - runtime audit:
   `64c8346bdf418c73714e09fa05f4c701e34ddd0ddd480c681632d7ecf1cc7f0e`.
 
-Next Panel slice: inventory the behavior callbacks and service implementations
-still imported from Community Panel. Replace one behavior boundary at a time;
-remove no inherited module until notifications, Overview, DING, status menus,
-fullscreen, and exact teardown pass on both Shell versions.
+Build 71 replaces both inherited DING usable-area implementations with one
+shared runtime-owned module. Dock uses `community-dock@communitybig.org` and
+Taskbar uses `community-panel@communitybig.org` as stable margin owners. The
+implementation preserves the official DING sentinel, 100 ms coalescing,
+extension-state reconnection, and `setMarginsForExtension()` protocol.
+Telemetry exposes ownership, connection, pending dispatch, dispatch count, and
+the exact enabled DING recipients. Strict audit rejects inherited ownership,
+disconnection, pending work, or recipient drift.
+
+The first GNOME 50 Taskbar activation caught an invalid owner object before any
+actor leaked. The root cause was that the runtime surface manager is not an
+extension record and has no UUID. Passing the explicit stable Taskbar owner
+fixed activation transactionally; no timer workaround was added.
+
+GNOME 50 accepted BigGnome and Taskbar exact-margin checks, including a 38 ->
+56 -> 38 px update, dynamic DING activation, 10 slow and 20 rapid transitions,
+and zero strict-audit failures. GNOME 51 accepted the same exact 38/56 px
+geometry, dynamic recipient telemetry, 10 slow and 20 rapid transitions, and
+zero strict-audit failures. Both finish with one monitor and their original
+layout, override-map, and DING state.
+
+One discarded GNOME 51 rapid block coincided with GSConnect 72 repeatedly
+failing `Cannot inherit from a final type`. A captured stack showed the Shell
+main thread and dconf worker deadlocked in GJS/GObject toggle-reference cleanup.
+After a session restart, five replacement rapid cycles passed individually with
+GSConnect temporarily disabled. Its original enabled/error state was restored;
+this external failure is not attributed to build 71.
+
+The runtime-owned implementation retains the upstream 1-clause BSD notice.
+Both unreferenced inherited copies were removed only after live acceptance.
+Three engine boundaries remain: notifications, Overview, and the final inherited
+status/fullscreen behavior and exact-teardown gate.
+
+Build 71 final validation: focused `79 passed`; full suite `575 passed`, with
+one known PyGI warning. All runtime and inherited JavaScript syntax and diff
+checks pass. PKGBUILD and package versions are unchanged. Final local/GNOME 50/
+GNOME 51 SHA-256 values match:
+
+- runtime controller:
+  `79c78c2e234d5a227e4a061fd93e43437a2c80de750254abc28c282e902b7eed`;
+- Taskbar service host:
+  `f1eb7afa540c3cca2ee52e141668308ce7df124614f0eaeec81cc85baf28ba15`;
+- shared DING bridge:
+  `7e78f4953c79898c95d145fa69cfb13984cebfc81294256bca0f722cbd03f538`;
+- Dock imports:
+  `88a8d26e2ac62fe2747371f266b36cc05aec1579d8ed1c349fba5a7c705b3d62`;
+- Dock runtime:
+  `9672f688e01e7094b11dab3c1cddcce51e66a3c3ba512226da69f4bbdd4eba03`;
+- runtime audit:
+  `efb56a7f4981f0964df79de2a32e13dc993436fadf3c18a7eb045316388adc8e`;
+- complete unified-runtime payload:
+  `eccff7810be42f25a4beb973ba1b2240eed71e265748628db5edb4344be5bd2b`;
+- complete Community Panel compatibility payload:
+  `1963a060026a0ee8b1ca63d23d72f4f4b182c57142eb3388d5d539568d27bdac`.
+
+Next Panel slice: port the notification implementation behind the existing
+owned lifecycle. Remove no further inherited module until its focused behavior,
+restoration, and both-Shell matrices pass.
+
+Post-migration product backlog, explicitly outside the four remaining engine
+boundaries:
+
+- BigGnome Dock applications-menu side, with right preserved as the default
+  and left offered as a per-layout choice.
+- A third Dock hover card for pointer-distance magnification. Icons must grow
+  and shrink progressively like the macOS Dock, without replacing Standard or
+  Gentle lift.
 
 ### 3. Finish settings ownership
 

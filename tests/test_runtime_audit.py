@@ -130,6 +130,23 @@ def _snapshot(**changes) -> Snapshot:
                         "BigGnome": "intelligent",
                         "G-Unity": "always-visible",
                     }.get(layout),
+                    "desktopBridge": {
+                        "implementation": (
+                            "layout-switcher-runtime"
+                            if surface == "dock" else ""
+                        ),
+                        "ownerUuid": (
+                            COMMUNITY_DOCK_UUID if surface == "dock" else ""
+                        ),
+                        "connected": surface == "dock",
+                        "pending": False,
+                        "recipientUuids": (
+                            [DESKTOP_ICONS_UUID]
+                            if surface == "dock"
+                            and DESKTOP_ICONS_UUID in values["enabled_extensions"]
+                            else []
+                        ),
+                    },
                     "actors": dock_actors,
                 },
                 "taskbar": {
@@ -181,6 +198,25 @@ def _snapshot(**changes) -> Snapshot:
                                 if surface == "taskbar" else {}
                             ),
                             "desktopMarginsPending": False,
+                            "desktopBridge": {
+                                "implementation": (
+                                    "layout-switcher-runtime"
+                                    if surface == "taskbar" else ""
+                                ),
+                                "ownerUuid": (
+                                    COMMUNITY_PANEL_UUID
+                                    if surface == "taskbar" else ""
+                                ),
+                                "connected": surface == "taskbar",
+                                "pending": False,
+                                "recipientUuids": (
+                                    [DESKTOP_ICONS_UUID]
+                                    if surface == "taskbar"
+                                    and DESKTOP_ICONS_UUID
+                                    in values["enabled_extensions"]
+                                    else []
+                                ),
+                            },
                             "signalsOwned": surface == "taskbar",
                             "signalGroups": 7 if surface == "taskbar" else 0,
                             "keybindingOwned": surface == "taskbar",
@@ -519,6 +555,36 @@ def test_audit_rejects_extended_biggnome_dock(tmp_path):
     assert "dock-extended" in failures
 
 
+def test_audit_rejects_inherited_or_disconnected_dock_desktop_bridge(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(enabled_extensions=(RUNTIME_UUID, HELPER_UUID, DESKTOP_ICONS_UUID))
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    dock = dict(runtime["dock"])
+    dock["desktopBridge"] = {
+        "implementation": "inherited",
+        "ownerUuid": "wrong@example.org",
+        "connected": False,
+        "pending": True,
+        "recipientUuids": [],
+    }
+    runtime["dock"] = dock
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(_snapshot(
+            enabled_extensions=(RUNTIME_UUID, HELPER_UUID, DESKTOP_ICONS_UUID),
+            runtime_diagnostics=diagnostics,
+        ), tmp_path)
+    )
+
+    assert "dock-desktop-bridge-implementation" in failures
+    assert "dock-desktop-bridge-owner" in failures
+    assert "dock-desktop-bridge-connection" in failures
+    assert "dock-desktop-bridge-settled" in failures
+    assert "dock-desktop-bridge-recipient" in failures
+
+
 def test_audit_reports_missing_internal_payload(tmp_path):
     _payload(tmp_path)
     (tmp_path / f"usr/share/gnome-shell/extensions/{COMMUNITY_PANEL_UUID}/extension.js").unlink()
@@ -612,6 +678,13 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
             "desktopIconsOwned": False,
             "desktopMargins": {},
             "desktopMarginsPending": True,
+            "desktopBridge": {
+                "implementation": "inherited",
+                "ownerUuid": "wrong@example.org",
+                "connected": False,
+                "pending": True,
+                "recipientUuids": [DESKTOP_ICONS_UUID],
+            },
             "signalsOwned": False,
             "signalGroups": 0,
             "keybindingOwned": False,
@@ -661,6 +734,10 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-overview-service" in failures
     assert "taskbar-notification-service" in failures
     assert "taskbar-desktop-icons-service" in failures
+    assert "taskbar-desktop-bridge-implementation" in failures
+    assert "taskbar-desktop-bridge-owner" in failures
+    assert "taskbar-desktop-bridge-connection" in failures
+    assert "taskbar-desktop-bridge-settled" in failures
     assert "taskbar-manager-signals" in failures
     assert "taskbar-manager-signal-groups" in failures
     assert "taskbar-keybinding-service" in failures
@@ -669,6 +746,7 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-notification-subscriptions" in failures
     assert "taskbar-desktop-margin-coverage" in failures
     assert "taskbar-desktop-margin-geometry" in failures
+    assert "taskbar-desktop-bridge-recipient" in failures
     assert "taskbar-shell-hooks-ownership" in failures
     assert "taskbar-shell-hooks-active" in failures
     assert "taskbar-shell-hooks-restoration" in failures

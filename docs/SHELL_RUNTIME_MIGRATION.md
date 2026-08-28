@@ -99,6 +99,9 @@ padding, and actor allocation remain implementation details.
 - [ ] Dock position: left, bottom, right.
 - [ ] Dock length: fit content or fill available edge.
 - [ ] Multi-monitor target: primary monitor or all monitors.
+- [ ] BigGnome applications-menu side: right by default, optional left.
+- [ ] Third hover mode with pointer-distance icon magnification and progressive
+  grow/shrink, matching the macOS Dock interaction model.
 
 Add these only after the size controls and runtime foundation are accepted.
 

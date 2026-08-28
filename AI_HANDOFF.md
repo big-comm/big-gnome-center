@@ -2011,3 +2011,44 @@ Append one entry per completed change:
 - Next slice: inventory the behavior callbacks and inherited service
   implementations still loaded from Community Panel. Replace and accept one
   boundary at a time before deleting any compatibility module.
+
+## 2026-08-27 — Shared DING usable-area implementation, build 71
+
+- One runtime-owned `DesktopIconsUsableAreaClass` now serves Dock and Taskbar.
+  It preserves the official DING sentinel, 100 ms coalescing,
+  `extension-state-changed` reconnection, and `setMarginsForExtension()`
+  protocol. The upstream 1-clause BSD notice remains in the owned source.
+- Dock uses `community-dock@communitybig.org`; Taskbar uses the explicit stable
+  `community-panel@communitybig.org` owner. The first GNOME 50 activation caught
+  that `TaskbarSurfaceManager` has no UUID. Transactional cleanup left zero
+  actors; the stable owner fixed the root cause without a timer workaround.
+- Telemetry and strict audit require runtime ownership, connection, settled
+  dispatch, exact enabled-DING recipients, and exact physical/margin geometry.
+  Both dormant inherited DING implementations were removed after acceptance.
+- GNOME 50 passed exact 38/56 px margins, dynamic DING activation, 10 slow and
+  20 rapid Dock/Taskbar transitions, then returned to BigGnome with DING off,
+  empty overrides, and one monitor. GNOME 51 passed the equivalent matrix and
+  returned to Hybrid with DING active, empty overrides, and one monitor.
+- One GNOME 51 rapid block was discarded after GSConnect 72 repeatedly failed
+  `Cannot inherit from a final type`. GDB captured a GJS/GObject toggle-ref
+  deadlock between the Shell main thread and dconf worker. After session restart,
+  five individually audited replacement cycles passed with GSConnect disabled;
+  its original enabled/error state was restored. No build 71 JS error occurred.
+- Focused tests: `79 passed`. Full suite: `575 passed`, one known PyGI warning.
+  Runtime/inherited JavaScript syntax and diff checks pass. PKGBUILD and package
+  versions are unchanged. Strict audits report zero failures on both VMs.
+- Final local/GNOME 50/GNOME 51 SHA-256: runtime controller
+  `79c78c2e234d5a227e4a061fd93e43437a2c80de750254abc28c282e902b7eed`;
+  service host
+  `f1eb7afa540c3cca2ee52e141668308ce7df124614f0eaeec81cc85baf28ba15`;
+  shared DING bridge
+  `7e78f4953c79898c95d145fa69cfb13984cebfc81294256bca0f722cbd03f538`;
+  Dock imports
+  `88a8d26e2ac62fe2747371f266b36cc05aec1579d8ed1c349fba5a7c705b3d62`;
+  Dock runtime
+  `9672f688e01e7094b11dab3c1cddcce51e66a3c3ba512226da69f4bbdd4eba03`;
+  audit
+  `efb56a7f4981f0964df79de2a32e13dc993436fadf3c18a7eb045316388adc8e`.
+- Three migration boundaries remain: notification behavior, Overview behavior,
+  then final inherited status/fullscreen behavior plus exact teardown. The Dock
+  menu-side selector and macOS-like magnification remain post-migration work.

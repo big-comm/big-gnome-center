@@ -257,11 +257,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     expected = runtime.get("expected") or {}
     dock = runtime.get("dock") or {}
     panel = dock.get("panel") or {}
+    dock_desktop_bridge = dock.get("desktopBridge") or {}
     taskbar = runtime.get("taskbar") or {}
     taskbar_lifecycle = taskbar.get("lifecycle") or {}
     panel_host = taskbar_lifecycle.get("panelHost") or {}
     monitor_host = taskbar_lifecycle.get("monitorHost") or {}
     service_host = taskbar_lifecycle.get("serviceHost") or {}
+    desktop_bridge = service_host.get("desktopBridge") or {}
     shell_hooks = taskbar_lifecycle.get("shellHooks") or {}
     status_area = taskbar_lifecycle.get("statusArea") or {}
     dock_actors = dock.get("actors") or []
@@ -304,6 +306,35 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "taskbar-state",
             f"active={expected_taskbars}",
             f"expected active={expected_taskbars}, got {bool(taskbar.get('active'))}",
+        ),
+        _check(
+            (dock_desktop_bridge.get("implementation")
+             == "layout-switcher-runtime") == expected_docks,
+            "dock-desktop-bridge-implementation",
+            f"runtime-owned={expected_docks}",
+            "expected runtime-owned Dock desktop bridge="
+            f"{expected_docks}, got "
+            f"{dock_desktop_bridge.get('implementation')}",
+        ),
+        _check(
+            (dock_desktop_bridge.get("ownerUuid") == COMMUNITY_DOCK_UUID)
+            == expected_docks,
+            "dock-desktop-bridge-owner",
+            COMMUNITY_DOCK_UUID if expected_docks else "none",
+            f"owner={dock_desktop_bridge.get('ownerUuid')}",
+        ),
+        _check(
+            bool(dock_desktop_bridge.get("connected")) == expected_docks,
+            "dock-desktop-bridge-connection",
+            f"connected={expected_docks}",
+            "expected Dock desktop bridge connection="
+            f"{expected_docks}, got {dock_desktop_bridge.get('connected')}",
+        ),
+        _check(
+            not dock_desktop_bridge.get("pending"),
+            "dock-desktop-bridge-settled",
+            "Dock desktop bridge settled",
+            "Dock desktop bridge dispatch is pending",
         ),
         _check(
             bool(taskbar_lifecycle.get("managerOwned")) == expected_taskbars,
@@ -428,6 +459,34 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "expected desktop-icons ownership="
             f"{expected_taskbars}, got "
             f"{bool(service_host.get('desktopIconsOwned'))}",
+        ),
+        _check(
+            (desktop_bridge.get("implementation")
+             == "layout-switcher-runtime") == expected_taskbars,
+            "taskbar-desktop-bridge-implementation",
+            f"runtime-owned={expected_taskbars}",
+            "expected runtime-owned desktop bridge="
+            f"{expected_taskbars}, got {desktop_bridge.get('implementation')}",
+        ),
+        _check(
+            (desktop_bridge.get("ownerUuid") == COMMUNITY_PANEL_UUID)
+            == expected_taskbars,
+            "taskbar-desktop-bridge-owner",
+            COMMUNITY_PANEL_UUID if expected_taskbars else "none",
+            f"owner={desktop_bridge.get('ownerUuid')}",
+        ),
+        _check(
+            bool(desktop_bridge.get("connected")) == expected_taskbars,
+            "taskbar-desktop-bridge-connection",
+            f"connected={expected_taskbars}",
+            "expected desktop bridge connection="
+            f"{expected_taskbars}, got {desktop_bridge.get('connected')}",
+        ),
+        _check(
+            not desktop_bridge.get("pending"),
+            "taskbar-desktop-bridge-settled",
+            "desktop bridge settled",
+            "desktop bridge dispatch is pending",
         ),
         _check(
             bool(service_host.get("signalsOwned")) == expected_taskbars,
@@ -592,6 +651,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             actor.get("monitor") for actor in taskbar_actors
             if isinstance(actor.get("monitor"), int)
         )
+
         desktop_margin_indices = sorted(
             int(index) for index in (service_host.get("desktopMargins") or {})
             if str(index).isdigit()
@@ -667,6 +727,16 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     f"margins={desktop_margins}, actors={taskbar_actors}",
                 ),
                 _check(
+                    (DESKTOP_ICONS_UUID
+                     in desktop_bridge.get("recipientUuids", []))
+                    == (DESKTOP_ICONS_UUID in snapshot.enabled_extensions),
+                    "taskbar-desktop-bridge-recipient",
+                    "DING recipient matches enabled extensions",
+                    "recipients="
+                    f"{desktop_bridge.get('recipientUuids', [])}, "
+                    f"enabled={DESKTOP_ICONS_UUID in snapshot.enabled_extensions}",
+                ),
+                _check(
                     {"activities", "quickSettings", "dateMenu"}
                     <= adopted_roles,
                     "taskbar-native-status-adoption",
@@ -708,6 +778,17 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
         )
         checks.extend(
             (
+                _check(
+                    (DESKTOP_ICONS_UUID
+                     in dock_desktop_bridge.get("recipientUuids", []))
+                    == (DESKTOP_ICONS_UUID in snapshot.enabled_extensions),
+                    "dock-desktop-bridge-recipient",
+                    "DING recipient matches enabled extensions",
+                    "recipients="
+                    f"{dock_desktop_bridge.get('recipientUuids', [])}, "
+                    "enabled="
+                    f"{DESKTOP_ICONS_UUID in snapshot.enabled_extensions}",
+                ),
                 _check(
                     dock_monitor_indices == logical_monitor_indices,
                     "dock-monitor-coverage",

@@ -22,6 +22,13 @@ Application-button and panel behavior extraction, final settings ownership, and
 upgrade/rollback coverage remain. A small GJS runtime remains necessary because
 GNOME Shell actors cannot run in the GTK process.
 
+Deferred until the four remaining Taskbar migration boundaries are accepted:
+
+- BigGnome Dock applications-menu side: keep right as the default and offer
+  left as an owned per-layout option.
+- Third Dock hover mode: pointer-distance magnification, with icons growing and
+  shrinking progressively like the macOS Dock. Keep Standard and Gentle lift.
+
 ## Status geral
 
 Aplicativo GTK4/Adwaita bem estruturado. **77 testes passando**, `ruff check` limpo,

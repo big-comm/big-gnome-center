@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 70" in controller
+    assert "RUNTIME_BUILD = 71" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -500,6 +500,8 @@ def test_taskbar_global_shell_hooks_have_owned_transactional_lifecycle():
 def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     services = (RUNTIME / "taskbarServiceHost.js").read_text()
+    desktop_icons = (RUNTIME / "desktopIconsUsableArea.js").read_text()
+    dock_imports = (RUNTIME / "dock/imports.js").read_text()
     monitor = (RUNTIME / "taskbarMonitorHost.js").read_text()
     manager = (
         ROOT
@@ -522,7 +524,26 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "manager.serviceHost.activateOverview(" in monitor
     assert "new Overview.Overview(manager)" in services
     assert "new NotificationsMonitor()" in services
-    assert "new DesktopIconsIntegration.DesktopIconsUsableAreaClass()" in services
+    assert "new DesktopIconsUsableAreaClass(" in services
+    assert "./desktopIconsUsableArea.js" in services
+    assert "../desktopIconsUsableArea.js" in dock_imports
+    assert "layout-switcher-runtime" in desktop_icons
+    assert "setMarginsForExtension(this._ownerUuid, this._margins)" in desktop_icons
+    assert "130cbc66-235c-4bd6-8571-98d2d8bba5e2" in desktop_icons
+    assert "TASKBAR_MARGIN_OWNER = 'community-panel@communitybig.org'" in services
+    assert "typeof owner === 'string'" in desktop_icons
+    assert "recipientUuids" in desktop_icons
+    assert "extension.uuid" in desktop_icons
+    assert not (RUNTIME / "dock/desktopIconsIntegration.js").exists()
+    assert not (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org"
+        / "desktopIconsIntegration.js"
+    ).exists()
+    assert "desktopIconsUsableArea?.diagnostics()" in (
+        RUNTIME / "dockRuntime.js"
+    ).read_text()
+    assert "desktopBridge" in services
     assert "INTELLIHIDE_KEYBINDING" in services
     assert "GLib.Source.remove(this._desktopMarginsIdleId)" in services
     assert "changed::panel-sizes" in services

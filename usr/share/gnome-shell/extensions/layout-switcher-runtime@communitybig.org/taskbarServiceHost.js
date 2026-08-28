@@ -6,15 +6,16 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import * as DesktopIconsIntegration from '../community-panel@communitybig.org/desktopIconsIntegration.js';
 import {NotificationsMonitor} from '../community-panel@communitybig.org/notificationsMonitor.js';
 import * as Overview from '../community-panel@communitybig.org/overview.js';
 import * as Panel from '../community-panel@communitybig.org/panel.js';
 import * as PanelSettings from '../community-panel@communitybig.org/panelSettings.js';
 import * as Utils from '../community-panel@communitybig.org/utils.js';
 import {DTP_EXTENSION, SETTINGS} from '../community-panel@communitybig.org/runtimeContext.js';
+import {DesktopIconsUsableAreaClass} from './desktopIconsUsableArea.js';
 
 const INTELLIHIDE_KEYBINDING = 'intellihide-key-toggle';
+const TASKBAR_MARGIN_OWNER = 'community-panel@communitybig.org';
 
 export class TaskbarServiceHost {
     constructor() {
@@ -73,8 +74,8 @@ export class TaskbarServiceHost {
         try {
             this._notificationsMonitor = new NotificationsMonitor();
             manager.notificationsMonitor = this._notificationsMonitor;
-            this._desktopIconsUsableArea =
-                new DesktopIconsIntegration.DesktopIconsUsableAreaClass();
+            this._desktopIconsUsableArea = new DesktopIconsUsableAreaClass(
+                TASKBAR_MARGIN_OWNER);
             this.updateDesktopIconsMargins(manager);
             this._lastError = '';
         } catch (error) {
@@ -251,6 +252,8 @@ export class TaskbarServiceHost {
             desktopMarginsPending: Boolean(this._desktopMarginsIdleId),
             desktopMargins: this._desktopMargins,
             desktopMarginUpdates: this._desktopMarginUpdates,
+            desktopBridge:
+                this._desktopIconsUsableArea?.diagnostics() ?? {},
             signalsOwned: Boolean(this._signals),
             signalGroups: this._signals ? 7 : 0,
             keybindingOwned: this._keybindingOwned,

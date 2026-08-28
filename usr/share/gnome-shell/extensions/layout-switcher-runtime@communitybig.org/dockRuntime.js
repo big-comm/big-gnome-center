@@ -119,6 +119,8 @@ export class DockRuntime {
             visibility: this._host.visibilityModes.mode(),
             extended: this._host.placement.extended(),
             panel: this._panelController?.diagnostics() ?? {},
+            desktopBridge:
+                this._manager?.desktopIconsUsableArea?.diagnostics() ?? {},
             actors: docks.map(dock => this._actorDiagnostics(dock)),
         };
     }

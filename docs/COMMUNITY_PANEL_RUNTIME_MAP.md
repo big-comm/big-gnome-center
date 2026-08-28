@@ -1,7 +1,7 @@
 # Community Panel Runtime Map
 
 Last update: 2026-08-27
-Baseline: `0f9c4a9`, runtime build 70
+Baseline: `70212c9`, runtime build 71
 
 ## Scope
 
@@ -20,7 +20,7 @@ taskbarSurface.js
   -> taskbarServiceHost.js
      -> overview.js
      -> notificationsMonitor.js
-     -> desktopIconsIntegration.js
+     -> runtime/desktopIconsUsableArea.js
   -> panelManager.js
      -> panel.js
         -> taskbar.js
@@ -51,7 +51,7 @@ taskbarSurface.js
 | `overview.js` | Taskbar/overview integration | inherited | lifecycle owned by service host; replace behavior separately |
 | `proximity.js` | window overlap watches | inherited | retain with intellihide |
 | `notificationsMonitor.js` | application notification counts | inherited | lifecycle owned by service host; port implementation separately |
-| `desktopIconsIntegration.js` | desktop usable-area bridge | inherited | lifecycle and exact margins owned by service host |
+| `desktopIconsIntegration.js` | removed in build 71 | runtime | shared owned implementation replaces both copies |
 | `panelSettings.js` | renderer settings and monitor maps | adapter | remove after upgrade matrix |
 | `panelPositions.js` | renderer position constants | adapter | replace with layout profiles |
 | `runtimeContext.js` | compatibility dependency injection | adapter | remove last |
@@ -104,17 +104,27 @@ previously constructed directly by `PanelManager`:
 
 1. inherited Overview construction and activation after primary-panel creation;
 2. inherited notification monitor, launcher subscription, and Unity D-Bus name;
-3. inherited DING usable-area bridge with exact per-monitor margins;
+3. DING usable-area bridge with exact per-monitor margins;
 4. four root settings groups and three panel-box signal groups;
 5. the inherited intellihide toggle keybinding;
 6. pending DING idle cancellation and transactional partial cleanup.
 
 Compatibility properties remain on `PanelManager` only for inherited behavior
 callbacks and are cleared only while still owned. This boundary does not claim
-that the inherited service implementations have been ported. Telemetry reports
+that the remaining inherited service implementations have been ported. Telemetry reports
 service generations, ownership and activation, subscription and bus ownership,
 notification application count, exact desktop margins, pending work, signal
 groups, keybinding ownership, failures, and last error.
+
+## Desktop usable-area boundary
+
+Runtime build 71 ports the DING protocol into one shared runtime module. Dock
+and Taskbar use stable owner UUIDs, preserve the official 100 ms coalescing and
+`setMarginsForExtension()` contract, reconnect on DING state changes, and expose
+connection, pending-dispatch, recipient, and dispatch-count telemetry. The two
+dormant inherited implementations were removed after GNOME 50 and GNOME 51
+accepted exact one-monitor margins, 38/56 px updates, and repeated Dock/Taskbar
+transitions.
 
 ## Upstream reference
 

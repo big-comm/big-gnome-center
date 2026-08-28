@@ -95,7 +95,6 @@ def test_community_panel_preserves_license_provenance_schema_and_translations():
 
 def test_community_panel_runtime_does_not_require_an_active_extension_record():
     i18n = (PANEL / "i18n.js").read_text()
-    desktop_icons = (PANEL / "desktopIconsIntegration.js").read_text()
 
     assert "Gettext.domain('dash-to-panel')" in i18n
     for name in ("appIcons.js", "panel.js", "windowPreview.js"):
@@ -104,8 +103,7 @@ def test_community_panel_runtime_does_not_require_an_active_extension_record():
             name == "appIcons.js" and "gettext as _, ngettext } from './i18n.js'" in source
         )
         assert "gettext as _" not in source.split("./i18n.js", 1)[-1]
-    assert "Extension.lookupByURL" not in desktop_icons
-    assert "const PANEL_UUID = 'community-panel@communitybig.org'" in desktop_icons
+    assert not (PANEL / "desktopIconsIntegration.js").exists()
 
 
 def test_taskbar_layouts_use_only_unified_runtime():

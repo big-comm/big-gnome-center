@@ -66,7 +66,7 @@ Visibility and appearance:
 
 Integration and compatibility:
 
-- `dock/dbusmenuUtils.js`, `dock/desktopIconsIntegration.js`.
+- `dock/dbusmenuUtils.js`, shared runtime `desktopIconsUsableArea.js`.
 - `dock/fileManager1API.js`, `dock/launcherAPI.js`, `dock/locations.js`.
 - `dock/locationsWorker.js`, `dock/utils.js`, `dock/dependencies/`.
 
@@ -84,7 +84,7 @@ Runtime entry and orchestration:
 Application behavior:
 
 - `appIcons.js`, `windowPreview.js`, `notificationsMonitor.js`.
-- `overview.js`, `desktopIconsIntegration.js`.
+- `overview.js`. The DING bridge moved to the unified runtime in build 71.
 
 Visibility and appearance:
 
