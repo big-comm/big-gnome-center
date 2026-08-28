@@ -42,5 +42,8 @@ Local runtime changes:
   tracked-chrome mutations, and guarded Wayland fullscreen surface repair into
   the unified runtime. The inherited Panel style module is removed after
   GNOME 50/51 acceptance.
+- Build 75 internalizes all 13 active Taskbar renderer modules in the unified
+  runtime. This directory remains a dormant rollback and resource host until
+  the upgrade matrix passes.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

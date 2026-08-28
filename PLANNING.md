@@ -16,13 +16,13 @@ its old directory is a resource and schema host only. GNOME 50/51 Dock layout
 transitions, fullscreen cycles, and the complete monitor matrix pass.
 Panel/Taskbar lifecycle, DING usable-area bridge, notification monitor, and
 Overview/status/fullscreen integration are now owned by the unified runtime;
-inherited renderer modules remain temporarily behind that boundary. Runtime build 51 also
+the active renderer modules are internalized under `runtime/taskbar/`. Runtime build 51 also
 matches Shell stylesheet ownership across `Main.loadTheme()` replacement;
 GNOME 50/51 reject null or duplicate custom CSS in strict audit.
-The accepted behavior boundary is complete. Structural Taskbar renderer
-internalization, obsolete adapter removal, and upgrade/rollback coverage
-remain. A small GJS runtime remains necessary because GNOME Shell actors cannot
-run in the GTK process.
+The active behavior and executable boundaries are complete. Upgrade/rollback
+coverage, obsolete adapter removal, and final compatibility cleanup remain. A
+small GJS runtime remains necessary because GNOME Shell actors cannot run in
+the GTK process.
 
 Post-migration product backlog:
 

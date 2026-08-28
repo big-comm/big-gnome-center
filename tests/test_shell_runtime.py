@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 74" in controller
+    assert "RUNTIME_BUILD = 75" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -285,6 +285,29 @@ def test_unified_runtime_loads_rollback_engines_behind_one_controller():
     assert "ComponentHost" in taskbar
 
 
+def test_taskbar_renderer_modules_are_internalized_under_unified_runtime():
+    renderer = RUNTIME / "taskbar"
+    expected = {
+        "appIcons.js",
+        "i18n.js",
+        "intellihide.js",
+        "panel.js",
+        "panelManager.js",
+        "panelPositions.js",
+        "panelSettings.js",
+        "proximity.js",
+        "runtimeContext.js",
+        "taskbar.js",
+        "transparency.js",
+        "utils.js",
+        "windowPreview.js",
+    }
+
+    assert {path.name for path in renderer.glob("*.js")} == expected
+    for path in RUNTIME.glob("*.js"):
+        assert "../community-panel@communitybig.org/" not in path.read_text()
+
+
 def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
     taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
     surface = (RUNTIME / "taskbarSurface.js").read_text()
@@ -292,10 +315,7 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
         ROOT
         / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/extension.js"
     ).read_text()
-    context = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/runtimeContext.js"
-    ).read_text()
+    context = (RUNTIME / "taskbar/runtimeContext.js").read_text()
 
     assert "new TaskbarSurfaceManager(this._host)" in taskbar
     assert "await this._surface.enable(panelHeight)" in taskbar
@@ -306,6 +326,8 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
     assert "manager?.disable();" in surface
     assert "Context.initializeRuntimeContext(this._host, this)" in surface
     assert "Context.clearRuntimeContext(this);" in surface
+    assert "rendererImplementation" in surface
+    assert "rendererModules: this._manager ? 13 : 0" in surface
     assert surface.index("manager?.disable();") < surface.index(
         "Context.clearRuntimeContext(this);"
     )
@@ -323,9 +345,7 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
 def test_taskbar_app_actions_are_owned_with_a_rollback_fallback():
     actions = (RUNTIME / "taskbarAppActions.js").read_text()
     surface = (RUNTIME / "taskbarSurface.js").read_text()
-    app_icons = (
-        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/appIcons.js"
-    ).read_text()
+    app_icons = (RUNTIME / "taskbar/appIcons.js").read_text()
 
     assert "new TaskbarAppActions(Context.SETTINGS)" in surface
     assert "this.appActions?.destroy()" in surface
@@ -366,15 +386,9 @@ def test_taskbar_app_actions_are_owned_with_a_rollback_fallback():
 def test_taskbar_previews_and_context_menus_are_runtime_owned_with_fallbacks():
     interactions = (RUNTIME / "taskbarInteractions.js").read_text()
     surface = (RUNTIME / "taskbarSurface.js").read_text()
-    taskbar = (
-        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/taskbar.js"
-    ).read_text()
-    app_icons = (
-        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/appIcons.js"
-    ).read_text()
-    intellihide = (
-        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/intellihide.js"
-    ).read_text()
+    taskbar = (RUNTIME / "taskbar/taskbar.js").read_text()
+    app_icons = (RUNTIME / "taskbar/appIcons.js").read_text()
+    intellihide = (RUNTIME / "taskbar/intellihide.js").read_text()
 
     assert "new TaskbarInteractions()" in surface
     assert "this.interactions?.destroy()" in surface
@@ -391,9 +405,7 @@ def test_taskbar_previews_and_context_menus_are_runtime_owned_with_fallbacks():
 def test_taskbar_layout_indicators_are_runtime_rendered_with_fallbacks():
     renderer = (RUNTIME / "taskbarIndicatorRenderer.js").read_text()
     surface = (RUNTIME / "taskbarSurface.js").read_text()
-    app_icons = (
-        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/appIcons.js"
-    ).read_text()
+    app_icons = (RUNTIME / "taskbar/appIcons.js").read_text()
 
     assert "new TaskbarIndicatorRenderer(Context.SETTINGS)" in surface
     assert "this.indicatorRenderer?.destroy()" in surface
@@ -411,13 +423,8 @@ def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
         RUNTIME / "taskbarStatusFullscreenIntegration.js"
     ).read_text()
     host = (RUNTIME / "taskbarPanelHost.js").read_text()
-    panel = (
-        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panel.js"
-    ).read_text()
-    manager = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
-    ).read_text()
+    panel = (RUNTIME / "taskbar/panel.js").read_text()
+    manager = (RUNTIME / "taskbar/panelManager.js").read_text()
 
     assert "new TaskbarStatusAreaHost()" in surface
     assert "new TaskbarStatusFullscreenIntegration(" in surface
@@ -460,20 +467,14 @@ def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
     assert "this.statusFullscreen.unstyle(this)" in panel
     assert "PanelStyle" not in panel
     assert "_adjustForOverview" not in panel
-    intellihide = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/intellihide.js"
-    ).read_text()
+    intellihide = (RUNTIME / "taskbar/intellihide.js").read_text()
     assert "setIntellihideTracking(" in intellihide
 
 
 def test_taskbar_monitor_topology_is_owned_outside_panel_manager():
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     host = (RUNTIME / "taskbarMonitorHost.js").read_text()
-    manager = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
-    ).read_text()
+    manager = (RUNTIME / "taskbar/panelManager.js").read_text()
 
     assert "new TaskbarMonitorHost()" in surface
     assert "this.monitorHost.bind(manager)" in surface
@@ -496,10 +497,7 @@ def test_taskbar_monitor_topology_is_owned_outside_panel_manager():
 def test_taskbar_global_shell_hooks_have_owned_transactional_lifecycle():
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     hooks = (RUNTIME / "taskbarShellHooks.js").read_text()
-    manager = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
-    ).read_text()
+    manager = (RUNTIME / "taskbar/panelManager.js").read_text()
 
     assert "new TaskbarShellHooks()" in surface
     assert "this.shellHooks.destroy(manager)" in surface
@@ -532,10 +530,7 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
     dock_imports = (RUNTIME / "dock/imports.js").read_text()
     monitor = (RUNTIME / "taskbarMonitorHost.js").read_text()
-    manager = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panelManager.js"
-    ).read_text()
+    manager = (RUNTIME / "taskbar/panelManager.js").read_text()
 
     assert "new TaskbarServiceHost()" in surface
     assert "this.serviceHost.destroy(manager)" in surface
@@ -639,8 +634,8 @@ def test_taskbar_window_telemetry_distinguishes_normal_and_desktop_windows():
     assert "wmClass: window.get_wm_class()" in taskbar
 
 
-def test_inherited_taskbar_modules_use_the_separate_runtime_context():
-    panel = ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org"
+def test_internalized_taskbar_modules_use_the_separate_runtime_context():
+    panel = RUNTIME / "taskbar"
     consumers = [
         "appIcons.js",
         "intellihide.js",

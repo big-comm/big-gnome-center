@@ -14,9 +14,9 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as WindowManager from 'resource:///org/gnome/shell/ui/windowManager.js';
 import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
 
-import * as Intellihide from '../community-panel@communitybig.org/intellihide.js';
-import * as Utils from '../community-panel@communitybig.org/utils.js';
-import {SETTINGS} from '../community-panel@communitybig.org/runtimeContext.js';
+import * as Intellihide from './taskbar/intellihide.js';
+import * as Utils from './taskbar/utils.js';
+import {SETTINGS} from './taskbar/runtimeContext.js';
 
 const GS_SWITCH_HOTKEYS_KEY = 'switch-to-application-';
 const GS_OPEN_HOTKEYS_KEY = 'open-new-window-application-';

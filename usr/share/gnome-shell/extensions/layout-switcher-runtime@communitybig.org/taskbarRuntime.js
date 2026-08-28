@@ -14,7 +14,7 @@ export class TaskbarRuntime {
     constructor(extension) {
         this._host = new ComponentHost(extension, PANEL_UUID, {
             name: 'Community Panel',
-            version: 74,
+            version: 75,
             url: 'https://github.com/BigCommunity/layout-switcher',
         });
         this._surface = new TaskbarSurfaceManager(this._host);

@@ -7,7 +7,7 @@ import Shell from 'gi://Shell';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import * as Utils from '../community-panel@communitybig.org/utils.js';
+import * as Utils from './taskbar/utils.js';
 
 const DOUBLE_CLICK_DELAY_MS = 450;
 const CLICK_MODIFIERS = Clutter.ModifierType.SHIFT_MASK |

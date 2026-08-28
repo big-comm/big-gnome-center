@@ -367,6 +367,20 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{expected_taskbars}, got {bool(taskbar_lifecycle.get('managerOwned'))}",
         ),
         _check(
+            (
+                taskbar_lifecycle.get("rendererImplementation")
+                == "layout-switcher-runtime"
+            ) == expected_taskbars
+            and taskbar_lifecycle.get("rendererModules", 0)
+            == (13 if expected_taskbars else 0),
+            "taskbar-renderer-implementation",
+            f"runtime-owned={expected_taskbars}",
+            "expected runtime-owned Taskbar renderer="
+            f"{expected_taskbars}, got "
+            f"{taskbar_lifecycle.get('rendererImplementation')}/"
+            f"{taskbar_lifecycle.get('rendererModules', 0)} modules",
+        ),
+        _check(
             bool(taskbar_lifecycle.get("globalOwned")) == expected_taskbars,
             "taskbar-global-ownership",
             f"owned={expected_taskbars}",

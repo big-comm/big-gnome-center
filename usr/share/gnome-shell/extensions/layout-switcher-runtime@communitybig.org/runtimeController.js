@@ -8,7 +8,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 74;
+export const RUNTIME_BUILD = 75;
 
 export class RuntimeController {
     constructor(extension) {

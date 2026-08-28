@@ -6,10 +6,10 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import * as Panel from '../community-panel@communitybig.org/panel.js';
-import * as PanelSettings from '../community-panel@communitybig.org/panelSettings.js';
-import * as Utils from '../community-panel@communitybig.org/utils.js';
-import {DTP_EXTENSION, SETTINGS} from '../community-panel@communitybig.org/runtimeContext.js';
+import * as Panel from './taskbar/panel.js';
+import * as PanelSettings from './taskbar/panelSettings.js';
+import * as Utils from './taskbar/utils.js';
+import {DTP_EXTENSION, SETTINGS} from './taskbar/runtimeContext.js';
 import {DesktopIconsUsableAreaClass} from './desktopIconsUsableArea.js';
 import {TaskbarNotificationMonitor} from './taskbarNotificationMonitor.js';
 import {TaskbarOverviewIntegration} from './taskbarOverviewIntegration.js';

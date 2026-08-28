@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-import * as Utils from '../community-panel@communitybig.org/utils.js';
+import * as Utils from './taskbar/utils.js';
 
 export class TaskbarIndicatorRenderer {
     constructor(settings) {

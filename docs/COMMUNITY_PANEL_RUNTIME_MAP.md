@@ -1,13 +1,14 @@
 # Community Panel Runtime Map
 
 Last update: 2026-08-28
-Baseline: `3b88045`, runtime build 74
+Baseline: `1de221a`, runtime build 75
 
 ## Scope
 
-Map the inherited Community Panel modules still loaded by the unified runtime.
-The standalone `extension.js` is a rollback adapter and is not the active
-lifecycle owner. `TaskbarSurfaceManager` constructs `PanelManager` directly.
+Map the internalized Community Panel renderer modules loaded by the unified
+runtime. The standalone Community Panel `extension.js` and matching source
+copies are dormant rollback assets. `TaskbarSurfaceManager` constructs the
+runtime-owned `taskbar/panelManager.js` directly.
 
 ## Active import graph
 
@@ -22,40 +23,40 @@ taskbarSurface.js
      -> taskbarOverviewIntegration.js
      -> taskbarNotificationMonitor.js
      -> runtime/desktopIconsUsableArea.js
-  -> panelManager.js
-     -> panel.js
-        -> taskbar.js
-           -> appIcons.js
-           -> windowPreview.js
-        -> intellihide.js
-           -> proximity.js
-        -> transparency.js
-        -> panelSettings.js
-        -> panelPositions.js
-     -> runtimeContext.js
-     -> utils.js
+  -> taskbar/panelManager.js
+     -> taskbar/panel.js
+        -> taskbar/taskbar.js
+           -> taskbar/appIcons.js
+           -> taskbar/windowPreview.js
+        -> taskbar/intellihide.js
+           -> taskbar/proximity.js
+        -> taskbar/transparency.js
+        -> taskbar/panelSettings.js
+        -> taskbar/panelPositions.js
+     -> taskbar/runtimeContext.js
+     -> taskbar/utils.js
 ```
 
 ## Ownership map
 
 | Module | Live responsibility | Current owner | Migration action |
 |---|---|---|---|
-| `panelManager.js` | behavior callbacks and service coordination | mixed | service lifecycle delegated to owned hosts |
-| `panel.js` | allocation and inherited styling | mixed | native status lifecycle delegated to owned host |
-| `taskbar.js` | application actor layout and inherited adapters | mixed | retain until host accepted |
-| `appIcons.js` | application actors and renderer hooks | mixed | owned policies already injected |
-| `windowPreview.js` | preview renderer | inherited | retain behind owned interactions |
-| `intellihide.js` | overlap and reveal renderer | mixed | owned mode selection already active |
-| `transparency.js` | effective Panel alpha | inherited | owned opacity is the source of truth |
+| `taskbar/panelManager.js` | behavior callbacks and service coordination | runtime | internalized in build 75 |
+| `taskbar/panel.js` | allocation and inherited styling | runtime | internalized in build 75 |
+| `taskbar/taskbar.js` | application actor layout and adapters | runtime | internalized in build 75 |
+| `taskbar/appIcons.js` | application actors and renderer hooks | runtime | internalized in build 75 |
+| `taskbar/windowPreview.js` | preview renderer | runtime | internalized in build 75 |
+| `taskbar/intellihide.js` | overlap and reveal renderer | runtime | internalized in build 75 |
+| `taskbar/transparency.js` | effective Panel alpha | runtime | internalized in build 75 |
 | `taskbarStatusFullscreenIntegration.js` | native status styling and fullscreen tracking | runtime | owned implementation accepted in build 74 |
 | `taskbarOverviewIntegration.js` | Taskbar/overview integration | runtime | owned implementation accepted in build 73 |
-| `proximity.js` | window overlap watches | inherited | retain with intellihide |
+| `taskbar/proximity.js` | window overlap watches | runtime | internalized in build 75 |
 | `taskbarNotificationMonitor.js` | application notification counts | runtime | owned implementation accepted in build 72 |
 | `desktopIconsIntegration.js` | removed in build 71 | runtime | shared owned implementation replaces both copies |
-| `panelSettings.js` | renderer settings and monitor maps | adapter | remove after upgrade matrix |
-| `panelPositions.js` | renderer position constants | adapter | replace with layout profiles |
-| `runtimeContext.js` | compatibility dependency injection | adapter | remove last |
-| `utils.js` | shared Shell helpers | inherited | split only with each consumer |
+| `taskbar/panelSettings.js` | renderer settings and monitor maps | runtime adapter | remove after upgrade matrix |
+| `taskbar/panelPositions.js` | renderer position constants | runtime adapter | replace with layout profiles |
+| `taskbar/runtimeContext.js` | renderer dependency injection | runtime adapter | remove last |
+| `taskbar/utils.js` | shared Shell helpers | runtime | split only with each consumer |
 | `extension.js` | standalone compatibility entry point | inactive | retain for rollback cycle |
 
 ## Native status-area boundary
@@ -172,10 +173,10 @@ tracking mutations, pending repair, surface readiness, and repair count.
 `panelStyle.js` was removed only after GNOME 50.4 and GNOME 51.beta passed the
 status, F11, teardown, Taskbar re-entry, and strict-audit matrices.
 
-The behavior boundary is complete. Remaining migration work is structural:
-internalize the active Taskbar renderer modules, remove the standalone
-compatibility host after upgrade/rollback coverage, and retire obsolete schema
-adapters only after their gates pass.
+Build 75 closes the active executable boundary. All 13 Taskbar renderer modules
+are internal to the unified runtime, and strict audit identifies the runtime
+implementation and exact module count. The dormant standalone compatibility
+host and schema/resource adapters remain until upgrade/rollback coverage passes.
 
 ## Upstream reference
 

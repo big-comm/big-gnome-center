@@ -4,8 +4,8 @@ import Clutter from 'gi://Clutter';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import * as Panel from '../community-panel@communitybig.org/panel.js';
-import * as Utils from '../community-panel@communitybig.org/utils.js';
+import * as Panel from './taskbar/panel.js';
+import * as Utils from './taskbar/utils.js';
 
 export class TaskbarPanelHost {
     constructor(statusAreaHost, statusFullscreen) {

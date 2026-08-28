@@ -1,7 +1,7 @@
 # Shell Runtime Inventory
 
 Last update: 2026-08-28
-Status: Panel behavior boundary accepted; renderer internalization pending
+Status: Active Dock and Taskbar executable boundaries owned
 
 ## Ownership matrix
 
@@ -9,9 +9,9 @@ Status: Panel behavior boundary accepted; renderer internalization pending
 |---|---|---|---|
 | BigGnome | Unified runtime -> owned Dock | bottom | none |
 | G-Unity | Unified runtime -> owned Dock | left | none |
-| Hybrid | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
-| Desk UX | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
-| Classic | Unified runtime -> Taskbar compatibility engine | bottom | Dash to Dock snapshot, not enabled |
+| Hybrid | Unified runtime -> owned Taskbar | bottom | Dash to Dock snapshot, not enabled |
+| Desk UX | Unified runtime -> owned Taskbar | bottom | Dash to Dock snapshot, not enabled |
+| Classic | Unified runtime -> owned Taskbar | bottom | Dash to Dock snapshot, not enabled |
 | Minimal | Unified runtime -> native GNOME panel only | top | Dash to Dock snapshot, not enabled |
 
 The dormant Dash to Dock sections are migration debt. They must not be treated
@@ -29,15 +29,16 @@ Current installed payload:
 
 | Component | Current bytes | Current JS/CSS lines |
 |---|---:|---:|
-| Unified runtime with Dock | 645,379 | 18,404 |
+| Unified runtime with Dock and Taskbar | 965,865 | 29,153 |
 | Dock resources and schemas | 176,013 | 1,713 CSS |
-| Community Panel | 1,145,446 | 11,018 |
-| Combined | 1,966,838 | 31,135 |
+| Community Panel rollback/resources | 1,145,880 | 11,018 |
+| Combined | 2,287,758 | 41,884 |
 
 The runtime reads the owned schema, maps all six layout profiles, and selects
-Dock, Taskbar, or native GNOME behavior. Dock actors and lifecycle are owned by
-this runtime. Community Panel remains an internal compatibility module. The old
-Community Dock path is not an extension and contains no executable JavaScript.
+Dock, Taskbar, or native GNOME behavior. Dock and Taskbar actors, lifecycle,
+and active executable modules are owned by this runtime. Community Panel is a
+dormant rollback and resource host. The old Community Dock path is not an
+extension and contains no executable JavaScript.
 
 Preferences-only payload removed:
 
@@ -77,6 +78,10 @@ Removed standalone payload:
 - `extension.js`, `metadata.json`, `prefs.js`, and `Settings.ui`.
 
 ### Community Panel
+
+The active copies of the modules below are internalized under the unified
+runtime's `taskbar/` directory. Community Panel retains identical dormant
+copies only for the upgrade/rollback gate.
 
 Runtime entry and orchestration:
 

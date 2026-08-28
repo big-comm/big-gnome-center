@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
 Last update: 2026-08-28
-Safe checkpoint: `3b88045`
-Status: Build 74 accepts the final Panel behavior boundary
+Safe checkpoint: `1de221a`
+Status: Build 75 accepts Taskbar renderer internalization
 
 ## Purpose
 
@@ -24,8 +24,8 @@ The current source deliberately stops at the last safe boundary:
 - the unified controller selects Dock, Taskbar, or native GNOME per layout;
 - Community Dock is retired as an extension; Community Panel is disabled as a
   standalone extension;
-- the accepted Panel/Taskbar engine remains imported internally as a rollback
-  module;
+- the accepted Panel/Taskbar renderer is internalized in the unified runtime;
+- Community Panel remains a dormant rollback and resource host;
 - Dock construction, lifecycle, and executable modules belong to the unified
   runtime;
 - independent Dock and Panel preference screens are removed;
@@ -45,8 +45,8 @@ Layout Switcher GTK app
   -> helper extension for safe switch orchestration
   -> unified Shell runtime UUID
        -> owned Dock runtime for BigGnome and G-Unity
-       -> owned Taskbar physical/status/topology/hook hosts with inherited
-          visual modules for Hybrid, Desk UX, and Classic
+       -> owned Taskbar renderer and physical/status/topology/hook hosts for
+          Hybrid, Desk UX, and Classic
        -> native GNOME surface for Minimal
 ```
 
@@ -54,10 +54,10 @@ Current internal payload:
 
 | Module | Bytes | JS/CSS lines | Public UUID enabled |
 |---|---:|---:|---|
-| Unified runtime with Dock and Taskbar lifecycle | 645,379 | 18,404 | yes |
+| Unified runtime with Dock and Taskbar | 965,865 | 29,153 | yes |
 | Dock resource host | 176,013 | 1,713 CSS | no entry point |
-| Inherited Taskbar visual modules | 1,145,446 | 11,018 | rollback adapter only |
-| Total | 1,966,838 | 31,135 | one public runtime |
+| Community Panel rollback/resources | 1,145,880 | 11,018 | rollback adapter only |
+| Total | 2,287,758 | 41,884 | one public runtime |
 
 The size target is not a fixed percentage. Removal is allowed only when a
 replacement passes the relevant behavior contract.
@@ -191,7 +191,7 @@ Gates:
 - [ ] Validate the removable-drive menu with a mounted test device.
 - [x] Remove replaced DING, notification, Overview, and Panel-style branches
   only after their replacements are accepted.
-- [ ] Internalize the remaining inherited Taskbar renderer modules before
+- [x] Internalize the remaining inherited Taskbar renderer modules before
   removing the compatibility host.
 
 Gates:
@@ -660,9 +660,38 @@ are unchanged. Final local/GNOME 50/GNOME 51 SHA-256 values match:
 - complete Community Panel compatibility payload:
   `df2d22d95e3021e72c0c3832baf8c0de381dba7b415fd013a73926e752a770ef`.
 
-The behavior migration is complete. Structural work remains: internalize the
-active Taskbar renderer modules, validate upgrade/rollback, then remove the
-compatibility host and obsolete schema adapters.
+Build 75 internalizes the 13 active Taskbar renderer modules under
+`layout-switcher-runtime@communitybig.org/taskbar/`. Every runtime import now
+stays inside the unified runtime. Community Panel keeps an identical dormant
+copy for the upgrade/rollback gate; it is not the active renderer.
+
+GNOME 50.4 and GNOME 51.beta passed fresh-session activation, Hybrid strict
+audit, Minimal teardown, Hybrid re-entry, exact actor/style restoration, and
+clean current-shell journals. GNOME 50 finishes in BigGnome and GNOME 51 in
+Hybrid. Application/runtime labels match and each VM has one `1280x800`
+monitor. Strict audit now requires the runtime-owned renderer implementation
+and exact 13-module count.
+
+Focused tests: `81 passed`. Full suite: `577 passed`, one known PyGI warning.
+JavaScript syntax, strict schemas, Python compilation, and diff checks pass.
+PKGBUILD and package versions are unchanged. Final local/GNOME 50/GNOME 51
+SHA-256 values match:
+
+- runtime controller:
+  `1e5c2c96219cccfabcc077c38a24d4ea8e55b8da6cb7143048bab48d005ed070`;
+- Taskbar runtime:
+  `9c2252983d7d659a012cd8bcd4d1075bbdbce88209a711108ebe0fed04c86ccf`;
+- Taskbar surface:
+  `3539181fc7c4b17a20a2eab8efbca0429cee6b411130701b298a792ec75d46f6`;
+- runtime audit:
+  `4fce5086bec78eade01608abb4c699f311642d170ab997696afe0b0d7c25460c`;
+- complete unified-runtime payload:
+  `5c038ae73a9eafe4a63ee9d9f167f4754ab98226dc66bbe9229f109987c61682`;
+- complete Community Panel rollback/resource payload:
+  `63fa39f0e19be35754ea03afb0adbc9d6b8fcaf060dd30e259d41b8a556fc832`.
+
+The executable migration is complete. Upgrade/rollback validation must pass
+before removing the dormant compatibility host and obsolete schema adapters.
 
 Post-migration product backlog, explicitly outside the final engine boundary:
 
@@ -924,7 +953,7 @@ Add a deferred option only after a concrete user need and a separate approval.
 
 ## Definition of done
 
-- [ ] Only the unified runtime implements Dock and Taskbar actors.
+- [x] Only the unified runtime implements Dock and Taskbar actors.
 - [ ] Compatibility engines are absent from the shipped package.
 - [ ] All supported configuration exists only in Layout Switcher.
 - [ ] The six layout contracts match the accepted visual baseline.

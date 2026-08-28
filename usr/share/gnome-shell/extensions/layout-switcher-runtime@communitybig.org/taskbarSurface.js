@@ -6,9 +6,9 @@ import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {EventEmitter} from 'resource:///org/gnome/shell/misc/signals.js';
 
-import * as PanelManager from '../community-panel@communitybig.org/panelManager.js';
-import * as PanelSettings from '../community-panel@communitybig.org/panelSettings.js';
-import * as Context from '../community-panel@communitybig.org/runtimeContext.js';
+import * as PanelManager from './taskbar/panelManager.js';
+import * as PanelSettings from './taskbar/panelSettings.js';
+import * as Context from './taskbar/runtimeContext.js';
 import {TaskbarAppActions} from './taskbarAppActions.js';
 import {TaskbarInteractions} from './taskbarInteractions.js';
 import {TaskbarIndicatorRenderer} from './taskbarIndicatorRenderer.js';
@@ -145,6 +145,10 @@ export class TaskbarSurfaceManager {
     diagnostics() {
         return {
             managerOwned: Boolean(this._manager),
+            rendererImplementation: this._manager
+                ? 'layout-switcher-runtime'
+                : '',
+            rendererModules: this._manager ? 13 : 0,
             appActionsOwned: Boolean(this.appActions),
             appActions: this.appActions?.diagnostics() ?? {},
             interactionsOwned: Boolean(this.interactions),

@@ -2190,3 +2190,39 @@ Append one entry per completed change:
 - The behavior migration is complete. Remaining work is structural Taskbar
   renderer internalization, a mounted removable-drive menu check,
   upgrade/rollback gates, and compatibility/schema cleanup.
+
+## 2026-08-28 — Internalized Taskbar renderer, build 75
+
+- Checkpoint `1de221a` was clean before this slice. Build 75 is not committed.
+- The 13 active Taskbar renderer modules now live under the unified runtime's
+  `taskbar/` directory. Runtime JavaScript has no executable import into the
+  Community Panel directory.
+- Community Panel retains identical dormant sources, schema, CSS, translations,
+  and assets for the upgrade/rollback gate. Its standalone UUID remains
+  disabled in every layout.
+- Telemetry reports the runtime renderer implementation and module count.
+  Strict audit rejects legacy ownership or an incomplete module set.
+- GNOME 50.4 and GNOME 51.beta passed fresh-session activation, Hybrid strict
+  audit, Minimal teardown, Hybrid re-entry, exact native restoration, and clean
+  current-shell journals. Screenshots match the Hybrid baseline.
+- Final state: GNOME 50 BigGnome; GNOME 51 Hybrid; application/runtime labels
+  equal; one `1280x800` monitor each; strict audit zero failures. The SSH tty
+  session warning is expected. GSConnect activation noise on GNOME 51 remains
+  external.
+- Focused tests: `81 passed`. Full suite: `577 passed`, one known PyGI warning.
+  JavaScript syntax, strict schemas, Python compilation, and diff checks pass.
+  PKGBUILD/package versions are unchanged.
+- Final local/GNOME 50/GNOME 51 SHA-256: runtime controller
+  `1e5c2c96219cccfabcc077c38a24d4ea8e55b8da6cb7143048bab48d005ed070`;
+  Taskbar runtime
+  `9c2252983d7d659a012cd8bcd4d1075bbdbce88209a711108ebe0fed04c86ccf`;
+  Taskbar surface
+  `3539181fc7c4b17a20a2eab8efbca0429cee6b411130701b298a792ec75d46f6`;
+  audit
+  `4fce5086bec78eade01608abb4c699f311642d170ab997696afe0b0d7c25460c`;
+  runtime payload
+  `5c038ae73a9eafe4a63ee9d9f167f4754ab98226dc66bbe9229f109987c61682`;
+  Community Panel rollback/resource payload
+  `63fa39f0e19be35754ea03afb0adbc9d6b8fcaf060dd30e259d41b8a556fc832`.
+- Next gate: validate clean install, stable/testing upgrades, logout/login,
+  reboot, and rollback before deleting compatibility sources or schema adapters.

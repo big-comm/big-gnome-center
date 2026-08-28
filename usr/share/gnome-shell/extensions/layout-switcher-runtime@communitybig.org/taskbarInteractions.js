@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-import {Hold} from '../community-panel@communitybig.org/intellihide.js';
+import {Hold} from './taskbar/intellihide.js';
 
 export class TaskbarInteractions {
     constructor() {

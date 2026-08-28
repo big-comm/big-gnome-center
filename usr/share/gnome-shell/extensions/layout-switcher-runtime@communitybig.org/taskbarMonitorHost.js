@@ -2,9 +2,9 @@
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import * as PanelSettings from '../community-panel@communitybig.org/panelSettings.js';
-import * as Utils from '../community-panel@communitybig.org/utils.js';
-import {SETTINGS} from '../community-panel@communitybig.org/runtimeContext.js';
+import * as PanelSettings from './taskbar/panelSettings.js';
+import * as Utils from './taskbar/utils.js';
+import {SETTINGS} from './taskbar/runtimeContext.js';
 
 const TOPOLOGY_SETTINGS = [
     'changed::primary-monitor',

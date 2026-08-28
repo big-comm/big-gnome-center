@@ -8,8 +8,8 @@ import * as LookingGlass from 'resource:///org/gnome/shell/ui/lookingGlass.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import St from 'gi://St';
 
-import * as Utils from '../community-panel@communitybig.org/utils.js';
-import {SETTINGS} from '../community-panel@communitybig.org/runtimeContext.js';
+import * as Utils from './taskbar/utils.js';
+import {SETTINGS} from './taskbar/runtimeContext.js';
 
 export class TaskbarShellHooks {
     constructor() {

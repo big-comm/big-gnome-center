@@ -164,6 +164,11 @@ def _snapshot(**changes) -> Snapshot:
                     "window": {"normal": True},
                     "lifecycle": {
                         "managerOwned": surface == "taskbar",
+                        "rendererImplementation": (
+                            "layout-switcher-runtime"
+                            if surface == "taskbar" else ""
+                        ),
+                        "rendererModules": 13 if surface == "taskbar" else 0,
                         "globalOwned": surface == "taskbar",
                         "appActionsOwned": surface == "taskbar",
                         "interactionsOwned": surface == "taskbar",
@@ -899,6 +904,7 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     )
 
     assert "taskbar-manager-ownership" in failures
+    assert "taskbar-renderer-implementation" in failures
     assert "taskbar-app-actions-ownership" in failures
     assert "taskbar-interactions-ownership" in failures
     assert "taskbar-indicator-renderer-ownership" in failures
