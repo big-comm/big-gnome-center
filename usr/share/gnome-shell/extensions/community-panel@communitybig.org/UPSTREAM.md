@@ -29,12 +29,14 @@ Local runtime changes:
   unified runtime hook host. Inherited behavior callbacks remain unchanged.
 - Overview, notification-monitor, desktop usable-area, manager-signal, and
   intellihide-keybinding lifecycle belongs to the unified runtime service host.
-  Overview behavior remains a compatibility module.
 - Build 71 ports the official DING usable-area protocol into the unified
   runtime and removes the two dormant inherited implementations. The original
   1-clause BSD attribution is preserved in the owned source.
 - Build 72 ports notification aggregation, focus clearing, launcher signals,
   and Unity D-Bus ownership into the unified runtime. The dormant inherited
   notification monitor is removed after GNOME 50/51 acceptance.
+- Build 73 ports Overview allocation, dash visibility, workspace isolation,
+  hotkeys/previews, and click-to-exit behavior into the unified runtime. The
+  inherited Overview module is removed after GNOME 50/51 acceptance.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

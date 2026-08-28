@@ -564,12 +564,57 @@ match:
 - complete Community Panel compatibility payload:
   `6ec10936aca90596ded0a07d82a5b49725533d32cab652169126e875586280d6`.
 
-Next Panel slice: port Overview behavior behind the existing owned lifecycle.
-Remove no further inherited module until its focused behavior, restoration, and
-both-Shell matrices pass.
+Build 73 replaces the inherited Taskbar Overview implementation behind the
+existing owned service lifecycle. `TaskbarOverviewIntegration` owns dash
+visibility, Overview allocation, optional workspace isolation, number hotkeys
+and previews, and empty-space exit. It records exact property descriptors,
+signals, keybindings, and timeouts, and refuses to overwrite a hook replaced by
+another extension during restoration.
 
-Post-migration product backlog, explicitly outside the two remaining engine
-boundaries:
+GNOME Shell 50.4 target
+`233322b9b675b0385767147c1a6cfc6ff7325160`, Shell main
+`6db7eaf5377e24d85eb9251316a8b2b5ca407cc4`, Dash-to-Panel master
+`1c0c1f1354bfaccbf2539ef516ec527bea498a51`, and official GJS lifecycle and
+`InjectionManager` guidance were reviewed first. Both Shell versions retain the
+same central private Overview contracts; no public replacement exists.
+
+Telemetry and strict audit require runtime ownership, active connections,
+configured hook/keybinding state, coherent Overview/search/app-grid state,
+exact restoration state, zero conflicts, zero pending preview/timeouts, and
+zero orphan actors. Contract tests reject the inherited import and require the
+owned module. The inherited `overview.js` was removed only after both live
+matrices passed.
+
+GNOME 50.4 passed in Classic and GNOME 51.beta passed in Hybrid: first entry,
+normal and maximized windows, search, app grid, application activation,
+workspace switching, menus, empty-space exit, 10 slow and 20 rapid cycles in
+each window state, native Minimal restoration, and Taskbar re-entry. Final
+strict audits report zero failures; GNOME 50 is BigGnome, GNOME 51 is Hybrid,
+application/runtime labels match, and each VM has one `1280x800` monitor.
+Current-shell journals contain no new-module error. GNOME 51 retains the
+external GSConnect `wl_clipboard.js` final-type failure.
+
+Focused tests: `80 passed`. Full suite: `576 passed`, one known PyGI warning.
+Changed JavaScript syntax and diff checks pass. PKGBUILD and package versions
+are unchanged. Final local/GNOME 50/GNOME 51 SHA-256 values match:
+
+- runtime controller:
+  `9d918d47d5c48e8ab94fbafb662e157ad65489a322f01d392d29538f3fbd36ee`;
+- Taskbar service host:
+  `a53bc122e5ddacd00f701d272c73692d3f88f1e60f3d92dd098a6d52931fb72d`;
+- Taskbar Overview integration:
+  `0411e487cce6475141ae75eb88dbe292a7eed5d8116b30a30b8eea6fbd7170dc`;
+- runtime audit:
+  `a96b9abf4c1a75bf023bbf990f49a7a6e264aa72d602390691265b18e4e4d770`;
+- complete unified-runtime payload:
+  `50236f08080c1fddc1529fe9fe19d358887717eea4f07ac320c6ba78e865c60a`;
+- complete Community Panel compatibility payload:
+  `ee34534c3b866291f5e13a0122bc5f69421177601ec54b3080714e6192bb6bb1`.
+
+Final Panel slice: port remaining inherited status/fullscreen behavior and pass
+the exact-teardown gate. Do not start it in build 73.
+
+Post-migration product backlog, explicitly outside the final engine boundary:
 
 - BigGnome Dock applications-menu side, with right preserved as the default
   and left offered as a per-layout choice.

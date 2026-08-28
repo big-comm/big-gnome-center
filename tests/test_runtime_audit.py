@@ -187,6 +187,51 @@ def _snapshot(**changes) -> Snapshot:
                             "active": surface == "taskbar",
                             "overviewOwned": surface == "taskbar",
                             "overviewActive": surface == "taskbar",
+                            "overviewIntegration": {
+                                "implementation": (
+                                    "layout-switcher-runtime"
+                                    if surface == "taskbar" else ""
+                                ),
+                                "connected": surface == "taskbar",
+                                "active": surface == "taskbar",
+                                "signalsOwned": 14 if surface == "taskbar" else 0,
+                                "hooksOwned": 1 if surface == "taskbar" else 0,
+                                "hookLabels": (
+                                    ["overview-allocation"]
+                                    if surface == "taskbar" else []
+                                ),
+                                "allocationHookOwned": surface == "taskbar",
+                                "workspaceIsolationOwned": False,
+                                "configuredWorkspaceIsolation": False,
+                                "hotkeysEnabled": surface == "taskbar",
+                                "configuredHotkeys": surface == "taskbar",
+                                "keybindingsOwned": 61 if surface == "taskbar" else 0,
+                                "nativeKeybindingsSuppressed": (
+                                    18 if surface == "taskbar" else 0
+                                ),
+                                "clickToExitOwned": surface == "taskbar",
+                                "configuredClickToExit": surface == "taskbar",
+                                "dashVisible": False,
+                                "configuredDashVisible": False,
+                                "overviewVisible": False,
+                                "overviewVisibleTarget": False,
+                                "overviewState": "hidden",
+                                "overviewStateValue": 0,
+                                "searchActive": False,
+                                "appGridActive": False,
+                                "hotkeyPreviewActive": False,
+                                "pendingTimeouts": 0,
+                                "restorationPending": surface == "taskbar",
+                                "restoreConflicts": 0,
+                                "lastConflict": "",
+                                "entryCount": 0,
+                                "exitCount": 0,
+                                "stateChangeCount": 0,
+                                "allocationCount": 1 if surface == "taskbar" else 0,
+                                "lastState": "hidden",
+                                "actorsCreated": 0,
+                                "orphanActors": 0,
+                            },
                             "notificationsOwned": surface == "taskbar",
                             "launcherSubscriptionOwned": surface == "taskbar",
                             "unityBusOwned": surface == "taskbar",
@@ -691,6 +736,43 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
             "active": False,
             "overviewOwned": False,
             "overviewActive": False,
+            "overviewIntegration": {
+                "implementation": "inherited",
+                "connected": False,
+                "active": False,
+                "signalsOwned": 0,
+                "hooksOwned": 0,
+                "hookLabels": [],
+                "allocationHookOwned": False,
+                "workspaceIsolationOwned": True,
+                "configuredWorkspaceIsolation": False,
+                "hotkeysEnabled": False,
+                "configuredHotkeys": True,
+                "keybindingsOwned": 0,
+                "nativeKeybindingsSuppressed": 0,
+                "clickToExitOwned": False,
+                "configuredClickToExit": True,
+                "dashVisible": True,
+                "configuredDashVisible": False,
+                "overviewVisible": False,
+                "overviewVisibleTarget": False,
+                "overviewState": "invalid",
+                "overviewStateValue": -1,
+                "searchActive": False,
+                "appGridActive": False,
+                "hotkeyPreviewActive": True,
+                "pendingTimeouts": 1,
+                "restorationPending": False,
+                "restoreConflicts": 1,
+                "lastConflict": "external",
+                "entryCount": -1,
+                "exitCount": -1,
+                "stateChangeCount": -1,
+                "allocationCount": -1,
+                "lastState": "invalid",
+                "actorsCreated": 1,
+                "orphanActors": 1,
+            },
             "notificationsOwned": False,
             "launcherSubscriptionOwned": False,
             "unityBusOwned": False,
@@ -764,6 +846,12 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-service-host-ownership" in failures
     assert "taskbar-service-host-active" in failures
     assert "taskbar-overview-service" in failures
+    assert "taskbar-overview-implementation" in failures
+    assert "taskbar-overview-connection" in failures
+    assert "taskbar-overview-hooks" in failures
+    assert "taskbar-overview-restoration" in failures
+    assert "taskbar-overview-state" in failures
+    assert "taskbar-overview-residue" in failures
     assert "taskbar-notification-service" in failures
     assert "taskbar-notification-implementation" in failures
     assert "taskbar-notification-connection" in failures

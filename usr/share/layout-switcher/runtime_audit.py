@@ -275,6 +275,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     panel_host = taskbar_lifecycle.get("panelHost") or {}
     monitor_host = taskbar_lifecycle.get("monitorHost") or {}
     service_host = taskbar_lifecycle.get("serviceHost") or {}
+    overview_integration = service_host.get("overviewIntegration") or {}
     notification_monitor = service_host.get("notificationMonitor") or {}
     desktop_bridge = service_host.get("desktopBridge") or {}
     shell_hooks = taskbar_lifecycle.get("shellHooks") or {}
@@ -463,6 +464,87 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"owned/active={expected_taskbars}",
             f"overviewOwned={service_host.get('overviewOwned')}, "
             f"overviewActive={service_host.get('overviewActive')}",
+        ),
+        _check(
+            (overview_integration.get("implementation")
+             == "layout-switcher-runtime") == expected_taskbars,
+            "taskbar-overview-implementation",
+            f"runtime-owned={expected_taskbars}",
+            "expected runtime-owned Overview integration="
+            f"{expected_taskbars}, got "
+            f"{overview_integration.get('implementation')}",
+        ),
+        _check(
+            bool(overview_integration.get("connected")) == expected_taskbars
+            and bool(overview_integration.get("active")) == expected_taskbars,
+            "taskbar-overview-connection",
+            f"connected/active={expected_taskbars}",
+            f"integration={overview_integration}",
+        ),
+        _check(
+            not expected_taskbars or (
+                isinstance(overview_integration.get("signalsOwned"), int)
+                and overview_integration.get("signalsOwned") > 0
+                and isinstance(overview_integration.get("hooksOwned"), int)
+                and overview_integration.get("hooksOwned") > 0
+                and overview_integration.get("allocationHookOwned") is True
+                and "overview-allocation"
+                in overview_integration.get("hookLabels", [])
+                and overview_integration.get("workspaceIsolationOwned")
+                == overview_integration.get("configuredWorkspaceIsolation")
+                and overview_integration.get("hotkeysEnabled")
+                == overview_integration.get("configuredHotkeys")
+                and overview_integration.get("clickToExitOwned")
+                == overview_integration.get("configuredClickToExit")
+                and overview_integration.get("dashVisible")
+                == overview_integration.get("configuredDashVisible")
+            ),
+            "taskbar-overview-hooks",
+            "Overview signals, hooks, and configured behavior are owned",
+            f"integration={overview_integration}",
+        ),
+        _check(
+            not expected_taskbars or (
+                overview_integration.get("restorationPending") is True
+                and not overview_integration.get("restoreConflicts")
+                and not overview_integration.get("lastConflict")
+            ),
+            "taskbar-overview-restoration",
+            "restoration pending without conflicts",
+            f"integration={overview_integration}",
+        ),
+        _check(
+            not expected_taskbars or (
+                overview_integration.get("overviewState") in {
+                    "hidden", "entering", "window-picker",
+                    "transitioning", "app-grid",
+                }
+                and overview_integration.get("lastState") in {
+                    "hidden", "showing", "shown", "hiding",
+                }
+                and all(
+                    isinstance(overview_integration.get(key), int)
+                    and overview_integration.get(key) >= 0
+                    for key in (
+                        "entryCount", "exitCount", "stateChangeCount",
+                        "allocationCount",
+                    )
+                )
+            ),
+            "taskbar-overview-state",
+            "Overview state and counters are coherent",
+            f"integration={overview_integration}",
+        ),
+        _check(
+            not expected_taskbars or (
+                not overview_integration.get("hotkeyPreviewActive")
+                and not overview_integration.get("pendingTimeouts")
+                and overview_integration.get("actorsCreated") == 0
+                and overview_integration.get("orphanActors") == 0
+            ),
+            "taskbar-overview-residue",
+            "no pending Overview work or orphan actors",
+            f"integration={overview_integration}",
         ),
         _check(
             bool(service_host.get("notificationsOwned")) == expected_taskbars,

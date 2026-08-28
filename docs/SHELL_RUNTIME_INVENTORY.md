@@ -1,7 +1,7 @@
 # Shell Runtime Inventory
 
-Last update: 2026-08-25
-Status: Dock executable runtime internalized; Panel extraction pending
+Last update: 2026-08-28
+Status: Dock internalized; Panel final status/fullscreen boundary pending
 
 ## Ownership matrix
 
@@ -29,10 +29,10 @@ Current installed payload:
 
 | Component | Current bytes | Current JS/CSS lines |
 |---|---:|---:|
-| Unified runtime with Dock | 498,721 | 14,173 |
-| Dock resources and schemas | 178,485 | 1,713 CSS |
-| Community Panel | 1,201,543 | 12,854 |
-| Combined | 1,878,749 | 28,740 |
+| Unified runtime with Dock | 616,936 | 17,573 |
+| Dock resources and schemas | 176,013 | 1,713 CSS |
+| Community Panel | 1,157,792 | 11,390 |
+| Combined | 1,950,741 | 30,676 |
 
 The runtime reads the owned schema, maps all six layout profiles, and selects
 Dock, Taskbar, or native GNOME behavior. Dock actors and lifecycle are owned by
@@ -53,6 +53,7 @@ Preferences-only payload removed:
 Runtime entry and orchestration:
 
 - `dockRuntime.js`, `dockSurface.js`, `dockActorFactory.js`, `dock/dash.js`.
+- `taskbarOverviewIntegration.js` owns Taskbar Overview behavior.
 
 Application behavior:
 
@@ -83,9 +84,10 @@ Runtime entry and orchestration:
 
 Application behavior:
 
-- `appIcons.js`, `windowPreview.js`, `overview.js`.
+- `appIcons.js`, `windowPreview.js`.
 - The DING bridge moved to the unified runtime in build 71. Notification
-  monitoring moved to the unified runtime in build 72.
+  monitoring moved in build 72. Overview behavior moved in build 73; the
+  inherited module was removed after GNOME 50/51 acceptance.
 
 Visibility and appearance:
 

@@ -2094,3 +2094,50 @@ Append one entry per completed change:
   `6ec10936aca90596ded0a07d82a5b49725533d32cab652169126e875586280d6`.
 - Next slice: owned Overview behavior. Final slice: remaining inherited
   status/fullscreen behavior and exact teardown.
+
+## 2026-08-28 — Owned Taskbar Overview integration, build 73
+
+- Checkout started clean at `cfe61da`; build 72 was already committed despite
+  the incoming handoff describing it as uncommitted. No build 73 commit exists.
+- `TaskbarOverviewIntegration` now owns dash visibility, Overview allocation,
+  optional workspace isolation, number hotkeys/previews, and empty-space exit.
+  `TaskbarServiceHost` retains the activation point after the primary panel.
+- Signals, timeouts, keybindings, suppressed native bindings, and exact method
+  descriptors are transactional. Restoration reports conflicts instead of
+  overwriting another extension. No actors are created.
+- Telemetry and strict audit cover implementation, activation, signals/hooks,
+  settings coherence, Overview/search/app-grid state, restoration, counters,
+  pending work, conflicts, and orphan actors. Tests require the runtime import
+  and absence of the inherited module.
+- Sources reviewed on 2026-08-28: GNOME Shell 50.4 target
+  `233322b9b675b0385767147c1a6cfc6ff7325160`; Shell main
+  `6db7eaf5377e24d85eb9251316a8b2b5ca407cc4`; Dash-to-Panel master
+  `1c0c1f1354bfaccbf2539ef516ec527bea498a51`; official GJS Extension,
+  `InjectionManager`, and review lifecycle guidance. No public API replaces the
+  private Overview contracts. Reviewed hashes are recorded in
+  `docs/COMMUNITY_PANEL_RUNTIME_MAP.md`.
+- GNOME 50.4 passed in Classic and GNOME 51.beta in Hybrid: normal/maximized
+  windows, search, app grid, application activation, workspace changes, menus,
+  empty-space exit, 10 slow and 20 rapid cycles in both window states, Minimal
+  native restoration, and Taskbar re-entry. The inherited
+  `community-panel/.../overview.js` was removed only after both matrices passed.
+- Final state: GNOME 50 BigGnome; GNOME 51 Hybrid; application/runtime labels
+  equal; one `1280x800` monitor each; strict audit zero failures. Current-shell
+  journals contain no build 73 error. GNOME 51 still logs the external GSConnect
+  `wl_clipboard.js` final-type failure.
+- Focused tests: `80 passed`. Full suite: `576 passed`, one known PyGI warning.
+  Changed JavaScript syntax and diff checks pass. PKGBUILD/package versions are
+  unchanged. Final local/GNOME 50/GNOME 51 SHA-256: runtime controller
+  `9d918d47d5c48e8ab94fbafb662e157ad65489a322f01d392d29538f3fbd36ee`;
+  service host
+  `a53bc122e5ddacd00f701d272c73692d3f88f1e60f3d92dd098a6d52931fb72d`;
+  Overview integration
+  `0411e487cce6475141ae75eb88dbe292a7eed5d8116b30a30b8eea6fbd7170dc`;
+  audit
+  `a96b9abf4c1a75bf023bbf990f49a7a6e264aa72d602390691265b18e4e4d770`;
+  runtime payload
+  `50236f08080c1fddc1529fe9fe19d358887717eea4f07ac320c6ba78e865c60a`;
+  Community Panel payload
+  `ee34534c3b866291f5e13a0122bc5f69421177601ec54b3080714e6192bb6bb1`.
+- Next and final migration slice: inherited status/fullscreen behavior and the
+  exact-teardown gate. Do not mix it into build 73.

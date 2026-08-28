@@ -6,13 +6,13 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import * as Overview from '../community-panel@communitybig.org/overview.js';
 import * as Panel from '../community-panel@communitybig.org/panel.js';
 import * as PanelSettings from '../community-panel@communitybig.org/panelSettings.js';
 import * as Utils from '../community-panel@communitybig.org/utils.js';
 import {DTP_EXTENSION, SETTINGS} from '../community-panel@communitybig.org/runtimeContext.js';
 import {DesktopIconsUsableAreaClass} from './desktopIconsUsableArea.js';
 import {TaskbarNotificationMonitor} from './taskbarNotificationMonitor.js';
+import {TaskbarOverviewIntegration} from './taskbarOverviewIntegration.js';
 
 const INTELLIHIDE_KEYBINDING = 'intellihide-key-toggle';
 const TASKBAR_MARGIN_OWNER = 'community-panel@communitybig.org';
@@ -39,7 +39,7 @@ export class TaskbarServiceHost {
             return;
         this.destroy();
         this._owner = manager;
-        this._overview = new Overview.Overview(manager);
+        this._overview = new TaskbarOverviewIntegration(manager);
         manager.overview = this._overview;
         this._generation++;
     }
@@ -229,6 +229,7 @@ export class TaskbarServiceHost {
     }
 
     diagnostics() {
+        const overviewIntegration = this._overview?.diagnostics() ?? {};
         const notificationMonitor =
             this._notificationsMonitor?.diagnostics() ?? {};
         return {
@@ -244,6 +245,7 @@ export class TaskbarServiceHost {
             generation: this._generation,
             overviewOwned: Boolean(this._overview),
             overviewActive: this._overviewActive,
+            overviewIntegration,
             notificationsOwned: Boolean(this._notificationsMonitor),
             launcherSubscriptionOwned:
                 Boolean(notificationMonitor.launcherSubscriptionOwned),

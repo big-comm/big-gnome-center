@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 72" in controller
+    assert "RUNTIME_BUILD = 73" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -500,6 +500,7 @@ def test_taskbar_global_shell_hooks_have_owned_transactional_lifecycle():
 def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     services = (RUNTIME / "taskbarServiceHost.js").read_text()
+    overview = (RUNTIME / "taskbarOverviewIntegration.js").read_text()
     desktop_icons = (RUNTIME / "desktopIconsUsableArea.js").read_text()
     notifications = (RUNTIME / "taskbarNotificationMonitor.js").read_text()
     dock_imports = (RUNTIME / "dock/imports.js").read_text()
@@ -523,7 +524,36 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "this.serviceHost.unbind(this)" in manager
     assert "this.serviceHost.destroy(this)" in manager
     assert "manager.serviceHost.activateOverview(" in monitor
-    assert "new Overview.Overview(manager)" in services
+    assert "new TaskbarOverviewIntegration(manager)" in services
+    assert "./taskbarOverviewIntegration.js" in services
+    assert "../community-panel@communitybig.org/overview.js" not in services
+    assert not (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/overview.js"
+    ).exists()
+    assert "overviewIntegration" in services
+    assert "implementation: 'layout-switcher-runtime'" in overview
+    assert "Object.getOwnPropertyDescriptor(object, key)" in overview
+    assert "_descriptorsMatch(current, record.installed)" in overview
+    assert "Overview hook changed externally" in overview
+    assert "overview-allocation" in overview
+    assert "workspace-isolation" in overview
+    assert "changed::stockgs-keep-dash" in overview
+    assert "changed::overview-click-to-exit" in overview
+    assert "changed::isolate-workspaces" in overview
+    assert "changed::hot-keys" in overview
+    assert "Main.overview.toggle()" in overview
+    assert "Main.overview.show" not in overview
+    assert "this._endHotkeyPreviewCycle()" in overview
+    assert "this._clearTimeouts()" in overview
+    assert "restoreConflicts" in overview
+    assert "entryCount" in overview
+    assert "exitCount" in overview
+    assert "actorsCreated: 0" in overview
+    assert "orphanActors: 0" in overview
+    assert "Utils.GlobalSignalsHandler" not in overview
+    assert "Utils.InjectionsHandler" not in overview
+    assert "new InjectionManager()" not in overview
     assert "new TaskbarNotificationMonitor()" in services
     assert "./taskbarNotificationMonitor.js" in services
     assert "notificationMonitor" in services
@@ -563,7 +593,7 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "changed::panel-element-positions" in services
     assert "desktopMarginsPending" in services
     assert "activationFailures" in services
-    assert "new Overview.Overview" not in manager
+    assert "new TaskbarOverviewIntegration" not in manager
     assert "new NotificationsMonitor" not in manager
     assert "DesktopIconsIntegration" not in manager
     assert "_setKeyBindings(" not in manager
@@ -583,7 +613,6 @@ def test_inherited_taskbar_modules_use_the_separate_runtime_context():
     consumers = [
         "appIcons.js",
         "intellihide.js",
-        "overview.js",
         "panel.js",
         "panelManager.js",
         "panelStyle.js",

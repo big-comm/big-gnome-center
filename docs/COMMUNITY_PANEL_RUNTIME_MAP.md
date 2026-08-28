@@ -1,7 +1,7 @@
 # Community Panel Runtime Map
 
 Last update: 2026-08-28
-Baseline: `4f636df`, runtime build 72
+Baseline: `cfe61da`, runtime build 73
 
 ## Scope
 
@@ -18,7 +18,7 @@ taskbarSurface.js
   -> taskbarMonitorHost.js
   -> taskbarShellHooks.js
   -> taskbarServiceHost.js
-     -> overview.js
+     -> taskbarOverviewIntegration.js
      -> taskbarNotificationMonitor.js
      -> runtime/desktopIconsUsableArea.js
   -> panelManager.js
@@ -48,7 +48,7 @@ taskbarSurface.js
 | `intellihide.js` | overlap and reveal renderer | mixed | owned mode selection already active |
 | `transparency.js` | effective Panel alpha | inherited | owned opacity is the source of truth |
 | `panelStyle.js` | native box and status actor styling | inherited | retain until status host accepted |
-| `overview.js` | Taskbar/overview integration | inherited | lifecycle owned by service host; replace behavior separately |
+| `taskbarOverviewIntegration.js` | Taskbar/overview integration | runtime | owned implementation accepted in build 73 |
 | `proximity.js` | window overlap watches | inherited | retain with intellihide |
 | `taskbarNotificationMonitor.js` | application notification counts | runtime | owned implementation accepted in build 72 |
 | `desktopIconsIntegration.js` | removed in build 71 | runtime | shared owned implementation replaces both copies |
@@ -90,8 +90,8 @@ Runtime build 69 adds two more narrow lifecycle owners:
    and shutdown hooks;
 3. hook restoration uses exact saved property descriptors and never overwrites
    a property replaced by another extension after activation;
-4. `PanelManager` retains the accepted behavior callbacks, desktop-icon
-   service, overview integration, signals, and keybindings.
+4. `PanelManager` retains accepted renderer callbacks while owned hosts control
+   Overview, desktop-icon service, manager signals, and keybindings.
 
 Telemetry reports topology generations, monitor coverage, reset failures, the
 installed hook set, injection ownership, shutdown connection, pending
@@ -102,7 +102,7 @@ restoration, and restoration conflicts.
 Runtime build 70 adds `TaskbarServiceHost` as the lifecycle owner for services
 previously constructed directly by `PanelManager`:
 
-1. inherited Overview construction and activation after primary-panel creation;
+1. Overview construction and activation after primary-panel creation;
 2. notification monitor, launcher subscription, and Unity D-Bus name;
 3. DING usable-area bridge with exact per-monitor margins;
 4. four root settings groups and three panel-box signal groups;
@@ -141,6 +141,24 @@ inherited monitor was removed only after
 GNOME 50 and GNOME 51 accepted real notifications, focus clearing, 10 slow and
 20 rapid cycles, exact teardown/re-entry, and zero strict-audit failures.
 
+## Overview boundary
+
+Runtime build 73 ports the Taskbar Overview behavior into
+`TaskbarOverviewIntegration`. It owns dash visibility, Overview allocation,
+optional workspace isolation, number hotkeys and previews, and empty-space
+exit. Signals, timeouts, keybindings, and exact property descriptors are
+restored transactionally; an external replacement is reported instead of
+overwritten.
+
+Telemetry reports implementation, activation, signals, hooks, suppressed
+native bindings, Overview/search/app-grid state, restoration conflicts,
+entry/exit/state counters, pending previews/timeouts, and actor residue. The
+inherited `overview.js` was removed after GNOME 50.4 and GNOME 51.beta passed
+normal/maximized search, app-grid, activation, workspace, empty-space exit,
+10 slow and 20 rapid cycles, native restoration, Taskbar re-entry, and strict
+audit. The final migration boundary is inherited status/fullscreen behavior
+plus exact teardown.
+
 ## Upstream reference
 
 - GNOME Shell 50.4 `js/ui/panel.js`, tag target
@@ -152,6 +170,20 @@ GNOME 50 and GNOME 51 accepted real notifications, focus clearing, 10 slow and
   Shell overrides and explicit teardown; it exposes no newer public GNOME API.
   The bundled copy delegates their lifecycle to the runtime hosts while
   retaining the accepted upstream callbacks.
+- Overview review: GNOME Shell 50.4 target
+  `233322b9b675b0385767147c1a6cfc6ff7325160`, GNOME Shell main
+  `6db7eaf5377e24d85eb9251316a8b2b5ca407cc4`, and Dash-to-Panel master
+  `1c0c1f1354bfaccbf2539ef516ec527bea498a51`, retrieved 2026-08-28.
+  Reviewed Overview SHA-256 values: GNOME 50.4/current `overview.js`
+  `1fb938b6899669121d93a5b01d623003db85753551ff3941251d784f0c9394f5`;
+  GNOME 50.4 `overviewControls.js`
+  `75c152027190ec9b8ff56e55532c04982f6928dfb8c2979b4d384f9344f9affe`;
+  current `overviewControls.js`
+  `d798a47c66d0f33c04d18b1bdae5ac5a3d7fa7149c5afd9da40799d43f62b0a2`;
+  Dash-to-Panel `overview.js`
+  `fa388cb1600037fe6347808a087184596e345eb3d382274fbcee71ade2480048`.
+  Official GJS Extension/`InjectionManager` and review lifecycle guidance was
+  also reviewed. No public API replaces these private Shell contracts.
 
 GNOME 50.4 and current main retain the same central contracts used here:
 `Main.panel.statusArea`, `addToStatusArea()`, `_addToPanelBox()`, the left,
