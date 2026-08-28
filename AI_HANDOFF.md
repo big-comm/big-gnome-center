@@ -2226,3 +2226,38 @@ Append one entry per completed change:
   `63fa39f0e19be35754ea03afb0adbc9d6b8fcaf060dd30e259d41b8a556fc832`.
 - Next gate: validate clean install, stable/testing upgrades, logout/login,
   reboot, and rollback before deleting compatibility sources or schema adapters.
+
+## 2026-08-28 — Package upgrade matrix, build 76
+
+- Helper build 69 moves itself first in Shell extension order before disabling
+  a legacy Panel. This prevents Shell rebase from unloading the helper during
+  its own incremental layout call.
+- The login guard translates only the exact stable Hybrid combination from
+  ArcMenu to Community Menu. Other ArcMenu configurations remain untouched.
+- GNOME 50 passed stable `26.08.04-1821`, testing `26.08.26-1705`, Community
+  Panel, and Community Dock upgrade paths. GNOME 51 passed testing
+  `26.08.22-2158`. Downgrade and re-upgrade passed.
+- Both targets passed menu activation, logout/login, full reboot, strict audit,
+  matching application/runtime labels, and one-monitor restoration. Final
+  states are GNOME 50 BigGnome and GNOME 51 Hybrid.
+- Pacman conflicts on GNOME 51 were caused by prior direct deployment into
+  package paths. The exact unowned deployment set was removed before retrying;
+  the built package has no intrinsic file conflict.
+- Full suite: `579 passed`. Diff check passes. Package check emits no Python
+  bytecode into the payload. PKGBUILD/package versions are unchanged.
+- Final documented package SHA-256:
+  `c7fa5fed015b0cfb2870ce6db580a3b731a49ee9cffbd784a992d482e13dc8e4`.
+  Final local/GNOME 50/GNOME 51 SHA-256 values match for helper extension
+  `e37782ba8cfb83f2e1c66e00aece3c3b63b9ccd6cdfed02e5f9f22cbae2ef1fa`,
+  helper client
+  `8b697b4fb34ded56797dbab62c2bf3a1471827a1d0bf2b003915429f94a01db0`,
+  and helper guard
+  `b2f6765e2a065453ca7a9fbcddc3e758e19029a684204cb72c853aa63542b0ac`.
+- A Pacman removal confirmed the app, helper, and runtime paths absent before
+  a clean package install on GNOME 50. A fresh graphical session restored the
+  accepted BigGnome layout with zero audit failures.
+- `pacman -Qkk` reports pre-existing directory ownership residue from direct
+  deployments and the system `SoftwareRender` desktop-file customization. No
+  runtime/helper hash differs and no package file is missing.
+- Remaining gate: one complete testing-repository cycle. Do not remove
+  compatibility sources or schema adapters before it.

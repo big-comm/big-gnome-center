@@ -19,10 +19,12 @@ Overview/status/fullscreen integration are now owned by the unified runtime;
 the active renderer modules are internalized under `runtime/taskbar/`. Runtime build 51 also
 matches Shell stylesheet ownership across `Main.loadTheme()` replacement;
 GNOME 50/51 reject null or duplicate custom CSS in strict audit.
-The active behavior and executable boundaries are complete. Upgrade/rollback
-coverage, obsolete adapter removal, and final compatibility cleanup remain. A
-small GJS runtime remains necessary because GNOME Shell actors cannot run in
-the GTK process.
+The active behavior and executable boundaries are complete. Stable, testing,
+intermediate-UUID, logout/login, reboot, and rollback upgrade paths pass on
+GNOME 50/51. A clean package install also passes on GNOME 50. One complete
+testing-repository cycle, obsolete adapter removal, and final compatibility
+cleanup remain. A small GJS runtime remains necessary because GNOME Shell
+actors cannot run in the GTK process.
 
 Post-migration product backlog:
 

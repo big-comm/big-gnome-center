@@ -45,5 +45,8 @@ Local runtime changes:
 - Build 75 internalizes all 13 active Taskbar renderer modules in the unified
   runtime. This directory remains a dormant rollback and resource host until
   the upgrade matrix passes.
+- Build 76 accepts stable, testing, intermediate-UUID, downgrade/re-upgrade,
+  logout/login, and reboot paths on GNOME 50/51. Retain this dormant payload
+  through current clean-install validation and one testing-repository cycle.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

@@ -1,7 +1,11 @@
 # SPDX-License-Identifier: MIT
 """Shared pytest fixtures for layout-switcher tests."""
 
+import sys
+
 import pytest
+
+sys.dont_write_bytecode = True
 
 
 @pytest.fixture

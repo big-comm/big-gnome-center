@@ -112,16 +112,38 @@ class TestRequiredExtensionLists:
                 "user@example.org",
             ],
             [LEGACY_DASH_TO_DOCK_UUID, "disabled@example.org"],
-            available_uuids={HELPER_UUID, RUNTIME_UUID, ARCMENU_UUID, "user@example.org"},
+            available_uuids={
+                HELPER_UUID,
+                RUNTIME_UUID,
+                COMMUNITY_MENU_UUID,
+                ARCMENU_UUID,
+                "user@example.org",
+            },
+            active_layout="Hybrid",
         )
 
         assert enabled == [
             HELPER_UUID,
             RUNTIME_UUID,
-            ARCMENU_UUID,
+            COMMUNITY_MENU_UUID,
             "user@example.org",
         ]
-        assert disabled == ["disabled@example.org"]
+        assert disabled == ["disabled@example.org", ARCMENU_UUID]
+
+    def test_preserves_arc_menu_outside_saved_hybrid(self):
+        enabled, disabled = HelperClient.required_extension_lists(
+            [LEGACY_DASH_TO_PANEL_UUID, ARCMENU_UUID],
+            [],
+            available_uuids={
+                HELPER_UUID,
+                RUNTIME_UUID,
+                COMMUNITY_MENU_UUID,
+                ARCMENU_UUID,
+            },
+        )
+
+        assert enabled == [HELPER_UUID, RUNTIME_UUID, ARCMENU_UUID]
+        assert disabled == []
 
     def test_helper_only_repair_preserves_live_legacy_components(self):
         enabled, disabled = HelperClient.required_helper_lists(

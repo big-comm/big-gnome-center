@@ -117,7 +117,7 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 68;
+const HELPER_BUILD = 69;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -2438,6 +2438,17 @@ export default class LayoutSwitcherHelper extends Extension {
         target.add(self);
         reload.delete(self);
         teardown.delete(self);
+
+        // A newly migrated helper loads after every legacy extension. Move it
+        // first before any disable so Shell rebase cannot tear down this call.
+        if (Array.isArray(mgr._extensionOrder)) {
+            const idx = mgr._extensionOrder.indexOf(self);
+            if (idx > 0) {
+                mgr._extensionOrder.splice(idx, 1);
+                mgr._extensionOrder.unshift(self);
+                steps.push('hoist self');
+            }
+        }
 
         const live = this._liveUuids(mgr);
 

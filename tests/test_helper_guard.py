@@ -1,10 +1,15 @@
 # SPDX-License-Identifier: MIT
 """Static checks for the required helper session guard."""
 
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 AUTOSTART = ROOT / "etc/xdg/autostart/org.communitybig.layout-switcher-helper-guard.desktop"
+
+
+def test_package_check_does_not_create_python_bytecode():
+    assert sys.dont_write_bytecode
 
 
 def test_guard_autostart_uses_modern_gnome_session_path():
@@ -50,6 +55,7 @@ def test_guard_migrates_owned_extension_uuids_at_session_start():
     assert "COMMUNITY_DOCK_UUID" in guard
     assert "COMMUNITY_PANEL_UUID" in guard
     assert "available_uuids=HelperClient.installed_extension_uuids()" in guard
+    assert 'active_layout=Settings().get("active_layout", "")' in guard
     assert "_migrate_arcmenu_icon_path" in guard
     assert "HelperClient.migrate_component_asset_path(current)" in guard
     assert "HelperClient.reload_extension(_ARCMENU_UUID)" in guard

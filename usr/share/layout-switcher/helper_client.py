@@ -132,9 +132,12 @@ class HelperClient:
         enabled: Iterable[str],
         disabled: Iterable[str],
         available_uuids: Optional[Iterable[str]] = None,
+        active_layout: str = "",
     ) -> Tuple[list[str], list[str]]:
         """Migrate installed components and keep the helper enabled first."""
 
+        enabled_input = list(enabled)
+        disabled_input = list(disabled)
         available = set(available_uuids) if available_uuids is not None else None
 
         def migrate(values: Iterable[str]) -> list[str]:
@@ -145,8 +148,23 @@ class HelperClient:
                     migrated.append(current)
             return migrated
 
-        enabled_migrated = migrate(enabled)
-        disabled_migrated = migrate(disabled)
+        enabled_migrated = migrate(enabled_input)
+        disabled_migrated = migrate(disabled_input)
+        migrate_hybrid_menu = (
+            active_layout == "Hybrid"
+            and LEGACY_DASH_TO_PANEL_UUID in enabled_input
+            and ARCMENU_UUID in enabled_input
+            and (available is None or COMMUNITY_MENU_UUID in available)
+        )
+        if migrate_hybrid_menu:
+            enabled_migrated = list(
+                dict.fromkeys(
+                    COMMUNITY_MENU_UUID if uuid == ARCMENU_UUID else uuid
+                    for uuid in enabled_migrated
+                )
+            )
+            if ARCMENU_UUID not in disabled_migrated:
+                disabled_migrated.append(ARCMENU_UUID)
         if RUNTIME_UUID in enabled_migrated:
             panel_index = enabled_migrated.index(RUNTIME_UUID)
             menu_indexes = [

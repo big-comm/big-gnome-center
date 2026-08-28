@@ -13,6 +13,7 @@ from helper_client import (
     LEGACY_DASH_TO_PANEL_UUID,
     HelperClient,
 )
+from settings_store import Settings
 
 log = logging.getLogger("layout-switcher-helper-guard")
 
@@ -66,6 +67,7 @@ class HelperGuard:
             enabled_before,
             disabled_before,
             available_uuids=HelperClient.installed_extension_uuids(),
+            active_layout=Settings().get("active_layout", ""),
         )
         icon_changed = self._migrate_arcmenu_icon_path()
         enabled_current = list(self._settings.get_strv("enabled-extensions"))

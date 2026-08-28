@@ -178,6 +178,12 @@ are internal to the unified runtime, and strict audit identifies the runtime
 implementation and exact module count. The dormant standalone compatibility
 host and schema/resource adapters remain until upgrade/rollback coverage passes.
 
+Build 76 accepts stable, testing, intermediate Community UUID,
+downgrade/re-upgrade, logout/login, and reboot migration paths on GNOME 50/51.
+Helper build 69 protects its live migration call from Shell extension-order
+rebase. A clean package install passes on GNOME 50. One testing-repository
+cycle still gates compatibility removal.
+
 ## Upstream reference
 
 - GNOME Shell 50.4 `js/ui/panel.js`, tag target

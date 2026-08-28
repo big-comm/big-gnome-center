@@ -2,7 +2,7 @@
 
 Last update: 2026-08-28
 Safe checkpoint: `1de221a`
-Status: Build 75 accepts Taskbar renderer internalization
+Status: Build 76 accepts stable/testing upgrade and rollback paths
 
 ## Purpose
 
@@ -693,6 +693,15 @@ SHA-256 values match:
 The executable migration is complete. Upgrade/rollback validation must pass
 before removing the dormant compatibility host and obsolete schema adapters.
 
+Build 76 validates stable, testing, intermediate Community UUID, downgrade,
+logout/login, and reboot paths on GNOME 50/51. Helper build 69 moves itself
+first before legacy extension teardown, preventing Shell rebase from unloading
+the active migration call. The guard translates only the exact stable Hybrid
+ArcMenu state to Community Menu. Direct-deployment residue caused the observed
+Pacman file conflict; the package itself does not conflict. A clean package
+install and fresh graphical session pass on GNOME 50. One complete
+testing-repository cycle remains before cleanup.
+
 Post-migration product backlog, explicitly outside the final engine boundary:
 
 - BigGnome Dock applications-menu side, with right preserved as the default
@@ -885,18 +894,21 @@ Gate: clean install and stable-to-new upgrade produce the same accepted layout.
 
 ### 4. Stable migration and rollback validation
 
-- [ ] Test upgrade from the current stable package without opening Layout
+- [x] Test upgrade from the current stable package without opening Layout
   Switcher before the first login.
-- [ ] Test upgrade from the testing package and all intermediate Community UUIDs.
-- [ ] Confirm the menu icon, helper, unified runtime, and active layout survive
+- [x] Test upgrade from the testing package and all intermediate Community UUIDs.
+- [x] Confirm the menu icon, helper, unified runtime, and active layout survive
   logout/login and reboot.
-- [ ] Confirm old external extension packages remain installed but disabled when
+- [x] Confirm old external extension packages remain installed but disabled when
   the selected layout does not use them.
-- [ ] Confirm unrelated user extensions remain untouched.
-- [ ] Test downgrade or package rollback to the safe checkpoint.
+- [x] Confirm unrelated user extensions remain untouched.
+- [x] Test downgrade or package rollback to the safe checkpoint.
 - [ ] Retain compatibility engines for one complete testing-repository cycle.
 
 Gate: clean installation, stable upgrade, testing upgrade, and rollback accepted.
+
+Accepted in build 76. Compatibility payload retention still requires one
+complete testing-repository cycle.
 
 ### 5. Final cleanup
 
@@ -958,7 +970,7 @@ Add a deferred option only after a concrete user need and a separate approval.
 - [ ] All supported configuration exists only in Layout Switcher.
 - [ ] The six layout contracts match the accepted visual baseline.
 - [ ] Light/dark transitions and status icons never retain stale state.
-- [ ] Clean install, stable upgrade, testing upgrade, reboot, and rollback pass.
+- [x] Clean install, stable upgrade, testing upgrade, reboot, and rollback pass.
 - [ ] GNOME 50 and GNOME 51 pass the complete live matrix.
 - [ ] Full automated tests, package build, translations, and documentation pass.
 - [ ] User approves publication to the testing repository.

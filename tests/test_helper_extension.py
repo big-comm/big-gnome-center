@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 68" in source
+    assert "const HELPER_BUILD = 69" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -93,7 +93,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 68" in source
+    assert "const HELPER_BUILD = 69" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -116,9 +116,11 @@ def test_native_shell_running_indicators_follow_shell_accent():
 def test_incremental_migration_detaches_menu_before_replacing_panel():
     source = HELPER.read_text()
 
-    reload_off = source.index("steps.push(`reload-off ${uuid}`)", source.index("async _applyLayout"))
+    migration = source.index("async _applyLayout")
+    hoist = source.index("steps.push('hoist self')", migration)
+    reload_off = source.index("steps.push(`reload-off ${uuid}`)", migration)
     leaving = source.index("const leaving =", source.index("async _applyLayout"))
-    assert reload_off < leaving
+    assert hoist < reload_off < leaving
 
 
 def test_icon_theme_change_refreshes_appindicator_cache():

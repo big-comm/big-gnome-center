@@ -40,6 +40,13 @@ and active executable modules are owned by this runtime. Community Panel is a
 dormant rollback and resource host. The old Community Dock path is not an
 extension and contains no executable JavaScript.
 
+Build 76 accepts stable, testing, intermediate-UUID, downgrade/re-upgrade,
+logout/login, and reboot paths on GNOME 50/51. Helper build 69 owns the
+extension-order protection required while replacing a live legacy Panel. A
+clean package install and fresh session pass on GNOME 50. One
+testing-repository cycle still gates removal of dormant rollback sources and
+schema adapters.
+
 Preferences-only payload removed:
 
 - Dock: `prefs.js` (48 KiB) and `Settings.ui` (168 KiB).
