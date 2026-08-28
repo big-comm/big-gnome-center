@@ -78,6 +78,7 @@ class AuditEnvironmentError(RuntimeError):
 @dataclass(frozen=True)
 class Snapshot:
     active_layout: str
+    app_active_layout: str
     enabled_extensions: tuple[str, ...]
     runtime_state: int
     helper_state: int
@@ -206,6 +207,16 @@ def _tree_hash(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _application_active_layout() -> str:
+    path = Path.home() / ".config/big-appearance/settings.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, TypeError, ValueError):
+        return ""
+    value = data.get("active_layout")
+    return value if isinstance(value, str) else ""
+
+
 def _payload_hashes(root: Path) -> dict[str, str]:
     extension_root = root / "usr/share/gnome-shell/extensions"
     hashes = {
@@ -231,6 +242,7 @@ def collect_snapshot() -> Snapshot:
 
     return Snapshot(
         active_layout=str(_setting(RUNTIME_SCHEMA, "active-layout")),
+        app_active_layout=_application_active_layout(),
         enabled_extensions=tuple(enabled),
         runtime_state=_extension_state(RUNTIME_UUID),
         helper_state=_extension_state(HELPER_UUID),
@@ -263,6 +275,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     panel_host = taskbar_lifecycle.get("panelHost") or {}
     monitor_host = taskbar_lifecycle.get("monitorHost") or {}
     service_host = taskbar_lifecycle.get("serviceHost") or {}
+    notification_monitor = service_host.get("notificationMonitor") or {}
     desktop_bridge = service_host.get("desktopBridge") or {}
     shell_hooks = taskbar_lifecycle.get("shellHooks") or {}
     status_area = taskbar_lifecycle.get("statusArea") or {}
@@ -294,6 +307,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "runtime-layout",
             snapshot.active_layout,
             f"settings={snapshot.active_layout}, runtime={runtime.get('layout', '<empty>')}",
+        ),
+        _check(
+            snapshot.app_active_layout == snapshot.active_layout,
+            "application-layout-state",
+            snapshot.active_layout,
+            f"application={snapshot.app_active_layout or '<empty>'}, "
+            f"runtime={snapshot.active_layout or '<empty>'}",
         ),
         _check(
             bool(dock.get("active")) == expected_docks,
@@ -451,6 +471,52 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "expected notification ownership="
             f"{expected_taskbars}, got "
             f"{bool(service_host.get('notificationsOwned'))}",
+        ),
+        _check(
+            (notification_monitor.get("implementation")
+             == "layout-switcher-runtime") == expected_taskbars,
+            "taskbar-notification-implementation",
+            f"runtime-owned={expected_taskbars}",
+            "expected runtime-owned notification monitor="
+            f"{expected_taskbars}, got "
+            f"{notification_monitor.get('implementation')}",
+        ),
+        _check(
+            bool(notification_monitor.get("connected")) == expected_taskbars,
+            "taskbar-notification-connection",
+            f"connected={expected_taskbars}",
+            "expected notification connection="
+            f"{expected_taskbars}, got "
+            f"{notification_monitor.get('connected')}",
+        ),
+        _check(
+            not expected_taskbars or (
+                all(
+                    isinstance(notification_monitor.get(key), int)
+                    and notification_monitor.get(key) >= 0
+                    for key in (
+                        "trackedSources",
+                        "stateApps",
+                        "totalNotifications",
+                        "updateCount",
+                    )
+                )
+                and notification_monitor.get("stateApps")
+                == service_host.get("notificationApps")
+                and isinstance(notification_monitor.get("urgentApps"), list)
+                and all(
+                    isinstance(app_id, str) and app_id.endswith(".desktop")
+                    for app_id in notification_monitor.get("urgentApps")
+                )
+                and (
+                    not notification_monitor.get("lastUpdateApp")
+                    or notification_monitor.get("lastUpdateApp").endswith(".desktop")
+                )
+            ),
+            "taskbar-notification-telemetry",
+            "notification telemetry is coherent",
+            f"monitor={notification_monitor}, "
+            f"apps={service_host.get('notificationApps')}",
         ),
         _check(
             bool(service_host.get("desktopIconsOwned")) == expected_taskbars,

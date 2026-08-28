@@ -36,6 +36,7 @@ def _payload(root: Path) -> None:
 def _snapshot(**changes) -> Snapshot:
     values = {
         "active_layout": "BigGnome",
+        "app_active_layout": "BigGnome",
         "enabled_extensions": (RUNTIME_UUID, HELPER_UUID),
         "runtime_state": 1,
         "helper_state": 1,
@@ -46,6 +47,8 @@ def _snapshot(**changes) -> Snapshot:
         "indicator_overrides": {},
     }
     values.update(changes)
+    if "app_active_layout" not in changes:
+        values["app_active_layout"] = values["active_layout"]
     if "runtime_diagnostics" not in changes:
         layout = values["active_layout"]
         surface, edge = {
@@ -187,6 +190,22 @@ def _snapshot(**changes) -> Snapshot:
                             "notificationsOwned": surface == "taskbar",
                             "launcherSubscriptionOwned": surface == "taskbar",
                             "unityBusOwned": surface == "taskbar",
+                            "notificationApps": 0,
+                            "notificationMonitor": {
+                                "implementation": (
+                                    "layout-switcher-runtime"
+                                    if surface == "taskbar" else ""
+                                ),
+                                "connected": surface == "taskbar",
+                                "launcherSubscriptionOwned": surface == "taskbar",
+                                "unityBusOwned": surface == "taskbar",
+                                "trackedSources": 0,
+                                "stateApps": 0,
+                                "totalNotifications": 0,
+                                "urgentApps": [],
+                                "updateCount": 0,
+                                "lastUpdateApp": "",
+                            },
                             "desktopIconsOwned": surface == "taskbar",
                             "desktopMargins": (
                                 {"0": {
@@ -675,6 +694,19 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
             "notificationsOwned": False,
             "launcherSubscriptionOwned": False,
             "unityBusOwned": False,
+            "notificationApps": 1,
+            "notificationMonitor": {
+                "implementation": "inherited",
+                "connected": False,
+                "launcherSubscriptionOwned": False,
+                "unityBusOwned": False,
+                "trackedSources": -1,
+                "stateApps": 0,
+                "totalNotifications": -1,
+                "urgentApps": ["invalid"],
+                "updateCount": -1,
+                "lastUpdateApp": "invalid",
+            },
             "desktopIconsOwned": False,
             "desktopMargins": {},
             "desktopMarginsPending": True,
@@ -733,6 +765,9 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-service-host-active" in failures
     assert "taskbar-overview-service" in failures
     assert "taskbar-notification-service" in failures
+    assert "taskbar-notification-implementation" in failures
+    assert "taskbar-notification-connection" in failures
+    assert "taskbar-notification-telemetry" in failures
     assert "taskbar-desktop-icons-service" in failures
     assert "taskbar-desktop-bridge-implementation" in failures
     assert "taskbar-desktop-bridge-owner" in failures
@@ -757,6 +792,17 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-status-host-ownership" in failures
     assert "taskbar-native-menu-manager" in failures
     assert "taskbar-activation-settled" in failures
+
+
+def test_audit_rejects_application_and_runtime_layout_drift(tmp_path):
+    _payload(tmp_path)
+    checks = audit_snapshot(
+        _snapshot(active_layout="Hybrid", app_active_layout="G-Unity"),
+        tmp_path,
+    )
+
+    failures = {check.name for check in checks if check.status == "FAIL"}
+    assert "application-layout-state" in failures
 
 
 def test_audit_rejects_null_and_duplicate_shell_stylesheets(tmp_path):

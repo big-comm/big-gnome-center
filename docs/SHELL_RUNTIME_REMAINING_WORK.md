@@ -411,12 +411,12 @@ groups, and the intellihide keybinding. `PanelManager` keeps its accepted
 behavior callbacks and compatibility references, but no longer constructs or
 destroys these services directly.
 
-This is a lifecycle boundary, not an implementation rewrite. Official
+This was a lifecycle boundary, not an implementation rewrite. Official
 Dash-to-Panel master still constructs the same private services directly and
-does not expose a newer public GNOME API. The inherited `overview.js`,
+does not expose a newer public GNOME API. At build 70, inherited `overview.js`,
 `notificationsMonitor.js`, and `desktopIconsIntegration.js` implementations
-remain loaded behind the owned host until their individual replacements pass
-the behavior and restoration gates.
+remained loaded behind the owned host until their individual replacements
+passed the behavior and restoration gates.
 
 `TaskbarServiceHost` cancels pending DING margin idles and performs
 transactional partial cleanup after activation errors. Compatibility references
@@ -485,7 +485,7 @@ this external failure is not attributed to build 71.
 
 The runtime-owned implementation retains the upstream 1-clause BSD notice.
 Both unreferenced inherited copies were removed only after live acceptance.
-Three engine boundaries remain: notifications, Overview, and the final inherited
+Two engine boundaries remain: Overview, then the final inherited
 status/fullscreen behavior and exact-teardown gate.
 
 Build 71 final validation: focused `79 passed`; full suite `575 passed`, with
@@ -510,11 +510,65 @@ GNOME 51 SHA-256 values match:
 - complete Community Panel compatibility payload:
   `1963a060026a0ee8b1ca63d23d72f4f4b182c57142eb3388d5d539568d27bdac`.
 
-Next Panel slice: port the notification implementation behind the existing
-owned lifecycle. Remove no further inherited module until its focused behavior,
-restoration, and both-Shell matrices pass.
+Build 72 replaces the inherited Taskbar notification monitor behind the
+existing owned lifecycle. The runtime implementation aggregates multiple live
+message-tray sources for one desktop application, combines their counts with
+Unity launcher updates, preserves application-ID normalization, and clears
+counts and urgency when the application gains focus. It transactionally owns
+the Shell focus/tray signals, launcher subscription, and
+`com.canonical.Unity` bus name.
 
-Post-migration product backlog, explicitly outside the four remaining engine
+Official GNOME Shell 50.4 and main message-tray contracts and current
+Dash-to-Panel `notificationsMonitor.js` were reviewed first. Dash-to-Panel still
+uses the same private Shell signals and exposes no newer public notification
+API. The owned port keeps that contract but fixes source aggregation and stale
+Unity urgency without adding timers.
+
+Telemetry exposes implementation and connection ownership, tracked source and
+state counts, total notifications, urgent desktop IDs, update count, and the
+last updated app. Strict audit rejects inherited ownership, disconnected
+signals, negative or incoherent counts, and non-desktop urgent IDs. Contract
+tests require source add/remove, focus tracking, launcher subscription, Unity
+bus ownership, and transactional cleanup.
+
+GNOME 50 accepted a real transient notification, visible Brave badge, focus
+clearing, 10 slow and 20 rapid Unity cycles, exact Taskbar teardown/re-entry,
+and a final zero-failure BigGnome audit. GNOME 51 accepted the equivalent real
+notification and focus tests, 10 slow and 20 rapid cycles, and a final
+zero-failure Hybrid audit. Both finish with one `1280x800` monitor. A discarded
+GNOME 50 repeated full-layout stress sequence reached the existing GJS/dconf
+futex deadlock after many extension reloads; no runtime exception was logged,
+and the restarted session passed. Layout tests must use the complete app
+workflow: apply the full `LayoutApplier.apply()` snapshot and, only after
+success, persist the same label through `Settings().set("active_layout", ...)`.
+Changing only runtime `active-layout`, or omitting the app state, creates a
+mixed visual state and is not a valid transition test. Strict audit now rejects
+application/runtime layout drift.
+
+The dormant inherited notification monitor was removed only after both live
+matrices passed. Focused tests: `80 passed`. Full suite: `576 passed`, one known
+PyGI warning. Changed JavaScript syntax and diff checks pass. PKGBUILD and
+package versions are unchanged. Final local/GNOME 50/GNOME 51 SHA-256 values
+match:
+
+- runtime controller:
+  `eebb4822151d9cd3d585ca530f00f678c365f8e3696ec09494dc9c15cc7a57cd`;
+- Taskbar service host:
+  `69ecf8b1e59257d5f715ef3ebcb96bc10413a62f3916ae65d0c134e26aef6c66`;
+- Taskbar notification monitor:
+  `e2521f86fe4612cc48b4a13c822785fe9441bc9a37fcf794bced7e00bdcb3559`;
+- runtime audit:
+  `74335c366544efb2c393eea4febdb9e16816c5468f809a6500ec58b9126ccf4e`;
+- complete unified-runtime payload:
+  `01e436ca5c25a9fbf47eb6397f5693041a6fb0854f7cbacd5fc0c390e3a5c69b`;
+- complete Community Panel compatibility payload:
+  `6ec10936aca90596ded0a07d82a5b49725533d32cab652169126e875586280d6`.
+
+Next Panel slice: port Overview behavior behind the existing owned lifecycle.
+Remove no further inherited module until its focused behavior, restoration, and
+both-Shell matrices pass.
+
+Post-migration product backlog, explicitly outside the two remaining engine
 boundaries:
 
 - BigGnome Dock applications-menu side, with right preserved as the default

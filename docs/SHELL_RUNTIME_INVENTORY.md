@@ -83,8 +83,9 @@ Runtime entry and orchestration:
 
 Application behavior:
 
-- `appIcons.js`, `windowPreview.js`, `notificationsMonitor.js`.
-- `overview.js`. The DING bridge moved to the unified runtime in build 71.
+- `appIcons.js`, `windowPreview.js`, `overview.js`.
+- The DING bridge moved to the unified runtime in build 71. Notification
+  monitoring moved to the unified runtime in build 72.
 
 Visibility and appearance:
 

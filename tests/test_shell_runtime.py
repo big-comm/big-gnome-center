@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 71" in controller
+    assert "RUNTIME_BUILD = 72" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -501,6 +501,7 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     services = (RUNTIME / "taskbarServiceHost.js").read_text()
     desktop_icons = (RUNTIME / "desktopIconsUsableArea.js").read_text()
+    notifications = (RUNTIME / "taskbarNotificationMonitor.js").read_text()
     dock_imports = (RUNTIME / "dock/imports.js").read_text()
     monitor = (RUNTIME / "taskbarMonitorHost.js").read_text()
     manager = (
@@ -523,7 +524,19 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "this.serviceHost.destroy(this)" in manager
     assert "manager.serviceHost.activateOverview(" in monitor
     assert "new Overview.Overview(manager)" in services
-    assert "new NotificationsMonitor()" in services
+    assert "new TaskbarNotificationMonitor()" in services
+    assert "./taskbarNotificationMonitor.js" in services
+    assert "notificationMonitor" in services
+    assert "Shell.WindowTracker.get_default()" in notifications
+    assert "this._sourceRecords = new Map()" in notifications
+    assert "this._sourceRecords.set(source" in notifications
+    assert "this._recomputeTrayState(record.appId)" in notifications
+    assert "state.unityUrgent" in notifications
+    assert "totalNotifications" in notifications
+    assert "urgentApps" in notifications
+    assert "layout-switcher-runtime" in notifications
+    assert "runtimeContext.js" not in notifications
+    assert "Utils.GlobalSignalsHandler" not in notifications
     assert "new DesktopIconsUsableAreaClass(" in services
     assert "./desktopIconsUsableArea.js" in services
     assert "../desktopIconsUsableArea.js" in dock_imports
@@ -570,7 +583,6 @@ def test_inherited_taskbar_modules_use_the_separate_runtime_context():
     consumers = [
         "appIcons.js",
         "intellihide.js",
-        "notificationsMonitor.js",
         "overview.js",
         "panel.js",
         "panelManager.js",

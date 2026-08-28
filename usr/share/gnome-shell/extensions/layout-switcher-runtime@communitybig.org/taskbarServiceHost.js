@@ -6,13 +6,13 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import {NotificationsMonitor} from '../community-panel@communitybig.org/notificationsMonitor.js';
 import * as Overview from '../community-panel@communitybig.org/overview.js';
 import * as Panel from '../community-panel@communitybig.org/panel.js';
 import * as PanelSettings from '../community-panel@communitybig.org/panelSettings.js';
 import * as Utils from '../community-panel@communitybig.org/utils.js';
 import {DTP_EXTENSION, SETTINGS} from '../community-panel@communitybig.org/runtimeContext.js';
 import {DesktopIconsUsableAreaClass} from './desktopIconsUsableArea.js';
+import {TaskbarNotificationMonitor} from './taskbarNotificationMonitor.js';
 
 const INTELLIHIDE_KEYBINDING = 'intellihide-key-toggle';
 const TASKBAR_MARGIN_OWNER = 'community-panel@communitybig.org';
@@ -72,7 +72,7 @@ export class TaskbarServiceHost {
             return;
 
         try {
-            this._notificationsMonitor = new NotificationsMonitor();
+            this._notificationsMonitor = new TaskbarNotificationMonitor();
             manager.notificationsMonitor = this._notificationsMonitor;
             this._desktopIconsUsableArea = new DesktopIconsUsableAreaClass(
                 TASKBAR_MARGIN_OWNER);
@@ -229,6 +229,8 @@ export class TaskbarServiceHost {
     }
 
     diagnostics() {
+        const notificationMonitor =
+            this._notificationsMonitor?.diagnostics() ?? {};
         return {
             available: true,
             owned: Boolean(this._owner),
@@ -244,10 +246,10 @@ export class TaskbarServiceHost {
             overviewActive: this._overviewActive,
             notificationsOwned: Boolean(this._notificationsMonitor),
             launcherSubscriptionOwned:
-                Boolean(this._notificationsMonitor?._launcherEntryId),
-            unityBusOwned: Boolean(this._notificationsMonitor?._unityBusId),
-            notificationApps:
-                Object.keys(this._notificationsMonitor?._state ?? {}).length,
+                Boolean(notificationMonitor.launcherSubscriptionOwned),
+            unityBusOwned: Boolean(notificationMonitor.unityBusOwned),
+            notificationApps: notificationMonitor.stateApps ?? 0,
+            notificationMonitor,
             desktopIconsOwned: Boolean(this._desktopIconsUsableArea),
             desktopMarginsPending: Boolean(this._desktopMarginsIdleId),
             desktopMargins: this._desktopMargins,

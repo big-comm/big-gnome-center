@@ -1,6 +1,6 @@
 # PLANNING.md — Layout Switcher Roadmap
 
-Última revisão: 2026-08-26
+Última revisão: 2026-08-28
 Versão atual: **2.18.0**
 
 ## Active roadmap — focused Shell runtime
@@ -14,15 +14,16 @@ Current state: Dock actor construction, lifecycle, and executable modules are
 owned by the unified runtime. The standalone Community Dock engine is removed;
 its old directory is a resource and schema host only. GNOME 50/51 Dock layout
 transitions, fullscreen cycles, and the complete monitor matrix pass.
-Panel/Taskbar lifecycle is now also owned by the unified runtime; inherited
-visual modules remain temporarily behind that boundary. Runtime build 51 also
+Panel/Taskbar lifecycle, DING usable-area bridge, and notification monitor are
+now owned by the unified runtime; inherited visual modules remain temporarily
+behind that boundary. Runtime build 51 also
 matches Shell stylesheet ownership across `Main.loadTheme()` replacement;
 GNOME 50/51 reject null or duplicate custom CSS in strict audit.
 Application-button and panel behavior extraction, final settings ownership, and
 upgrade/rollback coverage remain. A small GJS runtime remains necessary because
 GNOME Shell actors cannot run in the GTK process.
 
-Deferred until the four remaining Taskbar migration boundaries are accepted:
+Deferred until the two remaining Taskbar migration boundaries are accepted:
 
 - BigGnome Dock applications-menu side: keep right as the default and offer
   left as an owned per-layout option.

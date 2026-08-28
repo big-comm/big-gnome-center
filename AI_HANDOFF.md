@@ -2049,6 +2049,48 @@ Append one entry per completed change:
   `9672f688e01e7094b11dab3c1cddcce51e66a3c3ba512226da69f4bbdd4eba03`;
   audit
   `efb56a7f4981f0964df79de2a32e13dc993436fadf3c18a7eb045316388adc8e`.
-- Three migration boundaries remain: notification behavior, Overview behavior,
-  then final inherited status/fullscreen behavior plus exact teardown. The Dock
-  menu-side selector and macOS-like magnification remain post-migration work.
+- Two migration boundaries remain: Overview behavior, then final inherited
+  status/fullscreen behavior plus exact teardown. The Dock menu-side selector
+  and macOS-like magnification remain post-migration work.
+
+## 2026-08-28 — Owned Taskbar notification monitor, build 72
+
+- `TaskbarNotificationMonitor` now owns Shell focus/message-tray signals, Unity
+  launcher updates, and the `com.canonical.Unity` bus name. It aggregates every
+  source per app, merges tray/Unity counts, and clears count/urgency on focus.
+- GNOME Shell 50.4/main and current Dash-to-Panel sources were reviewed. No
+  newer public API exists; the port follows the current private Shell contract
+  and fixes multi-source aggregation and stale Unity urgency without timers.
+- Telemetry and strict audit cover implementation, connection and bus
+  ownership, sources, application states, totals, urgent IDs, updates, and last
+  app. The inherited `notificationsMonitor.js` was removed after live acceptance.
+- GNOME 50 passed real notification, visible badge, focus clearing, 10 slow and
+  20 rapid cycles, teardown/re-entry, and final BigGnome strict audit. GNOME 51
+  passed the equivalent real/focus tests, 10 slow and 20 rapid cycles, and final
+  Hybrid strict audit. Both finish with one `1280x800` monitor and zero audit
+  failures.
+- Direct `active-layout` writes and a low-level apply without updating the app
+  state created mixed visuals during an early test. CLI transitions must apply
+  the full snapshot, then persist the same successful label through
+  `Settings().set("active_layout", ...)`. Strict audit rejects divergence.
+  Both layouts were fully restored before final acceptance.
+- One discarded GNOME 50 repeated full-layout stress sequence reached the
+  existing GJS/dconf futex deadlock after many extension reloads. No runtime JS
+  error was logged; the restarted session passed. GNOME 51 journal noise is the
+  known GSConnect `wl_clipboard.js` final-type failure, external to this build.
+- Focused tests: `80 passed`. Full suite: `576 passed`, one known PyGI warning.
+  Changed JavaScript syntax and diff checks pass. PKGBUILD/package versions are
+  unchanged. Final local/GNOME 50/GNOME 51 SHA-256: runtime controller
+  `eebb4822151d9cd3d585ca530f00f678c365f8e3696ec09494dc9c15cc7a57cd`;
+  service host
+  `69ecf8b1e59257d5f715ef3ebcb96bc10413a62f3916ae65d0c134e26aef6c66`;
+  notification monitor
+  `e2521f86fe4612cc48b4a13c822785fe9441bc9a37fcf794bced7e00bdcb3559`;
+  audit
+  `74335c366544efb2c393eea4febdb9e16816c5468f809a6500ec58b9126ccf4e`;
+  runtime payload
+  `01e436ca5c25a9fbf47eb6397f5693041a6fb0854f7cbacd5fc0c390e3a5c69b`;
+  Community Panel payload
+  `6ec10936aca90596ded0a07d82a5b49725533d32cab652169126e875586280d6`.
+- Next slice: owned Overview behavior. Final slice: remaining inherited
+  status/fullscreen behavior and exact teardown.
