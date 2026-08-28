@@ -15,16 +15,16 @@ owned by the unified runtime. The standalone Community Dock engine is removed;
 its old directory is a resource and schema host only. GNOME 50/51 Dock layout
 transitions, fullscreen cycles, and the complete monitor matrix pass.
 Panel/Taskbar lifecycle, DING usable-area bridge, notification monitor, and
-Overview integration are now owned by the unified runtime; inherited visual
-modules remain temporarily behind that boundary. Runtime build 51 also
+Overview/status/fullscreen integration are now owned by the unified runtime;
+inherited renderer modules remain temporarily behind that boundary. Runtime build 51 also
 matches Shell stylesheet ownership across `Main.loadTheme()` replacement;
 GNOME 50/51 reject null or duplicate custom CSS in strict audit.
-Application-button and panel behavior extraction, final settings ownership, and
-upgrade/rollback coverage remain. A small GJS runtime remains necessary because
-GNOME Shell actors cannot run in the GTK process.
+The accepted behavior boundary is complete. Structural Taskbar renderer
+internalization, obsolete adapter removal, and upgrade/rollback coverage
+remain. A small GJS runtime remains necessary because GNOME Shell actors cannot
+run in the GTK process.
 
-Deferred until the final Taskbar status/fullscreen and exact-teardown boundary
-is accepted:
+Post-migration product backlog:
 
 - BigGnome Dock applications-menu side: keep right as the default and offer
   left as an owned per-layout option.

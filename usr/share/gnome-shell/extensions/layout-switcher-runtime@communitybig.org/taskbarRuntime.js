@@ -14,7 +14,7 @@ export class TaskbarRuntime {
     constructor(extension) {
         this._host = new ComponentHost(extension, PANEL_UUID, {
             name: 'Community Panel',
-            version: 73,
+            version: 74,
             url: 'https://github.com/BigCommunity/layout-switcher',
         });
         this._surface = new TaskbarSurfaceManager(this._host);
@@ -110,6 +110,7 @@ export class TaskbarRuntime {
             y: Math.round(actor?.y ?? 0),
             width: Math.round(actor?.width ?? 0),
             height: Math.round(actor?.height ?? 0),
+            outerSize: Math.round(panel?.geom?.outerSize ?? 0),
             visible: Boolean(actor?.visible),
             mapped: Boolean(actor?.mapped),
             grouped: Boolean(panel?.taskbar?.isGroupApps),

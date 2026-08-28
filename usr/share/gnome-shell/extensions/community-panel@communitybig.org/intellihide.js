@@ -273,14 +273,10 @@ export const Intellihide = class {
   }
 
   _setTrackPanel(enable) {
-    let actorData = Utils.getTrackedActorData(this._panelBox)
-
-    actorData.affectsStruts = !enable
-    actorData.trackFullscreen = !enable
-
-    this._panelBox.visible = enable ? enable : this._panelBox.visible
-
-    Main.layoutManager._queueUpdateRegions()
+    this._dtpPanel.statusFullscreen.setIntellihideTracking(
+      this._dtpPanel,
+      enable,
+    )
   }
 
   _setRevealMechanism() {

@@ -1,7 +1,7 @@
 # Community Panel Runtime Map
 
 Last update: 2026-08-28
-Baseline: `cfe61da`, runtime build 73
+Baseline: `3b88045`, runtime build 74
 
 ## Scope
 
@@ -17,6 +17,7 @@ taskbarSurface.js
   -> taskbarStatusAreaHost.js
   -> taskbarMonitorHost.js
   -> taskbarShellHooks.js
+  -> taskbarStatusFullscreenIntegration.js
   -> taskbarServiceHost.js
      -> taskbarOverviewIntegration.js
      -> taskbarNotificationMonitor.js
@@ -29,7 +30,6 @@ taskbarSurface.js
         -> intellihide.js
            -> proximity.js
         -> transparency.js
-        -> panelStyle.js
         -> panelSettings.js
         -> panelPositions.js
      -> runtimeContext.js
@@ -47,7 +47,7 @@ taskbarSurface.js
 | `windowPreview.js` | preview renderer | inherited | retain behind owned interactions |
 | `intellihide.js` | overlap and reveal renderer | mixed | owned mode selection already active |
 | `transparency.js` | effective Panel alpha | inherited | owned opacity is the source of truth |
-| `panelStyle.js` | native box and status actor styling | inherited | retain until status host accepted |
+| `taskbarStatusFullscreenIntegration.js` | native status styling and fullscreen tracking | runtime | owned implementation accepted in build 74 |
 | `taskbarOverviewIntegration.js` | Taskbar/overview integration | runtime | owned implementation accepted in build 73 |
 | `proximity.js` | window overlap watches | inherited | retain with intellihide |
 | `taskbarNotificationMonitor.js` | application notification counts | runtime | owned implementation accepted in build 72 |
@@ -105,7 +105,7 @@ previously constructed directly by `PanelManager`:
 1. Overview construction and activation after primary-panel creation;
 2. notification monitor, launcher subscription, and Unity D-Bus name;
 3. DING usable-area bridge with exact per-monitor margins;
-4. four root settings groups and three panel-box signal groups;
+4. six root settings groups and three panel-box signal groups;
 5. the inherited intellihide toggle keybinding;
 6. pending DING idle cancellation and transactional partial cleanup.
 
@@ -156,8 +156,26 @@ entry/exit/state counters, pending previews/timeouts, and actor residue. The
 inherited `overview.js` was removed after GNOME 50.4 and GNOME 51.beta passed
 normal/maximized search, app-grid, activation, workspace, empty-space exit,
 10 slow and 20 rapid cycles, native restoration, Taskbar re-entry, and strict
-audit. The final migration boundary is inherited status/fullscreen behavior
-plus exact teardown.
+audit.
+
+## Status and fullscreen boundary
+
+Runtime build 74 ports native status styling, Overview panel visibility,
+fullscreen chrome tracking, and intellihide tracking into
+`TaskbarStatusFullscreenIntegration`. Exact inline styles and tracked-chrome
+flags are restored transactionally. The guarded Wayland surface repair uses
+the same exact-geometry boundary accepted by the owned Dock.
+
+Telemetry reports implementation, connections, panels and styles owned,
+restoration conflicts, Overview/fullscreen counters, native visibility,
+tracking mutations, pending repair, surface readiness, and repair count.
+`panelStyle.js` was removed only after GNOME 50.4 and GNOME 51.beta passed the
+status, F11, teardown, Taskbar re-entry, and strict-audit matrices.
+
+The behavior boundary is complete. Remaining migration work is structural:
+internalize the active Taskbar renderer modules, remove the standalone
+compatibility host after upgrade/rollback coverage, and retire obsolete schema
+adapters only after their gates pass.
 
 ## Upstream reference
 
@@ -184,6 +202,20 @@ plus exact teardown.
   `fa388cb1600037fe6347808a087184596e345eb3d382274fbcee71ade2480048`.
   Official GJS Extension/`InjectionManager` and review lifecycle guidance was
   also reviewed. No public API replaces these private Shell contracts.
+- Status/fullscreen review: GNOME Shell 50.4 target
+  `233322b9b675b0385767147c1a6cfc6ff7325160`, Shell main
+  `6db7eaf5377e24d85eb9251316a8b2b5ca407cc4`, and Dash-to-Panel master
+  `1c0c1f1354bfaccbf2539ef516ec527bea498a51`, retrieved 2026-08-28.
+  GNOME `layout.js` SHA-256 values are
+  `79b73a5a1390c9d6871c96ec18115bb1316747c321c2a157bc837f3a04bc6f12`
+  and
+  `a7dba213a2946830024610ac696996ae5d866deabc64ae590d474713b4d17fb7`.
+  Dash-to-Panel `intellihide.js`, `panel.js`, and `panelStyle.js` values are
+  `1789c9f93fa76ad8046c42b9a31a556b2f96296a86f87b2807047d1bcfa8ed04`,
+  `f1b771a838802bddcd82b2e8e2ce0e3b7af30c40f829c7e68805e49e2fe691a8`,
+  and
+  `b72f2953f0b973a870bd239b4825ff6e1ccf9bde9bc0e7fbc8569948b3a5c201`.
+  No public API replaces `trackFullscreen` or native status inline styles.
 
 GNOME 50.4 and current main retain the same central contracts used here:
 `Main.panel.statusArea`, `addToStatusArea()`, `_addToPanelBox()`, the left,

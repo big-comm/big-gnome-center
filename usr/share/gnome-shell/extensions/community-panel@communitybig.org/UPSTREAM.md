@@ -38,5 +38,9 @@ Local runtime changes:
 - Build 73 ports Overview allocation, dash visibility, workspace isolation,
   hotkeys/previews, and click-to-exit behavior into the unified runtime. The
   inherited Overview module is removed after GNOME 50/51 acceptance.
+- Build 74 ports native status styling, Overview/fullscreen visibility,
+  tracked-chrome mutations, and guarded Wayland fullscreen surface repair into
+  the unified runtime. The inherited Panel style module is removed after
+  GNOME 50/51 acceptance.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

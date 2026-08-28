@@ -27,7 +27,7 @@ def test_community_panel_has_distinct_identity_and_shell_support():
 
 def test_community_panel_pins_the_reviewed_dash_to_panel_73_core():
     expected = {
-        "panel.js": "22c5336a72101a9541ba3cea7e70086bb1eadd246501c0ce5639b49c49934b27",
+        "panel.js": "55acb37af5480ca127cdf7121667a9afee0995addfe8422901add742cd9160ae",
         "panelManager.js": "62d5ee247ded77568b634758adc2958e685015a9660d3da84187665670af07c5",
         "taskbar.js": "3b70a094b701291c2b6360d0105e8801610fe841c2120076e94fd1d5091fe427",
         "windowPreview.js": "0b61a11adad74464800bc63cefd2846faddb4bb969096a6dd99f2df1f4f92fb7",
@@ -191,13 +191,17 @@ def test_desk_ux_unfocused_indicator_is_neutral_gray():
     assert "alpha: 184" in color_method
 
 
-def test_panel_style_does_not_reparent_status_buttons_during_teardown():
-    panel_style = (PANEL / "panelStyle.js").read_text()
+def test_panel_style_is_owned_by_runtime():
+    integration = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/"
+        "layout-switcher-runtime@communitybig.org/"
+        "taskbarStatusFullscreenIntegration.js"
+    ).read_text()
 
-    assert "this._refreshPanelButtons = true" in panel_style
-    assert "this._refreshPanelButtons = false" in panel_style
-    assert "this._refreshPanelButtons &&" in panel_style
-    assert "if (!parent) return" in panel_style
+    assert not (PANEL / "panelStyle.js").exists()
+    assert "class StatusStyleOwner" in integration
+    assert "_restoreStyle(actor, refresh)" in integration
 
 
 def test_community_panel_context_menu_has_no_runtime_configuration():

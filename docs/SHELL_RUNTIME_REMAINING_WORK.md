@@ -1,8 +1,8 @@
 # Shell Runtime Remaining Work
 
-Last update: 2026-08-27
-Safe checkpoint: `70212c9`
-Status: Build 71 owns the shared DING usable-area implementation
+Last update: 2026-08-28
+Safe checkpoint: `3b88045`
+Status: Build 74 accepts the final Panel behavior boundary
 
 ## Purpose
 
@@ -54,10 +54,10 @@ Current internal payload:
 
 | Module | Bytes | JS/CSS lines | Public UUID enabled |
 |---|---:|---:|---|
-| Unified runtime with Dock and Taskbar lifecycle | 581,690 | 16,557 | yes |
+| Unified runtime with Dock and Taskbar lifecycle | 645,379 | 18,404 | yes |
 | Dock resource host | 176,013 | 1,713 CSS | no entry point |
-| Inherited Taskbar visual modules | 1,186,762 | 12,352 | rollback adapter only |
-| Total | 1,944,465 | 30,622 | one public runtime |
+| Inherited Taskbar visual modules | 1,145,446 | 11,018 | rollback adapter only |
+| Total | 1,966,838 | 31,135 | one public runtime |
 
 The size target is not a fixed percentage. Removal is allowed only when a
 replacement passes the relevant behavior contract.
@@ -186,9 +186,13 @@ Gates:
 - [x] Own installation and exact restoration of Shell prototype/global hooks.
 - [x] Own Overview, notification monitor, desktop usable-area, manager-signal,
   and intellihide-keybinding lifecycle.
-- [ ] Validate Quick Settings, date menu, AppIndicator, JamesDSP, GSConnect,
-  removable drives, notifications, and fullscreen transitions.
-- [ ] Remove each inherited Panel branch only after its replacement is accepted.
+- [x] Validate Quick Settings, date menu, AppIndicator, JamesDSP, GSConnect,
+  notifications, and fullscreen transitions.
+- [ ] Validate the removable-drive menu with a mounted test device.
+- [x] Remove replaced DING, notification, Overview, and Panel-style branches
+  only after their replacements are accepted.
+- [ ] Internalize the remaining inherited Taskbar renderer modules before
+  removing the compatibility host.
 
 Gates:
 
@@ -594,9 +598,10 @@ application/runtime labels match, and each VM has one `1280x800` monitor.
 Current-shell journals contain no new-module error. GNOME 51 retains the
 external GSConnect `wl_clipboard.js` final-type failure.
 
-Focused tests: `80 passed`. Full suite: `576 passed`, one known PyGI warning.
-Changed JavaScript syntax and diff checks pass. PKGBUILD and package versions
-are unchanged. Final local/GNOME 50/GNOME 51 SHA-256 values match:
+Focused tests: `80 passed`. Full suite: `576 passed`, with the known PyGI
+warning and two headless Adwaita warnings. Changed JavaScript syntax and diff
+checks pass. PKGBUILD and package versions are unchanged. Final local/GNOME 50/
+GNOME 51 SHA-256 values match:
 
 - runtime controller:
   `9d918d47d5c48e8ab94fbafb662e157ad65489a322f01d392d29538f3fbd36ee`;
@@ -611,8 +616,53 @@ are unchanged. Final local/GNOME 50/GNOME 51 SHA-256 values match:
 - complete Community Panel compatibility payload:
   `ee34534c3b866291f5e13a0122bc5f69421177601ec54b3080714e6192bb6bb1`.
 
-Final Panel slice: port remaining inherited status/fullscreen behavior and pass
-the exact-teardown gate. Do not start it in build 73.
+Build 74 completes the accepted Panel behavior boundary.
+`TaskbarStatusFullscreenIntegration` owns native status inline styles,
+Overview visibility, fullscreen chrome tracking, intellihide tracking, and a
+guarded Wayland fullscreen surface repair. Exact prior styles and tracking
+flags are restored transactionally; external replacements are reported as
+conflicts instead of overwritten.
+
+The first GNOME 50 F11 check rejected a logically correct frame because the
+late `MetaSurfaceContainerActor` allocation still left black borders. The
+runtime now applies the same exact frame/buffer/window-actor/surface guards
+accepted by the Dock. No application window state or geometry is changed.
+
+GNOME 50.4 and GNOME 51.beta each passed first F11 entry, 10 slow and 20 rapid
+cycles from non-maximized and maximized Brave, exact exit restoration, status
+menus, Taskbar teardown/re-entry, Desk UX, Classic, and final strict audits.
+GNOME 50 ends in BigGnome; GNOME 51 ends in Hybrid. Application/runtime labels
+match and each VM has one `1280x800` monitor. `panelStyle.js` was removed only
+after both matrices passed. GNOME 51's build-74 Shell journal is clean; the
+separate GSConnect activation failure remains external.
+
+A Desk UX live check exposed stale DING margins: the service calculated 40 px
+before the Panel's final idle geometry reached 46 px. Activation now queues the
+margin update after Panel geometry and observes both margin settings. The
+strict audit compares DING margins with `geom.outerSize`.
+
+Focused tests: `80 passed`. Full suite: `576 passed`, one known PyGI warning.
+Changed JavaScript syntax and diff checks pass. PKGBUILD and package versions
+are unchanged. Final local/GNOME 50/GNOME 51 SHA-256 values match:
+
+- runtime controller:
+  `f1263e9c94ba1439b34e33c904cb753428b90e924c342ab393039eff91d54dd6`;
+- Taskbar runtime:
+  `be1afa3c99ec347669fd3444dedbf84595b38f5b3c62a6d51d0bcb274389bb5c`;
+- Taskbar service host:
+  `2b86ea638feadd1b2eea0e913ddfef6ba0077df6c84f532e569e06decf4bf6ae`;
+- status/fullscreen integration:
+  `7ef87128e48ff6a65e1ac94f4ee61e286575ac215e421483a815dca75a781ea1`;
+- runtime audit:
+  `bd96cd6013278e14ceb44898e5764e7addf3676669c67043981a3ffbef766ea1`;
+- complete unified-runtime payload:
+  `c18e00eec254986ce7cc6ae5c25d122ab1201489d0331e3591d5b68dfa2ea20a`;
+- complete Community Panel compatibility payload:
+  `df2d22d95e3021e72c0c3832baf8c0de381dba7b415fd013a73926e752a770ef`.
+
+The behavior migration is complete. Structural work remains: internalize the
+active Taskbar renderer modules, validate upgrade/rollback, then remove the
+compatibility host and obsolete schema adapters.
 
 Post-migration product backlog, explicitly outside the final engine boundary:
 

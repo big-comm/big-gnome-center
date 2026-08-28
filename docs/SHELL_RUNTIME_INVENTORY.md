@@ -1,7 +1,7 @@
 # Shell Runtime Inventory
 
 Last update: 2026-08-28
-Status: Dock internalized; Panel final status/fullscreen boundary pending
+Status: Panel behavior boundary accepted; renderer internalization pending
 
 ## Ownership matrix
 
@@ -29,10 +29,10 @@ Current installed payload:
 
 | Component | Current bytes | Current JS/CSS lines |
 |---|---:|---:|
-| Unified runtime with Dock | 616,936 | 17,573 |
+| Unified runtime with Dock | 645,379 | 18,404 |
 | Dock resources and schemas | 176,013 | 1,713 CSS |
-| Community Panel | 1,157,792 | 11,390 |
-| Combined | 1,950,741 | 30,676 |
+| Community Panel | 1,145,446 | 11,018 |
+| Combined | 1,966,838 | 31,135 |
 
 The runtime reads the owned schema, maps all six layout profiles, and selects
 Dock, Taskbar, or native GNOME behavior. Dock actors and lifecycle are owned by
@@ -54,6 +54,7 @@ Runtime entry and orchestration:
 
 - `dockRuntime.js`, `dockSurface.js`, `dockActorFactory.js`, `dock/dash.js`.
 - `taskbarOverviewIntegration.js` owns Taskbar Overview behavior.
+- `taskbarStatusFullscreenIntegration.js` owns status/fullscreen behavior.
 
 Application behavior:
 
@@ -92,7 +93,7 @@ Application behavior:
 Visibility and appearance:
 
 - `intellihide.js`, `proximity.js`, `transparency.js`.
-- `panelStyle.js`, `stylesheet.css`.
+- `stylesheet.css`. The inherited `panelStyle.js` was removed in build 74.
 
 Shared support:
 

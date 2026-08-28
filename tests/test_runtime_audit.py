@@ -78,12 +78,14 @@ def _snapshot(**changes) -> Snapshot:
             "iconSize": dock_size,
         }] if surface == "dock" else [])
         actor_height = {"Hybrid": 38, "Desk UX": 46, "Classic": 38}.get(layout)
+        outer_size = {"Hybrid": 38, "Desk UX": 40, "Classic": 38}.get(layout)
         panel_opacity = {"Hybrid": 70, "Desk UX": 65, "Classic": 70}.get(layout)
         taskbar_actors = ([{
             "monitor": 0,
             "edge": edge,
             "width": 1920,
             "height": actor_height,
+            "outerSize": outer_size,
             "grouped": layout != "Classic",
             "opacity": panel_opacity,
             "intellihideEnabled": False,
@@ -255,7 +257,7 @@ def _snapshot(**changes) -> Snapshot:
                             "desktopMargins": (
                                 {"0": {
                                     "top": 0,
-                                    "bottom": actor_height,
+                                    "bottom": outer_size,
                                     "left": 0,
                                     "right": 0,
                                 }}
@@ -282,7 +284,7 @@ def _snapshot(**changes) -> Snapshot:
                                 ),
                             },
                             "signalsOwned": surface == "taskbar",
-                            "signalGroups": 7 if surface == "taskbar" else 0,
+                            "signalGroups": 9 if surface == "taskbar" else 0,
                             "keybindingOwned": surface == "taskbar",
                             "activationFailures": 0,
                         },
@@ -309,6 +311,43 @@ def _snapshot(**changes) -> Snapshot:
                                 if surface == "taskbar" else []
                             ),
                         },
+                        "statusFullscreen": ({
+                            "implementation": "layout-switcher-runtime",
+                            "active": True,
+                            "connected": True,
+                            "panelsOwned": len(taskbar_actors),
+                            "styledPanels": len(taskbar_actors),
+                            "signalsOwned": 5,
+                            "styledActors": 3,
+                            "orphanStyles": 0,
+                            "restorationPending": surface == "taskbar",
+                            "restoreConflicts": 0,
+                            "lastConflict": "",
+                            "fullscreenEvents": 0,
+                            "overviewEntries": 0,
+                            "overviewExits": 0,
+                            "visibilityUpdates": 1,
+                            "trackMutations": 1,
+                            "fullscreenSurface": {
+                                "focusWindowConnected": True,
+                                "windowSignalsOwned": 4,
+                                "windowActorSignalsOwned": 0,
+                                "surfaceSignalsOwned": 0,
+                                "surfaceChildSignalsOwned": 0,
+                                "repairPending": False,
+                                "repairCount": 0,
+                                "surfaceReady": False,
+                            },
+                            "panels": [{
+                                "monitor": 0,
+                                "monitorFullscreen": False,
+                                "visible": True,
+                                "mapped": True,
+                                "affectsStruts": True,
+                                "trackFullscreen": True,
+                                "intellihideEnabled": False,
+                            }],
+                        } if surface == "taskbar" else {}),
                         "statusArea": {
                             "hostOwned": surface == "taskbar",
                             "nativeMenuManagerPreserved": True,
@@ -813,6 +852,35 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
             "restoreConflicts": 1,
             "installedHooks": [],
         },
+        "statusFullscreen": {
+            "implementation": "inherited",
+            "active": False,
+            "connected": False,
+            "panelsOwned": 0,
+            "styledPanels": 0,
+            "signalsOwned": 0,
+            "styledActors": 0,
+            "orphanStyles": 1,
+            "restorationPending": False,
+            "restoreConflicts": 1,
+            "lastConflict": "external",
+            "fullscreenEvents": -1,
+            "overviewEntries": -1,
+            "overviewExits": -1,
+            "visibilityUpdates": -1,
+            "trackMutations": -1,
+            "fullscreenSurface": {
+                "focusWindowConnected": False,
+                "windowSignalsOwned": -1,
+                "windowActorSignalsOwned": -1,
+                "surfaceSignalsOwned": -1,
+                "surfaceChildSignalsOwned": -1,
+                "repairPending": True,
+                "repairCount": -1,
+                "surfaceReady": False,
+            },
+            "panels": [],
+        },
         "statusArea": {
             "hostOwned": False,
             "nativeMenuManagerPreserved": False,
@@ -874,6 +942,11 @@ def test_audit_rejects_taskbar_lifecycle_ownership_drift(tmp_path):
     assert "taskbar-shell-hooks-active" in failures
     assert "taskbar-shell-hooks-restoration" in failures
     assert "taskbar-shell-hooks-conflicts" in failures
+    assert "taskbar-status-fullscreen-implementation" in failures
+    assert "taskbar-status-fullscreen-connection" in failures
+    assert "taskbar-status-fullscreen-ownership" in failures
+    assert "taskbar-status-fullscreen-restoration" in failures
+    assert "taskbar-status-fullscreen-state" in failures
     assert "taskbar-shell-hooks-installed" in failures
     assert "taskbar-shell-injections" in failures
     assert "taskbar-shell-shutdown-hook" in failures

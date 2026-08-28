@@ -38,7 +38,6 @@ import * as Taskbar from './taskbar.js'
 import * as TaskbarItemContainer from './taskbar.js'
 import * as Pos from './panelPositions.js'
 import * as PanelSettings from './panelSettings.js'
-import * as PanelStyle from './panelStyle.js'
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
@@ -88,6 +87,7 @@ export const Panel = GObject.registerClass(
       panelBox,
       isStandalone,
       statusAreaHost,
+      statusFullscreen,
     ) {
       super._init({
         style_class: 'dashtopanelPanel',
@@ -99,7 +99,7 @@ export const Panel = GObject.registerClass(
       this._injectionManager = new InjectionManager()
 
       this.panelManager = panelManager
-      this.panelStyle = new PanelStyle.PanelStyle()
+      this.statusFullscreen = statusFullscreen
 
       this.monitor = monitor
       this.clipContainer = clipContainer
@@ -320,7 +320,6 @@ export const Panel = GObject.registerClass(
           'menu-closed',
           () => this.panel.sync_hover(),
         ],
-        [Main.overview, ['showing', 'hiding'], () => this._adjustForOverview()],
         [
           Main.overview,
           'hidden',
@@ -360,7 +359,7 @@ export const Panel = GObject.registerClass(
 
       this._bindSettingsChanges()
 
-      this.panelStyle.enable(this)
+      this.statusFullscreen.style(this)
 
       if (this.geom.vertical) {
         this._signalsHandler.add([
@@ -399,7 +398,7 @@ export const Panel = GObject.registerClass(
     }
 
     disable() {
-      this.panelStyle.disable()
+      this.statusFullscreen.unstyle(this)
 
       this._timeoutsHandler.destroy()
       this._signalsHandler.destroy()
@@ -682,21 +681,6 @@ export const Panel = GObject.registerClass(
       }
 
       return PERSISTENTSTORAGE[propName].pop()
-    }
-
-    _adjustForOverview() {
-      let isFocusedMonitor = this.panelManager.checkIfFocusedMonitor(
-        this.monitor,
-      )
-      let isOverview = !!Main.overview.visibleTarget
-      let isOverviewFocusedMonitor = isOverview && isFocusedMonitor
-      let isShown = !isOverview || isOverviewFocusedMonitor
-      let actorData = Utils.getTrackedActorData(this.panelBox)
-
-      // prevent the "chrome" to update the panelbox visibility while in overview
-      actorData.trackFullscreen = !isOverview
-
-      this.panelBox[isShown ? 'show' : 'hide']()
     }
 
     _resetGeometry() {

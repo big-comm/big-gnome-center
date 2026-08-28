@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 73" in controller
+    assert "RUNTIME_BUILD = 74" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -407,6 +407,9 @@ def test_taskbar_layout_indicators_are_runtime_rendered_with_fallbacks():
 def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     status = (RUNTIME / "taskbarStatusArea.js").read_text()
+    status_fullscreen = (
+        RUNTIME / "taskbarStatusFullscreenIntegration.js"
+    ).read_text()
     host = (RUNTIME / "taskbarPanelHost.js").read_text()
     panel = (
         ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/panel.js"
@@ -417,8 +420,9 @@ def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
     ).read_text()
 
     assert "new TaskbarStatusAreaHost()" in surface
-    assert "new TaskbarPanelHost(this.statusAreaHost)" in surface
-    assert "panelHost: this.panelHost.diagnostics()" in surface
+    assert "new TaskbarStatusFullscreenIntegration(" in surface
+    assert "new TaskbarPanelHost(" in surface
+    assert "panelHost: this.panelHost?.diagnostics()" in surface
     assert "statusArea: this.statusAreaHost.diagnostics(" in surface
     assert "this.panelHost.create(this, monitor, isStandalone)" in manager
     assert "this.panelHost.release(p)" in manager
@@ -428,7 +432,7 @@ def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
     assert "panelBox.remove_child(Main.panel)" in host
     assert "panelBox.add_child(Main.panel)" in host
     assert "_rollbackCreate(" in host
-    assert "this.panelHost.releaseAll()" in surface
+    assert "this.panelHost?.releaseAll()" in surface
     assert "Object.entries(panel?.statusArea ?? {})" in status
     assert "panel?.statusArea?.dateMenu" in status
     assert "panel?.statusArea?.quickSettings" in status
@@ -439,6 +443,28 @@ def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
     assert "get_transformed_position()" in status
     assert "addToStatusArea" not in status
     assert "destroy()" not in status
+    assert "implementation: 'layout-switcher-runtime'" in status_fullscreen
+    assert "in-fullscreen-changed" in status_fullscreen
+    assert "MetaSurfaceContainerActor" in status_fullscreen
+    assert "surface.set_position(0, 0)" in status_fullscreen
+    assert "notify::allocation" in status_fullscreen
+    assert "frame.width === monitor.width" in status_fullscreen
+    assert "buffer.width === monitor.width" in status_fullscreen
+    assert "trackFullscreen: !isOverview" in status_fullscreen
+    assert "setIntellihideTracking(" in status_fullscreen
+    assert "Object.assign(record.actorData, record.original)" in status_fullscreen
+    assert "status/fullscreen state changed externally" in status_fullscreen
+    assert "restorationPending" in status_fullscreen
+    assert "orphanStyles" in status_fullscreen
+    assert "this.statusFullscreen.style(this)" in panel
+    assert "this.statusFullscreen.unstyle(this)" in panel
+    assert "PanelStyle" not in panel
+    assert "_adjustForOverview" not in panel
+    intellihide = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/intellihide.js"
+    ).read_text()
+    assert "setIntellihideTracking(" in intellihide
 
 
 def test_taskbar_monitor_topology_is_owned_outside_panel_manager():
@@ -503,6 +529,7 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     overview = (RUNTIME / "taskbarOverviewIntegration.js").read_text()
     desktop_icons = (RUNTIME / "desktopIconsUsableArea.js").read_text()
     notifications = (RUNTIME / "taskbarNotificationMonitor.js").read_text()
+    taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
     dock_imports = (RUNTIME / "dock/imports.js").read_text()
     monitor = (RUNTIME / "taskbarMonitorHost.js").read_text()
     manager = (
@@ -568,6 +595,7 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "runtimeContext.js" not in notifications
     assert "Utils.GlobalSignalsHandler" not in notifications
     assert "new DesktopIconsUsableAreaClass(" in services
+    assert "this._queueDesktopIconsMargins(manager);" in services
     assert "./desktopIconsUsableArea.js" in services
     assert "../desktopIconsUsableArea.js" in dock_imports
     assert "layout-switcher-runtime" in desktop_icons
@@ -590,8 +618,11 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "INTELLIHIDE_KEYBINDING" in services
     assert "GLib.Source.remove(this._desktopMarginsIdleId)" in services
     assert "changed::panel-sizes" in services
+    assert "changed::panel-top-bottom-margins" in services
+    assert "changed::panel-side-margins" in services
     assert "changed::panel-element-positions" in services
     assert "desktopMarginsPending" in services
+    assert "outerSize: Math.round(panel?.geom?.outerSize ?? 0)" in taskbar
     assert "activationFailures" in services
     assert "new TaskbarOverviewIntegration" not in manager
     assert "new NotificationsMonitor" not in manager
@@ -615,7 +646,6 @@ def test_inherited_taskbar_modules_use_the_separate_runtime_context():
         "intellihide.js",
         "panel.js",
         "panelManager.js",
-        "panelStyle.js",
         "taskbar.js",
         "transparency.js",
         "windowPreview.js",

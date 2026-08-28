@@ -76,7 +76,7 @@ export class TaskbarServiceHost {
             manager.notificationsMonitor = this._notificationsMonitor;
             this._desktopIconsUsableArea = new DesktopIconsUsableAreaClass(
                 TASKBAR_MARGIN_OWNER);
-            this.updateDesktopIconsMargins(manager);
+            this._queueDesktopIconsMargins(manager);
             this._lastError = '';
         } catch (error) {
             this._activationFailures++;
@@ -117,6 +117,16 @@ export class TaskbarServiceHost {
                 [
                     SETTINGS,
                     'changed::panel-sizes',
+                    () => this._queueDesktopIconsMargins(manager),
+                ],
+                [
+                    SETTINGS,
+                    'changed::panel-top-bottom-margins',
+                    () => this._queueDesktopIconsMargins(manager),
+                ],
+                [
+                    SETTINGS,
+                    'changed::panel-side-margins',
                     () => this._queueDesktopIconsMargins(manager),
                 ],
             );
@@ -259,7 +269,7 @@ export class TaskbarServiceHost {
             desktopBridge:
                 this._desktopIconsUsableArea?.diagnostics() ?? {},
             signalsOwned: Boolean(this._signals),
-            signalGroups: this._signals ? 7 : 0,
+            signalGroups: this._signals ? 9 : 0,
             keybindingOwned: this._keybindingOwned,
             activationFailures: this._activationFailures,
             lastError: this._lastError,

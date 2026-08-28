@@ -8,8 +8,9 @@ import * as Panel from '../community-panel@communitybig.org/panel.js';
 import * as Utils from '../community-panel@communitybig.org/utils.js';
 
 export class TaskbarPanelHost {
-    constructor(statusAreaHost) {
+    constructor(statusAreaHost, statusFullscreen) {
         this._statusAreaHost = statusAreaHost;
+        this._statusFullscreen = statusFullscreen;
         this._panels = new Set();
         this._generation = 0;
     }
@@ -38,6 +39,7 @@ export class TaskbarPanelHost {
                 panelBox,
                 isStandalone,
                 isStandalone ? null : this._statusAreaHost,
+                this._statusFullscreen,
             );
             panelBox.add_child(panel);
             panel.enable();
@@ -53,6 +55,7 @@ export class TaskbarPanelHost {
                 trackFullscreen: true,
                 affectsStruts: true,
             });
+            this._statusFullscreen.track(panel);
             panel.intellihide.init();
 
             this._panels.add(panel);
@@ -66,6 +69,7 @@ export class TaskbarPanelHost {
 
     release(panel) {
         try {
+            this._statusFullscreen.release(panel);
             Main.layoutManager._untrackActor(panel);
             Main.layoutManager._untrackActor(panel.panelBox);
 
@@ -121,6 +125,7 @@ export class TaskbarPanelHost {
             );
         }
         this._statusAreaHost.restore();
+        this._statusFullscreen.release(panel);
 
         try {
             if (panel)

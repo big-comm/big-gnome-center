@@ -279,6 +279,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     notification_monitor = service_host.get("notificationMonitor") or {}
     desktop_bridge = service_host.get("desktopBridge") or {}
     shell_hooks = taskbar_lifecycle.get("shellHooks") or {}
+    status_fullscreen = taskbar_lifecycle.get("statusFullscreen") or {}
+    fullscreen_surface = status_fullscreen.get("fullscreenSurface") or {}
     status_area = taskbar_lifecycle.get("statusArea") or {}
     dock_actors = dock.get("actors") or []
     taskbar_actors = taskbar.get("actors") or []
@@ -645,11 +647,11 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
         ),
         _check(
             service_host.get("signalGroups", 0)
-            == (7 if expected_taskbars else 0),
+            == (9 if expected_taskbars else 0),
             "taskbar-manager-signal-groups",
-            f"signal groups={7 if expected_taskbars else 0}",
+            f"signal groups={9 if expected_taskbars else 0}",
             "expected signal groups="
-            f"{7 if expected_taskbars else 0}, got "
+            f"{9 if expected_taskbars else 0}, got "
             f"{service_host.get('signalGroups')}",
         ),
         _check(
@@ -701,6 +703,69 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "no restoration conflicts",
             f"conflicts={shell_hooks.get('restoreConflicts')}, "
             f"last={shell_hooks.get('lastConflict')}",
+        ),
+        _check(
+            (status_fullscreen.get("implementation")
+             == "layout-switcher-runtime") == expected_taskbars,
+            "taskbar-status-fullscreen-implementation",
+            f"runtime-owned={expected_taskbars}",
+            "expected runtime-owned status/fullscreen integration="
+            f"{expected_taskbars}, got "
+            f"{status_fullscreen.get('implementation')}",
+        ),
+        _check(
+            bool(status_fullscreen.get("active")) == expected_taskbars
+            and bool(status_fullscreen.get("connected")) == expected_taskbars,
+            "taskbar-status-fullscreen-connection",
+            f"active/connected={expected_taskbars}",
+            f"integration={status_fullscreen}",
+        ),
+        _check(
+            not expected_taskbars or (
+                status_fullscreen.get("panelsOwned") == len(taskbar_actors)
+                and status_fullscreen.get("styledPanels") == len(taskbar_actors)
+                and status_fullscreen.get("signalsOwned") == 5
+                and status_fullscreen.get("styledActors", 0) > 0
+            ),
+            "taskbar-status-fullscreen-ownership",
+            "Panel chrome and status styles are owned",
+            f"integration={status_fullscreen}, actors={len(taskbar_actors)}",
+        ),
+        _check(
+            not expected_taskbars or (
+                status_fullscreen.get("restorationPending") is True
+                and not status_fullscreen.get("restoreConflicts")
+                and not status_fullscreen.get("lastConflict")
+            ),
+            "taskbar-status-fullscreen-restoration",
+            "restoration pending without conflicts",
+            f"integration={status_fullscreen}",
+        ),
+        _check(
+            not expected_taskbars or (
+                not status_fullscreen.get("orphanStyles")
+                and all(
+                    isinstance(status_fullscreen.get(key), int)
+                    and status_fullscreen.get(key) >= 0
+                    for key in (
+                        "fullscreenEvents", "overviewEntries", "overviewExits",
+                        "visibilityUpdates", "trackMutations",
+                    )
+                )
+                and not fullscreen_surface.get("repairPending")
+                and all(
+                    isinstance(fullscreen_surface.get(key), int)
+                    and fullscreen_surface.get(key) >= 0
+                    for key in (
+                        "windowSignalsOwned", "windowActorSignalsOwned",
+                        "surfaceSignalsOwned", "surfaceChildSignalsOwned",
+                        "repairCount",
+                    )
+                )
+            ),
+            "taskbar-status-fullscreen-state",
+            "status/fullscreen state and counters are coherent",
+            f"integration={status_fullscreen}",
         ),
         _check(
             bool(status_area.get("hostOwned")) == expected_taskbars,
@@ -805,15 +870,18 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             if str(index).isdigit()
         )
         desktop_margins = service_host.get("desktopMargins") or {}
+        margin_sides = {
+            "top": "top",
+            "bottom": "bottom",
+            "left": "left",
+            "right": "right",
+        }
         desktop_margin_geometry = all(
             (desktop_margins.get(str(actor.get("monitor")))
              or desktop_margins.get(actor.get("monitor")))
-            == {
-                "top": 0,
-                "bottom": actor.get("height"),
-                "left": 0,
-                "right": 0,
-            }
+            == {side: (actor.get("outerSize") if side == margin_sides.get(
+                actor.get("edge")) else 0)
+                for side in margin_sides}
             for actor in taskbar_actors
         )
         checks.extend(
@@ -871,7 +939,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 _check(
                     desktop_margin_geometry,
                     "taskbar-desktop-margin-geometry",
-                    "desktop bottom margins match Taskbar actors",
+                    "desktop margins match Taskbar outer geometry",
                     f"margins={desktop_margins}, actors={taskbar_actors}",
                 ),
                 _check(

@@ -17,6 +17,7 @@ import {TaskbarPanelHost} from './taskbarPanelHost.js';
 import {TaskbarServiceHost} from './taskbarServiceHost.js';
 import {TaskbarShellHooks} from './taskbarShellHooks.js';
 import {TaskbarStatusAreaHost} from './taskbarStatusArea.js';
+import {TaskbarStatusFullscreenIntegration} from './taskbarStatusFullscreenIntegration.js';
 
 const UBUNTU_DOCK_UUID = 'ubuntu-dock@ubuntu.com';
 const UBUNTU_DOCK_SETTLE_MS = 200;
@@ -36,7 +37,8 @@ export class TaskbarSurfaceManager {
         this.interactions = null;
         this.indicatorRenderer = null;
         this.statusAreaHost = new TaskbarStatusAreaHost();
-        this.panelHost = new TaskbarPanelHost(this.statusAreaHost);
+        this.statusFullscreen = null;
+        this.panelHost = null;
         this.monitorHost = new TaskbarMonitorHost();
         this.serviceHost = new TaskbarServiceHost();
         this.shellHooks = new TaskbarShellHooks();
@@ -48,6 +50,10 @@ export class TaskbarSurfaceManager {
 
         const generation = ++this._generation;
         Context.initializeRuntimeContext(this._host, this);
+        this.statusFullscreen = new TaskbarStatusFullscreenIntegration(
+            Context.SETTINGS);
+        this.panelHost = new TaskbarPanelHost(
+            this.statusAreaHost, this.statusFullscreen);
         this.appActions = new TaskbarAppActions(Context.SETTINGS);
         this.interactions = new TaskbarInteractions();
         this.indicatorRenderer = new TaskbarIndicatorRenderer(Context.SETTINGS);
@@ -89,7 +95,8 @@ export class TaskbarSurfaceManager {
         } finally {
             this.serviceHost.destroy(manager);
             this.shellHooks.destroy(manager);
-            this.panelHost.releaseAll();
+            this.panelHost?.releaseAll();
+            this.statusFullscreen?.destroy();
             this.statusAreaHost.restore();
         }
 
@@ -101,6 +108,8 @@ export class TaskbarSurfaceManager {
         this.interactions = null;
         this.indicatorRenderer?.destroy();
         this.indicatorRenderer = null;
+        this.panelHost = null;
+        this.statusFullscreen = null;
 
         if (this._startupCompleteHandler) {
             try {
@@ -142,10 +151,11 @@ export class TaskbarSurfaceManager {
             interactions: this.interactions?.diagnostics() ?? {},
             indicatorRendererOwned: Boolean(this.indicatorRenderer),
             indicatorRenderer: this.indicatorRenderer?.diagnostics() ?? {},
-            panelHost: this.panelHost.diagnostics(),
+            panelHost: this.panelHost?.diagnostics() ?? {},
             monitorHost: this.monitorHost.diagnostics(),
             serviceHost: this.serviceHost.diagnostics(),
             shellHooks: this.shellHooks.diagnostics(),
+            statusFullscreen: this.statusFullscreen?.diagnostics() ?? {},
             statusArea: this.statusAreaHost.diagnostics(
                 this.panels().map(panel => panel.panelBox)),
             activationPending: Boolean(this._ubuntuDockDelayId),

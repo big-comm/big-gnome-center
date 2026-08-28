@@ -2,7 +2,7 @@
 
 > Active continuation document. Read this file before changing the repository.
 > Update the checklist and decision log after every verified task.
-> Last updated: 2026-08-27.
+> Last updated: 2026-08-28.
 
 ## Current objective
 
@@ -2098,7 +2098,8 @@ Append one entry per completed change:
 ## 2026-08-28 — Owned Taskbar Overview integration, build 73
 
 - Checkout started clean at `cfe61da`; build 72 was already committed despite
-  the incoming handoff describing it as uncommitted. No build 73 commit exists.
+  the incoming handoff describing it as uncommitted. Build 73 is checkpointed
+  at `3b88045`.
 - `TaskbarOverviewIntegration` now owns dash visibility, Overview allocation,
   optional workspace isolation, number hotkeys/previews, and empty-space exit.
   `TaskbarServiceHost` retains the activation point after the primary panel.
@@ -2141,3 +2142,51 @@ Append one entry per completed change:
   `ee34534c3b866291f5e13a0122bc5f69421177601ec54b3080714e6192bb6bb1`.
 - Next and final migration slice: inherited status/fullscreen behavior and the
   exact-teardown gate. Do not mix it into build 73.
+
+## 2026-08-28 — Owned Taskbar status/fullscreen integration, build 74
+
+- `TaskbarStatusFullscreenIntegration` now owns native status inline styles,
+  Overview panel visibility, fullscreen chrome tracking, intellihide tracking,
+  and guarded Wayland surface repair. Restoration is exact and transactional.
+- GNOME Shell 50.4/main and Dash-to-Panel master `1c0c1f1` were reviewed. Both
+  Shell versions retain `trackFullscreen`; no public replacement exists.
+  Source commits and full hashes are in `docs/COMMUNITY_PANEL_RUNTIME_MAP.md`.
+- GNOME 50 rejected the first logical F11 pass because Brave still had black
+  borders. The root cause was a late `MetaSurfaceContainerActor` allocation.
+  The accepted guard requires exact frame, buffer, window actor, surface, and
+  mapped-child geometry and never changes application window state.
+- GNOME 50 and 51 passed first F11 entry, 10 slow and 20 rapid cycles from
+  non-maximized and maximized Brave, exact exit restoration, Taskbar teardown
+  and re-entry, Desk UX, Classic, and final strict audits. Status menus and
+  native actors remained usable. Build 73 Overview search, app grid,
+  activation, and workspace behavior also passed regression checks.
+- A Desk UX audit exposed a real DING ordering defect: margins were sent at 40
+  px before final Panel geometry reached 46 px. The service now queues initial
+  dispatch after Panel geometry and observes both margin settings. Audit uses
+  `geom.outerSize`.
+- The inherited `panelStyle.js` was removed only after both Shell versions
+  passed. Its recoverable VM copies have SHA-256
+  `9de5d5ca9b1911ea9feeedfcafabdfb764a33439466a22e93658b6130f24e233`.
+- Final states: GNOME 50 BigGnome; GNOME 51 Hybrid; application/runtime labels
+  equal; one `1280x800` monitor each; strict audit zero failures. GNOME 50 has
+  only external JamesDSP/portal/PAM noise. GNOME 51 Shell journal is clean.
+- Focused tests: `80 passed`. Full suite: `576 passed`, with the known PyGI
+  warning and two headless Adwaita warnings. JavaScript syntax and diff checks
+  pass. PKGBUILD/package versions are unchanged. Final local/VM SHA-256:
+  runtime controller
+  `f1263e9c94ba1439b34e33c904cb753428b90e924c342ab393039eff91d54dd6`;
+  Taskbar runtime
+  `be1afa3c99ec347669fd3444dedbf84595b38f5b3c62a6d51d0bcb274389bb5c`;
+  service host
+  `2b86ea638feadd1b2eea0e913ddfef6ba0077df6c84f532e569e06decf4bf6ae`;
+  status/fullscreen integration
+  `7ef87128e48ff6a65e1ac94f4ee61e286575ac215e421483a815dca75a781ea1`;
+  audit
+  `bd96cd6013278e14ceb44898e5764e7addf3676669c67043981a3ffbef766ea1`;
+  runtime payload
+  `c18e00eec254986ce7cc6ae5c25d122ab1201489d0331e3591d5b68dfa2ea20a`;
+  Community Panel payload
+  `df2d22d95e3021e72c0c3832baf8c0de381dba7b415fd013a73926e752a770ef`.
+- The behavior migration is complete. Remaining work is structural Taskbar
+  renderer internalization, a mounted removable-drive menu check,
+  upgrade/rollback gates, and compatibility/schema cleanup.
