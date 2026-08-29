@@ -17,6 +17,18 @@ def test_application_icon_has_large_intrinsic_size():
     assert root.attrib["height"] == "128"
 
 
+def test_shared_menu_icon_has_shell_button_size():
+    icon = ROOT / "usr/share/icons/hicolor/scalable/apps/bigcommunity-menu-symbolic.svg"
+    root = ET.parse(icon).getroot()
+
+    assert root.attrib["width"] == "48"
+    assert root.attrib["height"] == "48"
+    source = icon.read_text()
+    assert "#808080" in source
+    assert "#2c2734" not in source
+    assert "#f2f2f2" not in source
+
+
 def test_update_notification_opens_installed_extensions():
     main_source = (ROOT / "usr/share/layout-switcher/main.py").read_text()
     window_source = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()

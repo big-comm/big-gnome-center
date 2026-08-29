@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 76" in controller
+    assert "RUNTIME_BUILD = 77" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -68,6 +68,17 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert profiles.count("dockSize: 39") == 2
     assert "extended: false" in profiles
     assert "extended: true" in profiles
+
+
+def test_gunity_dock_uses_shared_bigcommunity_menu_icon():
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    app_icons = (RUNTIME / "dock/appIcons.js").read_text()
+
+    assert "this._host.layout = profile.layout" in dock
+    assert "delete this._host.layout" in dock
+    assert "Docking.DockSurfaceManager.extension.layout === 'G-Unity'" in app_icons
+    assert "GUNITY_MENU_ICON_NAME = 'bigcommunity-menu-symbolic'" in app_icons
+    assert "this._iconActor.gicon = null" in app_icons
 
 
 def test_unified_runtime_applies_profile_or_override_indicator_before_activation():

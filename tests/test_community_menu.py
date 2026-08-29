@@ -52,12 +52,14 @@ def test_community_menu_replaces_arcmenu_package_dependency():
     assert "msgfmt --check" in pkgbuild
 
 
-def test_menu_button_uses_bundled_community_icon():
+def test_menu_button_uses_shared_bigcommunity_icon():
     source = (EXTENSION_DIR / "widgets/menuButton.js").read_text()
     constants = (EXTENSION_DIR / "constants.js").read_text()
+    icon = ROOT / "usr/share/icons/hicolor/scalable/apps/bigcommunity-menu-symbolic.svg"
 
-    assert (EXTENSION_DIR / "community-menu.svg").is_file()
-    assert "${EXTENSION_PATH}/community-menu.svg" in source
+    assert icon.is_file()
+    assert "bigcommunity-menu-symbolic" in source
+    assert "set_icon_name(MENU_ICON_NAME)" in source
     assert "MENU_BUTTON_ICON_SIZE = 36" in constants
     assert "style_class: 'community-menu-button-icon'" in source
     assert "style_class: 'popup-menu-icon'" not in source

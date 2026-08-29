@@ -1,10 +1,10 @@
 // Modified by Community Big, 2026-07-10: renamed, de-Zorinized, and adapted for GNOME Shell 50.
-import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 
 import * as Constants from '../constants.js';
-import {EXTENSION_PATH} from '../extension.js';
+
+const MENU_ICON_NAME = 'bigcommunity-menu-symbolic';
 
 export const MenuButton = GObject.registerClass({
 }, class MenuButton extends St.BoxLayout {
@@ -24,8 +24,7 @@ export const MenuButton = GObject.registerClass({
     }
 
     _setIcon() {
-        const menu_icon = `${EXTENSION_PATH}/community-menu.svg`;
-        this._icon.set_gicon(Gio.icon_new_for_string(menu_icon));
+        this._icon.set_icon_name(MENU_ICON_NAME);
     }
 
     setIconSize(size) {

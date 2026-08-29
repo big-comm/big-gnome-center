@@ -61,6 +61,7 @@ const COMMUNITY_INDICATOR_GEOMETRY = new Map([
     ['hybrid', {inactive: [18, 4], active: [18, 4], radius: 2}],
     ['desk-ux', {inactive: [8, 3], active: [18, 3], radius: 2}],
 ]);
+const GUNITY_MENU_ICON_NAME = 'bigcommunity-menu-symbolic';
 
 const clickAction = Object.freeze({
     SKIP: 0,
@@ -1471,7 +1472,13 @@ export const DockShowAppsIcon = GObject.registerClass({
         this._iconActor = super._createIcon(size);
         this._iconActor.fallbackIconName = this._iconActor.iconName;
         this._iconActor.fallbackGicon = this._iconActor.gicon;
-        this._iconActor.iconName = `view-app-grid-${Main.sessionMode.currentMode}-symbolic`;
+        if (Docking.DockSurfaceManager.extension.layout === 'G-Unity') {
+            this._iconActor.gicon = null;
+            this._iconActor.iconName = GUNITY_MENU_ICON_NAME;
+        } else {
+            this._iconActor.iconName =
+                `view-app-grid-${Main.sessionMode.currentMode}-symbolic`;
+        }
         return this._iconActor;
     }
 

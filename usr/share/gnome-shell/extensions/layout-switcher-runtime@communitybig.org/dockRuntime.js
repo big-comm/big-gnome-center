@@ -64,6 +64,7 @@ export class DockRuntime {
         this._visibility = visibility;
         this._menuSide = menuSide;
         this._skipStartupOverview = skipStartupOverview;
+        this._host.layout = profile.layout;
         this._host.skipStartupOverview = skipStartupOverview;
         if (this._active) {
             this._applyIndicator(indicator);
@@ -112,6 +113,7 @@ export class DockRuntime {
         this._visibility = null;
         this._menuSide = null;
         this._skipStartupOverview = null;
+        delete this._host.layout;
         delete this._host.menuSide;
         delete this._host.skipStartupOverview;
     }
