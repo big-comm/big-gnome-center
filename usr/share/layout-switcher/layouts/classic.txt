@@ -82,7 +82,7 @@ time-format='24h'
 
 [io/github/realmazharhussain/GdmSettings/touchpad]
 disable-while-typing=true
-natural-scrolling=true
+natural-scrolling=false
 speed=0.0
 tap-to-click=false
 two-finger-scrolling=true
@@ -192,6 +192,12 @@ toolkit-accessibility=false
 
 [org/gnome/desktop/media-handling]
 automount=true
+
+[org/gnome/desktop/peripherals/mouse]
+natural-scroll=false
+
+[org/gnome/desktop/peripherals/touchpad]
+natural-scroll=false
 
 [org/gnome/desktop/privacy]
 old-files-age=uint32 30
