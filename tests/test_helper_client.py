@@ -3,6 +3,8 @@
 
 from unittest.mock import call, patch
 
+import helper_client
+
 from helper_client import (
     ARCMENU_UUID,
     BIG_SHOT_UUID,
@@ -195,6 +197,15 @@ class TestRequiredExtensionLists:
         )
 
         assert enabled == [HELPER_UUID, RUNTIME_UUID, ARCMENU_UUID]
+
+
+class TestInstalledExtensionUuids:
+    def test_discovers_runtime_in_package_tree(self):
+        with patch(
+            "helper_client._EXTENSION_DIRS",
+            (helper_client._BUNDLED_EXTENSION_DIR,),
+        ):
+            assert RUNTIME_UUID in HelperClient.installed_extension_uuids()
 
 
 class TestComponentAssetMigration:

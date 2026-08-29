@@ -72,7 +72,9 @@ _HELPER_DIRS = (
     Path("/usr/local/share/gnome-shell/extensions") / HELPER_UUID,
 )
 
+_BUNDLED_EXTENSION_DIR = Path(__file__).resolve().parent.parent / "gnome-shell" / "extensions"
 _EXTENSION_DIRS = (
+    _BUNDLED_EXTENSION_DIR,
     Path.home() / ".local" / "share" / "gnome-shell" / "extensions",
     Path("/usr/share/gnome-shell/extensions"),
     Path("/usr/local/share/gnome-shell/extensions"),
