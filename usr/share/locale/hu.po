@@ -113,10 +113,7 @@ msgstr "Visszaállítod ezt a biztonsági mentést?"
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
-msgstr ""
-"A megjelölt elrendezések tartalmazzák a mentett testreszabásokat — "
-"kattintson a folytatáshoz vagy az eredeti alkalmazásához.Minden jelenlegi "
-"dconf beállítás felülíródik a {ts} időpontban készült pillanatképpel."
+msgstr "Minden jelenlegi dconf-beállítás felülíródik a {ts} időpontban készült pillanatképpel."
 
 #: usr/share/layout-switcher/ui/dialog_backups.py:198
 #: usr/share/layout-switcher/ui/dialog_backups.py:231
@@ -897,7 +894,7 @@ msgstr "Visszavonás"
 
 #: usr/share/layout-switcher/ui/page_layouts.py:419
 msgid "Restart the session for the 100% clean state"
-msgstr "Indítsa újra a munkamenetet a teljesen tiszta állapothoz"
+msgstr "Indítsa újra a munkamenetet a 100%-osan tiszta állapothoz"
 
 #: usr/share/layout-switcher/ui/page_layouts.py:422
 msgid "Restart now"
@@ -1722,3 +1719,181 @@ msgstr "{color} kiemelési szín"
 #: usr/share/layout-switcher/ui/window.py:488
 msgid "Panel and Dock"
 msgstr "Panel és Dokk"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:81
+msgid "Dock size"
+msgstr "A dokk mérete"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:114
+msgid "Panel height"
+msgstr "Panel magassága"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:450
+msgid "Smaller"
+msgstr "Kisebb"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:466
+msgid "Larger"
+msgstr "Nagyobb"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:143
+msgid "Restore layout defaults"
+msgstr "Elrendezés alapértelmezéseinek visszaállítása"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:33
+msgid "Standard"
+msgstr "Normál"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:34
+msgid "Gentle lift"
+msgstr "Finom emelés"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:245
+msgid "Icon hover effect"
+msgstr "Ikon lebegési effektusa"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:249
+msgid "Choose how dock icons react to the pointer."
+msgstr "Válaszd ki, hogyan reagálnak a dokk ikonjai az egérmutatóra."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "A {effect} lebegési effektus használata"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:658
+msgid "Icon hover effect updated"
+msgstr "Ikon lebegési effektusa frissítve"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:32
+msgid "Captures, annotates and records the screen."
+msgstr "Rögzíti, megjegyzésekkel látja el és felveszi a képernyőt."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:35
+msgid "Shows application tray icons in the system panel."
+msgstr "Az alkalmazásikonokat a rendszerpanelen jeleníti meg."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:40
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Alkalmazásindítókat és futó ablakokat biztosít a dokkban."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:43
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Az asztali elrendezések által használt alkalmazásmenüt biztosítja."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:46
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr "Az elrendezések által használt tálcát és rendszerpanelt biztosítja."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:49
+msgid "Keeps a searchable history of copied content."
+msgstr "Kereshető előzményeket vezet a másolt tartalomról."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:52
+msgid "Shows removable devices and lets you safely eject them."
+msgstr ""
+"Megjeleníti a cserélhető eszközöket, és biztonságos leválasztást tesz "
+"lehetővé."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:55
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Szabályozott elmosást és átlátszóságot ad az asztalhoz."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:58
+msgid "Connects phones to share files, notifications and other features."
+msgstr ""
+"Telefonokat kapcsol össze fájlok, értesítések és más funkciók megosztásához."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:61
+msgid "Shows files and folders on the desktop."
+msgstr "Megjeleníti az asztalon lévő fájlokat és mappákat."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:64
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Biztonságosan alkalmazza az elrendezés módosításait a GNOME Shellben."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:67
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr "Az elrendezések által használt dokk- és tálcafuttatást biztosítja."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:70
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "A GTK 3 alkalmazásokat a világos és sötét módhoz igazítja."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:73
+msgid "Uses the light GNOME Shell appearance."
+msgstr "A GNOME Shell világos megjelenését használja."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:76
+msgid "Loads the Shell theme selected by the active layout."
+msgstr "Az aktív elrendezés által kiválasztott Shell-témát tölti be."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:91
+msgid "Description not provided by the developer."
+msgstr "A fejlesztő nem adott meg leírást."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:770
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Technikai azonosító: {uuid}"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:772
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Verzió: {version}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:127
+msgid "Session"
+msgstr "Munkamenet"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:128
+msgid "Choose how this layout starts after login."
+msgstr "Válassza ki, hogyan induljon ez az elrendezés bejelentkezés után."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:131
+msgid "Open desktop after login"
+msgstr "Asztal megnyitása bejelentkezés után"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:132
+msgid "Skip the initial Activities overview for this layout."
+msgstr ""
+"A kezdeti Tevékenységek áttekintésének kihagyása ennél az elrendezésnél."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:144
+msgid "Reset appearance and session options for the active layout."
+msgstr ""
+"Az aktív elrendezés megjelenésének és munkamenet-beállításainak "
+"visszaállítása."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:165
+msgid "Application menu position"
+msgstr "Alkalmazásmenü helye"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:169
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "A BigGnome menüt a dokk bármelyik végére helyezheti."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Left"
+msgstr "Bal"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Right"
+msgstr "Jobb"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Az alkalmazásmenü elhelyezése itt: {side}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:668
+msgid "Application menu position updated"
+msgstr "Az alkalmazásmenü helye frissítve"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:678
+msgid "Login start updated"
+msgstr "A bejelentkezési indítás frissítve"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:685
+msgid "Layout appearance and session defaults restored"
+msgstr "Az elrendezés megjelenése és munkamenet-alapértékei visszaállítva"

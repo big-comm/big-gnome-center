@@ -113,10 +113,7 @@ msgstr "Ripristinare questo backup?"
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
-msgstr ""
-"I layout contrassegnati contengono le tue personalizzazioni salvate — fai "
-"clic per riprenderle o applicare l'originale.Tutte le impostazioni dconf "
-"correnti saranno sovrascritte con l’istantanea del {ts}."
+msgstr "Tutte le impostazioni dconf correnti saranno sovrascritte con l’istantanea del {ts}."
 
 #: usr/share/layout-switcher/ui/dialog_backups.py:198
 #: usr/share/layout-switcher/ui/dialog_backups.py:231
@@ -1719,3 +1716,183 @@ msgstr "{color} colore accento"
 #: usr/share/layout-switcher/ui/window.py:488
 msgid "Panel and Dock"
 msgstr "Pannello e Dock"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:81
+msgid "Dock size"
+msgstr "Dimensione del dock"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:114
+msgid "Panel height"
+msgstr "Altezza del pannello"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:450
+msgid "Smaller"
+msgstr "Più piccola"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:466
+msgid "Larger"
+msgstr "Più grande"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:143
+msgid "Restore layout defaults"
+msgstr "Ripristina i valori predefiniti del layout"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:33
+msgid "Standard"
+msgstr "Standard"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:34
+msgid "Gentle lift"
+msgstr "Sollevamento delicato"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:245
+msgid "Icon hover effect"
+msgstr "Effetto hover sulle icone"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:249
+msgid "Choose how dock icons react to the pointer."
+msgstr "Scegli come le icone del dock reagiscono al puntatore."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Usa l'effetto hover {effect}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:658
+msgid "Icon hover effect updated"
+msgstr "Effetto al passaggio sulle icone aggiornato"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:32
+msgid "Captures, annotates and records the screen."
+msgstr "Acquisisce, annota e registra lo schermo."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:35
+msgid "Shows application tray icons in the system panel."
+msgstr "Mostra le icone delle applicazioni nel pannello di sistema."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:40
+msgid "Provides application launchers and running windows in a dock."
+msgstr ""
+"Fornisce i lanciatori delle applicazioni e le finestre aperte nel dock."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:43
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Fornisce il menu delle applicazioni usato dai layout del desktop."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:46
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr ""
+"Fornisce la barra delle applicazioni e il pannello di sistema usati dai "
+"layout."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:49
+msgid "Keeps a searchable history of copied content."
+msgstr "Conserva una cronologia ricercabile dei contenuti copiati."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:52
+msgid "Shows removable devices and lets you safely eject them."
+msgstr ""
+"Mostra i dispositivi rimovibili e consente di espellerli in sicurezza."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:55
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Aggiunge sfocatura e trasparenza controllate al desktop."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:58
+msgid "Connects phones to share files, notifications and other features."
+msgstr "Collega i telefoni per condividere file, notifiche e altre funzioni."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:61
+msgid "Shows files and folders on the desktop."
+msgstr "Mostra file e cartelle sul desktop."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:64
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Applica in sicurezza le modifiche al layout in GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:67
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr ""
+"Fornisce il runtime del dock e della barra delle applicazioni usato dai "
+"layout."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:70
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr ""
+"Mantiene le applicazioni GTK 3 allineate alla modalità chiara e scura."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:73
+msgid "Uses the light GNOME Shell appearance."
+msgstr "Usa l’aspetto chiaro di GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:76
+msgid "Loads the Shell theme selected by the active layout."
+msgstr "Carica il tema della Shell selezionato dal layout attivo."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:91
+msgid "Description not provided by the developer."
+msgstr "Descrizione non fornita dallo sviluppatore."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:770
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Identificatore tecnico: {uuid}"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:772
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Versione: {version}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:127
+msgid "Session"
+msgstr "Sessione"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:128
+msgid "Choose how this layout starts after login."
+msgstr "Scegli come avviare questo layout dopo l’accesso."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:131
+msgid "Open desktop after login"
+msgstr "Apri il desktop dopo l’accesso"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:132
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Salta la panoramica iniziale delle attività per questo layout."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:144
+msgid "Reset appearance and session options for the active layout."
+msgstr "Reimposta l’aspetto e le opzioni di sessione del layout attivo."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:165
+msgid "Application menu position"
+msgstr "Posizione del menu applicazioni"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:169
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Posiziona il menu BigGnome a una delle estremità del dock."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Left"
+msgstr "Sinistra"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Right"
+msgstr "Destra"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Posiziona il menu applicazioni su {side}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:668
+msgid "Application menu position updated"
+msgstr "Posizione del menu applicazioni aggiornata"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:678
+msgid "Login start updated"
+msgstr "Avvio dell’accesso aggiornato"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:685
+msgid "Layout appearance and session defaults restored"
+msgstr ""
+"Aspetto e impostazioni predefinite di sessione del layout ripristinati"

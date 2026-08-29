@@ -112,10 +112,7 @@ msgstr "Endurheimta þetta afrit?"
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
-msgstr ""
-"Merktar útlitsskipanir innihalda vistuð aðlögun — smelltu til að halda áfram"
-" eða nota upprunalegt.Allar núverandi dconf-stillingar verða skrifaðar yfir "
-"með myndinni frá {ts}."
+msgstr "Allar núverandi dconf-stillingar verða skrifaðar yfir með myndinni frá {ts}."
 
 #: usr/share/layout-switcher/ui/dialog_backups.py:198
 #: usr/share/layout-switcher/ui/dialog_backups.py:231
@@ -896,7 +893,7 @@ msgstr "Afturkalla"
 
 #: usr/share/layout-switcher/ui/page_layouts.py:419
 msgid "Restart the session for the 100% clean state"
-msgstr "Endurræstu setuna til að fá 100% hreint ástand"
+msgstr "Endurræstu lotuna fyrir 100% hreint ástand"
 
 #: usr/share/layout-switcher/ui/page_layouts.py:422
 msgid "Restart now"
@@ -1715,3 +1712,175 @@ msgstr "{color} hreimlitur"
 #: usr/share/layout-switcher/ui/window.py:488
 msgid "Panel and Dock"
 msgstr "Spjald og bryggja"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:81
+msgid "Dock size"
+msgstr "Stærð dokku"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:114
+msgid "Panel height"
+msgstr "Hæð spjalds"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:450
+msgid "Smaller"
+msgstr "Minni"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:466
+msgid "Larger"
+msgstr "Stærri"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:143
+msgid "Restore layout defaults"
+msgstr "Endurheimta sjálfgefnar stillingar"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:33
+msgid "Standard"
+msgstr "Staðlað"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:34
+msgid "Gentle lift"
+msgstr "Mild lyfting"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:245
+msgid "Icon hover effect"
+msgstr "Sýnilegur músaráhrif á táknum"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:249
+msgid "Choose how dock icons react to the pointer."
+msgstr "Veldu hvernig tákningafletir doccsins bregðast við músinni."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Nota {effect} músaráhrif"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:658
+msgid "Icon hover effect updated"
+msgstr "Svifáhrif tákna uppfærð"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:32
+msgid "Captures, annotates and records the screen."
+msgstr "Tekur, skýrir og tekur upp skjáinn."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:35
+msgid "Shows application tray icons in the system panel."
+msgstr "Sýnir forritatákn í kerfisspjaldinu."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:40
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Býður upp á forritaræsinga og opin glugga í dokku."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:43
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Býður upp á forritavalmyndina sem útlit skjáborðsins nota."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:46
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr "Býður upp á verkstikuna og kerfisspjaldið sem útlitin nota."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:49
+msgid "Keeps a searchable history of copied content."
+msgstr "Heldur leitanlegum ferli yfir afritað efni."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:52
+msgid "Shows removable devices and lets you safely eject them."
+msgstr "Sýnir útskiptanleg tæki og leyfir örugga úttengingu."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:55
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Bætir stýrðri óskýringu og gegnsæi við skjáborðið."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:58
+msgid "Connects phones to share files, notifications and other features."
+msgstr "Tengir síma til að deila skrám, tilkynningum og öðrum eiginleikum."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:61
+msgid "Shows files and folders on the desktop."
+msgstr "Sýnir skrár og möppur á skjáborðinu."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:64
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Beitir útlitsbreytingum á öruggan hátt í GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:67
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr "Býður upp á keyrsluumhverfi dokku og verkstiku fyrir útlit."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:70
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "Heldur GTK 3 forritum samræmdum við ljósan og dökkan ham."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:73
+msgid "Uses the light GNOME Shell appearance."
+msgstr "Notar ljóst útlit GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:76
+msgid "Loads the Shell theme selected by the active layout."
+msgstr "Hleður Shell-þemanu sem virka útlitið valdi."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:91
+msgid "Description not provided by the developer."
+msgstr "Hönnuður gaf ekki upp lýsingu."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:770
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Tæknilegt auðkenni: {uuid}"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:772
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Útgáfa: {version}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:127
+msgid "Session"
+msgstr "Lota"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:128
+msgid "Choose how this layout starts after login."
+msgstr "Veldu hvernig þetta útlit ræsist eftir innskráningu."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:131
+msgid "Open desktop after login"
+msgstr "Opna skjáborðið eftir innskráningu"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:132
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Sleppa upphaflegu aðgerðayfirliti fyrir þetta útlit."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:144
+msgid "Reset appearance and session options for the active layout."
+msgstr "Endurstilla útlit og lotuvalkosti virka útlitsins."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:165
+msgid "Application menu position"
+msgstr "Staðsetning forritavalmyndar"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:169
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Settu BigGnome-valmyndina á annan hvorn enda dokkunnar."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Left"
+msgstr "Vinstri"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Right"
+msgstr "Hægri"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Setja forritavalmyndina á {side}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:668
+msgid "Application menu position updated"
+msgstr "Staðsetning forritavalmyndar uppfærð"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:678
+msgid "Login start updated"
+msgstr "Ræsing við innskráningu uppfærð"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:685
+msgid "Layout appearance and session defaults restored"
+msgstr "Útlit og sjálfgefnar lotustillingar útlitsins endurheimt"

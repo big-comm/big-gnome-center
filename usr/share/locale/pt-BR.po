@@ -228,10 +228,7 @@ msgstr "Restaurar este backup?"
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
-msgstr ""
-"Layouts com marca contêm suas personalizações salvas — clique para retomá-"
-"las ou aplicar o original.Todas as configurações atuais do dconf serão "
-"substituídas pela captura de {ts}."
+msgstr "Todas as configurações atuais do dconf serão substituídas pela captura de {ts}."
 
 #: usr/share/layout-switcher/ui/dialog_backups.py:198
 #: usr/share/layout-switcher/ui/dialog_backups.py:231
@@ -1070,9 +1067,7 @@ msgstr "Atualizar da v{old} para a v{new}"
 msgid ""
 "This extension cannot be removed here because it was installed by the "
 "system."
-msgstr "Captura, anota e grava a tela."
-"Esta extensão não pode ser removida por aqui porque foi instalada pelo "
-"sistema."
+msgstr "Esta extensão não pode ser removida por aqui porque foi instalada pelo sistema."
 
 #: usr/share/layout-switcher/ui/page_extensions.py:843
 #, python-brace-format
@@ -1224,8 +1219,7 @@ msgstr "Página {page} de {pages}"
 
 #: usr/share/layout-switcher/ui/page_fonts.py:431
 msgid "Internet connection is required to load the Google Fonts list."
-msgstr "Exibe ícones de aplicativos na área de notificação do painel."
-"É preciso ter conexão com a internet para carregar a lista do Google Fonts."
+msgstr "É preciso ter conexão com a internet para carregar a lista do Google Fonts."
 
 #: usr/share/layout-switcher/ui/page_fonts.py:435
 #, python-brace-format
@@ -1272,8 +1266,7 @@ msgstr "{family} instalada"
 
 #: usr/share/layout-switcher/ui/page_fonts.py:537
 msgid "Internet connection is required to install Google Fonts."
-msgstr "Fornece uma dock para iniciar aplicativos e acessar janelas em execução."
-"É preciso ter conexão com a internet para instalar fontes do Google Fonts."
+msgstr "É preciso ter conexão com a internet para instalar fontes do Google Fonts."
 
 #: usr/share/layout-switcher/ui/page_fonts.py:538
 msgid "Font not found on Google Fonts."
@@ -1311,9 +1304,7 @@ msgstr "Redefinir todas as configurações de fonte?"
 msgid ""
 "Interface, document and monospace fonts will return to system defaults. "
 "Rendering and scale settings will reset too."
-msgstr "Fornece o menu de aplicativos usado pelos layouts da área de trabalho."
-"As fontes de interface, documento e monoespaçada voltarão aos padrões do "
-"sistema. A renderização e a escala também serão restauradas."
+msgstr "As fontes de interface, documento e monoespaçada voltarão aos padrões do sistema. A renderização e a escala também serão restauradas."
 
 #: usr/share/layout-switcher/ui/page_fonts.py:568
 msgid "Reset"
@@ -1362,9 +1353,7 @@ msgstr "Em breve"
 msgid ""
 "You have previously modified this layout. Apply the original system default "
 "or resume your changes?"
-msgstr "Fornece a barra de tarefas e o painel do sistema usados pelos layouts."
-"Você modificou este layout anteriormente. Aplique o padrão original do "
-"sistema ou retome suas alterações?"
+msgstr "Você modificou este layout anteriormente. Aplique o padrão original do sistema ou retome suas alterações?"
 
 #: usr/share/layout-switcher/ui/page_layouts.py:242
 msgid "Resume my changes"
@@ -1410,7 +1399,7 @@ msgstr "Desfazer"
 
 #: usr/share/layout-switcher/ui/page_layouts.py:419
 msgid "Restart the session for the 100% clean state"
-msgstr "Reinicie a sessão para um estado 100% limpo"
+msgstr "Reinicie a sessão para obter um estado 100% limpo"
 
 #: usr/share/layout-switcher/ui/page_layouts.py:422
 msgid "Restart now"
@@ -1733,17 +1722,9 @@ msgstr "Menor"
 msgid "Larger"
 msgstr "Maior"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:115
+#: usr/share/layout-switcher/ui/page_panel_dock.py:143
 msgid "Restore layout defaults"
 msgstr "Restaurar padrões do layout"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:116
-msgid "Reset Panel and Dock options for the active layout."
-msgstr "Redefina as opções de Painel e Dock do layout ativo."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:445
-msgid "Layout Panel and Dock defaults restored"
-msgstr "Padrões de Painel e Dock do layout restaurados"
 
 #: usr/share/layout-switcher/ui/page_panel_dock.py:27
 msgid "Standard"
@@ -1769,3 +1750,134 @@ msgstr "Usar o efeito {effect} ao passar o ponteiro"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:526
 msgid "Icon hover effect updated"
 msgstr "Efeito ao passar sobre os ícones atualizado"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:32
+msgid "Captures, annotates and records the screen."
+msgstr "Captura, anota e grava a tela."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:35
+msgid "Shows application tray icons in the system panel."
+msgstr "Exibe ícones de aplicativos na área de notificação do painel."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:40
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Fornece lançadores de aplicativos e janelas em execução em uma dock."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:43
+msgid "Provides the applications menu used by desktop layouts."
+msgstr ""
+"Fornece o menu de aplicativos usado pelos layouts da área de trabalho."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:46
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr ""
+"Fornece a barra de tarefas e o painel do sistema usados pelos layouts."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:49
+msgid "Keeps a searchable history of copied content."
+msgstr "Mantém um histórico pesquisável do conteúdo copiado."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:52
+msgid "Shows removable devices and lets you safely eject them."
+msgstr "Exibe dispositivos removíveis e permite ejetá-los com segurança."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:55
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Adiciona desfoque e transparência controlados à área de trabalho."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:58
+msgid "Connects phones to share files, notifications and other features."
+msgstr ""
+"Conecta telefones para compartilhar arquivos, notificações e outros "
+"recursos."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:61
+msgid "Shows files and folders on the desktop."
+msgstr "Mostra arquivos e pastas na área de trabalho."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:64
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Aplica alterações de layout com segurança no GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:67
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr "Fornece o runtime de dock e barra de tarefas usado pelos layouts."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:70
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "Mantém aplicativos GTK 3 alinhados aos modos claro e escuro."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:73
+msgid "Uses the light GNOME Shell appearance."
+msgstr "Usa a aparência clara do GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:76
+msgid "Loads the Shell theme selected by the active layout."
+msgstr "Carrega o tema do Shell selecionado pelo layout ativo."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:91
+msgid "Description not provided by the developer."
+msgstr "Descrição não fornecida pelo desenvolvedor."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:770
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Identificador técnico: {uuid}"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:772
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Versão: {version}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:127
+msgid "Session"
+msgstr "Sessão"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:128
+msgid "Choose how this layout starts after login."
+msgstr "Escolha como este layout inicia após o login."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:131
+msgid "Open desktop after login"
+msgstr "Abrir a área de trabalho após o login"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:132
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Pular a visão inicial de Atividades para este layout."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:144
+msgid "Reset appearance and session options for the active layout."
+msgstr "Redefinir a aparência e as opções de sessão do layout ativo."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:165
+msgid "Application menu position"
+msgstr "Posição do menu de aplicativos"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:169
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Coloque o menu BigGnome em qualquer extremidade do dock."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Left"
+msgstr "Esquerda"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Right"
+msgstr "Direita"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Mover o menu de aplicativos: {side}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:668
+msgid "Application menu position updated"
+msgstr "Posição do menu de aplicativos atualizada"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:678
+msgid "Login start updated"
+msgstr "Inicialização após o login atualizada"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:685
+msgid "Layout appearance and session defaults restored"
+msgstr "Aparência e padrões de sessão do layout restaurados"

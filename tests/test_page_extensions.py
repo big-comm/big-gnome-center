@@ -3,6 +3,7 @@
 
 from pathlib import Path
 
+from constants import tr
 from ui.page_extensions import (
     _installed_extension_description,
     _matches_installed_extension,
@@ -34,9 +35,10 @@ def test_bundled_extensions_use_short_curated_descriptions():
     }
 
     description = _installed_extension_description(ext)
+    expected = tr("Captures, annotates and records the screen.")
 
-    assert description == "Captures, annotates and records the screen."
-    assert _matches_installed_extension(ext, "records the screen")
+    assert description == expected
+    assert _matches_installed_extension(ext, expected)
 
 
 def test_external_extension_description_uses_its_first_paragraph():
@@ -51,7 +53,7 @@ def test_external_extension_description_uses_its_first_paragraph():
 def test_missing_extension_description_has_a_clear_fallback():
     ext = {"uuid": "example@example.org", "description": ""}
 
-    assert _installed_extension_description(ext) == (
+    assert _installed_extension_description(ext) == tr(
         "Description not provided by the developer."
     )
 

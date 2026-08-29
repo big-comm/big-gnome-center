@@ -115,10 +115,7 @@ msgstr "Να επαναφερθεί αυτό το αντίγραφο ασφαλ�
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
-msgstr ""
-"Οι επισημασμένες διατάξεις περιέχουν τις αποθηκευμένες προσαρμογές σας — "
-"κάντε κλικ για να τις συνεχίσετε ή να εφαρμόσετε την αρχική.Όλες οι "
-"τρέχουσες ρυθμίσεις dconf θα αντικατασταθούν με το στιγμιότυπο από {ts}."
+msgstr "Όλες οι τρέχουσες ρυθμίσεις dconf θα αντικατασταθούν από το στιγμιότυπο από {ts}."
 
 #: usr/share/layout-switcher/ui/dialog_backups.py:198
 #: usr/share/layout-switcher/ui/dialog_backups.py:231
@@ -1737,3 +1734,182 @@ msgstr "{color} χρώμα έμφασης"
 #: usr/share/layout-switcher/ui/window.py:488
 msgid "Panel and Dock"
 msgstr "Πίνακας και Dock"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:81
+msgid "Dock size"
+msgstr "Μέγεθος εφαρμογής"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:114
+msgid "Panel height"
+msgstr "Ύψος πίνακα"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:450
+msgid "Smaller"
+msgstr "Μικρότερο"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:466
+msgid "Larger"
+msgstr "Μεγαλύτερο"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:143
+msgid "Restore layout defaults"
+msgstr "Επαναφορά προεπιλογών διάταξης"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:33
+msgid "Standard"
+msgstr "Τυπικό"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:34
+msgid "Gentle lift"
+msgstr "Ήπια ανύψωση"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:245
+msgid "Icon hover effect"
+msgstr "Εφέ αιώρησης εικονιδίων"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:249
+msgid "Choose how dock icons react to the pointer."
+msgstr "Επιλέξτε πώς αντιδρούν τα εικονίδια της εφαρμογής στον δείκτη."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Χρήση του εφέ αιώρησης {effect}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:658
+msgid "Icon hover effect updated"
+msgstr "Το εφέ αιώρησης εικονιδίων ενημερώθηκε"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:32
+msgid "Captures, annotates and records the screen."
+msgstr "Καταγράφει, σχολιάζει και αποθηκεύει την οθόνη."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:35
+msgid "Shows application tray icons in the system panel."
+msgstr "Εμφανίζει εικονίδια εφαρμογών στο πλαίσιο συστήματος."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:40
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Παρέχει εκκινητές εφαρμογών και ενεργά παράθυρα σε βάση."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:43
+msgid "Provides the applications menu used by desktop layouts."
+msgstr ""
+"Παρέχει το μενού εφαρμογών που χρησιμοποιούν οι διατάξεις επιφάνειας "
+"εργασίας."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:46
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr "Παρέχει τη γραμμή εργασιών και το πλαίσιο συστήματος των διατάξεων."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:49
+msgid "Keeps a searchable history of copied content."
+msgstr "Διατηρεί ιστορικό αντιγραμμένου περιεχομένου με αναζήτηση."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:52
+msgid "Shows removable devices and lets you safely eject them."
+msgstr ""
+"Εμφανίζει αφαιρούμενες συσκευές και επιτρέπει την ασφαλή εξαγωγή τους."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:55
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Προσθέτει ελεγχόμενη θαμπάδα και διαφάνεια στην επιφάνεια εργασίας."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:58
+msgid "Connects phones to share files, notifications and other features."
+msgstr ""
+"Συνδέει τηλέφωνα για κοινή χρήση αρχείων, ειδοποιήσεων και άλλων "
+"δυνατοτήτων."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:61
+msgid "Shows files and folders on the desktop."
+msgstr "Εμφανίζει αρχεία και φακέλους στην επιφάνεια εργασίας."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:64
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Εφαρμόζει με ασφάλεια αλλαγές διάταξης στο GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:67
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr "Παρέχει το περιβάλλον βάσης και γραμμής εργασιών των διατάξεων."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:70
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr ""
+"Διατηρεί τις εφαρμογές GTK 3 συγχρονισμένες με τη φωτεινή και σκοτεινή "
+"λειτουργία."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:73
+msgid "Uses the light GNOME Shell appearance."
+msgstr "Χρησιμοποιεί την ανοιχτόχρωμη εμφάνιση του GNOME Shell."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:76
+msgid "Loads the Shell theme selected by the active layout."
+msgstr "Φορτώνει το θέμα Shell που επέλεξε η ενεργή διάταξη."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:91
+msgid "Description not provided by the developer."
+msgstr "Δεν παρέχεται περιγραφή από τον προγραμματιστή."
+
+#: usr/share/layout-switcher/ui/page_extensions.py:770
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Τεχνικό αναγνωριστικό: {uuid}"
+
+#: usr/share/layout-switcher/ui/page_extensions.py:772
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Έκδοση: {version}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:127
+msgid "Session"
+msgstr "Συνεδρία"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:128
+msgid "Choose how this layout starts after login."
+msgstr "Επιλέξτε πώς ξεκινά αυτή η διάταξη μετά τη σύνδεση."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:131
+msgid "Open desktop after login"
+msgstr "Άνοιγμα επιφάνειας εργασίας μετά τη σύνδεση"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:132
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Παράλειψη της αρχικής επισκόπησης δραστηριοτήτων για αυτή τη διάταξη."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:144
+msgid "Reset appearance and session options for the active layout."
+msgstr "Επαναφορά εμφάνισης και επιλογών συνεδρίας για την ενεργή διάταξη."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:165
+msgid "Application menu position"
+msgstr "Θέση μενού εφαρμογών"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:169
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Τοποθετήστε το μενού BigGnome σε οποιοδήποτε άκρο της βάσης."
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Left"
+msgstr "Αριστερά"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:185
+msgid "Right"
+msgstr "Δεξιά"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Τοποθέτηση του μενού εφαρμογών στα {side}"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:668
+msgid "Application menu position updated"
+msgstr "Η θέση του μενού εφαρμογών ενημερώθηκε"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:678
+msgid "Login start updated"
+msgstr "Η εκκίνηση σύνδεσης ενημερώθηκε"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:685
+msgid "Layout appearance and session defaults restored"
+msgstr "Η εμφάνιση και οι προεπιλογές συνεδρίας της διάταξης αποκαταστάθηκαν"
