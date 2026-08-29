@@ -1,6 +1,6 @@
 # Shell Runtime Remaining Work
 
-Last update: 2026-08-28
+Last update: 2026-08-29
 Safe checkpoint: `1de221a`
 Status: Build 76 accepts stable/testing upgrade and rollback paths
 
@@ -76,6 +76,17 @@ replacement passes the relevant behavior contract.
 Light/dark mode is global user state. Switching layouts must preserve it. Icon
 theme, AppIndicator actors, labels, menu styling, and Shell styling must follow
 the final effective mode without stale caches.
+
+Runtime build 80 owns the Shell popover exception: light application mode uses
+light Quick Settings, date/calendar, stored notifications, and banners in all
+layouts except Minimal. Fixed-dark panels remain dark. Telemetry proves class
+ownership and cleanup.
+
+GNOME 50 and 51 accepted light calendars and real notification banners.
+BigGnome, G-Unity, and Desk UX preserve dark panels. Notification actor destroy
+signals prevent disposed-actor scans. Final strict audits report zero failures
+and warnings. Runtime tree SHA-256:
+`0179d3d64db500800e0adb57aaf88e2abe0b300c690975df914d175e0a9ec00e`.
 
 ## Required work
 

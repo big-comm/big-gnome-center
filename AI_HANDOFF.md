@@ -2333,3 +2333,37 @@ Append one entry per completed change:
   in Hybrid; application/runtime labels match and each target has one monitor.
   No build 79 JavaScript error appears. GNOME 51 retains known GSConnect noise.
 - PKGBUILD and package versions are unchanged.
+
+## 2026-08-29 — Shell popover color scheme, build 80
+
+- `ShellPopoverThemeIntegration` follows the application color scheme without
+  changing the full Shell theme. Every layout except Minimal receives light
+  Quick Settings, date/calendar, stored notifications, and notification banners.
+- Owned classes cover controls, events, clocks, weather, messages, and GNOME 51
+  glass material. Dark mode, Minimal, actor replacement, and teardown remove them.
+- Per-actor `destroy` ownership removes transient notification records before
+  GObject disposal; notification close/re-scan produces no runtime exception.
+- Runtime telemetry and strict audit verify scheme/layout agreement, actor
+  availability, class ownership, and settled refresh state.
+- GNOME 50/51 passed light/dark visual checks. BigGnome, G-Unity, Hybrid,
+  Desk UX, and Classic accepted light styling; Minimal retained dark popovers.
+  BigGnome and Desk UX passed real banner and stored-notification checks.
+- Light sliders keep a transparent row and a visible inactive track.
+- Focused tests: `73 passed`; full suite: `602 passed`, with the known PyGI and
+  two headless Adwaita warnings. JavaScript and diff checks pass. Final strict
+  audits report zero failures and warnings. No post-fix module error appears;
+  GNOME 51 retains known external GSConnect final-type noise.
+- Final state: GNOME 50 BigGnome; GNOME 51 Hybrid; one monitor each; matching
+  application/runtime labels. PKGBUILD and package versions are unchanged.
+- Final local/GNOME 50/GNOME 51 SHA-256: runtime tree
+  `0179d3d64db500800e0adb57aaf88e2abe0b300c690975df914d175e0a9ec00e`;
+  controller
+  `626dfa7f879813d03d76d529de340a2ae151cc93aaabf8e7b2719c0a8e3451f0`;
+  popover integration
+  `0767f3a5f071fc736f44c761761ff3754176671614e438763aaa9ef2622dc952`;
+  stylesheet
+  `12e2ccd562ec998986e661af1572ab3235d6146dbd486de4ceda679cefa8381b`;
+  audit tool
+  `e49de2e52852db95a7991e896100e5fedbd2ff55e4769a0ade582dc44bf47cbd`;
+  audit payload
+  `2d5c1d9d9f88d13761833b97e4a3d5a6102f7db7e2b16a28d77ac1b8a099944d`.

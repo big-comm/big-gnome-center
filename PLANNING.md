@@ -167,6 +167,14 @@ ShellReloader.reload_all()
 
 ## Arquitetura / Débitos técnicos
 
+### Runtime build 80
+
+- Shell popovers follow light/dark application state in every layout except
+  Minimal; fixed-dark panels remain dark.
+- Runtime-owned styling covers Quick Settings, date/calendar, notifications,
+  and GNOME 51 glass.
+- Strict telemetry rejects missing, stale, or orphaned theme classes.
+
 | Item | Estado | Observação |
 |---|---|---|
 | `ruff check` | ✅ limpo | `[tool.ruff]` em `pyproject.toml` com E402 ignorado |

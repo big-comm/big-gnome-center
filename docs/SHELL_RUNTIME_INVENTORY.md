@@ -1,6 +1,6 @@
 # Shell Runtime Inventory
 
-Last update: 2026-08-28
+Last update: 2026-08-29
 Status: Active Dock and Taskbar executable boundaries owned
 
 ## Ownership matrix
@@ -62,6 +62,8 @@ Runtime entry and orchestration:
 
 - `dockRuntime.js`, `dockSurface.js`, `dockActorFactory.js`, `dock/dash.js`.
 - `startupOverviewIntegration.js` owns per-layout login Overview policy.
+- `shellPopoverThemeIntegration.js` owns light Quick Settings, date/calendar,
+  and notification policy with exact cleanup; Minimal stays native dark.
 - `taskbarOverviewIntegration.js` owns Taskbar Overview behavior.
 - `taskbarStatusFullscreenIntegration.js` owns status/fullscreen behavior.
 

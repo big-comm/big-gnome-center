@@ -1,0 +1,418 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+.layout-switcher-light-quick-settings,
+.layout-switcher-light-quick-settings.quick-settings {
+    color: #222226 !important;
+}
+
+.layout-switcher-light-quick-settings .popup-menu-content,
+.popup-menu-content.layout-switcher-light-quick-settings {
+    color: #222226 !important;
+    background-color: #fafafb !important;
+    border-color: #e6e6eb !important;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.layout-switcher-light-quick-settings .icon-button,
+.layout-switcher-light-quick-settings .button,
+.layout-switcher-light-quick-settings .quick-toggle,
+.layout-switcher-light-quick-settings .quick-toggle-menu-button,
+.layout-switcher-light-quick-settings .slider-bin {
+    color: #222226 !important;
+    background-color: st-mix(#222226, #fafafb, 12%) !important;
+}
+
+.layout-switcher-light-quick-settings .icon-button:hover,
+.layout-switcher-light-quick-settings .button:hover,
+.layout-switcher-light-quick-settings .quick-toggle:hover,
+.layout-switcher-light-quick-settings .quick-toggle-menu-button:hover,
+.layout-switcher-light-quick-settings .slider-bin:hover {
+    color: #222226 !important;
+    background-color: st-darken(st-mix(#222226, #fafafb, 12%), 4%) !important;
+}
+
+.layout-switcher-light-quick-settings .icon-button:active,
+.layout-switcher-light-quick-settings .button:active,
+.layout-switcher-light-quick-settings .quick-toggle:active,
+.layout-switcher-light-quick-settings .quick-toggle-menu-button:active,
+.layout-switcher-light-quick-settings .slider-bin:active {
+    color: #222226 !important;
+    background-color: st-darken(st-mix(#222226, #fafafb, 12%), 9%) !important;
+}
+
+.layout-switcher-light-quick-settings .icon-button:insensitive,
+.layout-switcher-light-quick-settings .button:insensitive,
+.layout-switcher-light-quick-settings .quick-toggle:insensitive,
+.layout-switcher-light-quick-settings .quick-toggle-menu-button:insensitive {
+    color: st-transparentize(#222226, 0.6) !important;
+    background-color: st-lighten(st-mix(#222226, #fafafb, 12%), 3%) !important;
+}
+
+.layout-switcher-light-quick-settings .quick-toggle:checked,
+.layout-switcher-light-quick-settings .quick-toggle-menu-button:checked,
+.layout-switcher-light-quick-settings .button.default {
+    color: -st-accent-fg-color !important;
+    background-color: -st-accent-color !important;
+}
+
+.layout-switcher-light-quick-settings
+.quick-toggle-has-menu:checked .quick-toggle-separator {
+    background-color: st-mix(-st-accent-fg-color, -st-accent-color, 20%) !important;
+}
+
+.layout-switcher-light-quick-settings
+.quick-toggle-has-menu .quick-toggle-separator {
+    background-color: rgba(34, 34, 38, 0.25) !important;
+}
+
+.layout-switcher-light-quick-settings .quick-toggle-menu {
+    color: #222226 !important;
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.09) !important;
+}
+
+.layout-switcher-light-quick-settings .quick-toggle-menu .popup-menu-item {
+    color: #222226 !important;
+}
+
+.layout-switcher-light-quick-settings .quick-toggle-menu .popup-menu-item:hover,
+.layout-switcher-light-quick-settings .quick-toggle-menu .popup-menu-item:selected,
+.layout-switcher-light-quick-settings .quick-toggle-menu .popup-menu-item:checked {
+    background-color: st-darken(#ececf0, 7%) !important;
+}
+
+.layout-switcher-light-quick-settings .quick-toggle-menu .header .icon {
+    background-color: rgba(34, 34, 38, 0.2) !important;
+}
+
+.layout-switcher-light-quick-settings .quick-toggle-menu .header .icon.active {
+    color: -st-accent-fg-color !important;
+    background-color: -st-accent-color !important;
+}
+
+.layout-switcher-light-quick-settings .message {
+    color: #222226 !important;
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.09) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+.layout-switcher-light-quick-settings .message:hover,
+.layout-switcher-light-quick-settings .message:focus {
+    color: #222226 !important;
+    background-color: st-darken(#ffffff, 4%) !important;
+}
+
+.layout-switcher-light-quick-settings
+.message .message-header .message-expand-button,
+.layout-switcher-light-quick-settings
+.message .message-header .message-close-button {
+    color: #222226 !important;
+    background-color: rgba(34, 34, 38, 0.15) !important;
+}
+
+.layout-switcher-light-quick-settings
+.message .message-header .message-expand-button:hover,
+.layout-switcher-light-quick-settings
+.message .message-header .message-close-button:hover {
+    background-color: rgba(34, 34, 38, 0.30) !important;
+}
+
+.layout-switcher-light-quick-settings
+.message .message-header .message-header-content .event-time {
+    color: rgba(34, 34, 38, 0.55) !important;
+}
+
+.layout-switcher-light-quick-settings .device-subtitle {
+    color: rgba(34, 34, 38, 0.5) !important;
+}
+
+.layout-switcher-light-quick-settings .background-apps-quick-toggle,
+.layout-switcher-light-quick-settings
+.quick-settings-system-item .power-item:insensitive {
+    background-color: transparent !important;
+}
+
+.layout-switcher-light-quick-settings
+.background-app-item .icon-button {
+    background-color: rgba(34, 34, 38, 0.13) !important;
+}
+
+/* GNOME 51 glass keeps one transparent surface and repaints its controls. */
+.layout-switcher-light-quick-settings
+.popup-menu-content.frosted-glass-shell-surface.quick-settings {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .icon-button,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .button,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .quick-toggle,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu-button,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .slider-bin {
+    color: #2e2e33 !important;
+    background-color: rgba(255, 255, 255, 0.48) !important;
+    border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .message {
+    background-color: rgba(255, 255, 255, 0.34) !important;
+    border-color: rgba(0, 0, 0, 0.18) !important;
+    box-shadow: none !important;
+}
+
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .quick-toggle:checked,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .quick-toggle-menu-button:checked,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .button.default {
+    color: -st-accent-fg-color !important;
+    background-color: st-transparentize(-st-accent-color, 0.30) !important;
+}
+
+.layout-switcher-light-quick-settings .slider-bin,
+.layout-switcher-light-quick-settings .slider-bin:hover,
+.layout-switcher-light-quick-settings .slider-bin:focus,
+.layout-switcher-light-quick-settings .slider-bin:active,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .slider-bin,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .slider-bin:hover,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .slider-bin:focus,
+.layout-switcher-light-quick-settings
+.frosted-glass-shell-surface.quick-settings .slider-bin:active {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.layout-switcher-light-quick-settings .slider {
+    color: #55555d !important;
+    -barlevel-background-color: st-mix(#222226, #fafafb, 18%) !important;
+}
+
+.layout-switcher-light-quick-settings .slider:hover {
+    color: #333339 !important;
+    -barlevel-background-color: st-mix(#222226, #fafafb, 24%) !important;
+}
+
+.layout-switcher-light-date-menu {
+    color: #222226 !important;
+}
+
+.layout-switcher-light-date-menu .popup-menu-content,
+.popup-menu-content.layout-switcher-light-date-menu,
+.datemenu-popover.layout-switcher-light-date-menu {
+    color: #222226 !important;
+    background-color: #fafafb !important;
+    border-color: #e6e6eb !important;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.layout-switcher-light-date-menu .calendar,
+.layout-switcher-light-date-menu .datemenu-today-button {
+    color: #222226 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.layout-switcher-light-date-menu .calendar:hover,
+.layout-switcher-light-date-menu .datemenu-today-button:hover {
+    background-color: st-darken(#fafafb, 7%) !important;
+}
+
+.layout-switcher-light-date-menu .calendar:active,
+.layout-switcher-light-date-menu .datemenu-today-button:active {
+    background-color: st-darken(#fafafb, 9%) !important;
+}
+
+.layout-switcher-light-date-menu .events-button,
+.layout-switcher-light-date-menu .world-clocks-button,
+.layout-switcher-light-date-menu .weather-button,
+.layout-switcher-light-date-menu .message {
+    color: #222226 !important;
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.09) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+.layout-switcher-light-date-menu .events-button:hover,
+.layout-switcher-light-date-menu .world-clocks-button:hover,
+.layout-switcher-light-date-menu .weather-button:hover,
+.layout-switcher-light-date-menu .message:hover,
+.layout-switcher-light-date-menu .message:focus {
+    color: #222226 !important;
+    background-color: st-darken(#ffffff, 4%) !important;
+}
+
+.layout-switcher-light-date-menu .calendar-day,
+.layout-switcher-light-date-menu .calendar-day-heading,
+.layout-switcher-light-date-menu .calendar-month-label,
+.layout-switcher-light-date-menu .pager-button,
+.layout-switcher-light-date-menu .message-list-controls,
+.layout-switcher-light-date-menu .message-list-clear-button {
+    color: #222226 !important;
+}
+
+.layout-switcher-light-date-menu .calendar-day,
+.layout-switcher-light-date-menu .calendar-day-heading,
+.layout-switcher-light-date-menu .calendar-month-label,
+.layout-switcher-light-date-menu .pager-button {
+    background-color: #fafafb !important;
+    border-color: transparent !important;
+}
+
+.layout-switcher-light-date-menu .calendar-day.calendar-weekend {
+    color: #78787b !important;
+}
+
+.layout-switcher-light-date-menu .calendar-day.calendar-other-month,
+.layout-switcher-light-date-menu .message-list-placeholder {
+    color: rgba(34, 34, 38, 0.5) !important;
+}
+
+.layout-switcher-light-date-menu .calendar-day.calendar-today {
+    color: -st-accent-fg-color !important;
+    background-color: -st-accent-color !important;
+}
+
+.layout-switcher-light-date-menu .calendar-day.calendar-day-with-events {
+    background-image: url("resource:///org/gnome/shell/theme/calendar-today-light.svg") !important;
+}
+
+.layout-switcher-light-date-menu
+.calendar-day.calendar-today.calendar-day-with-events {
+    background-image: url("resource:///org/gnome/shell/theme/calendar-today.svg") !important;
+}
+
+.layout-switcher-light-date-menu .calendar-day:hover,
+.layout-switcher-light-date-menu .calendar-day-heading:hover,
+.layout-switcher-light-date-menu .calendar-month-label:hover,
+.layout-switcher-light-date-menu .pager-button:hover,
+.layout-switcher-light-date-menu .message-list-clear-button:hover {
+    background-color: st-darken(#fafafb, 7%) !important;
+}
+
+.layout-switcher-light-date-menu .events-title,
+.layout-switcher-light-date-menu .event-time,
+.layout-switcher-light-date-menu .event-placeholder,
+.layout-switcher-light-date-menu .world-clocks-header,
+.layout-switcher-light-date-menu .world-clocks-timezone,
+.layout-switcher-light-date-menu .weather-header,
+.layout-switcher-light-date-menu .message-header,
+.layout-switcher-light-date-menu .message .event-time {
+    color: #6b6b6e !important;
+}
+
+.layout-switcher-light-date-menu .world-clocks-header.no-world-clocks,
+.layout-switcher-light-date-menu .weather-header.no-location {
+    color: #222226 !important;
+}
+
+.layout-switcher-light-date-menu .message-collapse-button,
+.layout-switcher-light-date-menu .message-expand-button,
+.layout-switcher-light-date-menu .message-close-button,
+.layout-switcher-light-date-menu .message-action-bin .button,
+.layout-switcher-light-date-menu .message-list-clear-button {
+    color: #222226 !important;
+    background-color: rgba(34, 34, 38, 0.15) !important;
+}
+
+.layout-switcher-light-date-menu .message-collapse-button:hover,
+.layout-switcher-light-date-menu .message-expand-button:hover,
+.layout-switcher-light-date-menu .message-close-button:hover,
+.layout-switcher-light-date-menu .message-action-bin .button:hover,
+.layout-switcher-light-date-menu .message-list-clear-button:hover {
+    background-color: rgba(34, 34, 38, 0.30) !important;
+}
+
+.layout-switcher-light-notification-banner,
+.layout-switcher-light-notification-banner.message {
+    color: #222226 !important;
+    background-color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.09) !important;
+    box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.layout-switcher-light-notification-banner:hover,
+.layout-switcher-light-notification-banner:focus {
+    color: #222226 !important;
+    background-color: st-darken(#ffffff, 4%) !important;
+}
+
+.layout-switcher-light-notification-banner .message-header,
+.layout-switcher-light-notification-banner .event-time {
+    color: #6b6b6e !important;
+}
+
+.layout-switcher-light-notification-banner .message-expand-button,
+.layout-switcher-light-notification-banner .message-close-button,
+.layout-switcher-light-notification-banner .message-action-bin .button {
+    color: #222226 !important;
+    background-color: rgba(34, 34, 38, 0.15) !important;
+}
+
+.layout-switcher-light-notification-banner .message-expand-button:hover,
+.layout-switcher-light-notification-banner .message-close-button:hover,
+.layout-switcher-light-notification-banner .message-action-bin .button:hover {
+    background-color: rgba(34, 34, 38, 0.30) !important;
+}
+
+/* GNOME 51 glass supplies the shared blur; repaint only its material. */
+.popup-menu-content.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover,
+.layout-switcher-light-date-menu.frosted-glass-shell-surface.datemenu-popover {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .calendar-day-heading,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .calendar-day,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .calendar-month-label,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .pager-button,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .message-list-clear-button,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .events-button,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .world-clocks-button,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .weather-button {
+    background-color: rgba(255, 255, 255, 0.46) !important;
+    border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .message,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .message:second-in-stack,
+.layout-switcher-light-date-menu
+.frosted-glass-shell-surface.datemenu-popover .message:lower-in-stack {
+    background-color: rgba(255, 255, 255, 0.34) !important;
+    border-color: rgba(0, 0, 0, 0.18) !important;
+    box-shadow: none !important;
+}
+
+.layout-switcher-light-notification-banner.frosted-glass-shell-surface {
+    color: #2e2e33 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}

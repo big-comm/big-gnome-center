@@ -267,6 +267,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     runtime = diagnostics.get("runtime") or {}
     stage = diagnostics.get("stage") or {}
     expected = runtime.get("expected") or {}
+    shell_popover_theme = runtime.get("shellPopoverTheme") or {}
     startup_overview = runtime.get("startupOverview") or {}
     dock = runtime.get("dock") or {}
     panel = dock.get("panel") or {}
@@ -298,6 +299,10 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     edge = expected.get("edge")
     expected_docks = surface == "dock"
     expected_taskbars = surface == "taskbar"
+    expected_light_shell_popovers = (
+        snapshot.active_layout != "Minimal"
+        and snapshot.color_scheme != "prefer-dark"
+    )
 
     checks = [
         _check(
@@ -311,6 +316,52 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "runtime-layout",
             snapshot.active_layout,
             f"settings={snapshot.active_layout}, runtime={runtime.get('layout', '<empty>')}",
+        ),
+        _check(
+            shell_popover_theme.get("implementation") == "layout-switcher-runtime",
+            "shell-popover-theme-implementation",
+            "runtime-owned",
+            f"implementation={shell_popover_theme.get('implementation')}",
+        ),
+        _check(
+            shell_popover_theme.get("connected") is True
+            and shell_popover_theme.get("menusAvailable") is True
+            and isinstance(shell_popover_theme.get("bannerSignals"), int)
+            and shell_popover_theme.get("bannerSignals") > 0,
+            "shell-popover-theme-connection",
+            "connected with menus and banner signals",
+            f"integration={shell_popover_theme}",
+        ),
+        _check(
+            shell_popover_theme.get("layout") == snapshot.active_layout
+            and shell_popover_theme.get("colorScheme") == snapshot.color_scheme
+            and shell_popover_theme.get("lightRequested")
+            is expected_light_shell_popovers,
+            "shell-popover-theme-state",
+            f"light={expected_light_shell_popovers}",
+            f"integration={shell_popover_theme}",
+        ),
+        _check(
+            not shell_popover_theme.get("refreshPending")
+            and isinstance(shell_popover_theme.get("ownedActors"), int)
+            and shell_popover_theme.get("ownedActors") > 0
+            and isinstance(shell_popover_theme.get("actorDestroyCount"), int)
+            and shell_popover_theme.get("classActors")
+            == (shell_popover_theme.get("ownedActors")
+                if expected_light_shell_popovers else 0),
+            "shell-popover-theme-ownership",
+            "style ownership matches color scheme",
+            f"integration={shell_popover_theme}",
+        ),
+        _check(
+            isinstance(shell_popover_theme.get("kinds"), dict)
+            and shell_popover_theme.get("kinds", {}).get("quickSettings", 0) > 0
+            and shell_popover_theme.get("kinds", {}).get("dateMenu", 0) > 0
+            and isinstance(
+                shell_popover_theme.get("kinds", {}).get("notificationBanners"), int),
+            "shell-popover-theme-targets",
+            "Quick Settings, date menu, and banners tracked",
+            f"integration={shell_popover_theme}",
         ),
         _check(
             snapshot.app_active_layout == snapshot.active_layout,

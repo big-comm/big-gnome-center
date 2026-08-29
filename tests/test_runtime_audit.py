@@ -131,6 +131,33 @@ def _snapshot(**changes) -> Snapshot:
                     "restoreConflicts": 0,
                     "lastConflict": "",
                 },
+                "shellPopoverTheme": {
+                    "implementation": "layout-switcher-runtime",
+                    "connected": True,
+                    "bannerSignals": 2,
+                    "layout": layout,
+                    "colorScheme": values["color_scheme"],
+                    "lightRequested": (
+                        layout != "Minimal"
+                        and values["color_scheme"] != "prefer-dark"
+                    ),
+                    "menusAvailable": True,
+                    "kinds": {
+                        "quickSettings": 2,
+                        "dateMenu": 2,
+                        "notificationBanners": 0,
+                    },
+                    "ownedActors": 4,
+                    "classActors": (
+                        4
+                        if layout != "Minimal"
+                        and values["color_scheme"] != "prefer-dark"
+                        else 0
+                    ),
+                    "actorDestroyCount": 0,
+                    "refreshPending": False,
+                    "refreshCount": 2,
+                },
                 "dock": {
                     "active": surface == "dock",
                     "panel": {
@@ -530,6 +557,52 @@ def test_audit_accepts_startup_preference_armed_mid_session(tmp_path):
     )
 
     assert not any(name.startswith("startup-overview") for name in failures)
+
+
+def test_audit_rejects_missing_light_shell_popover_style(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Hybrid", color_scheme="prefer-light")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["shellPopoverTheme"] = dict(
+        runtime["shellPopoverTheme"], classActors=0)
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(audit_snapshot(
+        _snapshot(
+            active_layout="Hybrid",
+            color_scheme="prefer-light",
+            runtime_diagnostics=diagnostics,
+        ),
+        tmp_path,
+    ))
+
+    assert "shell-popover-theme-ownership" in failures
+
+
+def test_audit_rejects_light_shell_popover_style_in_minimal(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Minimal", color_scheme="prefer-light")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["shellPopoverTheme"] = dict(
+        runtime["shellPopoverTheme"],
+        lightRequested=True,
+        classActors=4,
+    )
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(audit_snapshot(
+        _snapshot(
+            active_layout="Minimal",
+            color_scheme="prefer-light",
+            runtime_diagnostics=diagnostics,
+        ),
+        tmp_path,
+    ))
+
+    assert "shell-popover-theme-state" in failures
+    assert "shell-popover-theme-ownership" in failures
 
 
 def test_audit_rejects_owned_dock_setting_drift(tmp_path):

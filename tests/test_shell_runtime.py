@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 79" in controller
+    assert "RUNTIME_BUILD = 80" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -212,6 +212,32 @@ def test_runtime_owns_startup_overview_for_every_surface():
     assert "disableOverviewOnStartup" not in dock_surface
     assert "hide-overview-on-startup" not in taskbar_surface
     assert "startInOverview" not in taskbar_surface
+
+
+def test_runtime_owns_light_shell_popovers_except_for_minimal():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    integration = (RUNTIME / "shellPopoverThemeIntegration.js").read_text()
+    stylesheet = (RUNTIME / "stylesheet.css").read_text()
+
+    assert "new ShellPopoverThemeIntegration()" in controller
+    assert "this._shellPopoverTheme.apply(profile.layout)" in controller
+    assert "shellPopoverTheme: this._shellPopoverTheme?.diagnostics()" in controller
+    assert "changed::color-scheme" in integration
+    assert "this._layout !== 'Minimal'" in integration
+    assert "statusArea?.quickSettings?.menu?.actor" in integration
+    assert "statusArea?.dateMenu" in integration
+    assert "Main.messageTray?._bannerBin" in integration
+    assert "'child-added', 'child-removed'" in integration
+    assert "actor.connect('destroy'" in integration
+    assert "this._records.delete(actor)" in integration
+    assert "implementation: 'layout-switcher-runtime'" in integration
+    assert "layout-switcher-light-quick-settings" in stylesheet
+    assert "layout-switcher-light-date-menu" in stylesheet
+    assert "layout-switcher-light-notification-banner" in stylesheet
+    assert ".layout-switcher-light-quick-settings .message" in stylesheet
+    assert ".layout-switcher-light-date-menu .calendar-day" in stylesheet
+    assert ".layout-switcher-light-date-menu .message" in stylesheet
+    assert ".popup-menu-content.frosted-glass-shell-surface.quick-settings" in stylesheet
 
 
 def test_runtime_applies_owned_dock_settings_without_rebuilding_active_surface():

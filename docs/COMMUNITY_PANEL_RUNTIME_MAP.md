@@ -1,7 +1,7 @@
 # Community Panel Runtime Map
 
-Last update: 2026-08-28
-Baseline: `d22f8de`, runtime build 76
+Last update: 2026-08-29
+Baseline: runtime build 80
 
 ## Scope
 
@@ -18,6 +18,7 @@ longer reads or mutates its inherited startup-Overview key.
 ```text
 runtimeController.js
   -> startupOverviewIntegration.js
+  -> shellPopoverThemeIntegration.js
 taskbarSurface.js
   -> taskbarPanelHost.js
   -> taskbarStatusAreaHost.js
@@ -58,6 +59,7 @@ taskbarSurface.js
 | `taskbar/proximity.js` | window overlap watches | runtime | internalized in build 75 |
 | `taskbarNotificationMonitor.js` | application notification counts | runtime | owned implementation accepted in build 72 |
 | `startupOverviewIntegration.js` | per-layout login Overview policy | runtime | owned post-migration option |
+| `shellPopoverThemeIntegration.js` | application-scheme popover styling | runtime | owned in build 80; Minimal excluded |
 | `desktopIconsIntegration.js` | removed in build 71 | runtime | shared owned implementation replaces both copies |
 | `taskbar/panelSettings.js` | renderer settings and monitor maps | runtime adapter | remove after upgrade matrix |
 | `taskbar/panelPositions.js` | renderer position constants | runtime adapter | replace with layout profiles |

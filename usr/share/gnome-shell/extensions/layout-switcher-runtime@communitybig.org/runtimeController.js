@@ -4,12 +4,13 @@ import Gio from 'gi://Gio';
 
 import {DockRuntime} from './dockRuntime.js';
 import {profileForLayout, RuntimeSurface} from './layoutProfiles.js';
+import {ShellPopoverThemeIntegration} from './shellPopoverThemeIntegration.js';
 import {StartupOverviewIntegration} from './startupOverviewIntegration.js';
 import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 79;
+export const RUNTIME_BUILD = 80;
 
 export class RuntimeController {
     constructor(extension) {
@@ -29,12 +30,15 @@ export class RuntimeController {
 
         this._dock = new DockRuntime(this._extension);
         this._taskbar = new TaskbarRuntime(this._extension);
+        this._shellPopoverTheme = new ShellPopoverThemeIntegration();
         this._startupOverview = new StartupOverviewIntegration();
         this._enabled = true;
         this._syncPromise = Promise.resolve();
         this._settings = new Gio.Settings({settings_schema: schema});
         const startupProfile = profileForLayout(
             this._settings.get_string('active-layout'));
+        this._shellPopoverTheme.enable();
+        this._shellPopoverTheme.apply(startupProfile.layout);
         this._startupOverview.apply(
             this._skipStartupOverviewForProfile(startupProfile));
         this._settingsChangedIds = [
@@ -65,10 +69,12 @@ export class RuntimeController {
         this._settingsChangedIds = [];
         this._dock?.deactivate();
         this._taskbar?.deactivate();
+        this._shellPopoverTheme?.destroy();
         this._startupOverview?.destroy();
         this._activeProfile = null;
         this._dock = null;
         this._taskbar = null;
+        this._shellPopoverTheme = null;
         this._startupOverview = null;
         this._settings = null;
         this._syncPromise = null;
@@ -101,6 +107,7 @@ export class RuntimeController {
         const skipStartupOverview = this._skipStartupOverviewForProfile(profile);
         const dockProfileChanged = this._activeProfile?.layout !== profile.layout;
         this._activeProfile = profile;
+        this._shellPopoverTheme.apply(profile.layout);
         this._startupOverview.apply(skipStartupOverview);
 
         if (profile.surface === RuntimeSurface.DOCK) {
@@ -244,6 +251,7 @@ export class RuntimeController {
                 menuSide: this._menuSideForProfile(profile),
                 skipStartupOverview: this._skipStartupOverviewForProfile(profile),
             },
+            shellPopoverTheme: this._shellPopoverTheme?.diagnostics() ?? {},
             startupOverview: this._startupOverview?.diagnostics() ?? {},
             dock: this._dock?.diagnostics() ?? {active: false, actors: []},
             taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},
