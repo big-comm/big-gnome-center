@@ -1542,6 +1542,10 @@ export class DockSurfaceManager {
         return DockSurfaceManager.getDefault().settings;
     }
 
+    static get menuAtStart() {
+        return DockSurfaceManager.getDefault().menuAtStart;
+    }
+
     get extension() {
         return this._extension;
     }
@@ -1556,6 +1560,14 @@ export class DockSurfaceManager {
 
     get settings() { // eslint-disable-line no-dupe-class-members
         return this._settings;
+    }
+
+    get menuAtStart() {
+        if (this._extension.menuSide === 'left')
+            return true;
+        if (this._extension.menuSide === 'right')
+            return false;
+        return this._settings.showAppsAtTop;
     }
 
     get iconTheme() {
@@ -1596,6 +1608,11 @@ export class DockSurfaceManager {
 
     getDockByMonitor(monitorIndex) {
         return this._allDocks.find(d => d.monitorIndex === monitorIndex);
+    }
+
+    updateMenuSide() {
+        for (const dock of this._allDocks)
+            dock.dash.updateShowAppsButton(true);
     }
 
     _ensureLocations() {
@@ -2211,12 +2228,10 @@ export class DockSurfaceManager {
         if (Main.layoutManager._startingUp) {
             this._prepareStartupAnimation();
 
-            const hadOverview = Main.sessionMode.hasOverview;
-
             // Convince LayoutManager to use the legacy startup animation:
             // Reset overview controls state to HIDDEN, as skipping the startup
             // overview leaves it stuck at WINDOW_PICKER
-            if (this._settings.disableOverviewOnStartup) {
+            if (this._extension.skipStartupOverview) {
                 const {OverviewAdjustment} = OverviewControls;
                 this._propertyInjections.addWithLabel(Labels.STARTUP_ANIMATION,
                     OverviewAdjustment.prototype, 'value', {
@@ -2236,11 +2251,10 @@ export class DockSurfaceManager {
             this._signalsHandler.addWithLabel(Labels.STARTUP_ANIMATION,
                 Main.layoutManager, 'startup-complete', () => {
                     this._signalsHandler.removeWithLabel(Labels.STARTUP_ANIMATION);
-                    Main.sessionMode.hasOverview = hadOverview;
                     replaceMainDash();
                     dummyDash.destroy();
                     this._runStartupAnimation();
-                    if (this._settings.disableOverviewOnStartup) {
+                    if (this._extension.skipStartupOverview) {
                         this._propertyInjections.removeWithLabel(Labels.STARTUP_ANIMATION);
                         this.overviewControls._stateAdjustment.value =
                             OverviewControls.ControlsState.HIDDEN;

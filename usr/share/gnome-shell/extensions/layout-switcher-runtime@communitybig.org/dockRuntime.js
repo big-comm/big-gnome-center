@@ -54,19 +54,24 @@ export class DockRuntime {
         );
     }
 
-    activate(profile, indicator, hover, opacity, iconSize, visibility) {
+    activate(profile, indicator, hover, opacity, iconSize, visibility,
+        menuSide, skipStartupOverview) {
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
         this._opacity = opacity;
         this._iconSize = iconSize;
         this._visibility = visibility;
+        this._menuSide = menuSide;
+        this._skipStartupOverview = skipStartupOverview;
+        this._host.skipStartupOverview = skipStartupOverview;
         if (this._active) {
             this._applyIndicator(indicator);
             this._applyHover(hover);
             this._applyOpacity(opacity);
             this._applyIconSize(iconSize);
             this._host.visibilityModes.apply(visibility);
+            this._applyMenuSide(menuSide);
             return;
         }
 
@@ -76,6 +81,7 @@ export class DockRuntime {
         this._applyOpacity(opacity);
         this._applyIconSize(iconSize);
         this._host.visibilityModes.apply(visibility);
+        this._applyMenuSide(menuSide);
         this._host.notificationsMonitor = new DockNotificationMonitor(
             this._host.getSettings(DOCK_SCHEMA),
         );
@@ -104,6 +110,10 @@ export class DockRuntime {
         this._opacity = null;
         this._iconSize = null;
         this._visibility = null;
+        this._menuSide = null;
+        this._skipStartupOverview = null;
+        delete this._host.menuSide;
+        delete this._host.skipStartupOverview;
     }
 
     diagnostics() {
@@ -118,6 +128,8 @@ export class DockRuntime {
             managerGeneration: this._managerGeneration,
             visibility: this._host.visibilityModes.mode(),
             extended: this._host.placement.extended(),
+            menuSide: this._menuSide,
+            skipStartupOverview: this._skipStartupOverview,
             panel: this._panelController?.diagnostics() ?? {},
             desktopBridge:
                 this._manager?.desktopIconsUsableArea?.diagnostics() ?? {},
@@ -168,6 +180,9 @@ export class DockRuntime {
     _actorDiagnostics(dock) {
         const actor = dock?._box ?? dock;
         const background = dock?.dash?._background;
+        const menu = dock?.dash?._showAppsIcon;
+        const [menuX] = menu?.get_transformed_position?.() ?? [null];
+        const [dockX] = actor?.get_transformed_position?.() ?? [null];
         const backgroundColor = background
             ? background.get_theme_node().get_background_color()
             : null;
@@ -184,6 +199,12 @@ export class DockRuntime {
                 ? Math.round(backgroundColor.alpha * 100 / 255)
                 : null,
             iconSize: Math.round(dock?.dash?.iconSize ?? 0),
+            menuX: Number.isFinite(menuX) ? Math.round(menuX) : null,
+            menuSide: Number.isFinite(menuX) && Number.isFinite(dockX)
+                ? menuX + menu.width / 2 < dockX + actor.width / 2
+                    ? 'left'
+                    : 'right'
+                : '',
         };
     }
 
@@ -228,6 +249,13 @@ export class DockRuntime {
 
     _applyProfile(profile) {
         this._host.placement.apply(profile?.edge, profile?.extended);
+    }
+
+    _applyMenuSide(menuSide) {
+        this._host.menuSide = ['left', 'right'].includes(menuSide)
+            ? menuSide
+            : null;
+        this._manager?.updateMenuSide();
     }
 
     _destroyNotificationsMonitor() {

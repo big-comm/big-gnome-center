@@ -14,6 +14,7 @@ COMMUNITY_PANEL_SCHEMA = "org.gnome.shell.extensions.dash-to-panel"
 VISIBILITY_MODES = ("always-visible", "always-hidden", "intelligent")
 INDICATOR_STYLES = ("dot", "hybrid", "desk-ux")
 DOCK_HOVER_EFFECTS = ("default", "lift")
+DOCK_MENU_SIDES = ("left", "right")
 DOCK_SIZE_RANGE = (28, 64)
 PANEL_HEIGHT_RANGE = (32, 56)
 
@@ -94,6 +95,8 @@ class PanelDockSettings:
                 "dock-size",
                 "dock-hover",
                 "panel-height",
+                "dock-menu-side",
+                "skip-startup-overview",
             )
         }
         self.runtime.reset_layout(self.active_layout)
@@ -104,6 +107,8 @@ class PanelDockSettings:
                 self.set_dock_visibility(defaults["dock-visibility"])
                 self.set_dock_size(defaults["dock-size"])
                 self.set_dock_hover_effect(defaults["dock-hover"])
+                if self.active_layout == "BigGnome":
+                    self.set_dock_menu_side(defaults["dock-menu-side"])
             elif self.community_panel_active:
                 self.set_dock_hover_effect(defaults["dock-hover"])
             if self.dock_active or self.community_panel_active:
@@ -115,6 +120,7 @@ class PanelDockSettings:
                 self.set_indicator_style(defaults["indicator-style"])
             if self.community_panel_active:
                 self.set_panel_height(defaults["panel-height"])
+            self.set_skip_startup_overview(defaults["skip-startup-overview"])
         finally:
             self._restoring = False
 
@@ -184,6 +190,27 @@ class PanelDockSettings:
         if self._runtime_owns_dock():
             return
         self.dock.set_int("dash-max-icon-size", size)
+
+    def dock_menu_side(self) -> str:
+        side = self.runtime.get(self.active_layout, "dock-menu-side", "right")
+        return side if side in DOCK_MENU_SIDES else "right"
+
+    def set_dock_menu_side(self, side: str) -> None:
+        if side not in DOCK_MENU_SIDES:
+            raise ValueError(f"invalid dock menu side: {side}")
+        self._remember("dock-menu-side", side)
+
+    def skip_startup_overview(self) -> bool:
+        return bool(
+            self.runtime.get(
+                self.active_layout,
+                "skip-startup-overview",
+                False,
+            )
+        )
+
+    def set_skip_startup_overview(self, skip: bool) -> None:
+        self._remember("skip-startup-overview", bool(skip))
 
     def dock_hover_effect(self) -> str:
         if self._runtime_owns_active_component():

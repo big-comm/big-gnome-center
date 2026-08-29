@@ -61,6 +61,7 @@ Preferences-only payload removed:
 Runtime entry and orchestration:
 
 - `dockRuntime.js`, `dockSurface.js`, `dockActorFactory.js`, `dock/dash.js`.
+- `startupOverviewIntegration.js` owns per-layout login Overview policy.
 - `taskbarOverviewIntegration.js` owns Taskbar Overview behavior.
 - `taskbarStatusFullscreenIntegration.js` owns status/fullscreen behavior.
 
@@ -155,6 +156,8 @@ present in a dormant section is not evidence of use.
 | System status/clock | native top | native top | bottom | bottom | bottom | native top |
 | App labels | no | no | no | no | yes | no |
 | Desktop icons default | off | off | on | off | on | off |
+| Applications menu side | right | layout | n/a | n/a | n/a | n/a |
+| Open desktop after login | off | off | on | on | on | off |
 
 ## First safe removal slice
 

@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 75" in controller
+    assert "RUNTIME_BUILD = 76" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -110,6 +110,7 @@ def test_runtime_listens_to_every_owned_visual_setting():
 
     for key in (
         "dock-hover-overrides",
+        "dock-menu-side-overrides",
         "dock-opacity-overrides",
         "dock-size-overrides",
         "dock-visibility-overrides",
@@ -117,10 +118,60 @@ def test_runtime_listens_to_every_owned_visual_setting():
         "panel-height-overrides",
         "panel-opacity-overrides",
         "panel-visibility-overrides",
+        "skip-startup-overview-overrides",
     ):
         assert f"'{key}'," in controller
     assert "const dockProfileChanged" in controller
     assert "if (dockProfileChanged)" in controller
+
+
+def test_runtime_owns_biggnome_menu_side_without_legacy_writes():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    surface = (RUNTIME / "dockSurface.js").read_text()
+    dash = (RUNTIME / "dock/dash.js").read_text()
+
+    assert "_menuSideForProfile(profile)" in controller
+    assert "profile.layout !== 'BigGnome'" in controller
+    assert "this._applyMenuSide(menuSide)" in dock
+    assert "this._manager?.updateMenuSide()" in dock
+    assert "get menuAtStart()" in surface
+    assert "dock.dash.updateShowAppsButton(true)" in surface
+    assert "Docking.DockSurfaceManager.menuAtStart" in dash
+    assert "updateShowAppsButton(force = false)" in dash
+    assert "if (!force &&" in dash
+    assert "const anchor = showAppsContainer === this._dashContainer" in dash
+    assert "set_child_below_sibling(this._showAppsIcon, anchor)" in dash
+    assert "set_child_above_sibling(this._showAppsIcon, anchor)" in dash
+    assert "menuSide: Number.isFinite(menuX)" in dock
+    assert "set_boolean('show-apps-at-top'" not in dock
+
+
+def test_runtime_owns_startup_overview_for_every_surface():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    integration = (RUNTIME / "startupOverviewIntegration.js").read_text()
+    dock_surface = (RUNTIME / "dockSurface.js").read_text()
+    taskbar_surface = (RUNTIME / "taskbarSurface.js").read_text()
+
+    assert "new StartupOverviewIntegration()" in controller
+    assert "this._startupOverview.apply(skipStartupOverview)" in controller
+    synchronous_apply = controller.index(
+        "this._startupOverview.apply(\n            this._skipStartupOverviewForProfile(startupProfile))"
+    )
+    assert synchronous_apply < controller.index("this._queueSync();")
+    assert "Main.sessionMode.hasOverview = value" in integration
+    assert "Main.overview.hide()" in integration
+    assert "layoutSwitcherStartupOverviewHandled" in integration
+    assert "this._firstSessionActivation" in integration
+    assert "'startup-complete'" in integration
+    assert "implementation: 'layout-switcher-runtime'" in integration
+    assert "restorationPending" in integration
+    assert "restoreConflicts" in integration
+    assert "postStartupHide" in integration
+    assert "this._extension.skipStartupOverview" in dock_surface
+    assert "disableOverviewOnStartup" not in dock_surface
+    assert "hide-overview-on-startup" not in taskbar_surface
+    assert "startInOverview" not in taskbar_surface
 
 
 def test_runtime_applies_owned_dock_settings_without_rebuilding_active_surface():

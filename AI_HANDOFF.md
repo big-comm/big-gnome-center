@@ -2276,3 +2276,38 @@ Append one entry per completed change:
   `53b650c96083514362d8f1e1850d67f69bf8b99ddd01961d11adb47abe9aa5a8`.
 - Journal noise is external: Copyous teardown callbacks on GNOME 50 and the
   known GSConnect final-type error on GNOME 51.
+
+## 2026-08-28 — Runtime-owned login and Dock options
+
+- BigGnome owns an illustrated applications-menu side selector. Right remains
+  the default; live left/right cycles preserve the Dock generation.
+- Every layout owns a startup-Overview preference. Hybrid, Desk UX, and Classic
+  open the desktop by default; BigGnome, G-Unity, and Minimal retain Overview.
+- `StartupOverviewIntegration` follows Shell `hasOverview` startup policy,
+  restores it transactionally, and uses public `Main.overview.hide()` only when
+  the extension first activates after Shell startup. A per-Shell marker prevents
+  later layout changes from hiding a user-opened Overview.
+- GNOME 50 passed BigGnome login with the option on and off plus live menu-side
+  cycles. GNOME 51 passed Hybrid login with the option off and on. Final states
+  are BigGnome/right/Overview on GNOME 50 and Hybrid/direct desktop on GNOME 51.
+  Both have one monitor, matching application/runtime labels, and strict audit
+  with zero failures and warnings.
+- GNOME Shell 50.4 target `233322b9b675b0385767147c1a6cfc6ff7325160`
+  and main `6db7eaf5377e24d85eb9251316a8b2b5ca407cc4` were reviewed. `layout.js`
+  SHA-256 values are
+  `79b73a5a1390c9d6871c96ec18115bb1316747c321c2a157bc837f3a04bc6f12`
+  and `a7dba213a2946830024610ac696996ae5d866deabc64ae590d474713b4d17fb7`.
+- Focused tests: `129 passed`; full suite: `591 passed`, with the known PyGI
+  and two headless Adwaita warnings. Schemas, JavaScript, Python, and diff checks
+  pass. PKGBUILD/package versions are unchanged. Catalog updates are deferred
+  for LangForge; every new UI string already uses `tr()`.
+- Final local/GNOME 50/GNOME 51 SHA-256: startup integration
+  `fc232ab7617fa3d399e5abef5b44e07217e35802846421e10f4a333200ea6e7d`;
+  Dock dash
+  `c7a9dd66a7880e00a8ebb7b0e9289a81f88e79eefeaa1021c6f5e30ee1538ed2`;
+  runtime payload
+  `4650c0899d83c39c259ce5355bbc69f6a27f8c65ad733941842c8fb8b55918df`;
+  Community Panel payload
+  `8358d5973745b710020971064a9acf0b8d200f6bba672a3b55c8319a2f15ad75`;
+  audit tree
+  `80ed2fc2974c5e0daf23fe3161d746e554fd8f03a254aa717b09c89d5413d058`.

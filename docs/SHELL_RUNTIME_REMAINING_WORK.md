@@ -704,11 +704,18 @@ testing-repository cycle remains before cleanup.
 
 Post-migration product backlog, explicitly outside the final engine boundary:
 
-- BigGnome Dock applications-menu side, with right preserved as the default
-  and left offered as a per-layout choice.
 - A third Dock hover card for pointer-distance magnification. Icons must grow
   and shrink progressively like the macOS Dock, without replacing Standard or
   Gentle lift.
+
+Accepted post-migration options:
+
+- BigGnome applications-menu side is runtime-owned, illustrated, live, and
+  defaults to right.
+- Startup Overview policy is runtime-owned for all layouts. Hybrid, Desk UX,
+  and Classic open the desktop by default; the other layouts retain Overview.
+- GNOME 50/51 passed both login outcomes, exact restoration, one monitor, and
+  strict audit with zero failures and warnings.
 
 ### 3. Finish settings ownership
 

@@ -24,7 +24,7 @@ def test_community_dock_is_a_private_resource_host():
 
 def test_community_dock_tracks_accepted_core_baseline():
     assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
-        "f8fe0f2e8fec576c453ee5a639db584b9de47a6ba04f4c1c36494980146b1ece"
+        "ce2d4a4752fd1e29b2cf056dcc34483b3b9e8fb83a068be3cae37b8d32745188"
     )
 
 

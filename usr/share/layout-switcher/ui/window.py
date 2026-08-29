@@ -443,15 +443,11 @@ class MainWindow(Adw.ApplicationWindow):
         return row
 
     def refresh_layout_capabilities(self) -> None:
-        """Disable navigation for components unused by the active layout."""
+        """Keep layout-owned session controls reachable for every layout."""
         panel_dock_row = self._nav_rows.get("panel-dock")
         if panel_dock_row is None:
             return
-
-        panel_dock_available = Settings().get("active_layout", "") != "Minimal"
-        panel_dock_row.set_sensitive(panel_dock_available)
-        if not panel_dock_available and self._nav.get_selected_row() is panel_dock_row:
-            self._nav.select_row(self._nav_rows["layouts"])
+        panel_dock_row.set_sensitive(True)
 
     # ── Sidebar toggle (collapsed) ────────────────────────────────────────────
 

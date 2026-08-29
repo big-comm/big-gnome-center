@@ -267,6 +267,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     runtime = diagnostics.get("runtime") or {}
     stage = diagnostics.get("stage") or {}
     expected = runtime.get("expected") or {}
+    startup_overview = runtime.get("startupOverview") or {}
     dock = runtime.get("dock") or {}
     panel = dock.get("panel") or {}
     dock_desktop_bridge = dock.get("desktopBridge") or {}
@@ -317,6 +318,30 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             snapshot.active_layout,
             f"application={snapshot.app_active_layout or '<empty>'}, "
             f"runtime={snapshot.active_layout or '<empty>'}",
+        ),
+        _check(
+            startup_overview.get("implementation") == "layout-switcher-runtime",
+            "startup-overview-implementation",
+            "runtime-owned",
+            f"implementation={startup_overview.get('implementation')}",
+        ),
+        _check(
+            startup_overview.get("skipRequested")
+            == expected.get("skipStartupOverview"),
+            "startup-overview-setting",
+            f"skip={expected.get('skipStartupOverview')}",
+            "expected skip="
+            f"{expected.get('skipStartupOverview')}, got "
+            f"{startup_overview.get('skipRequested')}",
+        ),
+        _check(
+            not startup_overview.get("connected")
+            and not startup_overview.get("restorationPending")
+            and not startup_overview.get("restoreConflicts")
+            and not startup_overview.get("lastConflict"),
+            "startup-overview-restoration",
+            "settled without conflicts",
+            f"integration={startup_overview}",
         ),
         _check(
             bool(dock.get("active")) == expected_docks,
@@ -1084,11 +1109,26 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     "expected "
                     f"{expected.get('extended')}, got {dock.get('extended')}",
                 ),
+                _check(
+                    dock.get("menuSide") == expected.get("menuSide"),
+                    "dock-menu-side",
+                    str(expected.get("menuSide")),
+                    "expected "
+                    f"{expected.get('menuSide')}, got {dock.get('menuSide')}",
+                ),
             )
         )
         for actor in dock_actors:
             checks.extend(
                 (
+                    _check(
+                        expected.get("menuSide") is None
+                        or actor.get("menuSide") == expected.get("menuSide"),
+                        "dock-menu-side-actor",
+                        str(expected.get("menuSide")),
+                        "expected "
+                        f"{expected.get('menuSide')}, got {actor.get('menuSide')}",
+                    ),
                     _check(
                         actor.get("opacity") == expected.get("opacity"),
                         "dock-opacity",

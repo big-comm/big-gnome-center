@@ -41,5 +41,13 @@
       <default>{}</default>
       <summary>Dock hover effect overrides by layout</summary>
     </key>
+    <key name="dock-menu-side-overrides" type="a{ss}">
+      <default>{}</default>
+      <summary>Dock application menu side overrides by layout</summary>
+    </key>
+    <key name="skip-startup-overview-overrides" type="a{sb}">
+      <default>{}</default>
+      <summary>Startup overview overrides by layout</summary>
+    </key>
   </schema>
 </schemalist>

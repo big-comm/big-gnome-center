@@ -340,6 +340,33 @@ APP_CSS = """
     background-color: @accent_bg_color;
 }
 
+/* ── BigGnome Dock menu position chooser ──────────────────────────── */
+.dock-menu-side-grid > flowboxchild {
+    background: none;
+    outline: none;
+    box-shadow: none;
+}
+.dock-menu-side-card {
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid alpha(@card_fg_color, 0.12);
+    background-color: alpha(@card_bg_color, 0.54);
+    box-shadow: none;
+}
+.dock-menu-side-card:hover {
+    border-color: alpha(@accent_color, 0.48);
+    background-color: alpha(@card_bg_color, 0.82);
+}
+.dock-menu-side-card:checked {
+    border-color: @accent_color;
+    background-color: alpha(@accent_bg_color, 0.13);
+    box-shadow: inset 0 0 0 1px @accent_color;
+}
+.dock-menu-preview-menu {
+    border-radius: 999px;
+    background-color: @accent_bg_color;
+    border: 1px solid alpha(@accent_fg_color, 0.35);
+}
 /* ── Extension cards em destaque ─────────────────────────────────────── */
 .ext-card {
     outline: 1px solid alpha(@card_fg_color, 0.12);

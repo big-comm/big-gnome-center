@@ -28,10 +28,15 @@ actors cannot run in the GTK process.
 
 Post-migration product backlog:
 
-- BigGnome Dock applications-menu side: keep right as the default and offer
-  left as an owned per-layout option.
 - Third Dock hover mode: pointer-distance magnification, with icons growing and
   shrinking progressively like the macOS Dock. Keep Standard and Gentle lift.
+
+Completed post-migration options:
+
+- BigGnome owns an illustrated left/right applications-menu selector; right is
+  the default.
+- Every layout owns a startup-Overview preference. Hybrid, Desk UX, and Classic
+  open the desktop by default; BigGnome, G-Unity, and Minimal retain Overview.
 
 ## Status geral
 

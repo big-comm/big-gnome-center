@@ -1,7 +1,7 @@
 # Community Panel Runtime Map
 
 Last update: 2026-08-28
-Baseline: `1de221a`, runtime build 75
+Baseline: `d22f8de`, runtime build 76
 
 ## Scope
 
@@ -10,9 +10,14 @@ runtime. The standalone Community Panel `extension.js` and matching source
 copies are dormant rollback assets. `TaskbarSurfaceManager` constructs the
 runtime-owned `taskbar/panelManager.js` directly.
 
+Per-layout login Overview policy is also runtime-owned. The Taskbar renderer no
+longer reads or mutates its inherited startup-Overview key.
+
 ## Active import graph
 
 ```text
+runtimeController.js
+  -> startupOverviewIntegration.js
 taskbarSurface.js
   -> taskbarPanelHost.js
   -> taskbarStatusAreaHost.js
@@ -52,6 +57,7 @@ taskbarSurface.js
 | `taskbarOverviewIntegration.js` | Taskbar/overview integration | runtime | owned implementation accepted in build 73 |
 | `taskbar/proximity.js` | window overlap watches | runtime | internalized in build 75 |
 | `taskbarNotificationMonitor.js` | application notification counts | runtime | owned implementation accepted in build 72 |
+| `startupOverviewIntegration.js` | per-layout login Overview policy | runtime | owned post-migration option |
 | `desktopIconsIntegration.js` | removed in build 71 | runtime | shared owned implementation replaces both copies |
 | `taskbar/panelSettings.js` | renderer settings and monitor maps | runtime adapter | remove after upgrade matrix |
 | `taskbar/panelPositions.js` | renderer position constants | runtime adapter | replace with layout profiles |

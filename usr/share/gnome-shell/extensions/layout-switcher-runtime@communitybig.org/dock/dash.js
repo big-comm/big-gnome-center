@@ -1151,11 +1151,14 @@ export const DockDash = GObject.registerClass({
         this._queueRedisplay();
     }
 
-    updateShowAppsButton() {
-        if (this._showAppsIcon.get_parent() && !this._showAppsIcon.visible)
+    updateShowAppsButton(force = false) {
+        if (!force && this._showAppsIcon.get_parent() && !this._showAppsIcon.visible)
             return;
 
-        const {settings} = Docking.DockSurfaceManager;
+        const {settings, extension} = Docking.DockSurfaceManager;
+        const ownedMenuSide = ['left', 'right'].includes(extension.menuSide)
+            ? extension.menuSide
+            : null;
         const notifiedProperties = [];
         const showAppsContainer = settings.showAppsAlwaysInTheEdge || !settings.dockExtended
             ? this._dashContainer : this._boxContainer;
@@ -1167,14 +1170,26 @@ export const DockDash = GObject.registerClass({
                 (_obj, pspec) => notifiedProperties.push(pspec.name));
         }
 
-        if (this._showAppsIcon.get_parent() !== showAppsContainer) {
+        if (ownedMenuSide) {
+            if (this._showAppsIcon.get_parent() !== showAppsContainer) {
+                this._showAppsIcon.get_parent()?.remove_child(this._showAppsIcon);
+                showAppsContainer.add_child(this._showAppsIcon);
+            }
+            const anchor = showAppsContainer === this._dashContainer
+                ? this._scrollView
+                : this._box;
+            if (ownedMenuSide === 'left')
+                showAppsContainer.set_child_below_sibling(this._showAppsIcon, anchor);
+            else
+                showAppsContainer.set_child_above_sibling(this._showAppsIcon, anchor);
+        } else if (this._showAppsIcon.get_parent() !== showAppsContainer) {
             this._showAppsIcon.get_parent()?.remove_child(this._showAppsIcon);
 
-            if (Docking.DockSurfaceManager.settings.showAppsAtTop)
+            if (Docking.DockSurfaceManager.menuAtStart)
                 showAppsContainer.insert_child_below(this._showAppsIcon, null);
             else
                 showAppsContainer.insert_child_above(this._showAppsIcon, null);
-        } else if (settings.showAppsAtTop) {
+        } else if (Docking.DockSurfaceManager.menuAtStart) {
             showAppsContainer.set_child_below_sibling(this._showAppsIcon, null);
         } else {
             showAppsContainer.set_child_above_sibling(this._showAppsIcon, null);

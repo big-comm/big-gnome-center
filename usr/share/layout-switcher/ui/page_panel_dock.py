@@ -48,6 +48,7 @@ class PanelDockPage(Gtk.Box):
         self._settings = None
         self._indicator_buttons = {}
         self._hover_buttons = {}
+        self._menu_side_buttons = {}
         self._build()
         self.refresh()
 
@@ -82,6 +83,8 @@ class PanelDockPage(Gtk.Box):
             self._on_dock_size_changed,
         )
         self._dock_group.add(self._dock_size)
+        self._menu_side_row = self._build_menu_side_row()
+        self._dock_group.add(self._menu_side_row)
         self._hover_row = self._build_hover_effect_row()
         self._dock_group.add(self._hover_row)
         self._dock_visibility = self._visibility_row(
@@ -120,10 +123,25 @@ class PanelDockPage(Gtk.Box):
         self._panel_group.add(self._panel_visibility)
         content.append(self._panel_group)
 
+        self._session_group = Adw.PreferencesGroup(
+            title=tr("Session"),
+            description=tr("Choose how this layout starts after login."),
+        )
+        self._skip_startup_overview = Adw.SwitchRow(
+            title=tr("Open desktop after login"),
+            subtitle=tr("Skip the initial Activities overview for this layout."),
+        )
+        self._skip_startup_overview.connect(
+            "notify::active",
+            self._on_skip_startup_overview_changed,
+        )
+        self._session_group.add(self._skip_startup_overview)
+        content.append(self._session_group)
+
         self._restore_group = Adw.PreferencesGroup()
         restore_row = Adw.ActionRow(
             title=tr("Restore layout defaults"),
-            subtitle=tr("Reset Panel and Dock options for the active layout."),
+            subtitle=tr("Reset appearance and session options for the active layout."),
         )
         restore_button = Gtk.Button(label=tr("Restore"))
         restore_button.set_valign(Gtk.Align.CENTER)
@@ -136,6 +154,86 @@ class PanelDockPage(Gtk.Box):
 
         scroll.set_child(content)
         self.append(scroll)
+
+    def _build_menu_side_row(self) -> Adw.PreferencesRow:
+        row = Adw.PreferencesRow()
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box.set_margin_top(12)
+        box.set_margin_bottom(12)
+        box.set_margin_start(12)
+        box.set_margin_end(12)
+        title = Gtk.Label(label=tr("Application menu position"), xalign=0)
+        title.add_css_class("heading")
+        box.append(title)
+        hint = Gtk.Label(
+            label=tr("Place the BigGnome menu at either end of the Dock."),
+            wrap=True,
+            xalign=0,
+        )
+        hint.add_css_class("dim-label")
+        hint.add_css_class("caption")
+        box.append(hint)
+
+        flow = Gtk.FlowBox()
+        flow.add_css_class("dock-menu-side-grid")
+        flow.set_selection_mode(Gtk.SelectionMode.NONE)
+        flow.set_min_children_per_line(2)
+        flow.set_max_children_per_line(2)
+        flow.set_column_spacing(10)
+        flow.set_homogeneous(True)
+        first_button = None
+        for value, label in (("left", tr("Left")), ("right", tr("Right"))):
+            button = self._build_menu_side_button(value, label)
+            if first_button is None:
+                first_button = button
+            else:
+                button.set_group(first_button)
+            flow.append(button)
+            self._menu_side_buttons[value] = button
+        box.append(flow)
+        row.set_child(box)
+        return row
+
+    def _build_menu_side_button(self, value: str, label: str) -> Gtk.ToggleButton:
+        button = Gtk.ToggleButton()
+        button.add_css_class("dock-menu-side-card")
+        button.set_tooltip_text(
+            tr("Place the application menu on the {side}").format(side=label)
+        )
+        button.update_property([Gtk.AccessibleProperty.LABEL], [label])
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
+        box.set_margin_top(10)
+        box.set_margin_bottom(9)
+        box.set_margin_start(8)
+        box.set_margin_end(8)
+        preview = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        preview.add_css_class("dock-hover-preview")
+        preview.set_halign(Gtk.Align.CENTER)
+        preview.set_size_request(-1, 58)
+        menu = Gtk.Box()
+        menu.add_css_class("dock-menu-preview-menu")
+        menu.set_size_request(30, 30)
+        menu.set_valign(Gtk.Align.END)
+        icons = []
+        for _index in range(3):
+            icon = Gtk.Box()
+            icon.add_css_class("dock-hover-preview-icon")
+            icon.set_size_request(30, 30)
+            icon.set_valign(Gtk.Align.END)
+            icons.append(icon)
+        if value == "left":
+            preview.append(menu)
+        for icon in icons:
+            preview.append(icon)
+        if value == "right":
+            preview.append(menu)
+        box.append(preview)
+        label_widget = Gtk.Label(label=label)
+        label_widget.add_css_class("heading")
+        box.append(label_widget)
+        button.set_child(box)
+        button.connect("toggled", self._on_menu_side_toggled, value)
+        return button
 
     def _build_hover_effect_row(self) -> Adw.PreferencesRow:
         row = Adw.PreferencesRow()
@@ -388,7 +486,7 @@ class PanelDockPage(Gtk.Box):
                     community_panel_active=community_panel_active,
                     runtime_active=runtime_active,
                 )
-                if dock_active or community_panel_active
+                if runtime_active or dock_active or community_panel_active
                 else None
             )
         except Exception:
@@ -399,15 +497,28 @@ class PanelDockPage(Gtk.Box):
         hover_available = self._settings is not None and (
             dock_active or community_panel_active
         )
-        self._dock_group.set_visible(active_layout != "Classic")
+        self._dock_group.set_visible(
+            active_layout != "Classic" and (dock_available or indicator_available)
+        )
         self._dock_group.set_sensitive(dock_available or indicator_available)
+        self._panel_group.set_visible(panel_available)
         self._panel_group.set_sensitive(panel_available)
         self._dock_opacity.set_visible(not community_panel_active)
         self._dock_size.set_visible(dock_available and not community_panel_active)
+        self._menu_side_row.set_visible(
+            runtime_active and dock_available and active_layout == "BigGnome"
+        )
         self._hover_row.set_visible(hover_available and active_layout != "Classic")
         self._dock_visibility.set_visible(not community_panel_active)
         self._panel_height.set_visible(community_panel_active)
         self._indicator_row.set_sensitive(indicator_available)
+        session_available = (
+            self._settings is not None
+            and runtime_active
+            and self._settings.runtime.supports_layout(active_layout)
+        )
+        self._session_group.set_sensitive(session_available)
+        self._restore_group.set_sensitive(self._settings is not None)
         if community_panel_active:
             self._dock_group.set_title(tr("Taskbar"))
             self._dock_group.set_description(tr("Configure running application indicators."))
@@ -449,6 +560,10 @@ class PanelDockPage(Gtk.Box):
                 self._dock_size_label,
                 self._settings.dock_size(),
             )
+            if active_layout == "BigGnome":
+                self._menu_side_buttons[
+                    self._settings.dock_menu_side()
+                ].set_active(True)
         if hover_available:
             self._hover_buttons[self._settings.dock_hover_effect()].set_active(True)
         if indicator_available:
@@ -468,6 +583,10 @@ class PanelDockPage(Gtk.Box):
                     self._panel_height_label,
                     self._settings.panel_height(),
                 )
+        if session_available:
+            self._skip_startup_overview.set_active(
+                self._settings.skip_startup_overview()
+            )
         self._syncing = False
 
     @staticmethod
@@ -538,9 +657,29 @@ class PanelDockPage(Gtk.Box):
         self._settings.set_dock_hover_effect(effect)
         self._toast(tr("Icon hover effect updated"))
 
+    def _on_menu_side_toggled(
+        self,
+        button: Gtk.ToggleButton,
+        side: str,
+    ) -> None:
+        if self._syncing or not self._settings or not button.get_active():
+            return
+        self._settings.set_dock_menu_side(side)
+        self._toast(tr("Application menu position updated"))
+
+    def _on_skip_startup_overview_changed(
+        self,
+        row: Adw.SwitchRow,
+        param,
+    ) -> None:
+        if self._syncing or not self._settings:
+            return
+        self._settings.set_skip_startup_overview(row.get_active())
+        self._toast(tr("Login start updated"))
+
     def _on_restore_defaults_clicked(self, button: Gtk.Button) -> None:
         if not self._settings:
             return
         self._settings.restore_layout_defaults()
         self.refresh()
-        self._toast(tr("Layout Panel and Dock defaults restored"))
+        self._toast(tr("Layout appearance and session defaults restored"))

@@ -18,6 +18,8 @@ const LAYOUT_PROFILES = new Map([
         dockOpacity: 77,
         dockSize: 39,
         visibility: 'intelligent',
+        menuSide: 'right',
+        skipStartupOverview: false,
     })],
     ['G-Unity', Object.freeze({
         layout: 'G-Unity',
@@ -30,6 +32,7 @@ const LAYOUT_PROFILES = new Map([
         dockOpacity: 70,
         dockSize: 39,
         visibility: 'always-visible',
+        skipStartupOverview: false,
     })],
     ['Hybrid', Object.freeze({
         layout: 'Hybrid',
@@ -42,6 +45,7 @@ const LAYOUT_PROFILES = new Map([
         panelVisibility: 'always-visible',
         panelHeight: 38,
         actorHeight: 38,
+        skipStartupOverview: true,
     })],
     ['Desk UX', Object.freeze({
         layout: 'Desk UX',
@@ -54,6 +58,7 @@ const LAYOUT_PROFILES = new Map([
         panelVisibility: 'always-visible',
         panelHeight: 40,
         actorHeight: 46,
+        skipStartupOverview: true,
     })],
     ['Classic', Object.freeze({
         layout: 'Classic',
@@ -66,6 +71,7 @@ const LAYOUT_PROFILES = new Map([
         panelVisibility: 'always-visible',
         panelHeight: 38,
         actorHeight: 38,
+        skipStartupOverview: true,
     })],
     ['Minimal', Object.freeze({
         layout: 'Minimal',
@@ -74,6 +80,7 @@ const LAYOUT_PROFILES = new Map([
         labels: false,
         indicator: 'none',
         hover: 'default',
+        skipStartupOverview: false,
     })],
 ]);
 

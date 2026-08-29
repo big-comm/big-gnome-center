@@ -76,6 +76,8 @@ def _snapshot(**changes) -> Snapshot:
             "height": 48,
             "opacity": dock_opacity,
             "iconSize": dock_size,
+            "menuX": 470 if layout == "BigGnome" else 20,
+            "menuSide": "right" if layout == "BigGnome" else "left",
         }] if surface == "dock" else [])
         actor_height = {"Hybrid": 38, "Desk UX": 46, "Classic": 38}.get(layout)
         outer_size = {"Hybrid": 38, "Desk UX": 40, "Classic": 38}.get(layout)
@@ -114,6 +116,20 @@ def _snapshot(**changes) -> Snapshot:
                     "actorHeight": actor_height,
                     "opacity": dock_opacity if surface == "dock" else panel_opacity,
                     "iconSize": dock_size,
+                    "menuSide": "right" if layout == "BigGnome" else None,
+                    "skipStartupOverview": layout in ("Hybrid", "Desk UX", "Classic"),
+                },
+                "startupOverview": {
+                    "implementation": "layout-switcher-runtime",
+                    "connected": False,
+                    "startingUp": False,
+                    "skipRequested": layout in ("Hybrid", "Desk UX", "Classic"),
+                    "applied": True,
+                    "restored": True,
+                    "postStartupHide": layout in ("Hybrid", "Desk UX", "Classic"),
+                    "restorationPending": False,
+                    "restoreConflicts": 0,
+                    "lastConflict": "",
                 },
                 "dock": {
                     "active": surface == "dock",
@@ -135,6 +151,7 @@ def _snapshot(**changes) -> Snapshot:
                         "BigGnome": "intelligent",
                         "G-Unity": "always-visible",
                     }.get(layout),
+                    "menuSide": "right" if layout == "BigGnome" else None,
                     "desktopBridge": {
                         "implementation": (
                             "layout-switcher-runtime"
@@ -463,6 +480,56 @@ def test_audit_rejects_dock_visibility_drift(tmp_path):
     )
 
     assert "dock-visibility" in failures
+
+
+def test_audit_rejects_menu_side_and_startup_overview_drift(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["dock"] = dict(runtime["dock"], menuSide="left")
+    runtime["startupOverview"] = dict(
+        runtime["startupOverview"],
+        skipRequested=True,
+        restorationPending=True,
+    )
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+            strict_layout=True,
+        )
+    )
+
+    assert "dock-menu-side" in failures
+    assert "startup-overview-setting" in failures
+    assert "startup-overview-restoration" in failures
+
+
+def test_audit_accepts_startup_preference_armed_mid_session(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Hybrid")
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["startupOverview"] = dict(
+        runtime["startupOverview"],
+        applied=False,
+        restored=False,
+        postStartupHide=False,
+    )
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(active_layout="Hybrid", runtime_diagnostics=diagnostics),
+            tmp_path,
+            strict_layout=True,
+        )
+    )
+
+    assert not any(name.startswith("startup-overview") for name in failures)
 
 
 def test_audit_rejects_owned_dock_setting_drift(tmp_path):

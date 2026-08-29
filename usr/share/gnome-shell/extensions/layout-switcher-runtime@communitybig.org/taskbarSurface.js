@@ -25,11 +25,8 @@ const UBUNTU_DOCK_SETTLE_MS = 200;
 export class TaskbarSurfaceManager {
     constructor(host) {
         this._host = host;
-        this._realHasOverview = Main.sessionMode.hasOverview;
-        this._realStartInOverview = Main.layoutManager.startInOverview;
         this._generation = 0;
         this._manager = null;
-        this._startupCompleteHandler = 0;
         this._ubuntuDockDelayId = 0;
         this._ubuntuDockDelayResolve = null;
         this._global = null;
@@ -67,7 +64,6 @@ export class TaskbarSurfaceManager {
 
             PanelSettings.adjustMonitorSettings(Context.SETTINGS);
             this.setPanelHeight(panelHeight);
-            this._configureOverview();
             this.enableGlobalStyles();
 
             if (!await this._settleUbuntuDock(generation))
@@ -110,17 +106,6 @@ export class TaskbarSurfaceManager {
         this.indicatorRenderer = null;
         this.panelHost = null;
         this.statusFullscreen = null;
-
-        if (this._startupCompleteHandler) {
-            try {
-                Main.layoutManager.disconnect(this._startupCompleteHandler);
-            } catch (error) {
-                // Shell teardown may dispose the layout manager first.
-            }
-            this._startupCompleteHandler = 0;
-        }
-        Main.sessionMode.hasOverview = this._realHasOverview;
-        Main.layoutManager.startInOverview = this._realStartInOverview;
 
         if (global.dashToPanel === this._global)
             delete global.dashToPanel;
@@ -185,25 +170,6 @@ export class TaskbarSurfaceManager {
     disableGlobalStyles() {
         for (const name of ['br4', 'br8', 'br12', 'br16', 'br20'])
             Main.layoutManager.uiGroup.remove_style_class_name(name);
-    }
-
-    _configureOverview() {
-        const hideOverview = Context.SETTINGS.get_boolean(
-            'hide-overview-on-startup');
-        Main.layoutManager.startInOverview = !hideOverview;
-        if (!hideOverview || !Main.layoutManager._startingUp)
-            return;
-
-        Main.sessionMode.hasOverview = false;
-        this._startupCompleteHandler = Main.layoutManager.connect(
-            'startup-complete',
-            () => {
-                const id = this._startupCompleteHandler;
-                this._startupCompleteHandler = 0;
-                Main.sessionMode.hasOverview = this._realHasOverview;
-                Main.layoutManager.disconnect(id);
-            },
-        );
     }
 
     async _settleUbuntuDock(generation) {

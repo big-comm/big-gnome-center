@@ -119,6 +119,8 @@ class FakeRuntimeBackend:
             "dock-size-overrides": {},
             "panel-height-overrides": {},
             "dock-hover-overrides": {},
+            "dock-menu-side-overrides": {},
+            "skip-startup-overview-overrides": {},
         }
 
     def get_value(self, key):
@@ -206,6 +208,13 @@ def test_runtime_defaults_match_accepted_layout_contracts():
     assert runtime.get("Desk UX", "panel-height") == 40
     assert runtime.get("Desk UX", "dock-hover") == "default"
     assert runtime.get("Classic", "panel-height") == 38
+    assert runtime.get("BigGnome", "dock-menu-side") == "right"
+    assert runtime.get("BigGnome", "skip-startup-overview") is False
+    assert runtime.get("G-Unity", "skip-startup-overview") is False
+    assert runtime.get("Hybrid", "skip-startup-overview") is True
+    assert runtime.get("Desk UX", "skip-startup-overview") is True
+    assert runtime.get("Classic", "skip-startup-overview") is True
+    assert runtime.get("Minimal", "skip-startup-overview") is False
     assert runtime.default("Minimal", "dock-size") is None
 
 
@@ -349,6 +358,40 @@ def test_live_writes_are_mirrored_to_layout_owned_runtime_settings():
     assert settings.runtime.values[("Desk UX", "panel-opacity")] == 54
 
 
+def test_biggnome_menu_side_is_runtime_owned_and_validated():
+    settings = settings_fixture()
+    settings.active_layout = "BigGnome"
+    settings.runtime_active = True
+
+    settings.set_dock_menu_side("left")
+
+    assert settings.dock_menu_side() == "left"
+    assert settings.runtime.values[("BigGnome", "dock-menu-side")] == "left"
+    with pytest.raises(ValueError):
+        settings.set_dock_menu_side("center")
+
+
+@pytest.mark.parametrize(
+    ("layout", "expected"),
+    [
+        ("BigGnome", False),
+        ("G-Unity", False),
+        ("Hybrid", True),
+        ("Desk UX", True),
+        ("Classic", True),
+        ("Minimal", False),
+    ],
+)
+def test_startup_overview_defaults_and_overrides(layout, expected):
+    settings = settings_fixture()
+    settings.active_layout = layout
+    settings.runtime_active = True
+
+    assert settings.skip_startup_overview() is expected
+    settings.set_skip_startup_overview(not expected)
+    assert settings.skip_startup_overview() is not expected
+
+
 def test_restore_defaults_updates_active_components_without_saving_overrides():
     settings = settings_fixture()
     settings.active_layout = "Hybrid"
@@ -414,6 +457,8 @@ def test_runtime_schema_declares_typed_per_layout_overrides():
     assert 'name="dock-opacity-overrides" type="a{su}"' in schema
     assert 'name="panel-height-overrides" type="a{su}"' in schema
     assert 'name="dock-hover-overrides" type="a{ss}"' in schema
+    assert 'name="dock-menu-side-overrides" type="a{ss}"' in schema
+    assert 'name="skip-startup-overview-overrides" type="a{sb}"' in schema
 
 
 def test_dock_opacity_preserves_fixed_custom_background():
@@ -681,14 +726,12 @@ def test_window_exposes_panel_and_dock_navigation():
     assert 'elif key == "panel-dock":' in window
 
 
-def test_minimal_disables_panel_and_dock_navigation():
+def test_minimal_keeps_session_controls_reachable():
     window = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
     layouts = (ROOT / "usr/share/layout-switcher/ui/page_layouts.py").read_text()
 
     assert "def refresh_layout_capabilities(self)" in window
-    assert 'Settings().get("active_layout", "") != "Minimal"' in window
-    assert "panel_dock_row.set_sensitive(panel_dock_available)" in window
-    assert 'self._nav.select_row(self._nav_rows["layouts"])' in window
+    assert "panel_dock_row.set_sensitive(True)" in window
     assert layouts.count("root.refresh_layout_capabilities()") == 2
 
 
@@ -705,7 +748,7 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert 'tr("Panel transparency")' in page
     assert 'tr("Panel height")' in page
     assert 'tr("Restore layout defaults")' in page
-    assert 'tr("Reset Panel and Dock options for the active layout.")' in page
+    assert 'tr("Reset appearance and session options for the active layout.")' in page
     assert 'tr("Dock visibility")' in page
     assert 'tr("Panel visibility")' in page
     assert 'tr("Always visible")' in page
@@ -731,11 +774,25 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert "panel_available" in page
     assert "indicator_available" in page
     assert 'active_layout = Settings().get("active_layout", "")' in page
-    assert 'self._dock_group.set_visible(active_layout != "Classic")' in page
+    assert 'active_layout != "Classic" and (dock_available or indicator_available)' in page
     assert 'tr("Taskbar")' in page
     assert 'tr("Configure running application indicators.")' in page
     assert "self._dock_opacity.set_visible(not community_panel_active)" in page
     assert 'tr("Configure the Community Panel appearance and visibility.")' in page
+    assert 'tr("Application menu position")' in page
+    assert 'tr("Place the BigGnome menu at either end of the Dock.")' in page
+    assert "_build_menu_side_button" in page
+    assert 'preview.add_css_class("dock-hover-preview")' in page
+    assert "preview.set_halign(Gtk.Align.CENTER)" in page
+    assert 'icon.add_css_class("dock-hover-preview-icon")' in page
+    assert "menu.set_valign(Gtk.Align.END)" in page
+    assert page.count("icon.set_valign(Gtk.Align.END)") == 2
+    assert 'if value == "left":' in page
+    assert 'if value == "right":' in page
+    assert 'active_layout == "BigGnome"' in page
+    assert 'tr("Open desktop after login")' in page
+    assert 'tr("Skip the initial Activities overview for this layout.")' in page
+    assert "set_skip_startup_overview" in page
 
 
 def test_runtime_leaves_dock_fullscreen_tracking_to_native_engine():

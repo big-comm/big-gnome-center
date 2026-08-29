@@ -48,5 +48,7 @@ Local runtime changes:
 - Build 76 accepts stable, testing, intermediate-UUID, downgrade/re-upgrade,
   logout/login, and reboot paths on GNOME 50/51. Retain this dormant payload
   through current clean-install validation and one testing-repository cycle.
+- The unified runtime now owns per-layout login Overview policy. The dormant
+  Taskbar renderer no longer controls startup Overview state.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

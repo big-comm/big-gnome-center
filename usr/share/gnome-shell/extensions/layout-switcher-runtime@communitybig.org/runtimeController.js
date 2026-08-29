@@ -4,11 +4,12 @@ import Gio from 'gi://Gio';
 
 import {DockRuntime} from './dockRuntime.js';
 import {profileForLayout, RuntimeSurface} from './layoutProfiles.js';
+import {StartupOverviewIntegration} from './startupOverviewIntegration.js';
 import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 75;
+export const RUNTIME_BUILD = 76;
 
 export class RuntimeController {
     constructor(extension) {
@@ -28,12 +29,18 @@ export class RuntimeController {
 
         this._dock = new DockRuntime(this._extension);
         this._taskbar = new TaskbarRuntime(this._extension);
+        this._startupOverview = new StartupOverviewIntegration();
         this._enabled = true;
         this._syncPromise = Promise.resolve();
         this._settings = new Gio.Settings({settings_schema: schema});
+        const startupProfile = profileForLayout(
+            this._settings.get_string('active-layout'));
+        this._startupOverview.apply(
+            this._skipStartupOverviewForProfile(startupProfile));
         this._settingsChangedIds = [
             'active-layout',
             'dock-hover-overrides',
+            'dock-menu-side-overrides',
             'dock-opacity-overrides',
             'dock-size-overrides',
             'dock-visibility-overrides',
@@ -41,6 +48,7 @@ export class RuntimeController {
             'panel-height-overrides',
             'panel-opacity-overrides',
             'panel-visibility-overrides',
+            'skip-startup-overview-overrides',
         ].map(key => this._settings.connect(
             `changed::${key}`,
             () => this._queueSync(),
@@ -57,9 +65,11 @@ export class RuntimeController {
         this._settingsChangedIds = [];
         this._dock?.deactivate();
         this._taskbar?.deactivate();
+        this._startupOverview?.destroy();
         this._activeProfile = null;
         this._dock = null;
         this._taskbar = null;
+        this._startupOverview = null;
         this._settings = null;
         this._syncPromise = null;
     }
@@ -87,15 +97,19 @@ export class RuntimeController {
         const panelOpacity = this._panelOpacityForProfile(profile);
         const panelVisibility = this._panelVisibilityForProfile(profile);
         const panelHeight = this._panelHeightForProfile(profile);
+        const menuSide = this._menuSideForProfile(profile);
+        const skipStartupOverview = this._skipStartupOverviewForProfile(profile);
         const dockProfileChanged = this._activeProfile?.layout !== profile.layout;
         this._activeProfile = profile;
+        this._startupOverview.apply(skipStartupOverview);
 
         if (profile.surface === RuntimeSurface.DOCK) {
             this._taskbar.deactivate();
             if (dockProfileChanged)
                 this._dock.deactivate();
             this._dock.activate(
-                profile, indicator, hover, dockOpacity, dockSize, visibility);
+                profile, indicator, hover, dockOpacity, dockSize, visibility,
+                menuSide, skipStartupOverview);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             this._dock.deactivate();
             await this._taskbar.activate(
@@ -181,6 +195,23 @@ export class RuntimeController {
         return Math.max(32, Math.min(56, panelHeight));
     }
 
+    _menuSideForProfile(profile) {
+        if (profile.layout !== 'BigGnome')
+            return null;
+        const overrides = this._settings
+            .get_value('dock-menu-side-overrides')
+            .deep_unpack();
+        const side = overrides[profile.layout] ?? profile.menuSide;
+        return ['left', 'right'].includes(side) ? side : 'right';
+    }
+
+    _skipStartupOverviewForProfile(profile) {
+        const overrides = this._settings
+            .get_value('skip-startup-overview-overrides')
+            .deep_unpack();
+        return overrides[profile.layout] ?? profile.skipStartupOverview;
+    }
+
     _panelActorHeightForProfile(profile) {
         const panelHeight = this._panelHeightForProfile(profile);
         if (panelHeight === undefined)
@@ -210,7 +241,10 @@ export class RuntimeController {
                     ? this._panelVisibilityForProfile(profile)
                     : this._visibilityForProfile(profile),
                 actorHeight: this._panelActorHeightForProfile(profile),
+                menuSide: this._menuSideForProfile(profile),
+                skipStartupOverview: this._skipStartupOverviewForProfile(profile),
             },
+            startupOverview: this._startupOverview?.diagnostics() ?? {},
             dock: this._dock?.diagnostics() ?? {active: false, actors: []},
             taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},
         };

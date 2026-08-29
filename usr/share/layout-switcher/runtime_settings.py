@@ -12,6 +12,8 @@ LAYOUT_DEFAULTS = {
         "indicator-style": "desk-ux",
         "dock-size": 39,
         "dock-hover": "default",
+        "dock-menu-side": "right",
+        "skip-startup-overview": False,
     },
     "G-Unity": {
         "dock-opacity": 70,
@@ -21,6 +23,7 @@ LAYOUT_DEFAULTS = {
         "indicator-style": "dot",
         "dock-size": 39,
         "dock-hover": "default",
+        "skip-startup-overview": False,
     },
     "Hybrid": {
         "panel-opacity": 70,
@@ -28,6 +31,7 @@ LAYOUT_DEFAULTS = {
         "indicator-style": "hybrid",
         "panel-height": 38,
         "dock-hover": "lift",
+        "skip-startup-overview": True,
     },
     "Desk UX": {
         "panel-opacity": 65,
@@ -35,6 +39,7 @@ LAYOUT_DEFAULTS = {
         "indicator-style": "desk-ux",
         "panel-height": 40,
         "dock-hover": "default",
+        "skip-startup-overview": True,
     },
     "Classic": {
         "panel-opacity": 70,
@@ -42,8 +47,11 @@ LAYOUT_DEFAULTS = {
         "indicator-style": "dot",
         "panel-height": 38,
         "dock-hover": "default",
+        "skip-startup-overview": True,
     },
-    "Minimal": {},
+    "Minimal": {
+        "skip-startup-overview": False,
+    },
 }
 
 _OVERRIDE_KEYS = {
@@ -55,6 +63,8 @@ _OVERRIDE_KEYS = {
     "dock-size": ("dock-size-overrides", "a{su}"),
     "panel-height": ("panel-height-overrides", "a{su}"),
     "dock-hover": ("dock-hover-overrides", "a{ss}"),
+    "dock-menu-side": ("dock-menu-side-overrides", "a{ss}"),
+    "skip-startup-overview": ("skip-startup-overview-overrides", "a{sb}"),
 }
 
 
