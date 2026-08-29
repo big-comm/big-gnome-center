@@ -4,6 +4,9 @@ Community Dock starts from Dash to Dock 106 as packaged for BigLinux on
 2026-07-25. The GNOME 50 and GNOME 51 beta installations contained identical
 core JavaScript files at the time of import.
 
+Translation baseline: upstream tag `extensions.gnome.org-v106`, commit
+`a7b19816b7277e41c18ea5c3ff165e493a14e0d4`.
+
 Upstream project: https://github.com/micheleg/dash-to-dock
 
 Original author: Michele G.
@@ -16,6 +19,7 @@ Local changes:
 - Standalone Community Dock entry point and UUID metadata removed.
 - Original resource directory retained for schemas, stylesheet, and media.
 - Layout Switcher owns lifecycle, layout defaults, indicators, and panel policy.
+- Active gettext entries and compiled catalogs are owned by the unified runtime.
 
 Do not remove upstream copyright or license notices. Keep functional parity
 through upgrade and rollback testing.

@@ -30,6 +30,9 @@ Post-migration product backlog:
 
 - Third Dock hover mode: pointer-distance magnification, with icons growing and
   shrinking progressively like the macOS Dock. Keep Standard and Gentle lift.
+- Wallpaper-derived system colors: staged Shell, GTK, and Qt integration is
+  specified in
+  [`docs/WALLPAPER_COLOR_INTEGRATION.md`](docs/WALLPAPER_COLOR_INTEGRATION.md).
 
 Completed post-migration options:
 

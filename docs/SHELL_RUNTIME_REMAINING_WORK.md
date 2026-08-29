@@ -926,8 +926,8 @@ complete testing-repository cycle.
   activation.
 - [ ] Update extension descriptions and architecture documentation.
 - [ ] Record final installed bytes and JS/CSS line count.
-- [ ] Run gettext extraction and LangForge only after UI strings stabilize.
-- [ ] Validate PO files and compile catalogs.
+- [x] Run gettext extraction and LangForge after UI strings stabilize.
+- [x] Validate PO files and compile catalogs.
 - [ ] Build the package in CI and run the complete automated suite.
 
 Gate: GNOME 50 and GNOME 51 matrix accepted before testing publication.

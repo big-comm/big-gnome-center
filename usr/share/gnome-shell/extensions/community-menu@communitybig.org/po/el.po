@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: community-menu 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 22:10-0300\n"
+"POT-Creation-Date: 2026-08-29 00:52-0300\n"
 "PO-Revision-Date: 2015-01-23 23:57+0300\n"
 "Last-Translator: Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>\n"
 "Language-Team: team@lists.gnome.gr\n"
@@ -15,17 +15,25 @@ msgstr ""
 "X-Project-Style: gnome\n"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:48
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:200
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:202
 msgid "All Apps"
 msgstr "Όλες οι εφαρμογές"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/menu.js:184
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:56
+msgid "Frequent Apps"
+msgstr "Συχνές εφαρμογές"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:64
+msgid "Recent Files"
+msgstr "Πρόσφατα αρχεία"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/menu.js:239
 msgid "Community Menu"
-msgstr ""
+msgstr "Community Menu"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/openWindowsSearchProvider.js:32
 msgid "List of open windows across all workspaces"
-msgstr ""
+msgstr "Λίστα ανοιχτών παραθύρων σε όλους τους χώρους εργασίας"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/openWindowsSearchProvider.js:33
 msgid "Open Windows"
@@ -34,46 +42,46 @@ msgstr "Άνοιγμα παραθύρων"
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/openWindowsSearchProvider.js:47
 #, javascript-format
 msgid "'%s' on Workspace %d"
-msgstr ""
+msgstr "'%s' στον χώρο εργασίας %d"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:827
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:852
 msgid "Searching…"
 msgstr "Αναζήτηση…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:830
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:855
 msgid "No results."
 msgstr "Δε βρέθηκαν αποτελέσματα."
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:957
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:994
 #, javascript-format
 msgid "+ %d more"
 msgid_plural "+ %d more"
 msgstr[0] "+ %d περισσότερο"
 msgstr[1] "+ %d περισσότερες"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:109
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:181
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/placeMenuItem.js:57
 msgid "Home"
 msgstr "Προσωπικός φάκελος"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:158
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:230
 msgid "Software"
 msgstr "Λογισμικό"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:162
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:175
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:234
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:174
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:198
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:295
 msgid "Categories"
 msgstr "Κατηγορίες"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:461
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:794
 msgid "Applications"
 msgstr "Εφαρμογές"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:660
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:999
 msgid "Shortcuts"
 msgstr "Συντομεύσεις"
 
@@ -101,84 +109,80 @@ msgstr "Πίσω"
 msgid "Type to search"
 msgstr "Πληκτρολογήστε για αναζήτηση"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:49
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:79
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:48
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:78
 msgid "Add to Desktop"
 msgstr "Προσθήκη στην επιφάνεια εργασίας"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:78
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:77
 msgid "Remove from Desktop"
 msgstr "Αφαίρεση από την επιφάνεια εργασίας"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:165
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:164
 msgid "System Monitor"
 msgstr "Παρακολούθηση συστήματος"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:170
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:169
 msgid "Files"
 msgstr "Αρχεία"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:184
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:183
 msgid "Edit Menu"
 msgstr "Επεξεργασία Μενού"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:189
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:188
 msgid "Search Settings"
 msgstr "Ρυθμίσεις αναζήτησης"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:222
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:220
 msgid "Power Off / Log Out"
 msgstr "Απενεργοποίηση / Αποσύνδεση"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:224
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:94
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:210
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:222
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:112
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:228
 msgid "Suspend"
 msgstr "Αναστολή"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:228
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:106
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:226
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:124
 msgid "Restart…"
 msgstr "Επανεκκίνηση…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:232
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:118
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:230
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:136
 msgid "Power Off…"
 msgstr "Τερματισμός…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:238
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:246
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:236
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:264
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/userWidgets.js:182
 msgid "Lock"
 msgstr "Κλείδωμα"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:242
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:240
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/userWidgets.js:194
 msgid "Switch User…"
 msgstr "Εναλλαγή χρήστη…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:246
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:244
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/userWidgets.js:206
 msgid "Log Out…"
 msgstr "Αποσύνδεση…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:286
-msgid "Community Panel Settings"
-msgstr "Ρυθμίσεις Dash to Panel"
-
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:68
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:86
 msgid "Power"
 msgstr "Ενέργεια"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:173
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:191
 msgid "Power Off"
 msgstr "Τερματισμός"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:192
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:210
 msgid "Restart"
 msgstr "Επανεκκίνηση"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:228
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:246
 msgid "Log Out"
 msgstr "Αποσύνδεση"
 

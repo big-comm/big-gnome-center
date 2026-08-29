@@ -1,0 +1,91 @@
+# Slovenian translation for dash-to-dock
+# Copyright (C) 2021 dash-to-dock COPYRIGHT HOLDER
+# This file is distributed under the same license as the dash-to-dock package.
+#
+# Matej Urbančič <mateju@src.gnome.org>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Dash to Dock\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-29 15:39-0300\n"
+"PO-Revision-Date: 2023-07-13 18:42+0200\n"
+"Last-Translator: Matej Urbančič <mateju@src.gnome.org>\n"
+"Language-Team: Slovenian <gnome-si@googlegroups.com>\n"
+"Language: sl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100>=3 && "
+"n%100<=4 ? 2 : 3);\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-SourceCharset: ISO-8859-1\n"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js:1140
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockAppIconMenu.js:123
+msgid "All Windows"
+msgstr "Vsa okna"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js:1235
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockAppIconMenu.js:218
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockSurface.js:2338
+#, fuzzy
+msgid "Pin to Dock"
+msgstr "%s Nastavitve programa Dash to Dock"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js:1323
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockAppIconMenu.js:306
+#, fuzzy, javascript-format
+msgid "Quit %d Window"
+msgid_plural "Quit %d Windows"
+msgstr[0] "Končaj %d oken"
+msgstr[1] "Končaj %d oken"
+msgstr[2] "Končaj %d oken"
+msgstr[3] "Končaj %d oken"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:541
+msgid "Mount"
+msgstr "Priklopi"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:543
+msgid "Unmount"
+msgstr "Odklopi"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:545
+msgid "Eject"
+msgstr "Izvrzi"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:605
+#, javascript-format
+msgid "Failed to mount “%s”"
+msgstr "Priklapljanje programa »%s« je spodletelo!"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:610
+#, javascript-format
+msgid "Failed to unmount “%s”"
+msgstr "Odklapljanje programa »%s« je spodletelo!"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:615
+#, javascript-format
+msgid "Failed to eject “%s”"
+msgstr "Izmetavanje nosilca »%s« je spodletelo!"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:628
+msgid "Mount operation already in progress"
+msgstr "Priklapljanje je že v teku"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:633
+msgid "Unmount operation already in progress"
+msgstr "Odklapljanje je že v teku"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:638
+msgid "Eject operation already in progress"
+msgstr "Izmetavanje je že v teku"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:764
+msgid "Trash"
+msgstr "Smeti"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:805
+msgid "Empty Trash"
+msgstr "Izprazni smeti"

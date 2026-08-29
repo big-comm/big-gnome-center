@@ -1,0 +1,69 @@
+# Korean translations for Layout Switcher package.
+# Copyright (C) 2026 THE Layout Switcher'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Layout Switcher Taskbar package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Layout Switcher Taskbar\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-29 15:11-0300\n"
+"PO-Revision-Date: 2026-08-29 15:11-0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: ko\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2072
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2083
+msgid "Quit"
+msgstr "종료"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2089
+#, javascript-format
+msgid "Quit %d Window"
+msgid_plural "Quit %d Windows"
+msgstr[0] "창 %d개 종료"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2410
+msgid "Power options"
+msgstr "전원 옵션"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2415
+msgid "Event logs"
+msgstr "이벤트 로그"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2420
+msgid "System"
+msgstr "시스템"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2425
+msgid "Device Management"
+msgstr "장치 관리자"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2430
+msgid "Disk Management"
+msgstr "디스크 관리"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2460
+msgid "Gnome Settings"
+msgstr "GNOME 설정"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2468
+msgid "Restore Windows"
+msgstr "창 복원"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2469
+msgid "Show Desktop"
+msgstr "바탕화면 표시"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/panel.js:216
+msgid "Top Bar"
+msgstr "상단 표시줄"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/windowPreview.js:1156
+msgid "Move to current Workspace"
+msgstr "현재 작업 공간으로 이동"

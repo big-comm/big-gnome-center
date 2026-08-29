@@ -50,5 +50,7 @@ Local runtime changes:
   through current clean-install validation and one testing-repository cycle.
 - The unified runtime now owns per-layout login Overview policy. The dormant
   Taskbar renderer no longer controls startup Overview state.
+- Build 79 internalizes the v73 compiled gettext catalogs and binds them before
+  the runtime constructs Taskbar actors.
 
 GNOME 50 and GNOME 51 are live acceptance targets.

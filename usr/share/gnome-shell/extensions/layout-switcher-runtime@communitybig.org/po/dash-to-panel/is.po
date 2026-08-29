@@ -1,0 +1,70 @@
+# Icelandic translations for Layout Switcher package.
+# Copyright (C) 2026 THE Layout Switcher'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Layout Switcher Taskbar package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Layout Switcher Taskbar\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-29 15:11-0300\n"
+"PO-Revision-Date: 2026-08-29 15:11-0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: is\n"
+"Language: is\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n%10 != 1 || n%100 == 11);\n"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2072
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2083
+msgid "Quit"
+msgstr "Hætta"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2089
+#, javascript-format
+msgid "Quit %d Window"
+msgid_plural "Quit %d Windows"
+msgstr[0] "Loka %d glugga"
+msgstr[1] "Loka %d gluggum"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2410
+msgid "Power options"
+msgstr "Aflkostir"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2415
+msgid "Event logs"
+msgstr "Atburðaskrár"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2420
+msgid "System"
+msgstr "Kerfi"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2425
+msgid "Device Management"
+msgstr "Tækjastjórnun"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2430
+msgid "Disk Management"
+msgstr "Diskastjórnun"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2460
+msgid "Gnome Settings"
+msgstr "GNOME-stillingar"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2468
+msgid "Restore Windows"
+msgstr "Endurheimta glugga"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/appIcons.js:2469
+msgid "Show Desktop"
+msgstr "Sýna skjáborð"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/panel.js:216
+msgid "Top Bar"
+msgstr "Efsta stika"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar/windowPreview.js:1156
+msgid "Move to current Workspace"
+msgstr "Færa á núverandi vinnusvæði"

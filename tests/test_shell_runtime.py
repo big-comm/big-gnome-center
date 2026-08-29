@@ -2,6 +2,7 @@
 """Unified Shell runtime extraction contracts."""
 
 import ast
+import gettext
 import json
 from pathlib import Path
 
@@ -9,6 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 RUNTIME = ROOT / f"usr/share/gnome-shell/extensions/{RUNTIME_UUID}"
 LAYOUTS = ROOT / "usr/share/layout-switcher/layouts"
+SUPPORTED_LOCALES = (
+    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
+    "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt", "ro", "ru",
+    "sk", "sv", "tr", "uk", "zh",
+)
 
 
 def _enabled_extensions(layout_path: Path) -> list[str]:
@@ -36,9 +42,32 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 78" in controller
+    assert "RUNTIME_BUILD = 79" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
+
+
+def test_unified_runtime_owns_and_binds_surface_translations():
+    extension = (RUNTIME / "extension.js").read_text()
+
+    assert "this.initTranslations('dashtodock')" in extension
+    assert "this.initTranslations('dash-to-panel')" in extension
+    for domain in ("dashtodock", "dash-to-panel"):
+        assert (RUNTIME / f"locale/pt_BR/LC_MESSAGES/{domain}.mo").is_file()
+
+    dock = gettext.translation("dashtodock", RUNTIME / "locale", ["pt_BR"])
+    assert dock.gettext("All Windows") == "Todas as janelas"
+    assert dock.gettext("Pin to Dock") == "Fixar no dock"
+
+    taskbar = gettext.translation("dash-to-panel", RUNTIME / "locale", ["pt_BR"])
+    assert taskbar.gettext("Show Desktop") == "Exibir área de trabalho"
+
+
+def test_unified_runtime_packages_all_supported_surface_catalogs():
+    for domain in ("dashtodock", "dash-to-panel"):
+        for locale in SUPPORTED_LOCALES:
+            assert (RUNTIME / f"po/{domain}/{locale}.po").is_file()
+            gettext.translation(domain, RUNTIME / "locale", [locale])
 
 
 def test_unified_runtime_profiles_capture_all_six_layout_surfaces():

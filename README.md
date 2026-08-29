@@ -288,8 +288,9 @@ msgfmt --check --output-file=usr/share/locale/<locale>/LC_MESSAGES/layout-switch
   usr/share/locale/<locale>.po
 ```
 
-The bundled Community Menu maintains its own `community-menu` gettext domain
-under its extension directory.
+The bundled Community Menu maintains its own `community-menu` gettext domain.
+The unified Shell runtime also owns local `dashtodock` and `dash-to-panel`
+catalogs. All three domains cover the same 29 languages.
 
 ## License
 

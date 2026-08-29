@@ -2,27 +2,37 @@ msgid ""
 msgstr ""
 "Project-Id-Version: community-menu 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 22:10-0300\n"
+"POT-Creation-Date: 2026-08-29 00:52-0300\n"
 "PO-Revision-Date: 2026-02-07 19:37+0000\n"
 "Last-Translator: mati123321 <account.srrr3@slmail.me>\n"
-"Language-Team: Polish <https://translations.zorin.com/projects/zorin-menu/zorin-menu/pl/>\n"
+"Language-Team: Polish <https://translations.zorin.com/projects/zorin-menu/"
+"zorin-menu/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.18.1\n"
 "X-Poedit-Language: Polish\n"
 "X-Poedit-Country: Poland\n"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:48
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:200
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:202
 msgid "All Apps"
 msgstr "Wszystkie aplikacje"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/menu.js:184
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:56
+msgid "Frequent Apps"
+msgstr "Często używane aplikacje"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:64
+msgid "Recent Files"
+msgstr "Ostatnie pliki"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/menu.js:239
 msgid "Community Menu"
-msgstr ""
+msgstr "Community Menu"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/openWindowsSearchProvider.js:32
 msgid "List of open windows across all workspaces"
@@ -37,15 +47,15 @@ msgstr "Otwarte Okna"
 msgid "'%s' on Workspace %d"
 msgstr "'%s' na obszarze roboczym %d"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:827
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:852
 msgid "Searching…"
 msgstr "Szukam…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:830
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:855
 msgid "No results."
 msgstr "Brak wyników."
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:957
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/search.js:994
 #, javascript-format
 msgid "+ %d more"
 msgid_plural "+ %d more"
@@ -53,29 +63,29 @@ msgstr[0] "+ %d więcej"
 msgstr[1] "+ %d więcej"
 msgstr[2] "+ %d więcej"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:109
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:181
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/placeMenuItem.js:57
 msgid "Home"
 msgstr "Katalog domowy"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:158
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:230
 msgid "Software"
 msgstr "Oprogramowanie"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:162
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:175
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:234
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:174
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:198
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:295
 msgid "Categories"
 msgstr "Kategorie"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:461
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:794
 msgid "Applications"
 msgstr "Aplikacje"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:660
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/sections.js:999
 msgid "Shortcuts"
 msgstr "Skróty"
 
@@ -103,84 +113,80 @@ msgstr "Wstecz"
 msgid "Type to search"
 msgstr "Wpisz żeby wyszukać"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:49
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:79
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:48
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:78
 msgid "Add to Desktop"
 msgstr "Dodaj do pulpitu"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:78
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:77
 msgid "Remove from Desktop"
 msgstr "Usuń z pulpitu"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:165
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:164
 msgid "System Monitor"
 msgstr "Monitor systemu"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:170
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:169
 msgid "Files"
 msgstr "Pliki"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:184
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:183
 msgid "Edit Menu"
 msgstr "Edycja menu"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:189
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:188
 msgid "Search Settings"
 msgstr "Ustawienia wyszukiwania"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:222
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:220
 msgid "Power Off / Log Out"
 msgstr "Wyłącz komputer / Wyloguj"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:224
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:94
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:210
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:222
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:112
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:228
 msgid "Suspend"
 msgstr "Uśpij"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:228
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:106
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:226
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:124
 msgid "Restart…"
 msgstr "Uruchom ponownie…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:232
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:118
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:230
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:136
 msgid "Power Off…"
 msgstr "Wyłącz komputer…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:238
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:246
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:236
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:264
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/userWidgets.js:182
 msgid "Lock"
 msgstr "Zablokuj ekran"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:242
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:240
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/userWidgets.js:194
 msgid "Switch User…"
 msgstr "Przełącz użytkownika…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:246
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:244
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/userWidgets.js:206
 msgid "Log Out…"
 msgstr "Wyloguj się…"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/secondaryMenu.js:286
-msgid "Community Panel Settings"
-msgstr "Ustawienia Dash to Panel"
-
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:68
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:86
 msgid "Power"
 msgstr "Zasilanie"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:173
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:191
 msgid "Power Off"
 msgstr "Wyłącz komputer"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:192
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:210
 msgid "Restart"
 msgstr "Zrestartuj"
 
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:228
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/sessionButtons.js:246
 msgid "Log Out"
 msgstr "Wyloguj się"
 

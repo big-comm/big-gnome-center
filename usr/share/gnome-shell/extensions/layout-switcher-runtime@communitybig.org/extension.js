@@ -6,6 +6,8 @@ import {RuntimeController} from './runtimeController.js';
 
 export default class LayoutSwitcherRuntimeExtension extends Extension {
     enable() {
+        this.initTranslations('dashtodock');
+        this.initTranslations('dash-to-panel');
         this._controller = new RuntimeController(this);
         this._controller.enable();
     }

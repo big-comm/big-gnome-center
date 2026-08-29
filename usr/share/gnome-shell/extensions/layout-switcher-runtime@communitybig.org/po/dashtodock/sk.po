@@ -1,0 +1,85 @@
+# Slovak translations for Layout Switcher package.
+# Copyright (C) 2026 THE Layout Switcher'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Layout Switcher Dock package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Layout Switcher Dock\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-29 15:39-0300\n"
+"PO-Revision-Date: 2026-08-29 15:39-0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js:1140
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockAppIconMenu.js:123
+msgid "All Windows"
+msgstr "Všetky okná"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js:1235
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockAppIconMenu.js:218
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockSurface.js:2338
+msgid "Pin to Dock"
+msgstr "Pripnúť do doku"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js:1323
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockAppIconMenu.js:306
+#, javascript-format
+msgid "Quit %d Window"
+msgid_plural "Quit %d Windows"
+msgstr[0] "Ukončiť %d okno"
+msgstr[1] "Ukončiť %d okná"
+msgstr[2] "Ukončiť %d okien"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:541
+msgid "Mount"
+msgstr "Pripojiť"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:543
+msgid "Unmount"
+msgstr "Odpojiť"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:545
+msgid "Eject"
+msgstr "Vysunúť"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:605
+#, javascript-format
+msgid "Failed to mount “%s”"
+msgstr "Nepodarilo sa pripojiť „%s“"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:610
+#, javascript-format
+msgid "Failed to unmount “%s”"
+msgstr "Nepodarilo sa odpojiť „%s“"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:615
+#, javascript-format
+msgid "Failed to eject “%s”"
+msgstr "Nepodarilo sa vysunúť „%s“"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:628
+msgid "Mount operation already in progress"
+msgstr "Operácia pripojenia už prebieha"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:633
+msgid "Unmount operation already in progress"
+msgstr "Operácia odpojenia už prebieha"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:638
+msgid "Eject operation already in progress"
+msgstr "Operácia vysunutia už prebieha"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:764
+msgid "Trash"
+msgstr "Kôš"
+
+#: usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/locations.js:805
+msgid "Empty Trash"
+msgstr "Vyprázdniť kôš"
+

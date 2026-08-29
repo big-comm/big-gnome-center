@@ -16,7 +16,7 @@
     </key>
     <key name="dock-enabled" type="b">
       <default>true</default>
-      <summary>Blur Dash to Dock</summary>
+      <summary>Blur Community Dock</summary>
     </key>
     <key name="layout-menus-enabled" type="b">
       <default>true</default>

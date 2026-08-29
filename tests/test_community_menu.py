@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 """Static integration checks for the bundled Community Menu."""
 
+import gettext
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -9,6 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 EXTENSION_DIR = ROOT / "usr/share/gnome-shell/extensions/community-menu@communitybig.org"
 SCHEMA_FILE = (
     ROOT / "usr/share/glib-2.0/schemas/org.gnome.shell.extensions.community-menu.gschema.xml"
+)
+SUPPORTED_LOCALES = (
+    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
+    "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt", "ro", "ru",
+    "sk", "sv", "tr", "uk", "zh",
 )
 
 
@@ -50,6 +56,15 @@ def test_community_menu_replaces_arcmenu_package_dependency():
     assert "GPL-2.0-or-later" in pkgbuild
     assert "community-menu.mo" in pkgbuild
     assert "msgfmt --check" in pkgbuild
+
+
+def test_community_menu_packages_all_supported_catalogs():
+    for locale in SUPPORTED_LOCALES:
+        assert (EXTENSION_DIR / f"po/{locale}.po").is_file()
+        gettext.translation("community-menu", ROOT / "usr/share/locale", [locale])
+
+    template = (EXTENSION_DIR / "po/community-menu.pot").read_text()
+    assert "Community Panel Settings" not in template
 
 
 def test_menu_button_uses_shared_bigcommunity_icon():

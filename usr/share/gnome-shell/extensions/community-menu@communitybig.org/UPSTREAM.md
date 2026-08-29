@@ -19,3 +19,6 @@ Changes by Community Big on 2026-07-10:
 - Kept stock GNOME panel integration and retargeted it to Community Panel.
 - Removed overlay-key and input-source overrides.
 - Ported removed Clutter actions to GNOME Shell 50 gestures.
+
+Gettext catalogs were refreshed from current sources on 2026-08-29. All 29
+supported locales are complete; the removed panel-settings entry was retired.

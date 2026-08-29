@@ -2311,3 +2311,25 @@ Append one entry per completed change:
   `8358d5973745b710020971064a9acf0b8d200f6bba672a3b55c8319a2f15ad75`;
   audit tree
   `80ed2fc2974c5e0daf23fe3161d746e554fd8f03a254aa717b09c89d5413d058`.
+
+## 2026-08-29 — Shell translation ownership, build 79
+
+- The unified runtime binds owned `dashtodock` and `dash-to-panel` catalogs
+  before constructing Dock or Taskbar actors.
+- All 29 supported locales contain every active entry: Dock 14, Taskbar 12,
+  and Community Menu 40. Templates match current source extraction. Every PO
+  has zero fuzzy or untranslated entries and passes `msgfmt --check-format`.
+- Community Menu dropped the removed panel-settings entry. Frosted Glass now
+  labels the bundled surface as Community Dock.
+- Focused tests: `163 passed`. Full suite: `599 passed`, with the known PyGI
+  warning. JavaScript, strict schemas, i18n audit, and diff checks pass.
+- Final local/GNOME 50/GNOME 51 SHA-256: runtime tree
+  `f25ef0e5260383d492513f1ea264a4359f96f00234336513abb4d78cca37aa3b`;
+  Community Menu tree
+  `4e3986d065d1dfaedc318043967f2e1660d7de25cf740b26671b30c1bda00c9a`;
+  Community Menu MO set
+  `ff3b2270f92b48b851a8938cb8c75431f6fa2bcd8ea15bbae2c247c97f14c9af`.
+- Fresh-session strict audits pass. GNOME 50 ends in BigGnome; GNOME 51 ends
+  in Hybrid; application/runtime labels match and each target has one monitor.
+  No build 79 JavaScript error appears. GNOME 51 retains known GSConnect noise.
+- PKGBUILD and package versions are unchanged.
