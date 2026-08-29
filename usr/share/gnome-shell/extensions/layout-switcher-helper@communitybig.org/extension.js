@@ -117,7 +117,7 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 69;
+const HELPER_BUILD = 70;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -131,6 +131,7 @@ const STATE_DEACTIVATING = 7;
 // bounded poll means we move on exactly when the extension is ready.
 const STATE_WAIT_MS = 4000;
 const STATE_POLL_MS = 50;
+const TRANSITION_FRAME_MS = 16;
 
 // If the caller dies between BeginSwitch and CompleteSwitch, restore the
 // previous extension set so the user is never left on a bare desktop.
@@ -489,6 +490,10 @@ export default class LayoutSwitcherHelper extends Extension {
             });
             this._pendingSources?.add(id);
         });
+    }
+
+    _yieldTransitionFrame() {
+        return this._sleep(TRANSITION_FRAME_MS);
     }
 
     // Await an extension state transition instead of trusting a fixed delay.
@@ -2177,6 +2182,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 const settled = await this._waitState(mgr, uuid, s => this._isDown(s));
                 steps.push(settled ? `disable ${uuid}` : `disable ${uuid} TIMEOUT`);
                 disabled.push(uuid);
+                await this._yieldTransitionFrame();
             } catch (e) {
                 steps.push(`disable ${uuid} ERR ${e}`);
             }
@@ -2260,6 +2266,7 @@ export default class LayoutSwitcherHelper extends Extension {
                     steps.push(`enable ${uuid} ERROR`);
                 else
                     steps.push(settled ? `enable ${uuid}` : `enable ${uuid} TIMEOUT`);
+                await this._yieldTransitionFrame();
             } catch (e) {
                 steps.push(`enable ${uuid} ERR ${e}`);
             }
@@ -2274,6 +2281,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 mgr.disableExtension(uuid);
                 await this._waitState(mgr, uuid, s => this._isDown(s));
                 steps.push(`reconcile-off ${uuid}`);
+                await this._yieldTransitionFrame();
             } catch (e) {
                 steps.push(`reconcile-off ${uuid} ERR ${e}`);
             }

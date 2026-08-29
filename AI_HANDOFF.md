@@ -2261,3 +2261,18 @@ Append one entry per completed change:
   runtime/helper hash differs and no package file is missing.
 - Remaining gate: one complete testing-repository cycle. Do not remove
   compatibility sources or schema adapters before it.
+
+## 2026-08-28 — Smooth transition spinner, build 77
+
+- Helper build 70 yields one 16 ms frame after each synchronous Shell
+  extension enable or disable. Heavy clean-room steps no longer accumulate in
+  one compositor frame; protocol order and ownership are unchanged.
+- GNOME 50 frame capture confirms spinner progress throughout Desk UX to
+  Hybrid. GNOME 50/51 passed Desk UX to Hybrid and final strict audits.
+- Final state: GNOME 50 BigGnome; GNOME 51 Hybrid; one monitor each; matching
+  application/runtime labels; zero audit failures.
+- Full suite: `580 passed`. JavaScript syntax and diff checks pass. Final
+  helper SHA-256 on local/GNOME 50/GNOME 51:
+  `53b650c96083514362d8f1e1850d67f69bf8b99ddd01961d11adb47abe9aa5a8`.
+- Journal noise is external: Copyous teardown callbacks on GNOME 50 and the
+  known GSConnect final-type error on GNOME 51.

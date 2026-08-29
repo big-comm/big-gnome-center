@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 69" in source
+    assert "const HELPER_BUILD = 70" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -93,7 +93,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 69" in source
+    assert "const HELPER_BUILD = 70" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -304,6 +304,20 @@ def test_biggnome_dock_style_is_released_before_runtime_teardown():
     assert begin_switch.index("this._clearBigGnomeDockClass();") < begin_switch.index(
         "for (const uuid of teardown)"
     )
+
+
+def test_clean_room_switch_yields_frames_between_shell_components():
+    source = HELPER.read_text()
+    begin_switch = source.split("async _beginSwitch(payload) {", 1)[1]
+    begin_switch = begin_switch.split("CompleteSwitchAsync", 1)[0]
+    complete_switch = source.split("async _completeSwitch(payload) {", 1)[1]
+    complete_switch = complete_switch.split("AbortSwitchAsync", 1)[0]
+
+    assert "const TRANSITION_FRAME_MS = 16" in source
+    assert "_yieldTransitionFrame()" in source
+    assert "return this._sleep(TRANSITION_FRAME_MS);" in source
+    assert "await this._yieldTransitionFrame();" in begin_switch
+    assert complete_switch.count("await this._yieldTransitionFrame();") == 2
 
 
 def test_accent_indicators_preserve_layout_specific_sizes():
