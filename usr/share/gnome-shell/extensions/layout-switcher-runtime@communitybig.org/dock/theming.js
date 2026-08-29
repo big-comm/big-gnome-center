@@ -53,7 +53,6 @@ export class ThemeManager {
 
         // initialize colors with generic values
         this._customizedBackground = {red: 0, green: 0, blue: 0, alpha: 0};
-        this._customizedBorder = {red: 0, green: 0, blue: 0, alpha: 0};
         this._transparency = new Transparency(dock);
 
         this._signalsHandler.add([
@@ -113,31 +112,16 @@ export class ThemeManager {
     _updateDashOpacity() {
         const newAlpha = Docking.DockSurfaceManager.settings.backgroundOpacity;
 
-        const [backgroundColor, borderColor] = this._getDefaultColors();
+        const [backgroundColor] = this._getDefaultColors();
 
         if (!backgroundColor)
             return;
-
-        // Get the background and border alphas. We check the background alpha
-        // for a minimum of .001 to prevent division by 0 errors
-        const backgroundAlpha = Math.max(Math.round(backgroundColor.alpha / 2.55) / 100, .001);
-        let borderAlpha = Math.round(borderColor.alpha / 2.55) / 100;
-
-        // The border and background alphas should remain in sync
-        // We also limit the borderAlpha to a maximum of 1 (full opacity)
-        borderAlpha = Math.min((borderAlpha / backgroundAlpha) * newAlpha, 1);
 
         this._customizedBackground = `rgba(${
             backgroundColor.red},${
             backgroundColor.green},${
             backgroundColor.blue},${
             newAlpha})`;
-
-        this._customizedBorder = `rgba(${
-            borderColor.red},${
-            borderColor.green},${
-            borderColor.blue},${
-            borderAlpha})`;
     }
 
     _getDefaultColors() {
@@ -198,8 +182,6 @@ export class ThemeManager {
                 this._customizedBackground = backgroundColor;
             }
 
-            this._customizedBorder = this._customizedBackground;
-
             color.alpha = newAlpha * 255;
             this._transparency.setColor(color);
         } else {
@@ -253,41 +235,16 @@ export class ThemeManager {
     _adjustTheme() {
         const {settings} = Docking.DockSurfaceManager;
 
-        // Remove prior style edits
-        this._dash._background.set_style(null);
+        // Frosted Glass owns the only visible surface border.
+        const borderlessStyle = 'border: 0 solid transparent;';
+        this._dash._background.set_style(borderlessStyle);
         this._transparency.disable();
 
         // If built-in theme is enabled do nothing else
         if (settings.applyCustomTheme)
             return;
 
-        let newStyle = '';
-        const position = Utils.getPosition(settings);
-
-        // obtain theme border settings
-        const themeNode = this._dash._background.get_theme_node();
-        const borderColor = themeNode.get_border_color(St.Side.TOP);
-        const borderWidth = themeNode.get_border_width(St.Side.TOP);
-
-        // We're copying border and corner styles to left border and top-left
-        // corner, also removing bottom border and bottom-right corner styles
-        let borderMissingStyle = '';
-
-        if (this._rtl && (position !== St.Side.RIGHT)) {
-            borderMissingStyle = `border-right: ${borderWidth}px solid ${
-                borderColor.to_string()};`;
-        } else if (!this._rtl && (position !== St.Side.LEFT)) {
-            borderMissingStyle = `border-left: ${borderWidth}px solid ${
-                borderColor.to_string()};`;
-        }
-
-        newStyle = borderMissingStyle;
-
-        if (newStyle) {
-            // I do call set_style possibly twice so that only the background gets the transition.
-            // The transition-property css rules seems to be unsupported
-            this._dash._background.set_style(newStyle);
-        }
+        let newStyle = borderlessStyle;
 
         // Customize background
         const fixedTransparency = settings.transparencyMode === TransparencyMode.FIXED;
@@ -296,7 +253,6 @@ export class ThemeManager {
             this._transparency.enable();
         } else if (!defaultTransparency || settings.customBackgroundColor) {
             newStyle = `${newStyle}background-color:${this._customizedBackground}; ` +
-                       `border-color:${this._customizedBorder}; ` +
                        'transition-delay: 0s; transition-duration: 0.250s;';
             this._dash._background.set_style(newStyle);
         }
@@ -345,8 +301,6 @@ class Transparency {
         this._backgroundColor = '0,0,0';
         this._transparentAlpha = '0.2';
         this._opaqueAlpha = '1';
-        this._transparentAlphaBorder = '0.1';
-        this._opaqueAlphaBorder = '0.5';
         this._transparentTransition = '0ms';
         this._opaqueTransition = '0ms';
         this._base_actor_style = '';
@@ -528,15 +482,13 @@ class Transparency {
         this._transparent_style = `${this._base_actor_style
         }background-color: rgba(${
             this._backgroundColor}, ${this._transparentAlpha});` +
-            `border-color: rgba(${
-                this._backgroundColor}, ${this._transparentAlphaBorder});` +
+            'border: 0 solid transparent;' +
             `transition-duration: ${this._transparentTransition}ms;`;
 
         this._opaque_style = `${this._base_actor_style
         }background-color: rgba(${
             this._backgroundColor}, ${this._opaqueAlpha});` +
-            `border-color: rgba(${
-                this._backgroundColor},${this._opaqueAlphaBorder});` +
+            'border: 0 solid transparent;' +
             `transition-duration: ${this._opaqueTransition}ms;`;
 
         this.emit('styles-updated');
@@ -557,13 +509,11 @@ class Transparency {
         dummyObject.add_style_class_name('dummy-opaque');
         let themeNode = dummyObject.get_theme_node();
         this._opaqueAlpha = themeNode.get_background_color().alpha / 255;
-        this._opaqueAlphaBorder = themeNode.get_border_color(0).alpha / 255;
         this._opaqueTransition = themeNode.get_transition_duration();
 
         dummyObject.add_style_class_name('dummy-transparent');
         themeNode = dummyObject.get_theme_node();
         this._transparentAlpha = themeNode.get_background_color().alpha / 255;
-        this._transparentAlphaBorder = themeNode.get_border_color(0).alpha / 255;
         this._transparentTransition = themeNode.get_transition_duration();
 
         Main.uiGroup.remove_child(dummyObject);
@@ -572,9 +522,7 @@ class Transparency {
 
         if (settings.customizeAlphas) {
             this._opaqueAlpha = settings.maxAlpha;
-            this._opaqueAlphaBorder = this._opaqueAlpha / 2;
             this._transparentAlpha = settings.minAlpha;
-            this._transparentAlphaBorder = this._transparentAlpha / 2;
         }
     }
 }

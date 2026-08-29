@@ -36,7 +36,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 77" in controller
+    assert "RUNTIME_BUILD = 78" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -285,6 +285,25 @@ def test_runtime_owns_taskbar_opacity_and_reports_effective_alpha():
     assert "set_boolean('trans-use-dynamic-opacity', false)" in runtime
     assert "set_double('trans-panel-opacity', opacity / 100)" in runtime
     assert "Math.round(panel.dynamicTransparency.alpha * 100)" in runtime
+
+
+def test_runtime_leaves_surface_borders_to_frosted_glass():
+    dock_theme = (RUNTIME / "dock/theming.js").read_text()
+    taskbar_transparency = (RUNTIME / "taskbar/transparency.js").read_text()
+    glass_surface = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/"
+        "frosted-glass@communitybig.org/shellBlurSurface.js"
+    ).read_text()
+
+    assert "const borderlessStyle = 'border: 0 solid transparent;'" in dock_theme
+    assert dock_theme.count("'border: 0 solid transparent;'") >= 3
+    assert "border-color:${this._customizedBorder}" not in dock_theme
+    assert "this._borderStyle = 'border: 0 solid transparent;'" in taskbar_transparency
+    glass_border = "borderless ? 'border: none; ' : `border: 1px solid ${borderColor}; `"
+    assert glass_border in glass_surface
+    for layout in ("hybrid.txt", "classic.txt"):
+        assert "trans-use-border=false" in (LAYOUTS / layout).read_text()
 
 
 def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():

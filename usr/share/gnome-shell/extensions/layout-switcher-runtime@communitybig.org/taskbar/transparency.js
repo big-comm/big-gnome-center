@@ -190,34 +190,7 @@ export const DynamicTransparency = class {
   }
 
   _updateBorder() {
-    let rgba = this._dtpPanel._getDefaultLineColor(
-      Utils.checkIfColorIsBright(this.backgroundColorRgb),
-    ) // supply parameter manually or else an exception (something is undefined) will arise
-    const isLineCustom = SETTINGS.get_boolean('trans-border-use-custom-color')
-    rgba = isLineCustom
-      ? SETTINGS.get_string('trans-border-custom-color')
-      : rgba
-
-    const showBorder = SETTINGS.get_boolean('trans-use-border')
-    const borderWidth = SETTINGS.get_int('trans-border-width')
-
-    const position = this._dtpPanel.getPosition()
-    let borderPosition = ''
-    if (position == St.Side.LEFT) {
-      borderPosition = 'right'
-    }
-    if (position == St.Side.RIGHT) {
-      borderPosition = 'left'
-    }
-    if (position == St.Side.TOP) {
-      borderPosition = 'bottom'
-    }
-    if (position == St.Side.BOTTOM) {
-      borderPosition = 'top'
-    }
-
-    const style = `border: 0 solid ${rgba}; border-${borderPosition}-width:${borderWidth}px;`
-    this._borderStyle = showBorder ? style : ''
+    this._borderStyle = 'border: 0 solid transparent;'
   }
 
   _updateGradient() {
