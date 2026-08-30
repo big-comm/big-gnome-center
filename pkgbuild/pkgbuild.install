@@ -14,36 +14,6 @@ printMsg() {
     echo -e "${blueDark}[${lightBlue}layout-switcher${blueDark}]${reset} ${cyan}→${reset} ${white}${message}${reset}"
 }
 
-# The UUID changed in 2026. Pacman removes package-owned legacy files during
-# upgrade; this also retires copies left by older development packages.
-retire_legacy_helper() {
-    local legacy_dir="/usr/share/gnome-shell/extensions/layout-switcher-helper@bigcommunity.org"
-    if [ -d "$legacy_dir" ]; then
-        rm -rf -- "$legacy_dir"
-        printMsg "retired legacy Layout Switcher helper UUID"
-    fi
-}
-
-# The first bundled Community Menu release used the reversed project domain.
-# Remove stale development copies so only the corrected UUID is discoverable.
-retire_legacy_community_menu() {
-    local legacy_dir="/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org"
-    if [ -d "$legacy_dir" ]; then
-        rm -rf -- "$legacy_dir"
-        printMsg "retired legacy Community Menu UUID"
-    fi
-}
-
-post_install() {
-    retire_legacy_helper
-    retire_legacy_community_menu
-}
-
-post_upgrade() {
-    retire_legacy_helper
-    retire_legacy_community_menu
-}
-
 # Function executed before package installation
 # pre_install() {
 #     printMsg "Preparing to install the package..."

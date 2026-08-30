@@ -37,57 +37,52 @@ def test_guard_starts_background_extension_update_monitor():
     assert "X-GNOME-UsesNotifications=true" in desktop
 
 
-def test_guard_migrates_owned_extension_uuids_at_session_start():
+def test_guard_preserves_layout_components_at_session_start():
     client = (ROOT / "usr/share/layout-switcher/helper_client.py").read_text()
     guard = (ROOT / "usr/share/layout-switcher/helper_guard.py").read_text()
 
+    assert "LEGACY_HELPER_UUID in enabled and HELPER_UUID not in enabled" in guard
+    assert "if not self._legacy_session:" in guard
+    assert "HelperClient.ensure_enabled()" in guard
+    assert "HelperClient.required_extension_lists(" not in guard
+    assert "HelperClient.apply_layout(" not in guard
+    assert "_migrate_arcmenu_icon_path" not in guard
+
+    # Explicit layout application still owns legacy component migration.
     assert "LEGACY_COMMUNITY_MENU_UUID" in client
     assert "LEGACY_BIG_SHOT_UUID" in client
     assert "LEGACY_DASH_TO_DOCK_UUID" in client
     assert "LEGACY_DASH_TO_PANEL_UUID" in client
     assert "LAYOUT_COMPONENT_UUID_MIGRATIONS" in client
     assert "required_helper_lists(enabled, disabled)" in client
-    assert "_migrate_initial_session" in guard
-    assert "HelperClient.ensure_available()" in guard
-    assert "HelperClient.apply_layout(" in guard
-    assert "reload=reload_uuids" in guard
-    assert "LEGACY_DASH_TO_PANEL_UUID" in guard
-    assert "COMMUNITY_DOCK_UUID" in guard
-    assert "COMMUNITY_PANEL_UUID" in guard
-    assert "available_uuids=HelperClient.installed_extension_uuids()" in guard
-    assert 'active_layout=Settings().get("active_layout", "")' in guard
-    assert "_migrate_arcmenu_icon_path" in guard
-    assert "HelperClient.migrate_component_asset_path(current)" in guard
-    assert "HelperClient.reload_extension(_ARCMENU_UUID)" in guard
 
 
-def test_package_upgrade_retires_legacy_helper_directory():
+def test_package_upgrade_preserves_legacy_helper_directory():
     install_script = (ROOT / "pkgbuild/pkgbuild.install").read_text()
 
-    assert (
-        "/usr/share/gnome-shell/extensions/layout-switcher-helper@bigcommunity.org"
-    ) in install_script
-    assert "retire_legacy_helper" in install_script
-    assert "post_install()" in install_script
-    assert "post_upgrade()" in install_script
+    assert "retire_legacy_helper" not in install_script
 
 
-def test_only_current_helper_directory_is_shipped():
+def test_current_and_legacy_helper_directories_are_shipped():
     extensions = ROOT / "usr/share/gnome-shell/extensions"
 
     assert (extensions / "layout-switcher-helper@communitybig.org").is_dir()
-    assert not (extensions / "layout-switcher-helper@bigcommunity.org").exists()
+    legacy = extensions / "layout-switcher-helper@bigcommunity.org"
+    assert legacy.is_dir()
+    metadata = (legacy / "metadata.json").read_text()
+    assert '"uuid": "layout-switcher-helper@bigcommunity.org"' in metadata
 
 
-def test_package_upgrade_retires_legacy_community_menu_directory():
+def test_package_upgrade_preserves_legacy_community_menu_directory():
     install_script = (ROOT / "pkgbuild/pkgbuild.install").read_text()
 
-    assert ("/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org") in install_script
-    assert "retire_legacy_community_menu" in install_script
+    assert "retire_legacy_community_menu" not in install_script
 
 
-def test_only_current_community_menu_directory_is_shipped():
+def test_current_and_legacy_community_menu_directories_are_shipped():
     extensions = ROOT / "usr/share/gnome-shell/extensions"
 
     assert (extensions / "community-menu@communitybig.org").is_dir()
-    assert not (extensions / "community-menu@bigcommunity.org").exists()
+    assert (extensions / "community-menu@bigcommunity.org").is_dir()
+    metadata = (extensions / "community-menu@bigcommunity.org/metadata.json").read_text()
+    assert '"uuid": "community-menu@bigcommunity.org"' in metadata

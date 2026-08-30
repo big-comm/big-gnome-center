@@ -17,7 +17,9 @@ DOCK_SURFACE = ROOT / (
 
 
 def test_community_dock_is_a_private_resource_host():
-    assert not (DOCK / "metadata.json").exists()
+    metadata = (DOCK / "metadata.json").read_text()
+    assert '"uuid": "community-dock@communitybig.org"' in metadata
+    assert '"name": "Community Dock Runtime Resources"' in metadata
     assert not (DOCK / "extension.js").exists()
     assert DOCK_SURFACE.is_file()
 

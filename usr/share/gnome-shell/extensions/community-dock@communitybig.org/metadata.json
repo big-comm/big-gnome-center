@@ -1,0 +1,8 @@
+{
+  "uuid": "community-dock@communitybig.org",
+  "name": "Community Dock Runtime Resources",
+  "description": "Private resources for the Layout Switcher Shell runtime.",
+  "shell-version": ["50", "51"],
+  "url": "https://github.com/BigCommunity/layout-switcher",
+  "version": 1
+}
