@@ -326,6 +326,17 @@ class HelperClient:
         return ""
 
     @classmethod
+    def wait_for_active_uuid(cls, uuid: str, timeout_ms: int = 8000) -> bool:
+        """Wait for a helper UUID to own the shared D-Bus interface."""
+        deadline = time.monotonic() + max(timeout_ms, 0) / 1000.0
+        while time.monotonic() < deadline:
+            remaining_ms = max(100, int((deadline - time.monotonic()) * 1000))
+            if cls.active_uuid(timeout_ms=min(remaining_ms, 800)) == uuid:
+                return True
+            time.sleep(0.1)
+        return False
+
+    @classmethod
     def begin_switch(
         cls,
         persist: Iterable[str],

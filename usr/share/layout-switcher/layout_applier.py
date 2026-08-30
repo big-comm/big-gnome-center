@@ -742,6 +742,34 @@ class LayoutApplier:
         return ok
 
     @classmethod
+    def _recover_legacy_helper_handoff(
+        cls,
+        target_enabled: Iterable[str],
+    ) -> Tuple[bool, str]:
+        """Finish a switch whose legacy helper vanished during handoff."""
+        target = [uuid for uuid in target_enabled if uuid]
+        if not HelperClient.wait_for_active_uuid(HELPER_UUID):
+            return False, "new helper did not acquire the D-Bus interface"
+
+        ok, info = HelperClient.apply_layout(target)
+        if not ok:
+            return False, info
+
+        states = ShellReloader.list_extensions_state()
+        for uuid in target:
+            if uuid in _STRUCTURAL_EXTENSION_UUIDS and states.get(uuid) == 3:
+                HelperClient.reload_extension(uuid)
+        states = ShellReloader.list_extensions_state()
+        failed = [
+            uuid
+            for uuid in target
+            if uuid in _STRUCTURAL_EXTENSION_UUIDS and states.get(uuid) != 1
+        ]
+        if failed:
+            return False, "layout components failed after helper handoff: " + ", ".join(failed)
+        return True, info
+
+    @classmethod
     def _apply_via_helper_v7(
         cls,
         data: str,
@@ -774,6 +802,7 @@ class LayoutApplier:
         info = HelperClient.ping_info()
         if info.get("busy"):
             return False, "a layout switch is already in progress"
+        source_helper_uuid = info.get("uuid") or HelperClient.active_uuid()
 
         settings_data, _switch = cls._split_shell_extension_switch_keys(data)
 
@@ -852,6 +881,13 @@ class LayoutApplier:
             return False, str(exc)
 
         ok, steps = HelperClient.complete_switch(target_enabled)
+        if not ok and source_helper_uuid == LEGACY_HELPER_UUID:
+            log.info("legacy helper left during CompleteSwitch; finishing with new helper")
+            ok, recovery = cls._recover_legacy_helper_handoff(target_enabled)
+            if ok:
+                steps = f"legacy helper handoff recovered: {recovery}"
+            else:
+                steps = f"{steps}; helper handoff failed: {recovery}"
         if not ok:
             log.warning("helper CompleteSwitch failed: %s", steps)
             HelperClient.abort_switch()

@@ -247,6 +247,16 @@ class TestActiveUuid:
     def test_detects_legacy_helper_without_uuid_field(self, _mock_ping):
         assert HelperClient.active_uuid() == LEGACY_HELPER_UUID
 
+    @patch("helper_client.time.sleep")
+    @patch(
+        "helper_client.HelperClient.active_uuid",
+        side_effect=[LEGACY_HELPER_UUID, HELPER_UUID],
+    )
+    def test_waits_for_current_helper_handoff(self, mock_active, mock_sleep):
+        assert HelperClient.wait_for_active_uuid(HELPER_UUID, timeout_ms=1000) is True
+        assert mock_active.call_count == 2
+        mock_sleep.assert_called_once_with(0.1)
+
 
 class TestEnsureAvailable:
     @patch("helper_client.HelperClient.ensure_enabled", return_value=(True, True, ""))

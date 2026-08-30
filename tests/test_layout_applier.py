@@ -2237,6 +2237,63 @@ class TestHelperIntegration:
         assert ok is True
         mock_reload.assert_called_once_with("kiwi@kemma")
 
+    @patch("layout_applier.LayoutApplier._restore_settings_backup")
+    @patch("layout_applier.HelperClient.abort_switch")
+    @patch(
+        "layout_applier.ShellReloader.list_extensions_state",
+        return_value={
+            "layout-switcher-runtime@communitybig.org": 1,
+            "community-menu@communitybig.org": 1,
+        },
+    )
+    @patch("layout_applier.HelperClient.reload_extension", return_value=True)
+    @patch("layout_applier.HelperClient.apply_layout", return_value=(True, "reconciled"))
+    @patch("layout_applier.HelperClient.wait_for_active_uuid", return_value=True)
+    @patch(
+        "layout_applier.HelperClient.complete_switch",
+        return_value=(False, "helper CompleteSwitch call failed"),
+    )
+    @patch("layout_applier.HelperClient.begin_switch", return_value=(True, ""))
+    @patch(
+        "layout_applier.HelperClient.ping_info",
+        return_value={"uuid": "layout-switcher-helper@bigcommunity.org", "version": 7},
+    )
+    @patch("layout_applier.LayoutApplier._enabled_extensions", return_value=[])
+    @patch("layout_applier.LayoutApplier._managed_extension_subdirs", return_value=[])
+    @patch("layout_applier.run_cmd", return_value=(True, ""))
+    def test_cleanroom_recovers_when_legacy_helper_hands_off_mid_completion(
+        self,
+        _run,
+        _subdirs,
+        _enabled,
+        _ping,
+        _begin,
+        _complete,
+        mock_wait,
+        mock_apply,
+        _reload,
+        _states,
+        mock_abort,
+        mock_restore,
+    ):
+        data = (
+            "[org/gnome/shell]\n"
+            "disabled-extensions=[]\n"
+            "enabled-extensions=['layout-switcher-runtime@communitybig.org', "
+            "'community-menu@communitybig.org']\n"
+        )
+
+        ok, msg = LayoutApplier._apply_via_helper_v7(data)
+
+        assert ok is True
+        assert "handoff recovered" in msg
+        mock_wait.assert_called_once_with("layout-switcher-helper@communitybig.org")
+        target = mock_apply.call_args.args[0]
+        assert "layout-switcher-runtime@communitybig.org" in target
+        assert "community-menu@communitybig.org" in target
+        mock_abort.assert_not_called()
+        mock_restore.assert_not_called()
+
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
     @patch("layout_applier.LayoutApplier._reset_orphan_keys")
     @patch("layout_applier.HelperClient.apply_layout")
