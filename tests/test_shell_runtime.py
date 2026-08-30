@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 80" in controller
+    assert "RUNTIME_BUILD = 81" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -117,11 +117,12 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
 
     assert "indicator-style-overrides" in controller
     assert "dock-hover-overrides" in controller
-    assert "profile, indicator, hover, dockOpacity, dockSize, visibility" in controller
+    assert "dock-magnification-overrides" in controller
+    assert "profile, indicator, hover, magnificationIntensity, dockOpacity" in controller
     assert "profile, indicator, hover, panelOpacity," in controller
     assert "panelVisibility, panelHeight);" in controller
     assert "this._host.runningIndicators?.setStyle(style)" in dock
-    assert "this._host.hoverEffects.setEffect(effect)" in dock
+    assert "this._host.hoverEffects.setEffect(effect, magnificationIntensity)" in dock
     assert "set_string('indicator-style', style)" not in dock
     assert "set_string('dock-hover-effect', effect)" not in dock
     assert "this._host.placement.apply(profile?.edge, profile?.extended)" in dock
@@ -150,6 +151,7 @@ def test_runtime_listens_to_every_owned_visual_setting():
 
     for key in (
         "dock-hover-overrides",
+        "dock-magnification-overrides",
         "dock-menu-side-overrides",
         "dock-opacity-overrides",
         "dock-size-overrides",
@@ -255,7 +257,7 @@ def test_runtime_applies_owned_dock_settings_without_rebuilding_active_surface()
     active_branch = dock[dock.index("if (this._active) {"):]
     for application in (
         "this._applyIndicator(indicator)",
-        "this._applyHover(hover)",
+        "this._applyHover(hover, magnificationIntensity)",
         "this._applyOpacity(opacity)",
         "this._applyIconSize(iconSize)",
         "this._host.visibilityModes.apply(visibility)",
@@ -882,6 +884,10 @@ def test_runtime_owns_dock_favorites_and_running_app_order():
         ROOT
         / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/dash.js"
     ).read_text()
+    app_icons = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
+    ).read_text()
 
     assert "new DockAppModel()" in dock
     assert "appModel?.favorites()" in dash
@@ -968,16 +974,38 @@ def test_runtime_owns_dock_hover_effects():
         ROOT
         / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/dash.js"
     ).read_text()
+    app_icons = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
+    ).read_text()
+    stylesheet = (
+        ROOT
+        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/stylesheet.css"
+    ).read_text()
 
     assert "new DockHoverEffects(" in dock
-    assert "this._host.hoverEffects.setEffect(effect)" in dock
-    assert "applyStyle(actor)" in runtime
+    assert "this._host.hoverEffects.setEffect(effect, magnificationIntensity)" in dock
+    assert "applyStyle(dash)" in runtime
     assert "animate(actor, position, iconSize)" in runtime
     assert "get_string('dock-hover-effect')" not in runtime
     assert "return this._effect" in runtime
     assert "scale_x: lift ? 1.08 : 1" in runtime
+    assert "FRAME_INTERVAL_MS = 16" in runtime
+    assert "const smooth = proximity * proximity * (3 - 2 * proximity)" in runtime
+    assert "maxScale: 1 + this._intensity / 100" in runtime
+    assert "renderer: 'ui-group-clone'" in runtime
+    assert "new Clutter.Clone({" in runtime
+    assert "Main.uiGroup.add_child(clone)" in runtime
+    assert "Math.ceil(size * maximum)" in runtime
+    assert "highResolutionSources:" in runtime
+    assert "actor.opacity = 0" in runtime
+    assert "actor.opacity = state.sourceOpacity" in runtime
+    assert "releaseAll()" in runtime
     assert "hoverEffects.animate(actor, this._position, this.iconSize)" in dash
     assert "hoverEffects.applyStyle(this)" in dash
+    assert "hoverEffects?.labelClearance(" in app_icons
+    assert "magnificationClearance" in app_icons
+    assert stylesheet.count("#dash.community-dock-hover-magnify") >= 6
 
 
 def test_runtime_owns_core_dock_context_menu_actions():

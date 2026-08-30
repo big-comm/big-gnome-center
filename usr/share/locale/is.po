@@ -1884,3 +1884,15 @@ msgstr "Ræsing við innskráningu uppfærð"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Útlit og sjálfgefnar lotustillingar útlitsins endurheimt"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Stækkun"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Styrkur stækkunar"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Veldu hversu mikið nálæg Dock-tákn stækka."

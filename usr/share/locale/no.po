@@ -1884,3 +1884,15 @@ msgstr "Oppstart ved innlogging oppdatert"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Oppsettets utseende og standardverdier for økten gjenopprettet"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Forstørrelse"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intensitet for forstørrelse"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Velg hvor mye ikoner i nærheten på Dock-en skal forstørres."

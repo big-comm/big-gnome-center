@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: layout-switcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-28 23:36-0300\n"
+"POT-Creation-Date: 2026-08-29 23:23-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1873,4 +1873,16 @@ msgstr ""
 
 #: usr/share/layout-switcher/layout_applier.py:2331
 msgid "Layout Switcher Helper is required to apply layouts."
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr ""
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
 msgstr ""

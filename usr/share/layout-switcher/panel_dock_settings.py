@@ -13,9 +13,10 @@ PANEL_SCHEMA = "org.communitybig.panel-and-dock"
 COMMUNITY_PANEL_SCHEMA = "org.gnome.shell.extensions.dash-to-panel"
 VISIBILITY_MODES = ("always-visible", "always-hidden", "intelligent")
 INDICATOR_STYLES = ("dot", "hybrid", "desk-ux")
-DOCK_HOVER_EFFECTS = ("default", "lift")
+DOCK_HOVER_EFFECTS = ("default", "lift", "magnify")
 DOCK_MENU_SIDES = ("left", "right")
 DOCK_SIZE_RANGE = (28, 64)
+DOCK_MAGNIFICATION_RANGE = (20, 60)
 PANEL_HEIGHT_RANGE = (32, 56)
 
 
@@ -94,6 +95,7 @@ class PanelDockSettings:
                 "indicator-style",
                 "dock-size",
                 "dock-hover",
+                "dock-magnification",
                 "panel-height",
                 "dock-menu-side",
                 "skip-startup-overview",
@@ -106,6 +108,7 @@ class PanelDockSettings:
                 self.set_dock_opacity(defaults["dock-opacity"])
                 self.set_dock_visibility(defaults["dock-visibility"])
                 self.set_dock_size(defaults["dock-size"])
+                self.set_dock_magnification(defaults["dock-magnification"])
                 self.set_dock_hover_effect(defaults["dock-hover"])
                 if self.active_layout == "BigGnome":
                     self.set_dock_menu_side(defaults["dock-menu-side"])
@@ -215,6 +218,8 @@ class PanelDockSettings:
     def dock_hover_effect(self) -> str:
         if self._runtime_owns_active_component():
             effect = self.runtime.get(self.active_layout, "dock-hover", "default")
+            if effect == "magnify" and not self._runtime_owns_dock():
+                return "default"
             return effect if effect in DOCK_HOVER_EFFECTS else "default"
         return self._legacy_dock_hover_effect()
 
@@ -231,6 +236,8 @@ class PanelDockSettings:
     def set_dock_hover_effect(self, effect: str) -> None:
         if effect not in DOCK_HOVER_EFFECTS:
             raise ValueError(f"invalid dock hover effect: {effect}")
+        if effect == "magnify" and not self._runtime_owns_dock():
+            raise ValueError("magnification requires the unified Dock runtime")
         self._remember("dock-hover", effect)
         if self._runtime_owns_active_component():
             return
@@ -240,6 +247,28 @@ class PanelDockSettings:
                 self._set_community_panel_hover_profile()
             return
         self.panel.set_string("dock-hover-effect", effect)
+
+    def dock_magnification(self) -> int:
+        value = int(
+            self.runtime.get(
+                self.active_layout,
+                "dock-magnification",
+                40,
+            )
+        )
+        return max(
+            DOCK_MAGNIFICATION_RANGE[0],
+            min(DOCK_MAGNIFICATION_RANGE[1], value),
+        )
+
+    def set_dock_magnification(self, intensity: int) -> None:
+        if self.active_layout not in ("BigGnome", "G-Unity"):
+            raise ValueError("magnification is available only for Dock layouts")
+        intensity = max(
+            DOCK_MAGNIFICATION_RANGE[0],
+            min(DOCK_MAGNIFICATION_RANGE[1], int(intensity)),
+        )
+        self._remember("dock-magnification", intensity)
 
     def _set_community_panel_hover_profile(self) -> None:
         from gi.repository import GLib

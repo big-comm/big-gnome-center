@@ -1894,3 +1894,15 @@ msgstr "Kirjautumisen aloitus päivitetty"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Asettelun ulkoasu ja istunnon oletukset palautettu"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Suurennus"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Suurennuksen voimakkuus"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Valitse, kuinka paljon lähellä olevat Dock-kuvakkeet kasvavat."

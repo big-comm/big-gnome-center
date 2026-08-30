@@ -1896,3 +1896,15 @@ msgstr "Avvio dell’accesso aggiornato"
 msgid "Layout appearance and session defaults restored"
 msgstr ""
 "Aspetto e impostazioni predefinite di sessione del layout ripristinati"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Ingrandimento"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intensità dell'ingrandimento"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Scegli quanto devono ingrandirsi le icone del Dock vicine."

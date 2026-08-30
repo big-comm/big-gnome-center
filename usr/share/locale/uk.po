@@ -1886,3 +1886,15 @@ msgstr "Запуск після входу оновлено"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Вигляд і типові параметри сеансу компонування відновлено"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Збільшення"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Інтенсивність збільшення"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Виберіть, наскільки збільшуватимуться сусідні піктограми доку."

@@ -1868,3 +1868,15 @@ msgstr "로그인 시작 설정이 업데이트되었습니다"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "레이아웃 모양과 세션 기본값이 복원되었습니다"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "확대"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "확대 강도"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "주변 Dock 아이콘이 얼마나 커질지 선택합니다."

@@ -1589,28 +1589,34 @@ export function itemShowLabel() {
 
     const position = Utils.getPosition();
     const labelOffset = node.get_length('-x-offset');
+    const hoverEffects = Docking.DockSurfaceManager.extension.hoverEffects;
+    const baseIcon = this.child?._delegate?.icon ?? this.icon ??
+        this._delegate?.icon;
+    const magnificationClearance = hoverEffects?.labelClearance(
+        baseIcon?.iconSize ?? Math.min(itemWidth, itemHeight)) ?? 0;
 
     switch (position) {
     case St.Side.LEFT:
         yOffset = Math.floor((itemHeight - labelHeight) / 2);
         y = stageY + yOffset;
         xOffset = labelOffset;
-        x = stageX + this.get_width() + xOffset;
+        x = stageX + this.get_width() + xOffset + magnificationClearance;
         break;
     case St.Side.RIGHT:
         yOffset = Math.floor((itemHeight - labelHeight) / 2);
         y = stageY + yOffset;
         xOffset = labelOffset;
-        x = Math.round(stageX) - labelWidth - xOffset;
+        x = Math.round(stageX) - labelWidth - xOffset -
+            magnificationClearance;
         break;
     case St.Side.TOP:
-        y = stageY + labelOffset + itemHeight;
+        y = stageY + labelOffset + itemHeight + magnificationClearance;
         xOffset = Math.floor((itemWidth - labelWidth) / 2);
         x = stageX + xOffset;
         break;
     case St.Side.BOTTOM:
         yOffset = labelOffset;
-        y = stageY - labelHeight - yOffset;
+        y = stageY - labelHeight - yOffset - magnificationClearance;
         xOffset = Math.floor((itemWidth - labelWidth) / 2);
         x = stageX + xOffset;
         break;

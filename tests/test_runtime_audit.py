@@ -107,6 +107,7 @@ def _snapshot(**changes) -> Snapshot:
                         "G-Unity": True,
                     }.get(layout),
                     "hover": "lift" if layout == "Hybrid" else "default",
+                    "magnificationIntensity": 40 if surface == "dock" else None,
                     "indicator": indicator,
                     "visibility": {
                         "BigGnome": "intelligent",
@@ -172,6 +173,24 @@ def _snapshot(**changes) -> Snapshot:
                     }.get(layout),
                     "indicator": indicator if surface == "dock" else "",
                     "hover": "default" if surface == "dock" else "",
+                    "magnificationIntensity": 40 if surface == "dock" else None,
+                    "hoverState": {
+                        "implementation": "layout-switcher-runtime",
+                        "renderer": "ui-group-clone",
+                        "effect": "default",
+                        "intensity": 40,
+                        "maxScale": 1.4,
+                        "connectedDocks": 0,
+                        "pollSources": 0,
+                        "trackedActors": 0,
+                        "cloneActors": 0,
+                        "highResolutionSources": 0,
+                        "visibleClones": 0,
+                        "scaledActors": 0,
+                        "hiddenSources": 0,
+                        "updateCount": 0,
+                        "resetCount": 0,
+                    },
                     "opacity": dock_opacity,
                     "iconSize": dock_size,
                     "visibility": {
@@ -507,6 +526,81 @@ def test_audit_rejects_dock_visibility_drift(tmp_path):
     )
 
     assert "dock-visibility" in failures
+
+
+def test_audit_rejects_magnification_lifecycle_drift(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["expected"] = dict(
+        runtime["expected"],
+        hover="magnify",
+        magnificationIntensity=50,
+    )
+    runtime["dock"] = dict(
+        runtime["dock"],
+        hover="magnify",
+        magnificationIntensity=50,
+        hoverState={
+            **runtime["dock"]["hoverState"],
+            "effect": "magnify",
+            "intensity": 50,
+            "connectedDocks": 0,
+            "pollSources": 0,
+        },
+    )
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
+
+    assert "dock-hover-lifecycle" in failures
+
+
+def test_audit_accepts_clone_magnification_lifecycle(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["expected"] = dict(
+        runtime["expected"],
+        hover="magnify",
+        magnificationIntensity=50,
+    )
+    runtime["dock"] = dict(
+        runtime["dock"],
+        hover="magnify",
+        magnificationIntensity=50,
+        hoverState={
+            **runtime["dock"]["hoverState"],
+            "effect": "magnify",
+            "intensity": 50,
+            "maxScale": 1.5,
+            "connectedDocks": 1,
+            "pollSources": 1,
+            "trackedActors": 7,
+            "cloneActors": 7,
+            "highResolutionSources": 7,
+            "visibleClones": 3,
+            "scaledActors": 3,
+            "hiddenSources": 3,
+        },
+    )
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
+
+    assert not {name for name in failures if name.startswith("dock-hover")}
 
 
 def test_audit_rejects_menu_side_and_startup_overview_drift(tmp_path):

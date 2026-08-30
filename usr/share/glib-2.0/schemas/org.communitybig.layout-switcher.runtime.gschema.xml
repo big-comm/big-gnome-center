@@ -41,6 +41,10 @@
       <default>{}</default>
       <summary>Dock hover effect overrides by layout</summary>
     </key>
+    <key name="dock-magnification-overrides" type="a{su}">
+      <default>{}</default>
+      <summary>Dock magnification intensity overrides by layout</summary>
+    </key>
     <key name="dock-menu-side-overrides" type="a{ss}">
       <default>{}</default>
       <summary>Dock application menu side overrides by layout</summary>

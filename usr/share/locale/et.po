@@ -1884,3 +1884,15 @@ msgstr "Sisselogimise käivitus uuendatud"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Paigutuse välimus ja seansi vaikesätted taastatud"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Suurendus"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Suurenduse intensiivsus"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Vali, kui palju läheduses olevad dokiikoonid suurenevad."

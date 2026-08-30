@@ -12,6 +12,7 @@ LAYOUT_DEFAULTS = {
         "indicator-style": "desk-ux",
         "dock-size": 39,
         "dock-hover": "default",
+        "dock-magnification": 40,
         "dock-menu-side": "right",
         "skip-startup-overview": False,
     },
@@ -23,6 +24,7 @@ LAYOUT_DEFAULTS = {
         "indicator-style": "dot",
         "dock-size": 39,
         "dock-hover": "default",
+        "dock-magnification": 40,
         "skip-startup-overview": False,
     },
     "Hybrid": {
@@ -63,6 +65,7 @@ _OVERRIDE_KEYS = {
     "dock-size": ("dock-size-overrides", "a{su}"),
     "panel-height": ("panel-height-overrides", "a{su}"),
     "dock-hover": ("dock-hover-overrides", "a{ss}"),
+    "dock-magnification": ("dock-magnification-overrides", "a{su}"),
     "dock-menu-side": ("dock-menu-side-overrides", "a{ss}"),
     "skip-startup-overview": ("skip-startup-overview-overrides", "a{sb}"),
 }

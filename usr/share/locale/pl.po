@@ -1891,3 +1891,15 @@ msgstr "Uruchamianie po zalogowaniu zaktualizowane"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Wygląd i ustawienia domyślne sesji układu przywrócone"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Powiększenie"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intensywność powiększenia"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Wybierz, jak bardzo mają się powiększać pobliskie ikony Docka."

@@ -1892,3 +1892,15 @@ msgstr "Pornirea la autentificare a fost actualizată"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Aspectul și valorile implicite ale sesiunii au fost restaurate"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Mărire"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intensitatea măririi"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Alegeți cât de mult cresc pictogramele Dock din apropiere."

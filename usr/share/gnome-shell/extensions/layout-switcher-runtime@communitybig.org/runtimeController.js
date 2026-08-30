@@ -10,7 +10,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 80;
+export const RUNTIME_BUILD = 81;
 
 export class RuntimeController {
     constructor(extension) {
@@ -44,6 +44,7 @@ export class RuntimeController {
         this._settingsChangedIds = [
             'active-layout',
             'dock-hover-overrides',
+            'dock-magnification-overrides',
             'dock-menu-side-overrides',
             'dock-opacity-overrides',
             'dock-size-overrides',
@@ -97,6 +98,7 @@ export class RuntimeController {
         const profile = profileForLayout(this._settings.get_string('active-layout'));
         const indicator = this._indicatorForProfile(profile);
         const hover = this._hoverForProfile(profile);
+        const magnificationIntensity = this._magnificationForProfile(profile);
         const visibility = this._visibilityForProfile(profile);
         const dockOpacity = this._dockOpacityForProfile(profile);
         const dockSize = this._dockSizeForProfile(profile);
@@ -115,8 +117,8 @@ export class RuntimeController {
             if (dockProfileChanged)
                 this._dock.deactivate();
             this._dock.activate(
-                profile, indicator, hover, dockOpacity, dockSize, visibility,
-                menuSide, skipStartupOverview);
+                profile, indicator, hover, magnificationIntensity, dockOpacity,
+                dockSize, visibility, menuSide, skipStartupOverview);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             this._dock.deactivate();
             await this._taskbar.activate(
@@ -145,7 +147,21 @@ export class RuntimeController {
         const overrides = this._settings
             .get_value('dock-hover-overrides')
             .deep_unpack();
-        return overrides[profile.layout] ?? profile.hover;
+        const effect = overrides[profile.layout] ?? profile.hover;
+        if (effect === 'magnify' && profile.surface === RuntimeSurface.DOCK)
+            return effect;
+        return ['default', 'lift'].includes(effect) ? effect : 'default';
+    }
+
+    _magnificationForProfile(profile) {
+        if (profile.surface !== RuntimeSurface.DOCK)
+            return null;
+        const overrides = this._settings
+            .get_value('dock-magnification-overrides')
+            .deep_unpack();
+        const intensity = overrides[profile.layout] ??
+            profile.magnificationIntensity ?? 40;
+        return Math.max(20, Math.min(60, intensity));
     }
 
     _visibilityForProfile(profile) {
@@ -240,6 +256,7 @@ export class RuntimeController {
                 labels: profile.labels,
                 indicator: this._indicatorForProfile(profile),
                 hover: this._hoverForProfile(profile),
+                magnificationIntensity: this._magnificationForProfile(profile),
                 opacity: profile.surface === RuntimeSurface.DOCK
                     ? this._dockOpacityForProfile(profile)
                     : this._panelOpacityForProfile(profile),

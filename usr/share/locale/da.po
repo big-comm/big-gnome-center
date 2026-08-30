@@ -1883,3 +1883,15 @@ msgstr "Loginstart blev opdateret"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Layoutets udseende og sessionsstandarder blev gendannet"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Forstørrelse"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Forstørrelsesintensitet"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Vælg, hvor meget ikoner i nærheden i Docken skal vokse."

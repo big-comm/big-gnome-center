@@ -1885,3 +1885,15 @@ msgstr "Pokretanje pri prijavi ažurirano"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Izgled i zadane postavke sesije rasporeda vraćeni"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Povećanje"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intenzitet povećanja"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Odaberite koliko će ikone Docka u blizini narasti."

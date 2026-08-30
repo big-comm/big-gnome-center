@@ -54,11 +54,12 @@ export class DockRuntime {
         );
     }
 
-    activate(profile, indicator, hover, opacity, iconSize, visibility,
+    activate(profile, indicator, hover, magnificationIntensity, opacity, iconSize, visibility,
         menuSide, skipStartupOverview) {
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
+        this._magnificationIntensity = magnificationIntensity;
         this._opacity = opacity;
         this._iconSize = iconSize;
         this._visibility = visibility;
@@ -68,7 +69,7 @@ export class DockRuntime {
         this._host.skipStartupOverview = skipStartupOverview;
         if (this._active) {
             this._applyIndicator(indicator);
-            this._applyHover(hover);
+            this._applyHover(hover, magnificationIntensity);
             this._applyOpacity(opacity);
             this._applyIconSize(iconSize);
             this._host.visibilityModes.apply(visibility);
@@ -78,7 +79,7 @@ export class DockRuntime {
 
         this._applyProfile(profile);
         this._applyIndicator(indicator);
-        this._applyHover(hover);
+        this._applyHover(hover, magnificationIntensity);
         this._applyOpacity(opacity);
         this._applyIconSize(iconSize);
         this._host.visibilityModes.apply(visibility);
@@ -108,6 +109,7 @@ export class DockRuntime {
         this._profile = null;
         this._indicator = null;
         this._hover = null;
+        this._magnificationIntensity = null;
         this._opacity = null;
         this._iconSize = null;
         this._visibility = null;
@@ -125,6 +127,8 @@ export class DockRuntime {
             profile: this._profile?.layout ?? '',
             indicator: this._host.runningIndicators?.style() ?? this._indicator ?? '',
             hover: this._host.hoverEffects.effect(),
+            magnificationIntensity: this._host.hoverEffects.intensity(),
+            hoverState: this._host.hoverEffects.diagnostics(),
             opacity: this._opacity ?? null,
             iconSize: this._iconSize ?? null,
             managerGeneration: this._managerGeneration,
@@ -171,6 +175,7 @@ export class DockRuntime {
 
     _disableSurfaces() {
         const manager = this._manager;
+        this._host.hoverEffects.releaseAll();
         this._panelController?.destroy();
         this._panelController = null;
         this._indicatorController?.destroy();
@@ -227,9 +232,9 @@ export class DockRuntime {
         this._host.runningIndicators?.setStyle(style);
     }
 
-    _applyHover(hover) {
-        const effect = hover === 'lift' ? 'lift' : 'default';
-        this._host.hoverEffects.setEffect(effect);
+    _applyHover(hover, magnificationIntensity) {
+        const effect = ['lift', 'magnify'].includes(hover) ? hover : 'default';
+        this._host.hoverEffects.setEffect(effect, magnificationIntensity);
         for (const dock of this._manager?._allDocks ?? [])
             this._host.hoverEffects.applyStyle(dock.dash);
     }

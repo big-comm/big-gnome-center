@@ -1884,3 +1884,15 @@ msgstr "Giriş başlangıcı güncellendi"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Düzen görünümü ve oturum varsayılanları geri yüklendi"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Büyütme"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Büyütme yoğunluğu"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Yakındaki Dock simgelerinin ne kadar büyüyeceğini seçin."

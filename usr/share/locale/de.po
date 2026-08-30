@@ -1902,3 +1902,15 @@ msgstr "Anmeldestart aktualisiert"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Erscheinungsbild und Sitzungsvorgaben des Layouts wiederhergestellt"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Vergrößerung"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Vergrößerungsintensität"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Wählen Sie, wie stark sich nahegelegene Dock-Symbole vergrößern."

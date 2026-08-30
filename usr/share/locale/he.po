@@ -1874,3 +1874,15 @@ msgstr "הפעלת הכניסה עודכנה"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "המראה וברירות המחדל להפעלה של הפריסה שוחזרו"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "הגדלה"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "עוצמת ההגדלה"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "בחר כמה יגדלו סמלי Dock הסמוכים."

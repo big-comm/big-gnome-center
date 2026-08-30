@@ -1122,6 +1122,60 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     f"expected {expected.get('hover')}, got {dock.get('hover')}",
                 ),
                 _check(
+                    dock.get("magnificationIntensity")
+                    == expected.get("magnificationIntensity"),
+                    "dock-magnification-intensity",
+                    f"{expected.get('magnificationIntensity')}%",
+                    "expected "
+                    f"{expected.get('magnificationIntensity')}%, got "
+                    f"{dock.get('magnificationIntensity')}%",
+                ),
+                _check(
+                    dock.get("hoverState", {}).get("implementation")
+                    == "layout-switcher-runtime",
+                    "dock-hover-implementation",
+                    "runtime-owned",
+                    "Dock hover implementation is not runtime-owned",
+                ),
+                _check(
+                    dock.get("hoverState", {}).get("effect")
+                    == expected.get("hover")
+                    and dock.get("hoverState", {}).get("intensity")
+                    == expected.get("magnificationIntensity"),
+                    "dock-hover-state",
+                    "effect and intensity match runtime state",
+                    f"state={dock.get('hoverState', {})}",
+                ),
+                _check(
+                    (
+                        dock.get("hoverState", {}).get("connectedDocks")
+                        == len(dock_actors)
+                        and dock.get("hoverState", {}).get("pollSources")
+                        == len(dock_actors)
+                        and dock.get("hoverState", {}).get("renderer")
+                        == "ui-group-clone"
+                        and dock.get("hoverState", {}).get("cloneActors")
+                        == dock.get("hoverState", {}).get("trackedActors")
+                        and dock.get("hoverState", {}).get("highResolutionSources")
+                        == dock.get("hoverState", {}).get("trackedActors")
+                        and dock.get("hoverState", {}).get("hiddenSources")
+                        == dock.get("hoverState", {}).get("visibleClones")
+                    )
+                    if expected.get("hover") == "magnify"
+                    else (
+                        dock.get("hoverState", {}).get("connectedDocks") == 0
+                        and dock.get("hoverState", {}).get("pollSources") == 0
+                        and dock.get("hoverState", {}).get("scaledActors") == 0
+                        and dock.get("hoverState", {}).get("cloneActors") == 0
+                        and dock.get("hoverState", {}).get("highResolutionSources") == 0
+                        and dock.get("hoverState", {}).get("visibleClones") == 0
+                        and dock.get("hoverState", {}).get("hiddenSources") == 0
+                    ),
+                    "dock-hover-lifecycle",
+                    "magnification lifecycle matches selected effect",
+                    f"state={dock.get('hoverState', {})}",
+                ),
+                _check(
                     dock.get("opacity") == expected.get("opacity"),
                     "dock-opacity-setting",
                     f"{expected.get('opacity')}%",

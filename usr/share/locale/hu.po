@@ -1897,3 +1897,15 @@ msgstr "A bejelentkezési indítás frissítve"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Az elrendezés megjelenése és munkamenet-alapértékei visszaállítva"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Nagyítás"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Nagyítás intenzitása"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Válassza ki, mennyire nőjenek meg a közeli Dock-ikonok."

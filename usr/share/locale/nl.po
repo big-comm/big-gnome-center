@@ -1894,3 +1894,15 @@ msgstr "Start na inloggen bijgewerkt"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Uiterlijk en sessiestandaarden van de indeling hersteld"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Vergroting"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intensiteit van vergroting"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Kies hoeveel pictogrammen in de buurt op het Dock groter worden."

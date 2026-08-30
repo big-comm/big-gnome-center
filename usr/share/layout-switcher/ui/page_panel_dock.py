@@ -12,6 +12,7 @@ from extension_manager import ExtMgr
 from panel_dock_settings import (
     COMMUNITY_DOCK_UUID,
     COMMUNITY_PANEL_UUID,
+    DOCK_MAGNIFICATION_RANGE,
     DOCK_SIZE_RANGE,
     PANEL_HEIGHT_RANGE,
     PanelDockSettings,
@@ -32,6 +33,7 @@ INDICATOR_STYLES = (
 DOCK_HOVER_EFFECTS = (
     ("default", tr("Standard")),
     ("lift", tr("Gentle lift")),
+    ("magnify", tr("Magnification")),
 )
 RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 RUNTIME_DOCK_LAYOUTS = frozenset(("BigGnome", "G-Unity"))
@@ -87,6 +89,19 @@ class PanelDockPage(Gtk.Box):
         self._dock_group.add(self._menu_side_row)
         self._hover_row = self._build_hover_effect_row()
         self._dock_group.add(self._hover_row)
+        (
+            self._magnification,
+            self._magnification_scale,
+            self._magnification_label,
+        ) = self._size_row(
+            tr("Magnification intensity"),
+            DOCK_MAGNIFICATION_RANGE,
+            self._on_magnification_changed,
+        )
+        self._magnification.set_subtitle(
+            tr("Choose how much nearby Dock icons grow."),
+        )
+        self._dock_group.add(self._magnification)
         self._dock_visibility = self._visibility_row(
             tr("Dock visibility"),
             self._on_dock_visibility_changed,
@@ -181,6 +196,7 @@ class PanelDockPage(Gtk.Box):
         flow.set_max_children_per_line(2)
         flow.set_column_spacing(10)
         flow.set_homogeneous(True)
+        self._hover_flow = flow
         first_button = None
         for value, label in (("left", tr("Left")), ("right", tr("Right"))):
             button = self._build_menu_side_button(value, label)
@@ -256,8 +272,8 @@ class PanelDockPage(Gtk.Box):
         flow = Gtk.FlowBox()
         flow.add_css_class("dock-hover-grid")
         flow.set_selection_mode(Gtk.SelectionMode.NONE)
-        flow.set_min_children_per_line(2)
-        flow.set_max_children_per_line(2)
+        flow.set_min_children_per_line(3)
+        flow.set_max_children_per_line(3)
         flow.set_column_spacing(10)
         flow.set_homogeneous(True)
         first_button = None
@@ -283,18 +299,25 @@ class PanelDockPage(Gtk.Box):
         box.set_margin_bottom(9)
         box.set_margin_start(8)
         box.set_margin_end(8)
-        preview = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=14)
+        preview = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=8 if value == "magnify" else 14,
+        )
         preview.add_css_class("dock-hover-preview")
         preview.set_halign(Gtk.Align.CENTER)
         preview.set_size_request(-1, 58)
-        for index in range(3):
+        sizes = (18, 23, 30, 23, 18) if value == "magnify" else (30, 30, 30)
+        for index, size in enumerate(sizes):
             icon = Gtk.Box()
             icon.add_css_class("dock-hover-preview-icon")
-            icon.set_size_request(30, 30)
+            icon.set_size_request(size, size)
             icon.set_valign(Gtk.Align.END)
-            if value == "lift" and index == 1:
+            if (value == "lift" and index == 1) or (
+                value == "magnify" and index == 2
+            ):
                 icon.add_css_class("dock-hover-preview-raised")
-                icon.set_margin_bottom(8)
+                if value == "lift":
+                    icon.set_margin_bottom(8)
             preview.append(icon)
         box.append(preview)
         effect_label = Gtk.Label(label=label)
@@ -497,6 +520,9 @@ class PanelDockPage(Gtk.Box):
         hover_available = self._settings is not None and (
             dock_active or community_panel_active
         )
+        magnification_available = (
+            runtime_active and dock_available and active_layout in RUNTIME_DOCK_LAYOUTS
+        )
         self._dock_group.set_visible(
             active_layout != "Classic" and (dock_available or indicator_available)
         )
@@ -509,6 +535,11 @@ class PanelDockPage(Gtk.Box):
             runtime_active and dock_available and active_layout == "BigGnome"
         )
         self._hover_row.set_visible(hover_available and active_layout != "Classic")
+        self._hover_buttons["magnify"].set_visible(magnification_available)
+        hover_columns = 3 if magnification_available else 2
+        self._hover_flow.set_min_children_per_line(hover_columns)
+        self._hover_flow.set_max_children_per_line(hover_columns)
+        self._magnification.set_visible(False)
         self._dock_visibility.set_visible(not community_panel_active)
         self._panel_height.set_visible(community_panel_active)
         self._indicator_row.set_sensitive(indicator_available)
@@ -565,7 +596,15 @@ class PanelDockPage(Gtk.Box):
                     self._settings.dock_menu_side()
                 ].set_active(True)
         if hover_available:
-            self._hover_buttons[self._settings.dock_hover_effect()].set_active(True)
+            hover_effect = self._settings.dock_hover_effect()
+            self._hover_buttons[hover_effect].set_active(True)
+            self._magnification.set_visible(
+                magnification_available and hover_effect == "magnify"
+            )
+        if magnification_available:
+            value = self._settings.dock_magnification()
+            self._magnification_scale.set_value(value)
+            self._magnification_label.set_label(f"{value}%")
         if indicator_available:
             self._indicator_buttons[self._settings.indicator_style()].set_active(True)
         if panel_available:
@@ -623,6 +662,12 @@ class PanelDockPage(Gtk.Box):
         if not self._syncing and self._settings:
             self._settings.set_panel_height(value)
 
+    def _on_magnification_changed(self, scale: Gtk.Scale) -> None:
+        value = round(scale.get_value())
+        self._magnification_label.set_label(f"{value}%")
+        if not self._syncing and self._settings:
+            self._settings.set_dock_magnification(value)
+
     def _on_dock_visibility_changed(self, row: Adw.ComboRow, param) -> None:
         if self._syncing or not self._settings:
             return
@@ -655,6 +700,7 @@ class PanelDockPage(Gtk.Box):
         if self._syncing or not self._settings or not button.get_active():
             return
         self._settings.set_dock_hover_effect(effect)
+        self._magnification.set_visible(effect == "magnify")
         self._toast(tr("Icon hover effect updated"))
 
     def _on_menu_side_toggled(

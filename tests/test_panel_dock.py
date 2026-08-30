@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 """Panel and Dock UI and settings contracts."""
 
+import gettext
 from pathlib import Path
 
 import pytest
@@ -9,6 +10,11 @@ from panel_dock_settings import PanelDockSettings
 from runtime_settings import LAYOUT_DEFAULTS, RuntimeSettings
 
 ROOT = Path(__file__).resolve().parents[1]
+APP_LOCALES = (
+    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he",
+    "hr", "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt",
+    "ro", "ru", "sk", "sv", "tr", "uk", "zh",
+)
 
 
 class FakeSettings:
@@ -119,6 +125,7 @@ class FakeRuntimeBackend:
             "dock-size-overrides": {},
             "panel-height-overrides": {},
             "dock-hover-overrides": {},
+            "dock-magnification-overrides": {},
             "dock-menu-side-overrides": {},
             "skip-startup-overview-overrides": {},
         }
@@ -209,6 +216,8 @@ def test_runtime_defaults_match_accepted_layout_contracts():
     assert runtime.get("Desk UX", "dock-hover") == "default"
     assert runtime.get("Classic", "panel-height") == 38
     assert runtime.get("BigGnome", "dock-menu-side") == "right"
+    assert runtime.get("BigGnome", "dock-magnification") == 40
+    assert runtime.get("G-Unity", "dock-magnification") == 40
     assert runtime.get("BigGnome", "skip-startup-overview") is False
     assert runtime.get("G-Unity", "skip-startup-overview") is False
     assert runtime.get("Hybrid", "skip-startup-overview") is True
@@ -457,6 +466,7 @@ def test_runtime_schema_declares_typed_per_layout_overrides():
     assert 'name="dock-opacity-overrides" type="a{su}"' in schema
     assert 'name="panel-height-overrides" type="a{su}"' in schema
     assert 'name="dock-hover-overrides" type="a{ss}"' in schema
+    assert 'name="dock-magnification-overrides" type="a{su}"' in schema
     assert 'name="dock-menu-side-overrides" type="a{ss}"' in schema
     assert 'name="skip-startup-overview-overrides" type="a{sb}"' in schema
 
@@ -509,6 +519,28 @@ def test_dock_hover_effect_is_validated_and_mirrored_per_layout():
 
     assert settings.dock_hover_effect() == "lift"
     assert settings.runtime.values[("G-Unity", "dock-hover")] == "lift"
+
+
+def test_dock_magnification_is_clamped_and_owned_per_dock_layout():
+    settings = settings_fixture()
+    settings.active_layout = "BigGnome"
+    settings.runtime_active = True
+
+    settings.set_dock_magnification(90)
+
+    assert settings.dock_magnification() == 60
+    assert settings.runtime.values[("BigGnome", "dock-magnification")] == 60
+
+
+def test_taskbar_rejects_dock_magnification():
+    settings = settings_fixture()
+    settings.active_layout = "Hybrid"
+    settings.dock_active = False
+    settings.community_panel_active = True
+    settings.runtime_active = True
+
+    with pytest.raises(ValueError, match="unified Dock runtime"):
+        settings.set_dock_hover_effect("magnify")
 
 
 def test_unified_dock_settings_write_only_layout_owned_overrides():
@@ -743,6 +775,9 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert 'tr("Icon hover effect")' in page
     assert 'tr("Standard")' in page
     assert 'tr("Gentle lift")' in page
+    assert 'tr("Magnification")' in page
+    assert 'tr("Magnification intensity")' in page
+    assert 'tr("Choose how much nearby Dock icons grow.")' in page
     assert 'tr("Choose how dock icons react to the pointer.")' in page
     assert "_build_hover_effect_button" in page
     assert 'tr("Panel transparency")' in page
@@ -793,6 +828,23 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert 'tr("Open desktop after login")' in page
     assert 'tr("Skip the initial Activities overview for this layout.")' in page
     assert "set_skip_startup_overview" in page
+
+
+def test_magnification_ui_is_translated_for_all_app_locales():
+    messages = (
+        "Magnification",
+        "Magnification intensity",
+        "Choose how much nearby Dock icons grow.",
+    )
+    localedir = ROOT / "usr/share/locale"
+
+    for locale in APP_LOCALES:
+        catalog = gettext.translation("layout-switcher", localedir, [locale])
+        for message in messages:
+            translated = catalog.gettext(message)
+            assert translated
+            if locale != "en":
+                assert translated != message
 
 
 def test_runtime_leaves_dock_fullscreen_tracking_to_native_engine():

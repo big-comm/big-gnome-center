@@ -9,13 +9,19 @@
 
 #dash.community-dock-hover-lift .dash-item-container .overview-tile:hover .overview-icon,
 #dash.community-dock-hover-lift .dash-item-container .overview-tile.focused .overview-icon,
-#dash.community-dock-hover-lift .dash-item-container .show-apps:hover .overview-icon {
+#dash.community-dock-hover-lift .dash-item-container .show-apps:hover .overview-icon,
+#dash.community-dock-hover-magnify .dash-item-container .overview-tile:hover .overview-icon,
+#dash.community-dock-hover-magnify .dash-item-container .overview-tile.focused .overview-icon,
+#dash.community-dock-hover-magnify .dash-item-container .show-apps:hover .overview-icon {
   background-color: transparent;
   box-shadow: none; }
 
 #dash.community-dock-hover-lift .dash-item-container .overview-tile:hover,
 #dash.community-dock-hover-lift .dash-item-container .overview-tile.focused,
-#dash.community-dock-hover-lift .dash-item-container .show-apps:hover {
+#dash.community-dock-hover-lift .dash-item-container .show-apps:hover,
+#dash.community-dock-hover-magnify .dash-item-container .overview-tile:hover,
+#dash.community-dock-hover-magnify .dash-item-container .overview-tile.focused,
+#dash.community-dock-hover-magnify .dash-item-container .show-apps:hover {
   background-color: transparent;
   border-color: transparent;
   box-shadow: none; }

@@ -1882,3 +1882,15 @@ msgstr "Spuštění po přihlášení aktualizováno"
 #: usr/share/layout-switcher/ui/page_panel_dock.py:685
 msgid "Layout appearance and session defaults restored"
 msgstr "Vzhled a výchozí možnosti relace rozvržení obnoveny"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Zvětšení"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intenzita zvětšení"
+
+#: usr/share/layout-switcher/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Zvolte, jak moc se mají okolní ikony Docku zvětšit."
