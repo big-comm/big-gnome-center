@@ -82,6 +82,16 @@ class PanelDockSettings:
             and self.runtime.supports_layout(self.active_layout)
         )
 
+    def _runtime_owns_panel_opacity(self) -> bool:
+        return (
+            self.runtime_active
+            and self.runtime.supports_layout(self.active_layout)
+            and (
+                self.community_panel_active
+                or self.active_layout == "Minimal"
+            )
+        )
+
     def restore_layout_defaults(self) -> None:
         if not self.runtime.supports_layout(self.active_layout):
             return
@@ -114,8 +124,13 @@ class PanelDockSettings:
                     self.set_dock_menu_side(defaults["dock-menu-side"])
             elif self.community_panel_active:
                 self.set_dock_hover_effect(defaults["dock-hover"])
-            if self.dock_active or self.community_panel_active:
+            if (
+                self.dock_active
+                or self.community_panel_active
+                or self.active_layout == "Minimal"
+            ):
                 self.set_panel_opacity(defaults["panel-opacity"])
+            if self.dock_active or self.community_panel_active:
                 self.set_panel_visibility(defaults["panel-visibility"])
             if self.active_layout != "Classic" and (
                 self.dock_active or self.community_panel_active
@@ -351,11 +366,7 @@ class PanelDockSettings:
         self.panel.set_string("indicator-style", style)
 
     def panel_opacity(self) -> int:
-        if (
-            self.runtime_active
-            and self.community_panel_active
-            and self.runtime.supports_layout(self.active_layout)
-        ):
+        if self._runtime_owns_panel_opacity():
             opacity = int(self.runtime.get(self.active_layout, "panel-opacity", 70))
             return max(0, min(100, opacity))
         return self._legacy_panel_opacity()
@@ -368,11 +379,7 @@ class PanelDockSettings:
     def set_panel_opacity(self, percent: int) -> None:
         percent = max(0, min(100, int(percent)))
         self._remember("panel-opacity", percent)
-        if (
-            self.runtime_active
-            and self.community_panel_active
-            and self.runtime.supports_layout(self.active_layout)
-        ):
+        if self._runtime_owns_panel_opacity():
             return
         if self.community_panel_active:
             self.community_panel.set_boolean("trans-use-custom-opacity", True)

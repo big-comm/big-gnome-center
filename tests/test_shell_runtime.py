@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 81" in controller
+    assert "RUNTIME_BUILD = 83" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -91,7 +91,7 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert "panelHeight: 38" in profiles
     assert "panelHeight: 40" in profiles
     assert profiles.count("panelOpacity: 70") == 2
-    assert profiles.count("panelOpacity: 65") == 1
+    assert profiles.count("panelOpacity: 65") == 2
     assert "dockOpacity: 77" in profiles
     assert "dockOpacity: 70" in profiles
     assert profiles.count("dockSize: 39") == 2
@@ -342,6 +342,28 @@ def test_runtime_owns_taskbar_opacity_and_reports_effective_alpha():
     assert "set_boolean('trans-use-dynamic-opacity', false)" in runtime
     assert "set_double('trans-panel-opacity', opacity / 100)" in runtime
     assert "Math.round(panel.dynamicTransparency.alpha * 100)" in runtime
+
+
+def test_runtime_owns_minimal_native_panel_opacity():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    profiles = (RUNTIME / "layoutProfiles.js").read_text()
+    integration = (RUNTIME / "nativePanelOpacityIntegration.js").read_text()
+
+    assert "new NativePanelOpacityIntegration()" in controller
+    assert "this._nativePanelOpacity.activate(panelOpacity)" in controller
+    assert "this._nativePanelOpacity.deactivate()" in controller
+    assert "nativePanelOpacity:" in controller
+    assert "panelOpacity: 65" in profiles
+    assert "Main.panel" in integration
+    assert "get_background_color()" in integration
+    assert "background-color: rgba(" in integration
+    assert "'notify::style'" in integration
+    assert "this._originalStyle = style" in integration
+    assert "this._repairCount++" in integration
+    assert "this._panel.set_style(this._originalStyle)" in integration
+    assert "styleOwned:" in integration
+    assert "styleSignalOwned:" in integration
+    assert "restoreConflicts:" in integration
 
 
 def test_runtime_leaves_surface_borders_to_frosted_glass():

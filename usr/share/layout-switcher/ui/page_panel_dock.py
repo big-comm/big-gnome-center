@@ -523,12 +523,19 @@ class PanelDockPage(Gtk.Box):
         magnification_available = (
             runtime_active and dock_available and active_layout in RUNTIME_DOCK_LAYOUTS
         )
+        native_panel_opacity_available = (
+            self._settings is not None
+            and runtime_active
+            and active_layout == "Minimal"
+        )
+        panel_available = panel_available or native_panel_opacity_available
         self._dock_group.set_visible(
             active_layout != "Classic" and (dock_available or indicator_available)
         )
         self._dock_group.set_sensitive(dock_available or indicator_available)
         self._panel_group.set_visible(panel_available)
         self._panel_group.set_sensitive(panel_available)
+        self._panel_opacity.set_visible(panel_available)
         self._dock_opacity.set_visible(not community_panel_active)
         self._dock_size.set_visible(dock_available and not community_panel_active)
         self._menu_side_row.set_visible(
@@ -542,6 +549,9 @@ class PanelDockPage(Gtk.Box):
         self._magnification.set_visible(False)
         self._dock_visibility.set_visible(not community_panel_active)
         self._panel_height.set_visible(community_panel_active)
+        self._panel_visibility.set_visible(
+            panel_available and not native_panel_opacity_available
+        )
         self._indicator_row.set_sensitive(indicator_available)
         session_available = (
             self._settings is not None
@@ -613,9 +623,10 @@ class PanelDockPage(Gtk.Box):
                 self._panel_opacity_label,
                 self._settings.panel_opacity(),
             )
-            self._panel_visibility.set_selected(
-                VISIBILITY_VALUES.index(self._settings.panel_visibility())
-            )
+            if not native_panel_opacity_available:
+                self._panel_visibility.set_selected(
+                    VISIBILITY_VALUES.index(self._settings.panel_visibility())
+                )
             if community_panel_active:
                 self._set_size(
                     self._panel_height_scale,

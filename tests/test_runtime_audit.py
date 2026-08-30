@@ -81,7 +81,12 @@ def _snapshot(**changes) -> Snapshot:
         }] if surface == "dock" else [])
         actor_height = {"Hybrid": 38, "Desk UX": 46, "Classic": 38}.get(layout)
         outer_size = {"Hybrid": 38, "Desk UX": 40, "Classic": 38}.get(layout)
-        panel_opacity = {"Hybrid": 70, "Desk UX": 65, "Classic": 70}.get(layout)
+        panel_opacity = {
+            "Hybrid": 70,
+            "Desk UX": 65,
+            "Classic": 70,
+            "Minimal": 65,
+        }.get(layout)
         taskbar_actors = ([{
             "monitor": 0,
             "edge": edge,
@@ -129,6 +134,19 @@ def _snapshot(**changes) -> Snapshot:
                     "restored": True,
                     "postStartupHide": layout in ("Hybrid", "Desk UX", "Classic"),
                     "restorationPending": False,
+                    "restoreConflicts": 0,
+                    "lastConflict": "",
+                },
+                "nativePanelOpacity": {
+                    "implementation": "layout-switcher-runtime",
+                    "active": surface == "native",
+                    "opacity": panel_opacity if surface == "native" else None,
+                    "effectiveOpacity": panel_opacity if surface == "native" else None,
+                    "styleOwned": surface == "native",
+                    "styleSignalOwned": surface == "native",
+                    "externalStyleUpdates": 0,
+                    "repairCount": 0,
+                    "restorationPending": surface == "native",
                     "restoreConflicts": 0,
                     "lastConflict": "",
                 },
@@ -697,6 +715,38 @@ def test_audit_rejects_light_shell_popover_style_in_minimal(tmp_path):
 
     assert "shell-popover-theme-state" in failures
     assert "shell-popover-theme-ownership" in failures
+
+
+def test_audit_owns_minimal_native_panel_opacity(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot(active_layout="Minimal")
+
+    assert not {
+        name for name in _failures(audit_snapshot(snapshot, tmp_path))
+        if name.startswith("native-panel-opacity")
+    }
+
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    runtime["nativePanelOpacity"] = dict(
+        runtime["nativePanelOpacity"],
+        active=False,
+        effectiveOpacity=70,
+        styleOwned=False,
+        styleSignalOwned=False,
+        restoreConflicts=1,
+        lastConflict="changed externally",
+    )
+    diagnostics["runtime"] = runtime
+    failures = _failures(audit_snapshot(
+        _snapshot(active_layout="Minimal", runtime_diagnostics=diagnostics),
+        tmp_path,
+    ))
+
+    assert "native-panel-opacity-lifecycle" in failures
+    assert "native-panel-opacity-signals" in failures
+    assert "native-panel-opacity-state" in failures
+    assert "native-panel-opacity-restoration" in failures
 
 
 def test_audit_rejects_owned_dock_setting_drift(tmp_path):

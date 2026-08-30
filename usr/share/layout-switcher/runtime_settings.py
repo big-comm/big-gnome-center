@@ -52,6 +52,7 @@ LAYOUT_DEFAULTS = {
         "skip-startup-overview": True,
     },
     "Minimal": {
+        "panel-opacity": 65,
         "skip-startup-overview": False,
     },
 }

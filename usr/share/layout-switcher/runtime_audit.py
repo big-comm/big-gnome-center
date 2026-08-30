@@ -269,6 +269,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     expected = runtime.get("expected") or {}
     shell_popover_theme = runtime.get("shellPopoverTheme") or {}
     startup_overview = runtime.get("startupOverview") or {}
+    native_panel_opacity = runtime.get("nativePanelOpacity") or {}
     dock = runtime.get("dock") or {}
     panel = dock.get("panel") or {}
     dock_desktop_bridge = dock.get("desktopBridge") or {}
@@ -299,6 +300,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     edge = expected.get("edge")
     expected_docks = surface == "dock"
     expected_taskbars = surface == "taskbar"
+    expected_native_panel = surface == "native"
     expected_light_shell_popovers = (
         snapshot.active_layout != "Minimal"
         and snapshot.color_scheme != "prefer-dark"
@@ -369,6 +371,52 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             snapshot.active_layout,
             f"application={snapshot.app_active_layout or '<empty>'}, "
             f"runtime={snapshot.active_layout or '<empty>'}",
+        ),
+        _check(
+            native_panel_opacity.get("implementation")
+            == "layout-switcher-runtime",
+            "native-panel-opacity-implementation",
+            "runtime-owned",
+            f"integration={native_panel_opacity}",
+        ),
+        _check(
+            native_panel_opacity.get("active") is expected_native_panel
+            and native_panel_opacity.get("restorationPending")
+            is expected_native_panel,
+            "native-panel-opacity-lifecycle",
+            f"active={expected_native_panel}",
+            f"integration={native_panel_opacity}",
+        ),
+        _check(
+            native_panel_opacity.get("styleSignalOwned")
+            is expected_native_panel,
+            "native-panel-opacity-signals",
+            f"owned={expected_native_panel}",
+            f"integration={native_panel_opacity}",
+        ),
+        _check(
+            (
+                native_panel_opacity.get("opacity") == expected.get("opacity")
+                and native_panel_opacity.get("effectiveOpacity")
+                == expected.get("opacity")
+                and native_panel_opacity.get("styleOwned") is True
+            )
+            if expected_native_panel
+            else (
+                native_panel_opacity.get("opacity") is None
+                and native_panel_opacity.get("effectiveOpacity") is None
+                and native_panel_opacity.get("styleOwned") is False
+            ),
+            "native-panel-opacity-state",
+            "native panel opacity matches runtime state",
+            f"expected={expected.get('opacity')}, integration={native_panel_opacity}",
+        ),
+        _check(
+            native_panel_opacity.get("restoreConflicts") == 0
+            and not native_panel_opacity.get("lastConflict"),
+            "native-panel-opacity-restoration",
+            "no restoration conflicts",
+            f"integration={native_panel_opacity}",
         ),
         _check(
             startup_overview.get("implementation") == "layout-switcher-runtime",

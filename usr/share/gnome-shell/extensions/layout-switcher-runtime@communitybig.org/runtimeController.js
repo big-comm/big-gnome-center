@@ -4,13 +4,14 @@ import Gio from 'gi://Gio';
 
 import {DockRuntime} from './dockRuntime.js';
 import {profileForLayout, RuntimeSurface} from './layoutProfiles.js';
+import {NativePanelOpacityIntegration} from './nativePanelOpacityIntegration.js';
 import {ShellPopoverThemeIntegration} from './shellPopoverThemeIntegration.js';
 import {StartupOverviewIntegration} from './startupOverviewIntegration.js';
 import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 81;
+export const RUNTIME_BUILD = 83;
 
 export class RuntimeController {
     constructor(extension) {
@@ -30,6 +31,7 @@ export class RuntimeController {
 
         this._dock = new DockRuntime(this._extension);
         this._taskbar = new TaskbarRuntime(this._extension);
+        this._nativePanelOpacity = new NativePanelOpacityIntegration();
         this._shellPopoverTheme = new ShellPopoverThemeIntegration();
         this._startupOverview = new StartupOverviewIntegration();
         this._enabled = true;
@@ -70,11 +72,13 @@ export class RuntimeController {
         this._settingsChangedIds = [];
         this._dock?.deactivate();
         this._taskbar?.deactivate();
+        this._nativePanelOpacity?.destroy();
         this._shellPopoverTheme?.destroy();
         this._startupOverview?.destroy();
         this._activeProfile = null;
         this._dock = null;
         this._taskbar = null;
+        this._nativePanelOpacity = null;
         this._shellPopoverTheme = null;
         this._startupOverview = null;
         this._settings = null;
@@ -113,6 +117,7 @@ export class RuntimeController {
         this._startupOverview.apply(skipStartupOverview);
 
         if (profile.surface === RuntimeSurface.DOCK) {
+            this._nativePanelOpacity.deactivate();
             this._taskbar.deactivate();
             if (dockProfileChanged)
                 this._dock.deactivate();
@@ -120,6 +125,7 @@ export class RuntimeController {
                 profile, indicator, hover, magnificationIntensity, dockOpacity,
                 dockSize, visibility, menuSide, skipStartupOverview);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
+            this._nativePanelOpacity.deactivate();
             this._dock.deactivate();
             await this._taskbar.activate(
                 profile, indicator, hover, panelOpacity,
@@ -129,6 +135,7 @@ export class RuntimeController {
         } else if (profile.surface === RuntimeSurface.NATIVE) {
             this._dock.deactivate();
             this._taskbar.deactivate();
+            this._nativePanelOpacity.activate(panelOpacity);
         } else {
             throw new Error(`Unsupported runtime surface: ${profile.surface}`);
         }
@@ -270,6 +277,7 @@ export class RuntimeController {
             },
             shellPopoverTheme: this._shellPopoverTheme?.diagnostics() ?? {},
             startupOverview: this._startupOverview?.diagnostics() ?? {},
+            nativePanelOpacity: this._nativePanelOpacity?.diagnostics() ?? {},
             dock: this._dock?.diagnostics() ?? {active: false, actors: []},
             taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},
         };

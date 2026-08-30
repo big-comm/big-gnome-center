@@ -215,6 +215,7 @@ def test_runtime_defaults_match_accepted_layout_contracts():
     assert runtime.get("Desk UX", "panel-height") == 40
     assert runtime.get("Desk UX", "dock-hover") == "default"
     assert runtime.get("Classic", "panel-height") == 38
+    assert runtime.get("Minimal", "panel-opacity") == 65
     assert runtime.get("BigGnome", "dock-menu-side") == "right"
     assert runtime.get("BigGnome", "dock-magnification") == 40
     assert runtime.get("G-Unity", "dock-magnification") == 40
@@ -658,6 +659,39 @@ def test_taskbar_opacity_writes_only_layout_owned_settings():
     assert settings.panel_opacity() == 100
 
 
+def test_minimal_opacity_writes_only_layout_owned_settings():
+    settings = settings_fixture()
+    settings.active_layout = "Minimal"
+    settings.dock_active = False
+    settings.community_panel_active = False
+    settings.runtime_active = True
+    legacy_values = dict(settings.panel.values)
+
+    settings.set_panel_opacity(42)
+
+    assert settings.panel_opacity() == 42
+    assert settings.runtime.values[("Minimal", "panel-opacity")] == 42
+    assert settings.panel.values == legacy_values
+    assert settings.panel.calls == []
+
+
+def test_minimal_restore_changes_only_runtime_owned_settings():
+    settings = settings_fixture()
+    settings.active_layout = "Minimal"
+    settings.dock_active = False
+    settings.community_panel_active = False
+    settings.runtime_active = True
+    settings.runtime.values[("Minimal", "panel-opacity")] = 42
+    legacy_panel_values = dict(settings.panel.values)
+
+    settings.restore_layout_defaults()
+
+    assert settings.panel_opacity() == 65
+    assert settings.runtime.values == {}
+    assert settings.panel.values == legacy_panel_values
+    assert settings.panel.calls == []
+
+
 def test_taskbar_visibility_writes_only_layout_owned_settings():
     settings = settings_fixture()
     settings.active_layout = "Hybrid"
@@ -828,6 +862,9 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert 'tr("Open desktop after login")' in page
     assert 'tr("Skip the initial Activities overview for this layout.")' in page
     assert "set_skip_startup_overview" in page
+    assert 'active_layout == "Minimal"' in page
+    assert "native_panel_opacity_available" in page
+    assert "panel_available and not native_panel_opacity_available" in page
 
 
 def test_magnification_ui_is_translated_for_all_app_locales():
