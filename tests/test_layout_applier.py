@@ -2205,6 +2205,20 @@ class TestHelperIntegration:
         mock_v7.assert_called_once()
         assert mock_v7.call_args.kwargs["layout_label"] == "G-Unity"
 
+    def test_helpers_expose_restricted_component_discovery(self):
+        root = Path(__file__).resolve().parents[1]
+        for uuid, build in (
+            ("layout-switcher-helper@bigcommunity.org", 42),
+            ("layout-switcher-helper@communitybig.org", 72),
+        ):
+            source = (
+                root / "usr/share/gnome-shell/extensions" / uuid / "extension.js"
+            ).read_text()
+            assert f"const HELPER_BUILD = {build};" in source
+            assert '<method name="DiscoverExtensions">' in source
+            assert "DISCOVERABLE_UUIDS.has(uuid)" in source
+            assert "ExtensionType.SYSTEM" in source
+
     @patch("layout_applier.ShellReloader.list_extensions_state", return_value={})
     @patch("layout_applier.HelperClient.reload_extension", return_value=True)
     @patch("layout_applier.HelperClient.complete_switch", return_value=(True, "steps"))
@@ -2293,6 +2307,184 @@ class TestHelperIntegration:
         assert "community-menu@communitybig.org" in target
         mock_abort.assert_not_called()
         mock_restore.assert_not_called()
+
+    @patch("layout_applier.LayoutApplier._restore_settings_backup")
+    @patch("layout_applier.HelperClient.abort_switch")
+    @patch(
+        "layout_applier.ShellReloader.list_extensions_state",
+        return_value={"community-menu@communitybig.org": 1},
+    )
+    @patch("layout_applier.HelperClient.apply_layout", return_value=(True, "reconciled"))
+    @patch("layout_applier.HelperClient.wait_for_active_uuid", return_value=True)
+    @patch(
+        "layout_applier.HelperClient.complete_switch",
+        return_value=(False, "helper CompleteSwitch call failed"),
+    )
+    @patch("layout_applier.HelperClient.begin_switch", return_value=(True, ""))
+    @patch(
+        "layout_applier.HelperClient.ping_info",
+        return_value={"uuid": "layout-switcher-helper@bigcommunity.org", "version": 7},
+    )
+    @patch("layout_applier.LayoutApplier._enabled_extensions", return_value=[])
+    @patch("layout_applier.LayoutApplier._managed_extension_subdirs", return_value=[])
+    @patch("layout_applier.run_cmd", return_value=(True, ""))
+    def test_cleanroom_handoff_never_reenables_legacy_helper(
+        self,
+        _run,
+        _subdirs,
+        _enabled,
+        _ping,
+        _begin,
+        mock_complete,
+        _wait,
+        mock_apply,
+        _states,
+        _abort,
+        _restore,
+    ):
+        from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
+
+        data = (
+            "[org/gnome/shell]\n"
+            "disabled-extensions=[]\n"
+            f"enabled-extensions=['{LEGACY_HELPER_UUID}', '{HELPER_UUID}', "
+            "'community-menu@communitybig.org']\n"
+        )
+
+        ok, _msg = LayoutApplier._apply_via_helper_v7(data)
+
+        assert ok is True
+        completed = mock_complete.call_args.args[0]
+        recovered = mock_apply.call_args.args[0]
+        assert completed[0] == HELPER_UUID
+        assert recovered[0] == HELPER_UUID
+        assert LEGACY_HELPER_UUID not in completed
+        assert LEGACY_HELPER_UUID not in recovered
+
+    @patch("layout_applier.LayoutApplier._renew_settings_freshness")
+    @patch(
+        "layout_applier.LayoutApplier._persist_to_settings_file",
+        return_value=(True, "/x"),
+    )
+    @patch(
+        "layout_applier.ShellReloader.list_extensions_state",
+        return_value={"layout-switcher-helper@bigcommunity.org": 1},
+    )
+    @patch(
+        "layout_applier.HelperClient.installed_extension_uuids",
+        return_value={
+            "layout-switcher-helper@communitybig.org",
+            "layout-switcher-runtime@communitybig.org",
+            "community-menu@communitybig.org",
+        },
+    )
+    @patch(
+        "layout_applier.HelperClient.discover_installed_components",
+        return_value=(False, "restart required"),
+    )
+    @patch(
+        "layout_applier.HelperClient.active_uuid",
+        return_value="layout-switcher-helper@bigcommunity.org",
+    )
+    @patch("layout_applier.HelperClient.ensure_available", return_value=(True, ""))
+    @patch(
+        "layout_applier.LayoutApplier._preserve_layout_independent_settings",
+        side_effect=lambda data: data,
+    )
+    def test_first_uuid_upgrade_stages_layout_without_touching_live_dconf(
+        self,
+        _preserve,
+        _ensure,
+        _active,
+        _discover,
+        _installed,
+        _states,
+        mock_persist,
+        mock_renew,
+    ):
+        from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
+
+        data = (
+            "[org/gnome/shell]\n"
+            "disabled-extensions=[]\n"
+            f"enabled-extensions=['{LEGACY_HELPER_UUID}', "
+            "'layout-switcher-runtime@communitybig.org', "
+            "'community-menu@communitybig.org']\n"
+        )
+
+        ok, msg = LayoutApplier.load_dconf_safely(data, before_uuids=[])
+
+        assert ok is True
+        assert "next session" in msg
+        assert LayoutApplier.last_apply_staged is True
+        persisted = mock_persist.call_args.args[0]
+        assert HELPER_UUID in persisted
+        assert LEGACY_HELPER_UUID not in persisted
+        mock_renew.assert_called_once_with()
+        _discover.assert_not_called()
+
+    @patch("layout_applier.LayoutApplier._renew_settings_freshness")
+    @patch(
+        "layout_applier.LayoutApplier._persist_to_settings_file",
+        return_value=(True, "/x"),
+    )
+    @patch(
+        "layout_applier.ShellReloader.list_extensions_state",
+        return_value={
+            "layout-switcher-helper@communitybig.org": 1,
+            "layout-switcher-runtime@communitybig.org": 1,
+            "community-menu@communitybig.org": 1,
+        },
+    )
+    @patch(
+        "layout_applier.HelperClient.installed_extension_uuids",
+        return_value={
+            "layout-switcher-helper@communitybig.org",
+            "layout-switcher-runtime@communitybig.org",
+            "community-menu@communitybig.org",
+        },
+    )
+    @patch("layout_applier.HelperClient.discover_installed_components")
+    @patch(
+        "layout_applier.HelperClient.active_uuid",
+        return_value="layout-switcher-helper@bigcommunity.org",
+    )
+    @patch("layout_applier.HelperClient.ensure_available", return_value=(True, ""))
+    @patch(
+        "layout_applier.LayoutApplier._preserve_layout_independent_settings",
+        side_effect=lambda data: data,
+    )
+    def test_legacy_helper_always_stages_even_when_new_uuids_are_known(
+        self,
+        _preserve,
+        _ensure,
+        _active,
+        mock_discover,
+        _installed,
+        _states,
+        mock_persist,
+        mock_renew,
+    ):
+        from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
+
+        data = (
+            "[org/gnome/shell]\n"
+            "disabled-extensions=[]\n"
+            f"enabled-extensions=['{LEGACY_HELPER_UUID}', "
+            "'layout-switcher-runtime@communitybig.org', "
+            "'community-menu@communitybig.org']\n"
+        )
+
+        ok, msg = LayoutApplier.load_dconf_safely(data, before_uuids=[])
+
+        assert ok is True
+        assert "next session" in msg
+        assert LayoutApplier.last_apply_staged is True
+        persisted = mock_persist.call_args.args[0]
+        assert HELPER_UUID in persisted
+        assert LEGACY_HELPER_UUID not in persisted
+        mock_discover.assert_not_called()
+        mock_renew.assert_called_once_with()
 
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
     @patch("layout_applier.LayoutApplier._reset_orphan_keys")

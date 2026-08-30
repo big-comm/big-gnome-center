@@ -329,6 +329,37 @@ class TestReloadExtension:
         assert HelperClient.reload_extension("kiwi@kemma") is False
 
 
+class TestDiscoverInstalledComponents:
+    @patch("helper_client.HelperClient._call")
+    @patch("helper_client.HelperClient.ping_info", return_value={"build": 42})
+    @patch("helper_client.HelperClient.active_uuid", return_value=LEGACY_HELPER_UUID)
+    def test_legacy_import_cache_requires_new_session(self, _active, _ping, mock_call):
+
+        ok, info = HelperClient.discover_installed_components()
+
+        assert ok is False
+        assert "new session" in info
+        mock_call.assert_not_called()
+
+    @patch("helper_client.HelperClient._call")
+    @patch(
+        "helper_client.HelperClient.installed_extension_uuids",
+        return_value={HELPER_UUID},
+    )
+    @patch("helper_client.HelperClient.reload_extension")
+    @patch("helper_client.HelperClient.ping_info", return_value={"build": 72})
+    @patch("helper_client.HelperClient.active_uuid", return_value=HELPER_UUID)
+    def test_current_helper_discovers_without_reload(
+        self, _active, _ping, mock_reload, _installed, mock_call
+    ):
+        mock_call.return_value = '{"ok":true,"loaded":[],"missing":[],"error":""}'
+
+        ok, _info = HelperClient.discover_installed_components()
+
+        assert ok is True
+        mock_reload.assert_not_called()
+
+
 class TestNotificationPosition:
     @patch("helper_client.HelperClient._call")
     def test_applies_position(self, mock_call):

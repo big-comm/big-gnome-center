@@ -319,6 +319,7 @@ class LayoutApplier:
     # (helper v7): live state == fresh-session state, so the UI can skip
     # the "restart the session for the 100% clean state" toast.
     last_apply_cleanroom: bool = False
+    last_apply_staged: bool = False
 
     @classmethod
     def _has_user_unit(cls, unit: str) -> bool:
@@ -747,7 +748,18 @@ class LayoutApplier:
         target_enabled: Iterable[str],
     ) -> Tuple[bool, str]:
         """Finish a switch whose legacy helper vanished during handoff."""
-        target = [uuid for uuid in target_enabled if uuid]
+        # An explicit layout apply completes the UUID migration. Never let the
+        # replacement helper re-enable its predecessor while both extension
+        # payloads are installed: they export the same D-Bus object and the
+        # ownership race tears freshly-created layout actors down.
+        target = [
+            HELPER_UUID,
+            *[
+                uuid
+                for uuid in target_enabled
+                if uuid and uuid not in {HELPER_UUID, LEGACY_HELPER_UUID}
+            ],
+        ]
         if not HelperClient.wait_for_active_uuid(HELPER_UUID):
             return False, "new helper did not acquire the D-Bus interface"
 
@@ -840,7 +852,11 @@ class LayoutApplier:
         # everything else the Shell's rebase cascade can never touch it.
         target_enabled = [
             HELPER_UUID,
-            *[u for u in target_enabled if u != HELPER_UUID],
+            *[
+                u
+                for u in target_enabled
+                if u not in {HELPER_UUID, LEGACY_HELPER_UUID}
+            ],
         ]
 
         persist = [*_HELPER_PERSIST_UUIDS, HELPER_UUID]
@@ -2366,11 +2382,27 @@ class LayoutApplier:
             detail = f": {helper_info}" if helper_info else ""
             return False, tr("Layout Switcher Helper is required to apply layouts.") + detail
 
+        active_helper_uuid = HelperClient.active_uuid()
+        if active_helper_uuid == LEGACY_HELPER_UUID:
+            # Never transfer the shared D-Bus object between helper UUIDs in
+            # one Shell session. GNOME can leave both module instances alive,
+            # making CompleteSwitch race the replacement helper export. Stage
+            # the absolute target below and keep the legacy desktop untouched.
+            discovered = False
+            discovery_info = "legacy helper migration requires a new session"
+        else:
+            discovered, discovery_info = HelperClient.discover_installed_components()
+        if not discovered:
+            log.warning("could not discover newly installed layout components: %s", discovery_info)
+
         data = cls._preserve_layout_independent_settings(data)
         data = cls._inject_helper_uuid(
             data,
             before_uuids,
-            active_helper_uuid=HelperClient.active_uuid(),
+            # A staged next-login layout must contain only the replacement
+            # helper. Keeping the live legacy UUID in that file would make the
+            # two helpers contend for one D-Bus object after login.
+            active_helper_uuid=active_helper_uuid if discovered else "",
             available_uuids=HelperClient.installed_extension_uuids(),
         )
         data = cls._apply_user_component_overrides(data, layout_id=layout_id)
@@ -2381,12 +2413,36 @@ class LayoutApplier:
                 data = cls._apply_gnome50_overview_default(data, layout_id)
 
         data = cls._retire_blur_my_shell(data)
+        cls._unit_cache = {}
+        cls.last_apply_cleanroom = False
+        cls.last_apply_staged = False
+
+        if active_helper_uuid == LEGACY_HELPER_UUID:
+            shell_values = cls._section_key_values(data, "/org/gnome/shell")
+            target = set(cls._string_list(shell_values.get("enabled-extensions")))
+            required = target & _STRUCTURAL_EXTENSION_UUIDS
+            installed = HelperClient.installed_extension_uuids()
+            if not required <= installed:
+                valid, validation_error = cls._validate_structural_extensions(data)
+                if not valid:
+                    return False, validation_error
+            if not persist:
+                return False, "legacy helper migration requires a new session"
+
+            cls._sync_lock_acquire()
+            try:
+                ok_persist, info = cls._persist_to_settings_file(data)
+                if not ok_persist:
+                    return False, f"settings.gnome write failed: {info}"
+                cls.last_apply_staged = True
+                cls._renew_settings_freshness()
+                return True, "layout staged for the next session"
+            finally:
+                cls._sync_lock_release()
+
         valid, validation_error = cls._validate_structural_extensions(data)
         if not valid:
             return False, validation_error
-
-        cls._unit_cache = {}
-        cls.last_apply_cleanroom = False
 
         def progress(label: str) -> None:
             if progress_cb is None:

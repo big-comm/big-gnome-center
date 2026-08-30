@@ -188,6 +188,13 @@ def test_menu_button_active_highlight_is_not_stretched_by_shell_padding():
     assert "background-color: #222226" in stylesheet
 
 
+def test_disable_is_safe_after_shell_rebase():
+    source = (EXTENSION_DIR / "extension.js").read_text()
+
+    assert "this.menuButtons?.length ?? 0" in source
+    assert "this.menuButtons?.indexOf(menuButton) ?? -1" in source
+
+
 def test_classic_categories_are_compact_and_open_cascade_on_hover():
     layout = (EXTENSION_DIR / "layouts/appListLayout.js").read_text()
     menu = (EXTENSION_DIR / "menu.js").read_text()

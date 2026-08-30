@@ -45,6 +45,18 @@ LEGACY_DASH_TO_PANEL_UUID = "dash-to-panel@jderose9.github.com"
 RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 ARCMENU_UUID = "arcmenu@arcmenu.com"
 
+_DISCOVERABLE_COMPONENT_UUIDS = (
+    HELPER_UUID,
+    RUNTIME_UUID,
+    COMMUNITY_MENU_UUID,
+    BIG_SHOT_UUID,
+    COMMUNITY_DOCK_UUID,
+    COMMUNITY_PANEL_UUID,
+)
+_DISCOVERY_HELPER_BUILDS = {
+    HELPER_UUID: 72,
+}
+
 _LEGACY_COMMUNITY_MENU_DIR = (
     "/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/"
 )
@@ -335,6 +347,48 @@ class HelperClient:
                 return True
             time.sleep(0.1)
         return False
+
+    @classmethod
+    def discover_installed_components(cls, timeout_ms: int = 30000) -> Tuple[bool, str]:
+        """Register newly packaged extension UUIDs in the running Shell."""
+        active = cls.active_uuid()
+        if active == LEGACY_HELPER_UUID:
+            return False, "legacy helper migration requires a new session"
+        if active not in _DISCOVERY_HELPER_BUILDS:
+            return False, "layout helper is not active"
+
+        info = cls.ping_info()
+        required_build = _DISCOVERY_HELPER_BUILDS[active]
+        if int(info.get("build", 0)) < required_build:
+            # GNOME caches imported extension modules by URI. ReloadExtension
+            # rebuilds the actor but returns the already-imported JavaScript,
+            # so an in-place package upgrade cannot acquire this new method.
+            # Keep the live layout intact and let LayoutApplier stage the
+            # absolute target for the next login.
+            return False, "running layout helper requires a new session"
+
+        installed = cls.installed_extension_uuids()
+        requested = [
+            uuid for uuid in _DISCOVERABLE_COMPONENT_UUIDS if uuid in installed
+        ]
+        from gi.repository import GLib
+
+        payload = json.dumps({"uuids": requested})
+        out = cls._call(
+            "DiscoverExtensions",
+            GLib.Variant("(s)", (payload,)),
+            timeout_ms,
+        )
+        if out is None:
+            return False, "helper extension discovery call failed"
+        try:
+            result = json.loads(out)
+        except (ValueError, json.JSONDecodeError):
+            return False, f"helper extension discovery bad reply: {out}"
+        if not result.get("ok", False):
+            detail = result.get("error") or ", ".join(result.get("missing", []))
+            return False, detail or "helper extension discovery failed"
+        return True, ", ".join(result.get("loaded", []))
 
     @classmethod
     def begin_switch(

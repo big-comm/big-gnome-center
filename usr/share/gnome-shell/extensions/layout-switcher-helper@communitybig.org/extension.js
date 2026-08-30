@@ -62,6 +62,7 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
 
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
@@ -117,7 +118,15 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 71;
+const HELPER_BUILD = 72;
+const DISCOVERABLE_UUIDS = new Set([
+    'layout-switcher-helper@communitybig.org',
+    'layout-switcher-runtime@communitybig.org',
+    'community-menu@communitybig.org',
+    'big-shot@communitybig.org',
+    'community-dock@communitybig.org',
+    'community-panel@communitybig.org',
+]);
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -171,6 +180,10 @@ const IFACE = `
     </method>
     <method name="ReloadExtension">
       <arg type="s" direction="in" name="uuid"/>
+      <arg type="s" direction="out" name="result"/>
+    </method>
+    <method name="DiscoverExtensions">
+      <arg type="s" direction="in" name="payload"/>
       <arg type="s" direction="out" name="result"/>
     </method>
   </interface>
@@ -495,6 +508,54 @@ export default class LayoutSwitcherHelper extends Extension {
 
     _returnJson(invocation, obj) {
         invocation.return_value(new GLib.Variant('(s)', [JSON.stringify(obj)]));
+    }
+
+    DiscoverExtensionsAsync(params, invocation) {
+        const [payload] = params;
+        this._discoverExtensions(payload)
+            .then(result => this._returnJson(invocation, result))
+            .catch(error => this._returnJson(invocation, {
+                ok: false, loaded: [], missing: [], error: String(error),
+            }));
+    }
+
+    async _discoverExtensions(payload) {
+        const requested = [...new Set((JSON.parse(payload || '{}').uuids ?? [])
+            .filter(uuid => DISCOVERABLE_UUIDS.has(uuid)))];
+        const manager = Main.extensionManager;
+        const loaded = [];
+        const missing = [];
+        const errors = [];
+
+        for (const uuid of requested) {
+            if (manager.lookup(uuid))
+                continue;
+            const dir = Gio.File.new_for_path(
+                `/usr/share/gnome-shell/extensions/${uuid}`);
+            if (!dir.query_exists(null)) {
+                missing.push(uuid);
+                continue;
+            }
+            try {
+                const extension = manager.createExtensionObject(
+                    uuid, dir, ExtensionType.SYSTEM);
+                await manager.loadExtension(extension);
+                loaded.push(uuid);
+            } catch (error) {
+                errors.push(`${uuid}: ${error}`);
+            }
+        }
+
+        for (const uuid of requested) {
+            if (!manager.lookup(uuid) && !missing.includes(uuid))
+                missing.push(uuid);
+        }
+        return {
+            ok: missing.length === 0 && errors.length === 0,
+            loaded,
+            missing,
+            error: errors.join('; '),
+        };
     }
 
     // Resolve after `ms` on the main loop — lets each extension's

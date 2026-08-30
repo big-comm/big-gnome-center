@@ -475,10 +475,13 @@ class LayoutsPage(Gtk.Box):
             # result IS the fresh-session state and the toast would only
             # undermine confidence in the switch.
             if overlay and not getattr(LayoutApplier, "last_apply_cleanroom", False):
+                staged = getattr(LayoutApplier, "last_apply_staged", False)
                 restart_toast = Adw.Toast(
                     title=tr("Restart the session for the 100% clean state"),
-                    timeout=20,
+                    timeout=0 if staged else 20,
                 )
+                if staged:
+                    restart_toast.set_priority(Adw.ToastPriority.HIGH)
                 restart_toast.set_button_label(tr("Restart now"))
                 restart_toast.connect(
                     "button-clicked",

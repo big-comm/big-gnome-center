@@ -252,7 +252,7 @@ export default class CommunityMenuExtension extends Extension {
     }
 
     _disableButtons() {
-        for (let i = this.menuButtons.length - 1; i >= 0; --i) {
+        for (let i = (this.menuButtons?.length ?? 0) - 1; i >= 0; --i) {
             const mb = this.menuButtons[i];
             this._disableButton(mb, mb.panel);
         }
@@ -264,7 +264,7 @@ export default class CommunityMenuExtension extends Extension {
             panel.statusArea['community-menu'] = null;
         }
 
-        const index = this.menuButtons.indexOf(menuButton);
+        const index = this.menuButtons?.indexOf(menuButton) ?? -1;
         if (index !== -1)
             this.menuButtons.splice(index, 1);
 

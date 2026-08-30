@@ -195,6 +195,9 @@ class MainWindow(Adw.ApplicationWindow):
         desktop_page = self._pages.get("desktop")
         if desktop_page is not None:
             desktop_page.refresh()
+        panel_dock_page = self._pages.get("panel-dock")
+        if panel_dock_page is not None:
+            panel_dock_page.refresh()
 
     def _on_theme_changed(self) -> None:
         """Refresh theme UI only if the page has already been created."""
@@ -448,6 +451,9 @@ class MainWindow(Adw.ApplicationWindow):
         if panel_dock_row is None:
             return
         panel_dock_row.set_sensitive(True)
+        panel_dock_page = self._pages.get("panel-dock")
+        if panel_dock_page is not None:
+            panel_dock_page.refresh()
 
     # ── Sidebar toggle (collapsed) ────────────────────────────────────────────
 
