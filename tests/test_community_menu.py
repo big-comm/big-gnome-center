@@ -3,6 +3,7 @@
 
 import gettext
 import json
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -25,7 +26,25 @@ def test_community_menu_metadata_is_independent():
     assert metadata["gettext-domain"] == "community-menu"
     assert metadata["settings-schema"] == "org.gnome.shell.extensions.community-menu"
     assert "50" in metadata["shell-version"]
-    assert metadata["version"] == 21
+    assert metadata["version"] == 22
+
+
+def test_registered_gobject_types_are_namespaced_from_legacy_menu():
+    registered_classes = []
+    for source_file in EXTENSION_DIR.rglob("*.js"):
+        source = source_file.read_text()
+        registered_classes.extend(
+            re.findall(
+                r"GObject\.registerClass\((?:(?!GObject\.registerClass).)*?"
+                r"\bclass\s+(\w+)",
+                source,
+                re.DOTALL,
+            )
+        )
+
+    assert len(registered_classes) == 47
+    assert all(name.startswith("CommunityBig") for name in registered_classes)
+    assert len(registered_classes) == len(set(registered_classes))
 
 
 def test_community_menu_schema_exposes_only_supported_layouts():
@@ -364,7 +383,7 @@ def test_hybrid_layout_matches_enterprise_menu_structure():
     assert "frequentAppsCategory" in backend
     assert "recentFilesCategory" in backend
     assert "Shell.AppUsage.get_default()" in backend
-    assert "class HybridCategoriesSection" in sections
+    assert "class CommunityBigHybridCategoriesSection" in sections
     assert "Constants.COMPACT_SUBMENU_ICON_SIZE" in sections
     assert "notify::hover" in sections
     assert "categoryMenuId !== 'recent_files'" in sections

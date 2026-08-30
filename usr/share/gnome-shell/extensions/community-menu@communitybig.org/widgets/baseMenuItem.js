@@ -28,7 +28,7 @@ export const BaseMenuItem = GObject.registerClass({
     Signals: {
         'activate': {param_types: [Clutter.Event.$gtype]},
     },
-}, class BaseMenuItem extends St.BoxLayout {
+}, class CommunityBigBaseMenuItem extends St.BoxLayout {
     _init(params) {
         params = Params.parse(params, {
             reactive: true,

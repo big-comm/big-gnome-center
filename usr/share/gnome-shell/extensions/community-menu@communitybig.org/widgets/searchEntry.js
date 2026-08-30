@@ -20,7 +20,7 @@ export const SearchEntry = GObject.registerClass({
             GObject.ParamFlags.READABLE,
             false),
     }
-}, class SearchEntry extends St.Entry {
+}, class CommunityBigSearchEntry extends St.Entry {
     _init(searchResults) {
         super._init({
             name: 'search-entry',

@@ -7,7 +7,7 @@ import * as Constants from '../constants.js';
 const MENU_ICON_NAME = 'bigcommunity-menu-symbolic';
 
 export const MenuButton = GObject.registerClass({
-}, class MenuButton extends St.BoxLayout {
+}, class CommunityBigMenuButton extends St.BoxLayout {
     _init() {
         super._init({
             style_class: 'panel-status-menu-box'

@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 70" in source
+    assert "const HELPER_BUILD = 71" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -93,7 +93,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 70" in source
+    assert "const HELPER_BUILD = 71" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -121,6 +121,17 @@ def test_incremental_migration_detaches_menu_before_replacing_panel():
     reload_off = source.index("steps.push(`reload-off ${uuid}`)", migration)
     leaving = source.index("const leaving =", source.index("async _applyLayout"))
     assert hoist < reload_off < leaving
+
+
+def test_dbus_export_retries_after_legacy_helper_releases_path():
+    source = HELPER.read_text()
+
+    assert "const DBUS_EXPORT_RETRY_MS = 250" in source
+    assert "if (this._dbus || this._dbusRetry)" in source
+    assert "retrying after legacy helper exits" in source
+    assert "this._dbusRetry = GLib.timeout_add(" in source
+    assert "if (!this._cancelled)\n                            this._export();" in source
+    assert "GLib.Source.remove(this._dbusRetry)" in source
 
 
 def test_icon_theme_change_refreshes_appindicator_cache():

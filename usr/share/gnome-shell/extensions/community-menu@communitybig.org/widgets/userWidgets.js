@@ -17,7 +17,7 @@ import * as Constants from '../constants.js';
 import * as SecondaryMenu from './secondaryMenu.js';
 
 export const Avatar = GObject.registerClass({
-}, class Avatar extends St.Bin {
+}, class CommunityBigAvatar extends St.Bin {
     _init(user, params) {
         params = Params.parse(params, {
             reactive: false,
@@ -74,7 +74,7 @@ export const UserMenuItem = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class UserMenuItem extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigUserMenuItem extends BaseMenuItem.BaseMenuItem {
     _init() {
         super._init();
         this.useTooltip = true;
@@ -133,7 +133,7 @@ export const UserMenuItem = GObject.registerClass({
 });
 
 export const UserMenuButton = GObject.registerClass({
-}, class UserMenuButton extends UserMenuItem {
+}, class CommunityBigUserMenuButton extends UserMenuItem {
     _init(systemActions) {
         super._init();
         this._systemActions = systemActions;

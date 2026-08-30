@@ -54,7 +54,7 @@ export const ClassicSidebarSection = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class ClassicSidebarSection extends St.BoxLayout {
+}, class CommunityBigClassicSidebarSection extends St.BoxLayout {
     _init() {
         super._init({
             ...getOrientationProp(true),
@@ -115,7 +115,7 @@ export const SessionButtonsSection = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class SessionButtonsSection extends PopupMenu.PopupBaseMenuItem {
+}, class CommunityBigSessionButtonsSection extends PopupMenu.PopupBaseMenuItem {
     _init() {
         super._init({
             reactive: false,
@@ -167,7 +167,7 @@ export const PlacesSection = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class PlacesSection extends St.BoxLayout {
+}, class CommunityBigPlacesSection extends St.BoxLayout {
     _init() {
         super._init({
             ...getOrientationProp(true)
@@ -220,7 +220,7 @@ export const ShortcutsSection = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class ShortcutsSection extends St.BoxLayout {
+}, class CommunityBigShortcutsSection extends St.BoxLayout {
     _init() {
         super._init({
             ...getOrientationProp(true)
@@ -289,7 +289,7 @@ export const CategoriesListSection = GObject.registerClass({
         'selected': { param_types: [GObject.TYPE_STRING] },
         'activated': {},
     }
-}, class CategoriesListSection extends St.Bin {
+}, class CommunityBigCategoriesListSection extends St.Bin {
     // Initialize the button
     _init(appsBackend, params = {}) {
         super._init({ x_expand: true, y_expand: true, style_class: 'categories-list', accessible_name: _('Categories')});
@@ -447,7 +447,7 @@ export const CategoriesListSection = GObject.registerClass({
 });
 
 export const CategoriesHoverSection = GObject.registerClass({
-}, class CategoriesHoverSection extends CategoriesListSection {
+}, class CommunityBigCategoriesHoverSection extends CategoriesListSection {
     _init(appsBackend) {
         super._init(appsBackend);
         this._leaveEventTimeoutId = null;
@@ -616,7 +616,7 @@ export const CategoriesHoverSection = GObject.registerClass({
 });
 
 export const HybridCategoriesSection = GObject.registerClass({
-}, class HybridCategoriesSection extends CategoriesListSection {
+}, class CommunityBigHybridCategoriesSection extends CategoriesListSection {
     _init(appsBackend) {
         super._init(appsBackend, {
             iconSize: Constants.COMPACT_SUBMENU_ICON_SIZE,
@@ -782,7 +782,7 @@ export const AppsListSection = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class AppsListSection extends St.Bin {
+}, class CommunityBigAppsListSection extends St.Bin {
     _init(
         appsBackend,
         isGrid,
@@ -991,7 +991,7 @@ export const SidebarSection = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class SidebarSection extends St.BoxLayout {
+}, class CommunityBigSidebarSection extends St.BoxLayout {
     _init() {
         super._init({
             ...getOrientationProp(true),

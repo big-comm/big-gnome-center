@@ -71,7 +71,7 @@ export const PlaceMenuItem = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class PlaceMenuItem extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigPlaceMenuItem extends BaseMenuItem.BaseMenuItem {
     _init(info) {
         super._init();
         this._info = info;

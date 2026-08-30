@@ -18,7 +18,7 @@ import * as Widgets from '../widgets/widgets.js';
 import {getOrientationProp} from '../utils.js';
 
 export const HybridLayout = GObject.registerClass({
-}, class HybridLayout extends BaseLayout.BaseLayout {
+}, class CommunityBigHybridLayout extends BaseLayout.BaseLayout {
     _init(appsBackend, panelInfo) {
         super._init(appsBackend, panelInfo);
         this.add_style_class_name('main-box');

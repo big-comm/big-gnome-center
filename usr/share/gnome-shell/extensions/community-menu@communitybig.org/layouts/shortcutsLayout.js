@@ -24,7 +24,7 @@ import * as BaseLayout from './baseLayout.js'
 import * as Sections from '../sections.js';
 
 export const ShortcutsLayout = GObject.registerClass({
-}, class ShortcutsLayout extends BaseLayout.BaseLayout {
+}, class CommunityBigShortcutsLayout extends BaseLayout.BaseLayout {
     // Initialize the layout
     _init(appsBackend, panelInfo) {
         super._init(appsBackend, panelInfo);

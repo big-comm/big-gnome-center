@@ -17,7 +17,7 @@ export const SessionButton = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class SessionButton extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigSessionButton extends BaseMenuItem.BaseMenuItem {
     _init(systemActions, accessible_name, icon_name, gicon = null) {
         super._init({
             style_class: "button system-menu-action"
@@ -63,7 +63,7 @@ export const SessionButton = GObject.registerClass({
 });
 
 export const ApplicationButton = GObject.registerClass({
-}, class ApplicationButton extends SessionButton {
+}, class CommunityBigApplicationButton extends SessionButton {
     _init(app) {
         super._init(null, app.get_name(), null, app.get_app_info().get_icon());
         this._app = app;
@@ -81,7 +81,7 @@ export const ApplicationButton = GObject.registerClass({
 });
 
 export const PowerMenuButton = GObject.registerClass({
-}, class PowerMenuButton extends SessionButton {
+}, class CommunityBigPowerMenuButton extends SessionButton {
     _init(systemActions) {
         super._init(systemActions, _("Power"), 'system-shutdown-symbolic');
         this._menuManager = new PopupMenu.PopupMenuManager(this);
@@ -186,7 +186,7 @@ export const PowerMenuButton = GObject.registerClass({
 });
 
 export const PowerButton = GObject.registerClass({
-}, class PowerButton extends SessionButton {
+}, class CommunityBigPowerButton extends SessionButton {
     _init(systemActions) {
         super._init(systemActions, _("Power Off"), 'system-shutdown-symbolic');
 
@@ -205,7 +205,7 @@ export const PowerButton = GObject.registerClass({
 
 
 export const RestartButton = GObject.registerClass({
-}, class RestartButton extends SessionButton {
+}, class CommunityBigRestartButton extends SessionButton {
     _init(systemActions) {
         super._init(systemActions, _("Restart"), 'system-reboot-symbolic');
 
@@ -223,7 +223,7 @@ export const RestartButton = GObject.registerClass({
 });
 
 export const SuspendButton = GObject.registerClass({
-}, class SuspendButton extends SessionButton {
+}, class CommunityBigSuspendButton extends SessionButton {
     _init(systemActions) {
         super._init(systemActions, _("Suspend"), 'media-playback-pause-symbolic');
 
@@ -241,7 +241,7 @@ export const SuspendButton = GObject.registerClass({
 });
 
 export const LogoutButton = GObject.registerClass({
-}, class LogoutButton extends SessionButton {
+}, class CommunityBigLogoutButton extends SessionButton {
     _init(systemActions) {
         super._init(systemActions, _("Log Out"), 'application-exit-symbolic');
 
@@ -259,7 +259,7 @@ export const LogoutButton = GObject.registerClass({
 });
 
 export const LockButton = GObject.registerClass({
-}, class LockButton extends SessionButton {
+}, class CommunityBigLockButton extends SessionButton {
     _init(systemActions) {
         super._init(systemActions, _("Lock"), 'changes-prevent-symbolic');
 

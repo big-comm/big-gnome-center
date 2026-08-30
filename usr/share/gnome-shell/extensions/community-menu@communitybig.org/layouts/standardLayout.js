@@ -31,7 +31,7 @@ import * as Widgets from '../widgets/widgets.js';
 import {getOrientationProp} from '../utils.js';
 
 export const StandardLayout = GObject.registerClass({
-}, class StandardLayout extends BaseLayout.BaseLayout {
+}, class CommunityBigStandardLayout extends BaseLayout.BaseLayout {
     // Initialize the layout
     _init(appsBackend, panelInfo) {
         super._init(appsBackend, panelInfo);

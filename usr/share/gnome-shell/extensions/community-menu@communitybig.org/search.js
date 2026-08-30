@@ -29,7 +29,7 @@ const ListSearchResult = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class ListSearchResult extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigListSearchResult extends BaseMenuItem.BaseMenuItem {
     _init(provider, metaInfo, resultsView, compact = false) {
         super._init();
         this.useTooltip = !compact;
@@ -150,7 +150,7 @@ const ListSearchResult = GObject.registerClass({
 });
 
 const AppSearchResult = GObject.registerClass({
-}, class AppSearchResult extends AppMenuItem.AppMenuItem {
+}, class CommunityBigAppSearchResult extends AppMenuItem.AppMenuItem {
     _init(provider, metaInfo, resultsView, isGrid, compact = false) {
         this.metaInfo = metaInfo;
         this.provider = provider;
@@ -232,7 +232,7 @@ const SearchResultsBase = GObject.registerClass({
         'terms-changed': {},
         'no-results': {},
     }
-}, class SearchResultsBase extends St.BoxLayout {
+}, class CommunityBigSearchResultsBase extends St.BoxLayout {
     _init(provider, resultsView) {
         super._init({
             ...getOrientationProp(true),
@@ -360,7 +360,7 @@ const SearchResultsBase = GObject.registerClass({
 });
 
 const ListSearchResults = GObject.registerClass({
-}, class ListSearchResults extends SearchResultsBase {
+}, class CommunityBigListSearchResults extends SearchResultsBase {
     _init(provider, resultsView, compact = false) {
         super._init(provider, resultsView);
         this._compact = compact;
@@ -429,7 +429,7 @@ const ListSearchResults = GObject.registerClass({
 });
 
 const AppSearchResults = GObject.registerClass({
-}, class AppSearchResults extends SearchResultsBase {
+}, class CommunityBigAppSearchResults extends SearchResultsBase {
     _init(provider, resultsView, isGrid, compact = false) {
         super._init(provider, resultsView);
         this._compact = compact;
@@ -504,7 +504,7 @@ export const SearchResults = GObject.registerClass({
         'no-results': {},
         'screenshot-activated': {},
     }
-}, class SearchResults extends St.BoxLayout {
+}, class CommunityBigSearchResults extends St.BoxLayout {
     _init(isGrid, monitorIndex, compact = false) {
         super._init({
             ...getOrientationProp(true),
@@ -933,7 +933,7 @@ const ProviderInfo = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class ProviderInfo extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigProviderInfo extends BaseMenuItem.BaseMenuItem {
     _init(provider, compact = false) {
         this.provider = provider;
         this._terms = [];

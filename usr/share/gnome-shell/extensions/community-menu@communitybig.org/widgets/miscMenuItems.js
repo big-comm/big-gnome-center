@@ -15,7 +15,7 @@ export const BackMenuItem = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class BackMenuItem extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigBackMenuItem extends BaseMenuItem.BaseMenuItem {
     _init() {
         super._init();
         this._icon = new St.Icon({
@@ -50,7 +50,7 @@ export const ShortcutMenuItem = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class ShortcutMenuItem extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigShortcutMenuItem extends BaseMenuItem.BaseMenuItem {
     _init(name, command, icon, fallbackIcon) {
         super._init();
         this._command = command;
@@ -94,7 +94,7 @@ export const CategoryMenuItem = GObject.registerClass({
     Signals: {
         'selected': { param_types: [GObject.TYPE_STRING] },
     }
-}, class CategoryMenuItem extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigCategoryMenuItem extends BaseMenuItem.BaseMenuItem {
     _init(category, iconSize = Constants.APP_LIST_ICON_SIZE, showArrow = true) {
         super._init();
         this._category = category;
@@ -148,7 +148,7 @@ export const CategoryMenuItem = GObject.registerClass({
 });
 
 export const CategoryHoverMenuItem = GObject.registerClass({
-}, class CategoryHoverMenuItem extends CategoryMenuItem {
+}, class CommunityBigCategoryHoverMenuItem extends CategoryMenuItem {
     _init(category) {
         super._init(category);
         this._keepActive = true;
@@ -189,7 +189,7 @@ export const AllAppsMenuItem = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class AllAppsMenuItem extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigAllAppsMenuItem extends BaseMenuItem.BaseMenuItem {
     _init() {
         super._init();
         this._icon = new St.Icon({

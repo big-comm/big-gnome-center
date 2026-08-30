@@ -233,7 +233,7 @@ const ApplicationsMenu = class extends PopupMenu.PopupMenu {
 };
 
 export const ApplicationsButton = GObject.registerClass({
-}, class ApplicationsButton extends PanelMenu.Button {
+}, class CommunityBigApplicationsButton extends PanelMenu.Button {
     // Initialize the menu
     _init(panelInfo) {
         super._init(1.0, _('Community Menu'), true);

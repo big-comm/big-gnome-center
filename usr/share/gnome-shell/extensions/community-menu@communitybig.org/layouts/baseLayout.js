@@ -33,7 +33,7 @@ export const BaseLayout = GObject.registerClass({
         'activated': {},
         'screenshot-activated': {},
     }
-}, class BaseLayout extends St.BoxLayout {
+}, class CommunityBigBaseLayout extends St.BoxLayout {
     _init(appsBackend, panelInfo) {
         super._init({
             reactive: true,

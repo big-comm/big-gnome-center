@@ -19,7 +19,7 @@ export const AppMenuItem = GObject.registerClass({
     Signals: {
         'activated': {},
     }
-}, class AppMenuItem extends BaseMenuItem.BaseMenuItem {
+}, class CommunityBigAppMenuItem extends BaseMenuItem.BaseMenuItem {
     _init(app, isGrid, iconSize = Constants.APP_LIST_ICON_SIZE) {
         super._init();
         this._isGrid = isGrid;

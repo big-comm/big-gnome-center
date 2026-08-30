@@ -45,7 +45,7 @@ export const VerticalSeparator = class {
 };
 
 export const Grid = GObject.registerClass({
-}, class Grid extends St.Widget {
+}, class CommunityBigGrid extends St.Widget {
     _init(column_count, column_spacing, row_spacing) {
         this._column_count = column_count;
         let layout = new Clutter.GridLayout({ 
@@ -98,7 +98,7 @@ export const Grid = GObject.registerClass({
 });
 
 export const ScrollView = GObject.registerClass({
-}, class ScrollView extends St.ScrollView {
+}, class CommunityBigScrollView extends St.ScrollView {
     _init(params){
         super._init({
             ...params,

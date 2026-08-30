@@ -30,7 +30,7 @@ import * as Utils from '../utils.js';
 import {getOrientationProp} from '../utils.js';
 
 export const AppListLayout = GObject.registerClass({
-}, class AppListLayout extends BaseLayout.BaseLayout {
+}, class CommunityBigAppListLayout extends BaseLayout.BaseLayout {
     // Initialize the layout
     _init(appsBackend, panelInfo) {
         super._init(appsBackend, panelInfo);

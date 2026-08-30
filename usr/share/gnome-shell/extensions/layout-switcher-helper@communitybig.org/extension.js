@@ -117,7 +117,7 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 70;
+const HELPER_BUILD = 71;
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
@@ -132,6 +132,7 @@ const STATE_DEACTIVATING = 7;
 const STATE_WAIT_MS = 4000;
 const STATE_POLL_MS = 50;
 const TRANSITION_FRAME_MS = 16;
+const DBUS_EXPORT_RETRY_MS = 250;
 
 // If the caller dies between BeginSwitch and CompleteSwitch, restore the
 // previous extension set so the user is never left on a bare desktop.
@@ -308,19 +309,39 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     _export() {
-        if (this._dbus)
+        if (this._dbus || this._dbusRetry)
             return;
         const dbus = Gio.DBusExportedObject.wrapJSObject(IFACE, this);
         try {
             dbus.export(Gio.DBus.session, BUS_PATH);
             this._dbus = dbus;
+            this._dbusExportBlocked = false;
             logHelper(`exported D-Bus interface (v${HELPER_VERSION} build ${HELPER_BUILD})`);
         } catch (e) {
-            logHelper(`export failed: ${e}`);
+            if (!this._dbusExportBlocked) {
+                logHelper(`export blocked; retrying after legacy helper exits: ${e}`);
+                this._dbusExportBlocked = true;
+            }
+            if (!this._cancelled) {
+                this._dbusRetry = GLib.timeout_add(
+                    GLib.PRIORITY_DEFAULT,
+                    DBUS_EXPORT_RETRY_MS,
+                    () => {
+                        this._dbusRetry = 0;
+                        if (!this._cancelled)
+                            this._export();
+                        return GLib.SOURCE_REMOVE;
+                    });
+            }
         }
     }
 
     _unexport() {
+        if (this._dbusRetry) {
+            GLib.Source.remove(this._dbusRetry);
+            this._dbusRetry = 0;
+        }
+        this._dbusExportBlocked = false;
         if (!this._dbus)
             return;
         try {

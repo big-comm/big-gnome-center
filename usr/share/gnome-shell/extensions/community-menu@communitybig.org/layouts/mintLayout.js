@@ -30,7 +30,7 @@ import * as Widgets from '../widgets/widgets.js';
 import {getOrientationProp} from '../utils.js';
 
 export const MintLayout = GObject.registerClass({
-}, class MintLayout extends BaseLayout.BaseLayout {
+}, class CommunityBigMintLayout extends BaseLayout.BaseLayout {
     // Initialize the layout
     _init(appsBackend, panelInfo) {
         super._init(appsBackend, panelInfo);
