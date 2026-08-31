@@ -119,7 +119,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 73;
+const HELPER_BUILD = 74;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -1873,20 +1873,32 @@ export default class LayoutSwitcherHelper extends Extension {
     // ── Transition curtain ──────────────────────────────────────────────────
 
     _createCurtain(label, labelFrom, iconFrom, iconTo) {
-        const curtain = new St.BoxLayout({
+        const curtain = new St.Widget({
             style_class: 'layout-switcher-curtain',
             style: 'background-color: #101014;',
-            vertical: true,
+            layout_manager: new Clutter.FixedLayout(),
             reactive: true,   // swallow clicks while the desktop mutates
             opacity: 0,
         });
         curtain.set_position(0, 0);
         curtain.set_size(global.stage.width, global.stage.height);
 
+        const primaryMonitor = Main.layoutManager.primaryMonitor ?? {
+            x: 0,
+            y: 0,
+            width: global.stage.width,
+            height: global.stage.height,
+        };
+        const monitorBin = new St.Widget({
+            x: primaryMonitor.x,
+            y: primaryMonitor.y,
+            width: primaryMonitor.width,
+            height: primaryMonitor.height,
+            layout_manager: new Clutter.BinLayout(),
+        });
+
         const box = new St.BoxLayout({
             vertical: true,
-            x_expand: true,
-            y_expand: true,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             style: 'spacing: 36px;',
@@ -2011,7 +2023,8 @@ export default class LayoutSwitcherHelper extends Extension {
             box.add_child(spinnerBin);
             curtain._lsSpinner = spinnerBin;
         }
-        curtain.add_child(box);
+        monitorBin.add_child(box);
+        curtain.add_child(monitorBin);
         curtain._lsStatusBox = box;
         return curtain;
     }

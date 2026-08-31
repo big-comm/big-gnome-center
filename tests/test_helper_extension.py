@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 73" in source
+    assert "const HELPER_BUILD = 74" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -75,6 +75,21 @@ def test_menu_layouts_hide_only_quick_settings_shutdown_action():
     assert "_teardownQuickSettingsShutdownItem()" in source
 
 
+def test_transition_content_is_centered_on_the_primary_monitor():
+    source = HELPER.read_text()
+
+    assert "layout_manager: new Clutter.FixedLayout()" in source
+    assert "const primaryMonitor = Main.layoutManager.primaryMonitor" in source
+    assert "x: primaryMonitor.x" in source
+    assert "y: primaryMonitor.y" in source
+    assert "width: primaryMonitor.width" in source
+    assert "height: primaryMonitor.height" in source
+    assert "layout_manager: new Clutter.BinLayout()" in source
+    assert source.index("monitorBin.add_child(box)") < source.index(
+        "curtain.add_child(monitorBin)"
+    )
+
+
 def test_hybrid_light_panel_keeps_overview_icon_contrast():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
@@ -93,7 +108,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 73" in source
+    assert "const HELPER_BUILD = 74" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
