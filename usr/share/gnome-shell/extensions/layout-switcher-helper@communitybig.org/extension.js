@@ -119,7 +119,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 74;
+const HELPER_BUILD = 75;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -909,8 +909,13 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     _setupGUnityShell() {
-        if (this._gUnityShellActive || this._extensionWillRun(KIWI_UUID))
+        if (this._extensionWillRun(KIWI_UUID))
             return;
+
+        if (this._gUnityShellActive) {
+            this._syncGUnityDatePosition();
+            return;
+        }
 
         const dateMenu = Main.panel.statusArea.dateMenu;
         const quickSettings = Main.panel.statusArea.quickSettings;
@@ -918,16 +923,13 @@ export default class LayoutSwitcherHelper extends Extension {
             return;
 
         this._gUnityShellActive = true;
-
-        const dateParent = dateMenu.container.get_parent?.();
-        if (dateParent) {
-            this._gUnityDateOriginal = {
-                parent: dateParent,
-                index: dateParent.get_children().indexOf(dateMenu.container),
-            };
-            dateParent.remove_child(dateMenu.container);
-            Main.panel._rightBox.add_child(dateMenu.container);
-        }
+        this._syncGUnityDatePosition();
+        this._gUnityRightBox = Main.panel._rightBox;
+        this._gUnityRightBoxSignal = this._gUnityRightBox.connect(
+            'child-added', (_box, child) => {
+                if (child !== dateMenu.container)
+                    this._queueGUnityDatePosition();
+            });
 
         const messageList = dateMenu._messageList;
         const messageParent = messageList?.get_parent?.();
@@ -1012,6 +1014,39 @@ export default class LayoutSwitcherHelper extends Extension {
         this._gUnityOverviewHiddenSignal = Main.overview.connect(
             'hidden', () => this._syncGUnityWindowTitle());
         this._syncGUnityWindowTitle();
+    }
+
+    _syncGUnityDatePosition() {
+        const container = Main.panel.statusArea.dateMenu?.container;
+        const rightBox = Main.panel._rightBox;
+        const parent = container?.get_parent?.();
+        if (!container || !rightBox || !parent)
+            return;
+
+        if (!this._gUnityDateOriginal) {
+            this._gUnityDateOriginal = {
+                parent,
+                index: parent.get_children().indexOf(container),
+            };
+        }
+
+        const children = rightBox.get_children();
+        if (parent === rightBox && children.at(-1) === container)
+            return;
+        parent.remove_child(container);
+        rightBox.add_child(container);
+    }
+
+    _queueGUnityDatePosition() {
+        if (this._gUnityDateReorderId)
+            return;
+        this._gUnityDateReorderId = GLib.idle_add(
+            GLib.PRIORITY_DEFAULT, () => {
+                this._gUnityDateReorderId = 0;
+                if (this._gUnityShellActive)
+                    this._syncGUnityDatePosition();
+                return GLib.SOURCE_REMOVE;
+            });
     }
 
     _watchGUnityNotificationSource(source) {
@@ -1107,6 +1142,14 @@ export default class LayoutSwitcherHelper extends Extension {
         this._gUnityTitleButton = null;
         this._gUnityTitleIcon = null;
         this._gUnityTitleLabel = null;
+
+        if (this._gUnityDateReorderId)
+            GLib.Source.remove(this._gUnityDateReorderId);
+        this._gUnityDateReorderId = 0;
+        if (this._gUnityRightBoxSignal && this._gUnityRightBox)
+            this._gUnityRightBox.disconnect(this._gUnityRightBoxSignal);
+        this._gUnityRightBoxSignal = 0;
+        this._gUnityRightBox = null;
 
         this._gUnityNotificationIndicator?.destroy();
         this._gUnityNotificationIndicator = null;

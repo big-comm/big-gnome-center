@@ -123,6 +123,11 @@
     color: rgba(34, 34, 38, 0.55) !important;
 }
 
+.layout-switcher-light-quick-settings
+.message-list.layout-switcher-g-unity-notifications .message-list-placeholder {
+    color: rgba(34, 34, 38, 0.5) !important;
+}
+
 .layout-switcher-light-quick-settings .device-subtitle {
     color: rgba(34, 34, 38, 0.5) !important;
 }

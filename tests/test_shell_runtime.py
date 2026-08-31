@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 84" in controller
+    assert "RUNTIME_BUILD = 85" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -252,6 +252,8 @@ def test_runtime_owns_light_shell_popovers_except_for_minimal():
     assert "layout-switcher-light-date-menu" in stylesheet
     assert "layout-switcher-light-notification-banner" in stylesheet
     assert ".layout-switcher-light-quick-settings .message" in stylesheet
+    assert "layout-switcher-g-unity-notifications .message-list-placeholder" in stylesheet
+    assert "color: rgba(34, 34, 38, 0.5) !important" in stylesheet
     assert ".layout-switcher-light-date-menu .calendar-day" in stylesheet
     assert ".layout-switcher-light-date-menu .message" in stylesheet
     assert ".popup-menu-content.frosted-glass-shell-surface.quick-settings" in stylesheet

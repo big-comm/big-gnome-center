@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 74" in source
+    assert "const HELPER_BUILD = 75" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -108,7 +108,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 74" in source
+    assert "const HELPER_BUILD = 75" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -243,13 +243,20 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "#panel.layout-switcher-g-unity-panel" in stylesheet
     assert "#dashtodockContainer.layout-switcher-g-unity-dock" in stylesheet
     assert "border: none" in stylesheet
-    assert "width: 340px" in stylesheet
-    assert "max-width: 340px" in stylesheet
+    g_unity_notifications = stylesheet.split(
+        ".message-list.layout-switcher-g-unity-notifications,", 1
+    )[1].split("}", 1)[0]
+    assert "width: auto" in g_unity_notifications
+    assert "min-height: 190px" in g_unity_notifications
+    assert "max-width" not in g_unity_notifications
+    assert ".message-list-placeholder" in stylesheet
+    assert "padding-bottom: 48px" in stylesheet
+    assert ".message-list-clear-button" in stylesheet
+    assert "padding: 3px 24px" in stylesheet
     assert "messageList.x_align = Clutter.ActorAlign.FILL" in source
     assert "messageList.x_expand = true" in source
-    assert "layout-switcher-g-unity-quick-settings" in stylesheet
-    assert "min-height: 3em" in stylesheet
     assert ".message-list.layout-switcher-g-unity-notifications" in stylesheet
+    assert ".layout-switcher-g-unity-quick-settings .quick-toggle" not in stylesheet
     assert ".message-view:ltr" in stylesheet
     assert "margin-right: 0" in stylesheet
     assert "_syncGUnityNotificationIndicator" in source
@@ -268,6 +275,11 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "color: #fafafb;" in g_unity_buttons
     assert "-natural-hpadding: 8px" in stylesheet
     assert "Gjs_ui_dateMenu_DateMenuButton.panel-button" in stylesheet
+    assert "_syncGUnityDatePosition" in source
+    assert "_queueGUnityDatePosition" in source
+    assert "children.at(-1) === container" in source
+    assert "'child-added', (_box, child)" in source
+    assert "this._gUnityRightBox.disconnect(this._gUnityRightBoxSignal)" in source
     assert "_setupGUnityDndAction" in source
     assert "notifications-disabled-symbolic" in source
     assert "dndToggle.hide()" in source

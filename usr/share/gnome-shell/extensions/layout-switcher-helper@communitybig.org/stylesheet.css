@@ -119,8 +119,18 @@ Gjs_ui_dateMenu_DateMenuButton StLabel {
     margin: 0;
     padding: 0;
     min-width: 0;
-    width: 340px;
-    max-width: 340px;
+    min-height: 190px;
+    width: auto;
+}
+
+.message-list.layout-switcher-g-unity-notifications .message-list-placeholder {
+    padding-bottom: 48px;
+}
+
+.message-list.layout-switcher-g-unity-notifications
+.message-list-clear-button {
+    min-height: 1.5em;
+    padding: 3px 24px;
 }
 
 .message-list.layout-switcher-g-unity-notifications .message-view:ltr {
@@ -129,13 +139,6 @@ Gjs_ui_dateMenu_DateMenuButton StLabel {
 
 .message-list.layout-switcher-g-unity-notifications .message-view:rtl {
     margin-left: 0;
-}
-
-/* GNOME 51 increased the default toggle height. G-Unity keeps the compact
- * system-menu proportions used by the layout while retaining native widgets. */
-.layout-switcher-g-unity-quick-settings .quick-toggle,
-.layout-switcher-g-unity-quick-settings .quick-toggle-has-menu {
-    min-height: 3em;
 }
 
 #dashtodockContainer.layout-switcher-g-unity-dock,
