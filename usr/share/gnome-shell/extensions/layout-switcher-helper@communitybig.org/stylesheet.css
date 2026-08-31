@@ -133,14 +133,6 @@ Gjs_ui_dateMenu_DateMenuButton StLabel {
     padding: 3px 24px;
 }
 
-.message-list.layout-switcher-g-unity-notifications .message-view:ltr {
-    margin-right: 0;
-}
-
-.message-list.layout-switcher-g-unity-notifications .message-view:rtl {
-    margin-left: 0;
-}
-
 #dashtodockContainer.layout-switcher-g-unity-dock,
 #dashtodockContainer.layout-switcher-g-unity-dock #dash,
 #dashtodockContainer.layout-switcher-g-unity-dock #dashtodockDashContainer,

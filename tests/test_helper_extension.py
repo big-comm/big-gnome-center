@@ -265,8 +265,14 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "this._gUnityMessageBin?.destroy()" in source
     assert ".message-list.layout-switcher-g-unity-notifications" in stylesheet
     assert ".layout-switcher-g-unity-quick-settings .quick-toggle" not in stylesheet
-    assert ".message-view:ltr" in stylesheet
-    assert "margin-right: 0" in stylesheet
+    assert (
+        ".message-list.layout-switcher-g-unity-notifications .message-view:ltr"
+        not in stylesheet
+    )
+    assert (
+        ".message-list.layout-switcher-g-unity-notifications .message-view:rtl"
+        not in stylesheet
+    )
     assert "_syncGUnityNotificationIndicator" in source
     assert "notification-added" in source
     assert "notification-removed" in source
