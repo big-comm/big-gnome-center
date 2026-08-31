@@ -57,6 +57,7 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -119,7 +120,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 75;
+const HELPER_BUILD = 76;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -147,6 +148,13 @@ const DBUS_EXPORT_RETRY_MS = 250;
 // If the caller dies between BeginSwitch and CompleteSwitch, restore the
 // previous extension set so the user is never left on a bare desktop.
 const ROLLBACK_TIMEOUT_S = 60;
+
+const GUnityMessageBin = GObject.registerClass(
+class GUnityMessageBin extends St.Bin {
+    vfunc_get_preferred_width(_forHeight) {
+        return [0, 0];
+    }
+});
 
 const CURTAIN_FADE_MS = 250;
 const CURTAIN_CHECK_MS = 650;
@@ -436,6 +444,7 @@ export default class LayoutSwitcherHelper extends Extension {
         return JSON.stringify({
             helperBuild: HELPER_BUILD,
             shellTheme: this._shellThemeDiagnostics(),
+            gUnity: this._gUnityDiagnostics(),
             runtime,
             runtimeError,
             stage: this._runtimeActors(),
@@ -459,6 +468,25 @@ export default class LayoutSwitcherHelper extends Extension {
             applicationStylesheet: Main.getThemeStylesheet()?.get_uri?.() ?? '',
             customStylesheets: (theme?.get_custom_stylesheets?.() ?? [])
                 .map(file => file?.get_uri?.() ?? '<null>'),
+        };
+    }
+
+    _gUnityDiagnostics() {
+        const preferredWidth = actor => {
+            const [minimum, natural] = actor?.get_preferred_width?.(-1) ?? [0, 0];
+            return {
+                allocated: actor?.width ?? 0,
+                minimum,
+                natural,
+            };
+        };
+        const quickSettings = Main.panel.statusArea.quickSettings;
+        const messageList = Main.panel.statusArea.dateMenu?._messageList;
+        return {
+            active: Boolean(this._gUnityShellActive),
+            grid: preferredWidth(quickSettings?.menu?._grid),
+            messageBin: preferredWidth(this._gUnityMessageBin),
+            messageList: preferredWidth(messageList),
         };
     }
 
@@ -944,7 +972,12 @@ export default class LayoutSwitcherHelper extends Extension {
             messageList.add_style_class_name('layout-switcher-g-unity-notifications');
             messageList.x_align = Clutter.ActorAlign.FILL;
             messageList.x_expand = true;
-            quickSettings.menu.addItem(messageList, 2);
+            this._gUnityMessageBin = new GUnityMessageBin({
+                child: messageList,
+                x_expand: true,
+                clip_to_allocation: true,
+            });
+            quickSettings.menu.addItem(this._gUnityMessageBin, 2);
         }
 
         const indicatorBox = quickSettings._indicators;
@@ -1179,6 +1212,11 @@ export default class LayoutSwitcherHelper extends Extension {
             messageList.x_expand = xExpand;
             parent.insert_child_at_index(messageList, Math.max(0, index));
         }
+        const orphanedMessageList = this._gUnityMessageBin?.get_child?.();
+        if (orphanedMessageList)
+            this._gUnityMessageBin.remove_child(orphanedMessageList);
+        this._gUnityMessageBin?.destroy();
+        this._gUnityMessageBin = null;
         this._gUnityMessageOriginal = null;
 
         const dateMenu = Main.panel.statusArea.dateMenu;

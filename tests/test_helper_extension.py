@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 75" in source
+    assert "const HELPER_BUILD = 76" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -108,7 +108,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 75" in source
+    assert "const HELPER_BUILD = 76" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -255,6 +255,14 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "padding: 3px 24px" in stylesheet
     assert "messageList.x_align = Clutter.ActorAlign.FILL" in source
     assert "messageList.x_expand = true" in source
+    assert "class GUnityMessageBin extends St.Bin" in source
+    assert "vfunc_get_preferred_width(_forHeight)" in source
+    assert "return [0, 0]" in source
+    assert "clip_to_allocation: true" in source
+    assert "quickSettings.menu.addItem(this._gUnityMessageBin, 2)" in source
+    assert "gUnity: this._gUnityDiagnostics()" in source
+    assert "messageBin: preferredWidth(this._gUnityMessageBin)" in source
+    assert "this._gUnityMessageBin?.destroy()" in source
     assert ".message-list.layout-switcher-g-unity-notifications" in stylesheet
     assert ".layout-switcher-g-unity-quick-settings .quick-toggle" not in stylesheet
     assert ".message-view:ltr" in stylesheet

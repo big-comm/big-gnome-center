@@ -3,6 +3,7 @@
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 EXTENSION = ROOT / "usr/share/gnome-shell/extensions/frosted-glass@communitybig.org"
@@ -127,6 +128,13 @@ def test_layout_switcher_exposes_frosted_glass_controls():
     assert "FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51" in controls
     assert "_build_overview_main_group" in controls
     assert 'self._settings.set_boolean("overview-enabled", True)' in controls
+    assert "if enabled and self._overview_only:" in controls
+    assert "_repair_enabled_runtime" in controls
+    assert "_queue_runtime_activation" in controls
+    assert "ShellReloader.get_extension_state" in controls
+    assert "ExtMgr._set_enabled_gsettings" in controls
+    assert "ShellReloader.enable_extension_dbus" in controls
+    assert 'get_boolean("enabled") and not ExtMgr.is_enabled' not in controls
     assert 'if _schema_has_key("use-accent-color"):' in controls
     for setting in [
         "panel-enabled",
@@ -143,6 +151,76 @@ def test_layout_switcher_exposes_frosted_glass_controls():
         "power-save-behavior",
     ]:
         assert setting in controls
+
+
+def test_controls_persist_missing_extension_before_live_activation():
+    from ui.frosted_glass import FrostedGlassControls
+
+    controls = Mock()
+    controls._wait_extension_live.return_value = True
+    with (
+        patch("ui.frosted_glass.ExtMgr.is_enabled", return_value=False),
+        patch(
+            "ui.frosted_glass.ExtMgr._set_enabled_gsettings",
+            return_value=(True, "persisted"),
+        ) as persist,
+        patch("ui.frosted_glass.ShellReloader.enable_extension_dbus") as enable,
+    ):
+        result = FrostedGlassControls._ensure_extension_live(controls)
+
+    assert result == (True, "persisted")
+    persist.assert_called_once_with("frosted-glass@communitybig.org", True)
+    enable.assert_not_called()
+
+
+def test_controls_repair_persisted_but_inactive_extension():
+    from ui.frosted_glass import FrostedGlassControls
+
+    controls = Mock()
+    controls._wait_extension_live.return_value = True
+    with (
+        patch("ui.frosted_glass.ExtMgr.is_enabled", return_value=True),
+        patch("ui.frosted_glass.ShellReloader.get_extension_state", return_value=2),
+        patch(
+            "ui.frosted_glass.ShellReloader.enable_extension_dbus",
+            return_value=(True, "enabled"),
+        ) as enable,
+    ):
+        result = FrostedGlassControls._ensure_extension_live(controls)
+
+    assert result == (True, "enabled")
+    enable.assert_called_once_with("frosted-glass@communitybig.org", True)
+
+
+def test_gnome50_master_reenables_overview_target():
+    from ui.frosted_glass import FrostedGlassControls
+
+    controls = Mock()
+    controls._overview_only = True
+    row = Mock()
+    row.get_active.return_value = True
+
+    FrostedGlassControls._on_master_changed(controls, row, None)
+
+    controls._settings.set_boolean.assert_any_call("enabled", True)
+    controls._settings.set_boolean.assert_any_call("overview-enabled", True)
+    controls._queue_runtime_activation.assert_called_once_with(show_toast=True)
+
+
+def test_background_runtime_repair_preserves_enabled_preference_on_failure():
+    from ui.frosted_glass import FrostedGlassControls
+
+    controls = Mock()
+    controls._settings.get_boolean.return_value = True
+
+    result = FrostedGlassControls._finish_runtime_activation(
+        controls, False, "offline", show_toast=False
+    )
+
+    assert result == 0
+    assert controls._activation_pending is False
+    controls._disable_setting.assert_not_called()
+    controls._toast.assert_not_called()
 
 
 def test_dock_material_overrides_and_restores_inline_background():

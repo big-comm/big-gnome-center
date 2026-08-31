@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 """Layout Switcher controls for the bundled Frosted Glass extension."""
 
+import time
 from typing import List
 
 import gi
@@ -21,6 +22,9 @@ FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51
 # WindowActor background blur corrupts repaints on the tested Mutter 51 beta.
 # Keep the setting contract visible, but do not expose an unsafe switch yet.
 WINDOW_BLUR_AVAILABLE = False
+_LIVE_EXTENSION_STATES = {1, 8}
+_ACTIVATION_TIMEOUT_SECONDS = 2.5
+_ACTIVATION_POLL_SECONDS = 0.1
 
 
 def is_frosted_glass_supported() -> bool:
@@ -48,6 +52,8 @@ class FrostedGlassControls(Gtk.Box):
         self._pool = pool
         self._toast = toast_cb
         self._settings = None
+        self._overview_only = False
+        self._activation_pending = False
         self._dependent_rows: List[Gtk.Widget] = []
         self._unavailable_rows: List[Gtk.Widget] = []
         self._build()
@@ -55,6 +61,7 @@ class FrostedGlassControls(Gtk.Box):
     def _build(self) -> None:
         shell_major = gnome_shell_version()[0]
         overview_only = MINIMUM_SHELL_MAJOR <= shell_major < FULL_BACKEND_MINIMUM_SHELL_MAJOR
+        self._overview_only = overview_only
         title = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         icon = Gtk.Image.new_from_icon_name("weather-fog-symbolic")
         icon.set_pixel_size(24)
@@ -105,12 +112,14 @@ class FrostedGlassControls(Gtk.Box):
             self.append(self._build_overview_main_group())
             self.append(self._build_overview_material_group())
             self._sync_sensitivity()
+            self._repair_enabled_runtime()
             return
         self.append(self._build_main_group())
         self.append(self._build_targets_group())
         self.append(self._build_material_group())
         self.append(self._build_rules_group())
         self._sync_sensitivity()
+        self._repair_enabled_runtime()
 
     def _build_overview_main_group(self) -> Adw.PreferencesGroup:
         group = Adw.PreferencesGroup()
@@ -271,8 +280,6 @@ class FrostedGlassControls(Gtk.Box):
         """Remove settings that cannot have a safe runtime effect."""
         if not WINDOW_BLUR_AVAILABLE and self._settings.get_boolean("windows-enabled"):
             self._settings.set_boolean("windows-enabled", False)
-        if self._settings.get_boolean("enabled") and not ExtMgr.is_enabled(FROSTED_GLASS_UUID):
-            self._settings.set_boolean("enabled", False)
 
     def _switch_row(self, key: str, title: str, subtitle: str) -> Adw.SwitchRow:
         row = Adw.SwitchRow(title=title, subtitle=subtitle)
@@ -331,22 +338,70 @@ class FrostedGlassControls(Gtk.Box):
     def _on_master_changed(self, row: Adw.SwitchRow, prop) -> None:
         enabled = row.get_active()
         self._settings.set_boolean("enabled", enabled)
+        if enabled and self._overview_only:
+            self._settings.set_boolean("overview-enabled", True)
         self._sync_sensitivity()
-        if not enabled or ExtMgr.is_enabled(FROSTED_GLASS_UUID):
+        if not enabled:
             return
 
+        self._queue_runtime_activation(show_toast=True)
+
+    def _repair_enabled_runtime(self) -> None:
+        if self._settings.get_boolean("enabled"):
+            self._queue_runtime_activation(show_toast=False)
+
+    def _queue_runtime_activation(self, show_toast: bool) -> None:
+        if self._activation_pending:
+            return
+        self._activation_pending = True
+
         def task() -> None:
-            ok, message = ShellReloader.apply_extension_state(FROSTED_GLASS_UUID, True)
-            if ok:
-                GLib.idle_add(self._toast, tr("Frosted glass enabled"))
-                return
-            GLib.idle_add(self._disable_setting)
-            GLib.idle_add(
-                self._toast,
-                tr("Could not enable Frosted Glass: {message}").format(message=message),
-            )
+            ok, message = self._ensure_extension_live()
+            GLib.idle_add(self._finish_runtime_activation, ok, message, show_toast)
 
         self._pool.submit(task)
+
+    @staticmethod
+    def _wait_extension_live() -> bool:
+        deadline = time.monotonic() + _ACTIVATION_TIMEOUT_SECONDS
+        while time.monotonic() < deadline:
+            state = ShellReloader.get_extension_state(FROSTED_GLASS_UUID, timeout=1)
+            if state in _LIVE_EXTENSION_STATES:
+                return True
+            time.sleep(_ACTIVATION_POLL_SECONDS)
+        return False
+
+    def _ensure_extension_live(self) -> tuple[bool, str]:
+        if not ExtMgr.is_enabled(FROSTED_GLASS_UUID):
+            ok, message = ExtMgr._set_enabled_gsettings(FROSTED_GLASS_UUID, True)
+            if not ok:
+                return False, message
+            if self._wait_extension_live():
+                return True, message
+
+        state = ShellReloader.get_extension_state(FROSTED_GLASS_UUID, timeout=2)
+        if state in _LIVE_EXTENSION_STATES:
+            return True, ""
+
+        ok, message = ShellReloader.enable_extension_dbus(FROSTED_GLASS_UUID, True)
+        if not ok:
+            return False, message
+        if self._wait_extension_live():
+            return True, message
+        return False, f"extension state {ShellReloader.get_extension_state(FROSTED_GLASS_UUID)}"
+
+    def _finish_runtime_activation(self, ok: bool, message: str, show_toast: bool) -> bool:
+        self._activation_pending = False
+        if not self._settings.get_boolean("enabled"):
+            return GLib.SOURCE_REMOVE
+        if ok:
+            if show_toast:
+                self._toast(tr("Frosted glass enabled"))
+            return GLib.SOURCE_REMOVE
+        if show_toast:
+            self._disable_setting()
+            self._toast(tr("Could not enable Frosted Glass: {message}").format(message=message))
+        return GLib.SOURCE_REMOVE
 
     def _disable_setting(self) -> bool:
         self._settings.set_boolean("enabled", False)

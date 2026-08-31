@@ -347,7 +347,7 @@ class TestDiscoverInstalledComponents:
         return_value={HELPER_UUID},
     )
     @patch("helper_client.HelperClient.reload_extension")
-    @patch("helper_client.HelperClient.ping_info", return_value={"build": 75})
+    @patch("helper_client.HelperClient.ping_info", return_value={"build": 76})
     @patch("helper_client.HelperClient.active_uuid", return_value=HELPER_UUID)
     def test_current_helper_discovers_without_reload(
         self, _active, _ping, mock_reload, _installed, mock_call
