@@ -115,10 +115,11 @@ const NOTIFICATION_POSITION_ALIGNS = new Map([
     ['bottom-center', [Clutter.ActorAlign.CENTER, Clutter.ActorAlign.END]],
     ['bottom-right', [Clutter.ActorAlign.END, Clutter.ActorAlign.END]],
 ]);
+const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 72;
+const HELPER_BUILD = 73;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -1192,7 +1193,10 @@ export default class LayoutSwitcherHelper extends Extension {
                 yAlign: bannerBin.get_y_align(),
                 xExpand: bannerBin.get_x_expand(),
                 yExpand: bannerBin.get_y_expand(),
+                translationY: bannerBin.translation_y,
             };
+            this._notificationBannerChildSignal = bannerBin.connect(
+                'child-added', () => this._syncNotificationPosition());
         }
 
         const [xAlign, yAlign] = aligns;
@@ -1200,9 +1204,27 @@ export default class LayoutSwitcherHelper extends Extension {
         bannerBin.set_y_expand(true);
         bannerBin.set_x_align(xAlign);
         bannerBin.set_y_align(yAlign);
+        bannerBin.translation_y =
+            this._notificationBannerOriginal.translationY -
+            this._notificationBottomOffset(position);
         bannerBin.queue_relayout();
         this._notificationPosition = position;
         return true;
+    }
+
+    _notificationBottomOffset(position) {
+        if (!position.startsWith('bottom-'))
+            return 0;
+        try {
+            const runtime = Main.extensionManager.lookup(RUNTIME_UUID)?.stateObj;
+            const monitorIndex = Main.layoutManager.primaryIndex ??
+                Main.layoutManager.primaryMonitor?.index ?? 0;
+            const offset = runtime?.notificationBottomOffset?.(monitorIndex) ?? 0;
+            return offset > 0 ? Math.ceil(offset) + NOTIFICATION_SURFACE_GAP : 0;
+        } catch (error) {
+            logHelper(`notification surface offset unavailable: ${error}`);
+            return 0;
+        }
     }
 
     _syncNotificationPosition(position = '') {
@@ -1218,12 +1240,16 @@ export default class LayoutSwitcherHelper extends Extension {
         const bannerBin = this._notificationBannerBin;
         const original = this._notificationBannerOriginal;
         if (bannerBin && original) {
+            if (this._notificationBannerChildSignal)
+                bannerBin.disconnect(this._notificationBannerChildSignal);
             bannerBin.set_x_align(original.xAlign);
             bannerBin.set_y_align(original.yAlign);
             bannerBin.set_x_expand(original.xExpand);
             bannerBin.set_y_expand(original.yExpand);
+            bannerBin.translation_y = original.translationY;
             bannerBin.queue_relayout();
         }
+        this._notificationBannerChildSignal = 0;
         this._notificationBannerBin = null;
         this._notificationBannerOriginal = null;
         this._notificationPosition = '';

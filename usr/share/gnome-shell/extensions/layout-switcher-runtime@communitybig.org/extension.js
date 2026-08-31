@@ -23,4 +23,8 @@ export default class LayoutSwitcherRuntimeExtension extends Extension {
             error: 'runtime controller is unavailable',
         };
     }
+
+    notificationBottomOffset(monitorIndex) {
+        return this._controller?.notificationBottomOffset(monitorIndex) ?? 0;
+    }
 }

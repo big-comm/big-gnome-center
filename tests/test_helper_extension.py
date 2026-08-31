@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 72" in source
+    assert "const HELPER_BUILD = 73" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -93,7 +93,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 72" in source
+    assert "const HELPER_BUILD = 73" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -387,3 +387,9 @@ def test_notification_positions_are_owned_by_the_shell_helper():
     assert "this._syncNotificationPosition();" in source
     assert "this._restoreNotificationPosition();" in source
     assert "notification_positions" in source
+    assert "NOTIFICATION_SURFACE_GAP = 12" in source
+    assert "runtime?.notificationBottomOffset?.(monitorIndex)" in source
+    assert "bannerBin.translation_y =" in source
+    assert "this._notificationBannerOriginal.translationY -" in source
+    assert "bannerBin.translation_y = original.translationY" in source
+    assert "'child-added', () => this._syncNotificationPosition()" in source

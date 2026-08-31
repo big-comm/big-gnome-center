@@ -13,9 +13,10 @@ const LERP_FACTOR = 0.28;
 const VISIBLE_SCALE_THRESHOLD = 1.002;
 
 export class DockHoverEffects {
-    constructor() {
+    constructor(isDockShown = () => true) {
         this._effect = 'default';
         this._intensity = 40;
+        this._isDockShown = isDockShown;
         this._records = new Map();
         this._updateCount = 0;
         this._resetCount = 0;
@@ -168,6 +169,11 @@ export class DockHoverEffects {
     }
 
     _tick(dash, record) {
+        if (!this._isDockShown(dash)) {
+            this._suspend(record);
+            return;
+        }
+
         const actors = this._iconActors(dash);
         const liveActors = new Set(actors);
         for (const [actor, state] of [...record.states]) {
@@ -223,6 +229,14 @@ export class DockHoverEffects {
             );
         }
         this._updateCount++;
+    }
+
+    _suspend(record) {
+        for (const [actor, state] of record.states) {
+            state.scale = 1;
+            state.clone?.hide();
+            this._restoreSource(actor, state);
+        }
     }
 
     _iconActors(dash) {

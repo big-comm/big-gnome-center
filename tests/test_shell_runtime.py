@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 83" in controller
+    assert "RUNTIME_BUILD = 84" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -97,6 +97,21 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert profiles.count("dockSize: 39") == 2
     assert "extended: false" in profiles
     assert "extended: true" in profiles
+
+
+def test_runtime_reports_bottom_surface_clearance_for_notifications():
+    extension = (RUNTIME / "extension.js").read_text()
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    dock = (RUNTIME / "dockRuntime.js").read_text()
+    taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
+
+    assert "notificationBottomOffset(monitorIndex)" in extension
+    assert "RuntimeSurface.DOCK" in controller
+    assert "RuntimeSurface.TASKBAR" in controller
+    assert "dock?.position !== 2" in dock
+    assert "dock.height" in dock
+    assert "panel?.geom?.position !== 2" in taskbar
+    assert "panel.geom.outerSize" in taskbar
 
 
 def test_gunity_dock_uses_shared_bigcommunity_menu_icon():
@@ -438,7 +453,7 @@ def test_unified_runtime_loads_rollback_engines_behind_one_controller():
     taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
 
     assert "CommunityDockRuntime" not in dock
-    assert "import {DockSurfaceManager}" in dock
+    assert "import {DockSurfaceManager, State}" in dock
     assert "CommunityPanelRuntime" not in taskbar
     assert "new TaskbarSurfaceManager(this._host)" in taskbar
     assert "ComponentHost" in dock
@@ -1028,6 +1043,19 @@ def test_runtime_owns_dock_hover_effects():
     assert "hoverEffects?.labelClearance(" in app_icons
     assert "magnificationClearance" in app_icons
     assert stylesheet.count("#dash.community-dock-hover-magnify") >= 6
+
+
+def test_magnification_waits_until_the_dock_is_fully_shown():
+    runtime = (RUNTIME / "dockRuntime.js").read_text()
+    hover = (RUNTIME / "dockHoverEffects.js").read_text()
+
+    assert "import {DockSurfaceManager, State}" in runtime
+    assert "dash => this._dockIsShown(dash)" in runtime
+    assert "dock?.getDockState?.() === State.SHOWN" in runtime
+    assert "if (!this._isDockShown(dash))" in hover
+    assert "this._suspend(record)" in hover
+    assert "state.clone?.hide()" in hover
+    assert "this._restoreSource(actor, state)" in hover
 
 
 def test_runtime_owns_core_dock_context_menu_actions():

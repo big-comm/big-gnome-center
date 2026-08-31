@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-import {DockSurfaceManager} from './dockSurface.js';
+import {DockSurfaceManager, State} from './dockSurface.js';
 
 import {ComponentHost} from './componentHost.js';
 import {DockActorFactory} from './dockActorFactory.js';
@@ -32,7 +32,9 @@ export class DockRuntime {
         this._host.appMenuFactory = new DockAppMenuFactory();
         this._host.appMenuActions = new DockAppMenuActions();
         this._host.appModel = new DockAppModel();
-        this._host.hoverEffects = new DockHoverEffects();
+        this._host.hoverEffects = new DockHoverEffects(
+            dash => this._dockIsShown(dash),
+        );
         this._host.notificationBadges = new DockNotificationBadges();
         this._host.placement = new DockPlacement(
             this._host.getSettings(DOCK_SCHEMA),
@@ -143,6 +145,16 @@ export class DockRuntime {
         };
     }
 
+    notificationBottomOffset(monitorIndex) {
+        if (!this._active)
+            return 0;
+        const dock = this._manager?._allDocks?.find(candidate =>
+            candidate?.monitorIndex === monitorIndex);
+        if (dock?.position !== 2)
+            return 0;
+        return Math.max(0, Math.ceil(dock.height ?? 0));
+    }
+
     _enableSurfaces() {
         if (this._manager)
             return;
@@ -213,6 +225,12 @@ export class DockRuntime {
                     : 'right'
                 : '',
         };
+    }
+
+    _dockIsShown(dash) {
+        const dock = this._manager?._allDocks
+            ?.find(candidate => candidate?.dash === dash);
+        return dock?.getDockState?.() === State.SHOWN;
     }
 
     _sideName(side) {

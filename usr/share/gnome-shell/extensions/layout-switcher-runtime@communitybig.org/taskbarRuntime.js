@@ -96,6 +96,17 @@ export class TaskbarRuntime {
         };
     }
 
+    notificationBottomOffset(monitorIndex) {
+        if (!this._active)
+            return 0;
+        const panel = this._surface.panels().find(candidate =>
+            (candidate?.monitor?.index ?? candidate?.monitorIndex) === monitorIndex);
+        if (panel?.geom?.position !== 2)
+            return 0;
+        return Math.max(0, Math.ceil(
+            panel.geom.outerSize ?? panel.panelBox?.height ?? 0));
+    }
+
     _panelDiagnostics(panel) {
         const actor = panel?.panelBox;
         return {

@@ -11,7 +11,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 83;
+export const RUNTIME_BUILD = 84;
 
 export class RuntimeController {
     constructor(extension) {
@@ -247,6 +247,14 @@ export class RuntimeController {
         if (panelHeight === undefined)
             return profile.actorHeight;
         return panelHeight + profile.actorHeight - profile.panelHeight;
+    }
+
+    notificationBottomOffset(monitorIndex) {
+        if (this._activeProfile?.surface === RuntimeSurface.DOCK)
+            return this._dock?.notificationBottomOffset(monitorIndex) ?? 0;
+        if (this._activeProfile?.surface === RuntimeSurface.TASKBAR)
+            return this._taskbar?.notificationBottomOffset(monitorIndex) ?? 0;
+        return 0;
     }
 
     diagnostics() {
