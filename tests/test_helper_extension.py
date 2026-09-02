@@ -44,7 +44,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 76" in source
+    assert "const HELPER_BUILD = 77" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -108,7 +108,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 76" in source
+    assert "const HELPER_BUILD = 77" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -308,13 +308,29 @@ def test_fixed_dark_layouts_resolve_the_shell_stylesheet_before_enable():
             "]);", 1
         )[0]
     assert "Main.sessionMode.colorScheme = 'force-dark'" in source
-    assert "ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout))" in source
+    assert "target.has(LIGHT_STYLE_UUID)" in source
     color_sync = source.index(
-        "ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout))"
+        "if (ensureValidColorScheme(\n            FIXED_DARK_LAYOUTS.has(targetLayout)"
     )
     theme_load = source.index("Main.loadTheme();", color_sync)
     first_enable = source.index("mgr.enableExtension(uuid)", theme_load)
     assert color_sync < theme_load < first_enable
+
+
+def test_theme_reload_drops_deleted_custom_stylesheets():
+    source = HELPER.read_text()
+
+    cleanup = source.split("function sanitizeCustomStylesheets()", 1)[1]
+    cleanup = cleanup.split("function ensureValidColorScheme", 1)[0]
+    assert "get_custom_stylesheets()" in cleanup
+    assert "if (!file || !uri || seen.has(uri))" in cleanup
+    assert "replacement.load_stylesheet(file)" in cleanup
+    assert "themeContext.set_theme(replacement)" in cleanup
+    ensure = source.split("function ensureValidColorScheme", 1)[1]
+    ensure = ensure.split("export default class", 1)[0]
+    assert ensure.index("sanitizeCustomStylesheets()") < ensure.index(
+        "St.Settings.get().notify('color-scheme')"
+    )
 
 
 def test_g_unity_shell_is_restored_before_extensions_are_disabled():

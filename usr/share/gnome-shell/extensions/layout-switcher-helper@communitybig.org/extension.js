@@ -120,7 +120,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 76;
+const HELPER_BUILD = 77;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -229,15 +229,54 @@ const FIXED_DARK_LAYOUTS = new Set([
 // further notify to recompute the stylesheet — so checking the current scheme is
 // not enough; we must drive Main._loadDefaultStylesheet() unconditionally so
 // _defaultCssStylesheet is non-null before loadTheme() reads it.
-function ensureValidColorScheme(forceDark = false) {
+function sanitizeCustomStylesheets() {
+    const themeContext = St.ThemeContext.get_for_stage(global.stage);
+    const theme = themeContext.get_theme();
+    const replacement = new St.Theme({
+        application_stylesheet: theme?.get_application_stylesheet() ?? null,
+        default_stylesheet: theme?.get_default_stylesheet() ?? null,
+        theme_stylesheet: theme?.get_theme_stylesheet() ?? null,
+    });
+    const seen = new Set();
+    let removed = 0;
+    for (const file of theme?.get_custom_stylesheets() ?? []) {
+        try {
+            const uri = file?.get_uri?.();
+            if (!file || !uri || seen.has(uri)) {
+                removed++;
+                continue;
+            }
+            replacement.load_stylesheet(file);
+            seen.add(uri);
+        } catch (e) {
+            removed++;
+            logHelper(`discarding invalid custom stylesheet: ${e}`);
+        }
+    }
+    if (removed)
+        themeContext.set_theme(replacement);
+    return removed;
+}
+
+function ensureValidColorScheme(forceDark = false, preferLight = false) {
     const previous = Main.sessionMode.colorScheme;
     const repaired = !VALID_COLOR_SCHEMES.has(previous);
     if (forceDark)
         Main.sessionMode.colorScheme = 'force-dark';
+    else if (preferLight)
+        Main.sessionMode.colorScheme = 'prefer-light';
     else if (repaired)
         Main.sessionMode.colorScheme = 'prefer-dark';
+
+    // loadTheme() copies every custom stylesheet from the current theme.
+    // Drop deleted cache files before the color-scheme notification triggers
+    // GNOME Shell's synchronous theme reload.
+    const staleStylesheets = sanitizeCustomStylesheets();
+    if (staleStylesheets)
+        logHelper(`removed ${staleStylesheets} stale custom stylesheet(s)`);
     St.Settings.get().notify('color-scheme');
-    return repaired || Main.sessionMode.colorScheme !== previous;
+    return repaired || staleStylesheets > 0 ||
+        Main.sessionMode.colorScheme !== previous;
 }
 
 export default class LayoutSwitcherHelper extends Extension {
@@ -2435,7 +2474,10 @@ export default class LayoutSwitcherHelper extends Extension {
         // BEFORE the appearance extensions enable on top of it.
         const targetLayout = this._pendingLayoutLabel ||
             this._readActiveLayoutLabel();
-        if (ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout)))
+        if (ensureValidColorScheme(
+            FIXED_DARK_LAYOUTS.has(targetLayout),
+            target.has(LIGHT_STYLE_UUID),
+        ))
             steps.push('fix colorScheme');
         if (req.theme_reload !== false) {
             try {

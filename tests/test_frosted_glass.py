@@ -527,6 +527,15 @@ def test_overview_controls_reuse_the_blurred_backdrop():
     assert "box-shadow: none !important" in stylesheet
 
 
+def test_overview_material_unloads_from_the_current_shell_theme():
+    material = (EXTENSION / "overviewMaterial.js").read_text()
+    unload = material.split("_unload() {", 1)[1].split("\n    }", 1)[0]
+
+    assert "St.ThemeContext.get_for_stage(global.stage).get_theme()" in unload
+    assert "theme?.unload_stylesheet(this._file)" in unload
+    assert "this._theme?.unload_stylesheet" not in unload
+
+
 def test_overview_does_not_call_private_app_grid_loading_methods():
     controller = (EXTENSION / "overviewController.js").read_text()
 

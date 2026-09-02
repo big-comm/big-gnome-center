@@ -176,7 +176,11 @@ export class OverviewMaterialStylesheet {
         if (!this._loaded)
             return;
         try {
-            this._theme?.unload_stylesheet(this._file);
+            // Main.loadTheme() copies custom stylesheets into a new theme.
+            // Unload from the current theme, not the stale instance that
+            // originally loaded the generated file.
+            const theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
+            theme?.unload_stylesheet(this._file);
         } catch (error) {
             console.debug(`Frosted Glass: cannot unload material stylesheet: ${error}`);
         }
