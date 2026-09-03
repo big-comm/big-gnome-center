@@ -158,6 +158,10 @@ msgid "Delete failed"
 msgstr "Falha ao excluir"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "Relevância"
+
+#: usr/share/layout-switcher/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Popularidade"
 

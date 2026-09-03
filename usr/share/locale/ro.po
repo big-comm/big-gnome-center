@@ -157,6 +157,10 @@ msgid "Delete failed"
 msgstr "Ștergerea a eșuat"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "Relevanță"
+
+#: usr/share/layout-switcher/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Popularitate"
 

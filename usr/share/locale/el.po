@@ -159,6 +159,10 @@ msgid "Delete failed"
 msgstr "Η διαγραφή απέτυχε"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "Συνάφεια"
+
+#: usr/share/layout-switcher/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Δημοτικότητα"
 

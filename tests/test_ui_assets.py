@@ -43,6 +43,15 @@ def test_update_notification_opens_installed_extensions():
     assert 'self._switch_sub("installed")' in extensions_source
 
 
+def test_extension_search_defaults_to_relevance():
+    source = (ROOT / "usr/share/layout-switcher/ui/ext_browse_view.py").read_text()
+
+    relevance = '(tr("Relevance"), ego_client.SORT_RELEVANCE)'
+    popularity = '(tr("Popularity"), ego_client.SORT_POPULARITY)'
+    assert source.index(relevance) < source.index(popularity)
+    assert "self._sort = ego_client.SORT_RELEVANCE" in source
+
+
 def test_effect_assets_and_gallery_geometry():
     for name in ("cube.png", "lamp.png", "wobbly.png"):
         path = EFFECTS / name

@@ -35,6 +35,7 @@ from constants import (
 
 log = logging.getLogger("layout-switcher")
 
+SORT_RELEVANCE = "relevance"
 SORT_POPULARITY = "popularity"
 SORT_DOWNLOADS = "downloads"
 SORT_RECENT = "recent"
@@ -245,7 +246,7 @@ def _parse_comments(raw: object) -> List[CommentEntry]:
 def search(
     query: str = "",
     page: int = 1,
-    sort: str = SORT_POPULARITY,
+    sort: str = SORT_RELEVANCE,
     shell_version: str = SHELL_ALL,
     use_cache: bool = True,
 ) -> Optional[SearchResult]:
@@ -256,7 +257,7 @@ def search(
     "all" especialmente, devolvendo extensões de qualquer versão.
     """
     page = max(1, int(page))
-    sort = sort or SORT_POPULARITY
+    sort = sort or SORT_RELEVANCE
     shell = shell_version or SHELL_ALL
 
     params = {

@@ -156,6 +156,10 @@ msgid "Delete failed"
 msgstr "Delete failed"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "Relevance"
+
+#: usr/share/layout-switcher/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Popularity"
 

@@ -38,6 +38,7 @@ def _clean_desc(text: str) -> str:
 # Mapa exibido → constante do EGO
 # Strings wrapped in tr() at definition so xgettext extracts them.
 SORT_CHOICES = [
+    (tr("Relevance"), ego_client.SORT_RELEVANCE),
     (tr("Popularity"), ego_client.SORT_POPULARITY),
     (tr("Downloads"), ego_client.SORT_DOWNLOADS),
     (tr("Recent"), ego_client.SORT_RECENT),
@@ -68,7 +69,7 @@ class ExtBrowseView(Gtk.Box):
         self._page = 1
         self._num_pages = 1
         self._total = 0
-        self._sort = ego_client.SORT_POPULARITY
+        self._sort = ego_client.SORT_RELEVANCE
         # Filtro de compatibilidade desligado por padrão: o EGO marca poucas
         # extensões como compatíveis com versões muito novas do Shell, e
         # ligar de cara faz a busca devolver 1-2 resultados estranhos.

@@ -156,6 +156,10 @@ msgid "Delete failed"
 msgstr "Ekki tókst að eyða"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "Samsvörun"
+
+#: usr/share/layout-switcher/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Vinsældir"
 

@@ -3,6 +3,7 @@
 
 import json
 from io import BytesIO
+from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 
 import ego_client
@@ -78,6 +79,38 @@ SAMPLE_INFO = {
 
 
 class TestSearch:
+    def test_default_sort_uses_server_relevance(self, tmp_path):
+        with (
+            patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),
+            patch(
+                "ego_client.urllib.request.urlopen",
+                return_value=_fake_response(SAMPLE_QUERY),
+            ) as mock_urlopen,
+        ):
+            ego_client.search(query="Bluetooth Battery Meter", use_cache=False)
+
+        request = mock_urlopen.call_args.args[0]
+        params = parse_qs(urlparse(request.full_url).query)
+        assert params["sort"] == [ego_client.SORT_RELEVANCE]
+
+    def test_explicit_popularity_sort_is_preserved(self, tmp_path):
+        with (
+            patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),
+            patch(
+                "ego_client.urllib.request.urlopen",
+                return_value=_fake_response(SAMPLE_QUERY),
+            ) as mock_urlopen,
+        ):
+            ego_client.search(
+                query="Bluetooth Battery Meter",
+                sort=ego_client.SORT_POPULARITY,
+                use_cache=False,
+            )
+
+        request = mock_urlopen.call_args.args[0]
+        params = parse_qs(urlparse(request.full_url).query)
+        assert params["sort"] == [ego_client.SORT_POPULARITY]
+
     def test_parses_response(self, tmp_path):
         with (
             patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),

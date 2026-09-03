@@ -155,6 +155,10 @@ msgid "Delete failed"
 msgstr "삭제 실패"
 
 #: usr/share/layout-switcher/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "관련성"
+
+#: usr/share/layout-switcher/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "인기"
 
