@@ -102,13 +102,5 @@ class TestExtractThemeColor:
     def test_unknown_kind_returns_none(self):
         assert theme_preview.extract_theme_color("AnyTheme", "weird") is None
 
-    def test_shell_theme_css(self, tmp_path):
-        theme_dir = tmp_path / "ShellT"
-        shell_dir = theme_dir / "gnome-shell"
-        shell_dir.mkdir(parents=True)
-        (shell_dir / "gnome-shell.css").write_text(
-            "@define-color theme_selected_bg_color #1c71d8;\n"
-        )
-
-        with patch.object(theme_preview, "_THEME_ROOTS", [tmp_path]):
-            assert theme_preview.extract_theme_color("ShellT", "shell") == "#1c71d8"
+    def test_shell_kind_is_not_supported(self):
+        assert theme_preview.extract_theme_color("AnyTheme", "shell") is None

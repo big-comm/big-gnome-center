@@ -10,7 +10,7 @@ Duas funcoes publicas:
       mostrar uma miniatura real do icone em vez de uma bolinha arbitraria.
 
   * ``extract_theme_color(theme_name, kind)`` -> Optional[str]
-      Extrai um hex ``#rrggbb`` representativo do tema GTK ou Shell,
+      Extrai um hex ``#rrggbb`` representativo do tema GTK,
       parseando variaveis de cor do CSS (``@define-color accent_color``,
       ``accent_bg_color``, ``theme_selected_bg_color``, ...). Fallback para
       None quando o tema usa referencia a outra variavel ou funcao (nao
@@ -312,7 +312,7 @@ def is_light_theme_name(theme_name: str) -> bool:
     return any(token in n for token in ("-light", "_light", " light", "white", "claro"))
 
 
-# ── GTK / Shell theme: color extraction ──────────────────────────────────────
+# ── GTK theme: color extraction ──────────────────────────────────────────
 
 
 _THEME_ROOTS: List[Path] = [
@@ -333,23 +333,17 @@ _ACCENT_VARS: List[str] = [
 _HEX_RE = re.compile(r"^#[0-9a-fA-F]{3,8}$")
 
 
-def _css_files(theme_name: str, kind: str) -> List[Path]:
-    """Arquivos CSS candidatos para extrair cor do tema."""
+def _css_files(theme_name: str) -> List[Path]:
+    """Return candidate GTK CSS files for color extraction."""
     files: List[Path] = []
     for root in _THEME_ROOTS:
         base = root / theme_name
         if not base.is_dir():
             continue
-        if kind == "gtk":
-            for sub in ("gtk-4.0/gtk.css", "gtk-3.0/gtk.css"):
-                f = base / sub
-                if f.is_file():
-                    files.append(f)
-        elif kind == "shell":
-            for sub in ("gnome-shell/gnome-shell.css", "gnome-shell.css"):
-                f = base / sub
-                if f.is_file():
-                    files.append(f)
+        for sub in ("gtk-4.0/gtk.css", "gtk-3.0/gtk.css"):
+            css_file = base / sub
+            if css_file.is_file():
+                files.append(css_file)
     return files
 
 
@@ -381,18 +375,18 @@ def _extract_from_css(text: str) -> Optional[str]:
 
 def extract_theme_color(theme_name: str, kind: str) -> Optional[str]:
     """
-    Extrai um hex representativo do tema GTK ou Shell.
+    Extrai um hex representativo do tema GTK.
 
     Args:
         theme_name: nome do tema (diretorio em ``~/.themes`` ou ``/usr/share/themes``)
-        kind: "gtk" ou "shell"
+        kind: "gtk"
 
     Retorna ``#rrggbb`` ou None se nao for possivel extrair uma cor literal.
     """
-    if kind not in ("gtk", "shell"):
+    if kind != "gtk":
         return None
 
-    for css_path in _css_files(theme_name, kind):
+    for css_path in _css_files(theme_name):
         try:
             # Limita leitura para nao carregar arquivos enormes inteiros
             # (gtk.css pode ter 100k+ linhas em temas grandes)
@@ -405,61 +399,4 @@ def extract_theme_color(theme_name: str, kind: str) -> Optional[str]:
         if color:
             return color
 
-    return None
-
-
-# ── Shell panel background extraction ───────────────────────────────────────
-
-# Capture ``#panel { ... background-color: <value> }`` from gnome-shell.css.
-# We accept the first ``background-color`` declaration inside the first
-# ``#panel`` rule. Themes that override via ``.panel`` class or nest selectors
-# are not handled — fallback is acceptable.
-_PANEL_BG_RE = re.compile(
-    r"#panel\s*\{[^}]*?background-color\s*:\s*([^;}]+)[;}]",
-    re.DOTALL | re.IGNORECASE,
-)
-
-_RGBA_RE = re.compile(r"rgba?\s*\(\s*([^)]+)\)", re.IGNORECASE)
-
-
-def _rgba_to_hex(raw: str) -> Optional[str]:
-    """Converte ``rgb(...)``/``rgba(...)`` para ``#rrggbb`` (descarta alpha)."""
-    match = _RGBA_RE.match(raw.strip())
-    if not match:
-        return None
-    parts = [p.strip() for p in match.group(1).split(",")]
-    if len(parts) < 3:
-        return None
-    try:
-        r = max(0, min(255, int(round(float(parts[0])))))
-        g = max(0, min(255, int(round(float(parts[1])))))
-        b = max(0, min(255, int(round(float(parts[2])))))
-    except ValueError:
-        return None
-    return f"#{r:02x}{g:02x}{b:02x}"
-
-
-def extract_shell_panel_bg(theme_name: str) -> Optional[str]:
-    """
-    Extrai a cor de fundo do ``#panel`` do gnome-shell.css do tema.
-    Retorna ``#rrggbb`` ou None quando o tema nao define ``#panel`` com
-    cor literal (hex/rgb/rgba). Alpha e descartado — visualizamos o
-    panel como solido no preview.
-    """
-    for css_path in _css_files(theme_name, "shell"):
-        try:
-            text = css_path.read_text(encoding="utf-8", errors="ignore")
-        except Exception as exc:
-            log.debug("shell css read failed: %s -> %s", css_path, exc)
-            continue
-        match = _PANEL_BG_RE.search(text)
-        if not match:
-            continue
-        raw = match.group(1).strip()
-        normalized = _normalize_hex(raw)
-        if normalized:
-            return normalized
-        rgba = _rgba_to_hex(raw)
-        if rgba:
-            return rgba
     return None

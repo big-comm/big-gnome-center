@@ -1,24 +1,15 @@
 # SPDX-License-Identifier: MIT
-"""
-theme_manager.py — Gerenciamento de temas GTK, ícones e Shell.
-
-Aplica temas em tempo real via gsettings sem necessidade de logout.
-GTK e ícones propagam imediatamente para todas as janelas abertas.
-Shell enables the User Themes extension on demand.
-
-DEVELOPER NOTE — DO NOT name any variable `_` in this file.
-"""
+"""Manage native accent, color-scheme, GTK, and icon themes."""
 
 import ast
 from pathlib import Path
 from typing import List, Tuple
 
-from constants import ACCENT_COLORS, DBUS_EXT_IFACE, DBUS_EXT_PATH, DBUS_SHELL_NAME
-from extension_manager import ExtMgr
+from constants import ACCENT_COLORS
 from settings_store import Settings
 from shell_reloader import ShellReloader
 from theme_preview import is_icon_theme
-from utils import gsettings_get, gsettings_set, run_cmd
+from utils import gsettings_get, gsettings_set
 
 _SHELL_SCHEMA = "org.gnome.shell"
 _LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
@@ -39,8 +30,6 @@ class ThemeMgr:
     Todos os métodos apply_* propagam mudanças em tempo real
     sem encerrar a sessão.
     """
-
-    SHELL_DEFAULT_THEME_LABEL = "Adwaita (Default)"
 
     @staticmethod
     def _layout_snapshot_marker() -> Path:
@@ -69,17 +58,12 @@ class ThemeMgr:
             # que so trazem ``cursors/``. Exige que o tema tenha pelo menos
             # uma categoria de icone para nao poluir a aba Icones.
             return (d / "index.theme").exists() and is_icon_theme(d.name)
-        if kind == "shell":
-            sd = d / "gnome-shell"
-            return sd.is_dir() and any(
-                (sd / f).exists() for f in ("gnome-shell.css", "gnome-shell.gresource")
-            )
         return False
 
     @staticmethod
     def _theme_roots(kind: str) -> List[Path]:
         """Return search directories for theme kind."""
-        if kind in ("gtk", "shell"):
+        if kind == "gtk":
             return [
                 Path.home() / ".themes",
                 Path("/usr/local/share/themes"),
@@ -95,7 +79,7 @@ class ThemeMgr:
     def list_themes(kind: str) -> List[str]:
         """
         Lista temas instalados do tipo especificado.
-        kind: "gtk" | "icons" | "shell"
+        kind: "gtk" | "icons"
         """
         seen: dict = {}
         for root in ThemeMgr._theme_roots(kind):
@@ -112,9 +96,6 @@ class ThemeMgr:
                     seen[d.name] = True
 
         names = sorted(seen.keys(), key=str.lower)
-        if kind == "shell":
-            names = [n for n in names if n != ThemeMgr.SHELL_DEFAULT_THEME_LABEL]
-            return [ThemeMgr.SHELL_DEFAULT_THEME_LABEL] + names
         return names
 
     # ── Aplicar tema ──────────────────────────────────────────────────────────
@@ -125,8 +106,6 @@ class ThemeMgr:
         Aplica o tema especificado em tempo real via gsettings.
 
         Para GTK/ícones: propaga imediatamente para todas as janelas abertas.
-        For Shell: enables User Themes when needed and reloads it over D-Bus.
-
         Retorna (True, "") ou (False, código_erro).
         """
         if kind == "gtk":
@@ -141,61 +120,7 @@ class ThemeMgr:
                 ThemeMgr._invalidate_layout_snapshot()
             return ok, msg
 
-        if kind == "shell":
-            uid = "user-theme@gnome-shell-extensions.gcampax.github.com"
-            settings_name = "" if name == ThemeMgr.SHELL_DEFAULT_THEME_LABEL else name
-            settings_value = "''" if not settings_name else settings_name
-
-            if not settings_name:
-                if not ExtMgr.is_installed(uid):
-                    return True, ""
-                ok, msg = gsettings_set(
-                    "org.gnome.shell.extensions.user-theme", "name", settings_value
-                )
-                if ok and ExtMgr.is_enabled(uid):
-                    ThemeMgr._reload_shell_user_theme(uid)
-                if ok:
-                    ThemeMgr._invalidate_layout_snapshot()
-                return ok, msg
-
-            if not ExtMgr.is_installed(uid):
-                return False, "user-theme-not-installed"
-
-            ok, msg = gsettings_set("org.gnome.shell.extensions.user-theme", "name", settings_value)
-            if not ok:
-                return False, msg
-
-            if not ExtMgr.is_enabled(uid):
-                enabled, enable_msg = ExtMgr.set_enabled(uid, True)
-                if not enabled:
-                    return False, enable_msg or "user-theme-enable-failed"
-
-            # Reload after enabling so the selected CSS is also applied when
-            # User Themes was previously disabled.
-            ThemeMgr._reload_shell_user_theme(uid)
-            ThemeMgr._invalidate_layout_snapshot()
-            return True, ""
-
         return False, f"unknown theme kind: {kind!r}"
-
-    @staticmethod
-    def _reload_shell_user_theme(uid: str) -> None:
-        """Reload User Themes so Shell CSS updates without logout."""
-        run_cmd(
-            [
-                "gdbus",
-                "call",
-                "--session",
-                "--dest",
-                DBUS_SHELL_NAME,
-                "--object-path",
-                DBUS_EXT_PATH,
-                "--method",
-                f"{DBUS_EXT_IFACE}.ReloadExtension",
-                uid,
-            ],
-            timeout=5,
-        )
 
     # ── Esquema de cores ──────────────────────────────────────────────────────
 
@@ -234,7 +159,6 @@ class ThemeMgr:
             shell_dark = dark or active_layout in _SHELL_DARK_LAYOUTS
             ThemeMgr._sync_shell_color_scheme(
                 shell_dark,
-                native_shell=active_layout in {"Classic", "Hybrid"},
                 fixed_shell=active_layout in _SHELL_DARK_LAYOUTS,
             )
             # Notifica o StyleManager do processo atual
@@ -267,64 +191,32 @@ class ThemeMgr:
         return [item for item in parsed if isinstance(item, str) and item]
 
     @staticmethod
-    def _string_value(value: str | None) -> str:
-        if not value:
-            return ""
-        try:
-            parsed = ast.literal_eval(value.strip())
-        except (ValueError, SyntaxError):
-            return value.strip().strip("'\"")
-        return parsed if isinstance(parsed, str) else ""
-
-    @staticmethod
     def _sync_shell_color_scheme(
         dark: bool,
         *,
-        native_shell: bool = False,
         fixed_shell: bool = False,
     ) -> None:
-        # These layouts keep their structural dark Shell while GTK
-        # applications continue to follow the global light/dark choice.
-        if fixed_shell:
-            return
-
         enabled = ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "enabled-extensions"))
         disabled = ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "disabled-extensions"))
-        user_theme_name = ""
-        if dark or native_shell:
-            user_theme_name = ThemeMgr._string_value(
-                gsettings_get("org.gnome.shell.extensions.user-theme", "name")
-            )
-        user_theme_enabled = _USER_THEME_UUID in enabled and _USER_THEME_UUID not in disabled
-        # Fixed-shell layouts and explicit user overrides are authoritative.
-        # Applying "Original" remains responsible for restoring layout defaults.
-        if native_shell and (user_theme_enabled or user_theme_name):
-            return
 
         def add_once(values: List[str], uuid: str) -> None:
             if uuid not in values:
                 values.append(uuid)
 
-        if dark:
+        enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
+        add_once(disabled, _USER_THEME_UUID)
+
+        if dark or fixed_shell:
             enabled = [uuid for uuid in enabled if uuid != _LIGHT_STYLE_UUID]
             add_once(disabled, _LIGHT_STYLE_UUID)
-            if user_theme_name:
-                disabled = [uuid for uuid in disabled if uuid != _USER_THEME_UUID]
-                add_once(enabled, _USER_THEME_UUID)
-            else:
-                enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
-                add_once(disabled, _USER_THEME_UUID)
         else:
-            enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
             disabled = [uuid for uuid in disabled if uuid != _LIGHT_STYLE_UUID]
             add_once(enabled, _LIGHT_STYLE_UUID)
-            add_once(disabled, _USER_THEME_UUID)
 
+        gsettings_set("org.gnome.shell.extensions.user-theme", "name", "''")
         gsettings_set(_SHELL_SCHEMA, "disabled-extensions", repr(disabled))
         gsettings_set(_SHELL_SCHEMA, "enabled-extensions", repr(enabled))
         ShellReloader.reload_extension(_LIGHT_STYLE_UUID, timeout=5)
-        if dark and user_theme_name:
-            ShellReloader.reload_extension(_USER_THEME_UUID, timeout=5)
 
     # ── Consultas ─────────────────────────────────────────────────────────────
 
@@ -334,14 +226,11 @@ class ThemeMgr:
         key_map = {
             "gtk": ("org.gnome.desktop.interface", "gtk-theme"),
             "icons": ("org.gnome.desktop.interface", "icon-theme"),
-            "shell": ("org.gnome.shell.extensions.user-theme", "name"),
         }
         schema, key = key_map.get(kind, ("", ""))
         if not schema:
             return ""
         value = gsettings_get(schema, key) or ""
-        if kind == "shell" and not value:
-            return ThemeMgr.SHELL_DEFAULT_THEME_LABEL
         return value
 
     @staticmethod

@@ -215,9 +215,9 @@ def test_original_layouts_use_traditional_pointer_scrolling():
         assert gdm_touchpad["natural-scrolling"] == "false"
 
 
-def test_fixed_dark_layouts_do_not_require_user_theme():
-    for filename in ("biggnome.txt", "desk-ux.txt"):
-        text = (LAYOUT_DIR / filename).read_text()
+def test_original_layouts_retire_user_theme():
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        text = layout_file.read_text()
         enabled, disabled = _shell_extension_lists(text)
         user_theme_values = _section_key_values(
             text,

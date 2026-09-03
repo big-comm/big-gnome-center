@@ -72,9 +72,6 @@ _CURATED_EXTENSION_DESCRIPTIONS = {
     "light-style@gnome-shell-extensions.gcampax.github.com": tr(
         "Uses the light GNOME Shell appearance."
     ),
-    "user-theme@gnome-shell-extensions.gcampax.github.com": tr(
-        "Loads the Shell theme selected by the active layout."
-    ),
 }
 
 

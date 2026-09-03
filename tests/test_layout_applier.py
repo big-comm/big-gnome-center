@@ -644,7 +644,7 @@ disabled-extensions=['community-menu@communitybig.org']
             f"enabled-extensions=['{user_theme}', 'dash-to-dock@micxgx.gmail.com']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
-            "name='Big-Blue'\n"
+            "name='Legacy-Shell'\n"
         )
         mock_run.side_effect = [
             (True, "'prefer-light'"),
@@ -662,7 +662,7 @@ disabled-extensions=['community-menu@communitybig.org']
         assert user_theme not in enabled
         assert user_theme in disabled
         assert light_style not in disabled
-        assert "name='Big-Blue'" in out
+        assert "name=''" in out
 
     @patch("layout_applier.run_cmd")
     def test_preserve_user_color_scheme_uses_effective_gsettings(self, mock_run):
@@ -735,8 +735,8 @@ disabled-extensions=['community-menu@communitybig.org']
         assert user_theme in disabled
 
     @patch("layout_applier.run_cmd")
-    def test_preserve_user_dark_color_scheme_keeps_named_shell_theme(self, mock_run):
-        """Named Shell themes still use user-theme in dark mode."""
+    def test_preserve_user_dark_color_scheme_retires_named_shell_theme(self, mock_run):
+        """Dark mode uses the native Shell and retires named Shell themes."""
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
@@ -748,7 +748,7 @@ disabled-extensions=['community-menu@communitybig.org']
             f"enabled-extensions=['{light_style}']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
-            "name='Big-Blue'\n"
+            "name='Legacy-Shell'\n"
         )
         mock_run.return_value = (True, "'prefer-dark'")
 
@@ -757,15 +757,15 @@ disabled-extensions=['community-menu@communitybig.org']
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
-        assert user_theme in enabled
+        assert user_theme not in enabled
         assert light_style not in enabled
         assert light_style in disabled
-        assert user_theme not in disabled
-        assert "name='Big-Blue'" in out
+        assert user_theme in disabled
+        assert "name=''" in out
 
     @patch("layout_applier.run_cmd")
     def test_biggnome_preserves_light_apps_and_dark_shell(self, mock_run):
-        """BigGnome keeps light apps and its named dark Shell theme."""
+        """BigGnome keeps light apps and its native dark Shell."""
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
@@ -778,7 +778,7 @@ disabled-extensions=['community-menu@communitybig.org']
             f"enabled-extensions=['{user_theme}', 'dash-to-dock@micxgx.gmail.com']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
-            "name='Big-Blue'\n"
+            "name='Legacy-Shell'\n"
         )
         mock_run.return_value = (True, "'prefer-light'")
 
@@ -791,10 +791,11 @@ disabled-extensions=['community-menu@communitybig.org']
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
-        assert user_theme in enabled
+        assert user_theme not in enabled
         assert light_style not in enabled
         assert light_style in disabled
-        assert user_theme not in disabled
+        assert user_theme in disabled
+        assert "name=''" in out
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.ShellReloader.reload_extension", return_value=True)
@@ -853,7 +854,9 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_reload.assert_not_called()
         assert mock_run.call_count == 2
         assert mock_run.call_args_list[0].args[0] == ["dconf", "load", "/"]
-        assert mock_run.call_args_list[0].kwargs["stdin_text"] == "[org/gnome/shell]\n"
+        settings_data = mock_run.call_args_list[0].kwargs["stdin_text"]
+        assert settings_data.startswith("[org/gnome/shell]\n")
+        assert "[org/gnome/shell/extensions/user-theme]\nname=''" in settings_data
         assert mock_run.call_args_list[1].args[0] == ["dconf", "load", "/"]
         assert (
             "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
@@ -988,7 +991,6 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "'community-panel@communitybig.org'" not in switch_data
 
     @patch("layout_applier.time.sleep")
-    @patch("layout_applier.LayoutApplier._enable_user_theme_after_load", return_value=True)
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch(
         "layout_applier.LayoutApplier._enabled_extensions",
@@ -999,7 +1001,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_enables_named_user_theme_after_settings_load(
+    def test_load_retires_named_user_theme_before_settings_load(
         self,
         mock_run,
         _has,
@@ -1008,10 +1010,9 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_disable,
         _enabled,
         _reload,
-        mock_enable_user_theme,
         _sleep,
     ):
-        """Named Shell themes must start after their name key is loaded."""
+        """Named Shell themes are retired before their extension can start."""
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
             "[org/gnome/shell]\n"
@@ -1019,7 +1020,7 @@ disabled-extensions=['community-menu@communitybig.org']
             f"enabled-extensions=['{user_theme}', 'stay@ext']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
-            "name='Big-Blue'\n"
+            "name='Legacy-Shell'\n"
         )
 
         ok, _ = LayoutApplier.load_dconf_safely(
@@ -1034,13 +1035,11 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "enabled-extensions" not in mock_run.call_args_list[0].kwargs["stdin_text"]
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
         assert (
-            "enabled-extensions=['layout-switcher-helper@communitybig.org', "
-            f"'{user_theme}', 'stay@ext']"
+            "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
         ) in switch_data
-        mock_enable_user_theme.assert_not_called()
+        assert "name=''" in mock_run.call_args_list[0].kwargs["stdin_text"]
 
     @patch("layout_applier.time.sleep")
-    @patch("layout_applier.LayoutApplier._enable_user_theme_after_load", return_value=True)
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch("layout_applier.LayoutApplier._enabled_extensions", return_value=[])
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=False)
@@ -1057,7 +1056,6 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_disable,
         _enabled,
         _reload,
-        mock_enable_user_theme,
         _sleep,
     ):
         """Empty user-theme names must not enable the user-theme extension."""
@@ -1100,10 +1098,8 @@ disabled-extensions=['community-menu@communitybig.org']
         )
         assert light_style in disabled
         assert user_theme in disabled
-        mock_enable_user_theme.assert_not_called()
 
     @patch("layout_applier.time.sleep")
-    @patch("layout_applier.LayoutApplier._enable_user_theme_after_load", return_value=True)
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch("layout_applier.LayoutApplier._enabled_extensions", return_value=[])
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
@@ -1111,7 +1107,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_keeps_running_user_theme_for_name_changes(
+    def test_load_disables_running_user_theme(
         self,
         mock_run,
         _has,
@@ -1120,10 +1116,9 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_disable,
         _enabled,
         _reload,
-        mock_enable_user_theme,
         _sleep,
     ):
-        """Running user-theme consumes name changes without a DBus restart."""
+        """A running legacy User Theme is disabled during the switch."""
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         data = (
@@ -1141,7 +1136,7 @@ disabled-extensions=['community-menu@communitybig.org']
         )
 
         assert ok is True
-        assert mock_disable.call_args.args[0] == ["leave@ext"]
+        assert mock_disable.call_args.args[0] == ["leave@ext", user_theme]
         assert mock_disable.call_args.kwargs == {"sort": False}
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
         shell = LayoutApplier._section_key_values(switch_data, "/org/gnome/shell")
@@ -1151,7 +1146,6 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "stay@ext" in enabled
         assert light_style in disabled
         assert user_theme in disabled
-        mock_enable_user_theme.assert_not_called()
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._wait_extension_live", return_value=True)
@@ -1438,7 +1432,6 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_enable_after_load.assert_called_once_with([kiwi])
 
     @patch("layout_applier.time.sleep")
-    @patch("layout_applier.LayoutApplier._enable_user_theme_after_load", return_value=True)
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
     @patch(
         "layout_applier.LayoutApplier._enabled_extensions",
@@ -1446,24 +1439,21 @@ disabled-extensions=['community-menu@communitybig.org']
     )
     @patch("layout_applier.LayoutApplier._disable_extensions_in_order", return_value=True)
     @patch("layout_applier.LayoutApplier._reset_orphan_keys")
-    @patch("layout_applier.LayoutApplier._read_dconf_value", return_value="'Big-Blue'")
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_keeps_same_named_user_theme_running(
+    def test_load_retires_running_named_user_theme(
         self,
         mock_run,
         _has,
         _persist,
-        _read_dconf,
         _reset,
         mock_disable,
         _enabled,
         _reload,
-        mock_enable_user_theme,
         _sleep,
     ):
-        """Desk UX -> BigGnome should not churn the same Big-Blue user-theme."""
+        """A running legacy User Theme is disabled during a layout switch."""
         user_theme = "user-theme@gnome-shell-extensions.gcampax.github.com"
         data = (
             "[org/gnome/shell]\n"
@@ -1471,7 +1461,7 @@ disabled-extensions=['community-menu@communitybig.org']
             f"enabled-extensions=['{user_theme}', 'stay@ext']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
-            "name='Big-Blue'\n"
+            "name='Legacy-Shell'\n"
         )
 
         ok, _ = LayoutApplier.load_dconf_safely(
@@ -1480,11 +1470,12 @@ disabled-extensions=['community-menu@communitybig.org']
         )
 
         assert ok is True
-        assert mock_disable.call_args.args[0] == ["leave@ext"]
+        assert mock_disable.call_args.args[0] == ["leave@ext", user_theme]
         assert mock_disable.call_args.kwargs == {"sort": False}
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert f"'{user_theme}'" in switch_data
-        mock_enable_user_theme.assert_not_called()
+        assert f"'{user_theme}'" not in LayoutApplier._section_key_values(
+            switch_data, "/org/gnome/shell"
+        )["enabled-extensions"]
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._wait_extension_live", return_value=True)
@@ -1522,7 +1513,7 @@ disabled-extensions=['community-menu@communitybig.org']
             f"enabled-extensions=['{light_style}']\n"
             "\n"
             "[org/gnome/shell/extensions/user-theme]\n"
-            "name='Big-Blue'\n"
+            "name='Legacy-Shell'\n"
         )
 
         ok, _ = LayoutApplier.load_dconf_safely(
@@ -1533,7 +1524,8 @@ disabled-extensions=['community-menu@communitybig.org']
         assert ok is True
         mock_disable.assert_called_once_with([community_dock], sort=False)
         settings_data = mock_run.call_args_list[0].kwargs["stdin_text"]
-        assert "name='Big-Blue'" not in settings_data
+        assert "name='Legacy-Shell'" not in settings_data
+        assert "name=''" in settings_data
         assert mock_reset.call_args.kwargs["skip_subdirs"] == {
             "/org/gnome/shell/extensions/dash-to-dock/",
             "/org/gnome/shell/extensions/user-theme/",
@@ -1568,64 +1560,8 @@ disabled-extensions=['community-menu@communitybig.org']
         ]
         assert mock_enable.call_count == 2
 
-    @patch("layout_applier.time.sleep")
-    @patch("layout_applier.ShellReloader.get_extension_state", return_value=1)
-    @patch("layout_applier.ShellReloader.enable_extension_dbus", return_value=(True, ""))
-    @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_enable_user_theme_after_load_writes_name_first(
-        self,
-        mock_run,
-        mock_enable,
-        _mock_state,
-        mock_sleep,
-    ):
-        ok = LayoutApplier._enable_user_theme_after_load("Big-Blue")
-
-        assert ok is True
-        mock_run.assert_called_once_with(
-            [
-                "dconf",
-                "write",
-                "/org/gnome/shell/extensions/user-theme/name",
-                "'Big-Blue'",
-            ],
-            timeout=5,
-        )
-        mock_enable.assert_called_once_with(
-            "user-theme@gnome-shell-extensions.gcampax.github.com",
-            enable=True,
-            timeout=LayoutApplier._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        assert mock_sleep.call_count == 2
-
-    @patch("layout_applier.time.sleep")
-    @patch("layout_applier.ShellReloader.get_extension_state", return_value=1)
-    @patch("layout_applier.ShellReloader.enable_extension_dbus", return_value=(True, ""))
-    @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_enable_user_theme_after_load_accepts_empty_name(
-        self,
-        mock_run,
-        mock_enable,
-        _mock_state,
-        _mock_sleep,
-    ):
-        ok = LayoutApplier._enable_user_theme_after_load("")
-
-        assert ok is True
-        mock_run.assert_called_once_with(
-            [
-                "dconf",
-                "write",
-                "/org/gnome/shell/extensions/user-theme/name",
-                "''",
-            ],
-            timeout=5,
-        )
-        mock_enable.assert_called_once_with(
-            "user-theme@gnome-shell-extensions.gcampax.github.com",
-            enable=True,
-            timeout=LayoutApplier._SHELL_DBUS_TIMEOUT_SEC,
-        )
+    def test_user_theme_enable_helper_is_retired(self):
+        assert not hasattr(LayoutApplier, "_enable_user_theme_after_load")
 
     @patch("layout_applier.run_cmd")
     def test_reset_orphan_keys_resets_leaving_branches_and_stale_keys(

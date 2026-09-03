@@ -33,11 +33,11 @@ def test_live_color_switch_empties_shell_rebase_slices():
     assert "!live.has(COMMUNITY_MENU_UUID)" in source
     assert "this._activeLayoutLabel === 'Desk UX'" in source
     assert "this._onColorSchemeChanged(false)" in source
-    assert "const managedNativeState = nativeShell" in source
-    assert "const manageShell = reconcileShell && managedNativeState" in source
+    assert "const manageShell = reconcileShell && nativeShell" in source
     assert "manageShell ? 'managed' : 'preserved'" in source
     assert "? [LIGHT_STYLE_UUID, USER_THEME_UUID]" in source
-    assert "if (!(nativeShell && dark) && !isLive(wantOn))" in source
+    assert "if (!dark && !isLive(LIGHT_STYLE_UUID))" in source
+    assert "mgr.enableExtension(USER_THEME_UUID)" not in source
     assert "Main.setThemeStylesheet(null)" in source
 
 

@@ -74,7 +74,7 @@ must remain active after the GTK application closes.
 - Write GTK 3/4 overrides atomically with unique ownership markers.
 - Remove only owned blocks/files when disabled.
 - Detect modified or conflicting owned files before restoration.
-- Preserve User Themes, layout classes, Frosted Glass, and runtime styles.
+- Preserve layout classes, Frosted Glass, and runtime styles.
 
 ## Qt design boundary
 
@@ -121,7 +121,7 @@ coverage until it passes.
 - Atomic ownership and exact restoration tests for every generated file.
 - Light/dark wallpaper and color-scheme changes.
 - Every layout, including transitions while the feature is enabled.
-- User Themes and Frosted Glass coexistence.
+- Native Shell styling and Frosted Glass coexistence.
 - GTK 3 and GTK 4 native and Flatpak applications.
 - Qt 5 and Qt 6 applications using the supported Kvantum path.
 - Ten slow and twenty rapid update cycles.

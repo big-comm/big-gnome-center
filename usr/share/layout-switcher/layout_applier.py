@@ -160,12 +160,10 @@ _STRUCTURAL_EXTENSION_UUIDS = frozenset(
         _RUNTIME_UUID,
         _KIWI_UUID,
         _LIGHT_STYLE_UUID,
-        _USER_THEME_UUID,
     }
 )
 # Appearance-owning extensions the in-shell helper force-reloads when they
-# stay enabled across a switch, so they re-read their config and re-theme
-# live (user-theme is intentionally absent — Main.loadTheme re-applies it).
+# stay enabled across a switch, so they re-read their config and re-theme live.
 _HELPER_RELOAD_UUIDS = frozenset(
     {
         "community-panel@communitybig.org",
@@ -204,8 +202,7 @@ _PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect", "gtk4-ding"})
 # styling, so they must (re)apply AFTER it. The in-shell helper v3 already
 # sequences this correctly; against an older helper (loadTheme last) the app
 # reloads these once more after the apply so the bar isn't left un-themed
-# (e.g. G-Unity losing Kiwi's dark panel). user-theme is excluded — it
-# IS what loadTheme paints, so reloading it is handled separately.
+# (e.g. G-Unity losing Kiwi's dark panel).
 _HELPER_SHELL_THEME_UUIDS = frozenset(
     {
         "kiwi@kemma",
@@ -274,16 +271,8 @@ _EXTENSION_SETTINGS_SUBDIRS = {
     _USER_THEME_UUID: "/org/gnome/shell/extensions/user-theme/",
 }
 
-# Extensions that should NOT be disabled during generic leave cleanup.
-#
-# user-theme owns the global ``StTheme`` (Main.loadTheme). Do not DBus-toggle
-# it during generic cleanup; Shell layouts with an empty theme name disable it
-# through the final enabled/disabled lists instead.
-_NO_DISABLE = frozenset(
-    {
-        _USER_THEME_UUID,
-    }
-)
+# Extensions that should not be disabled during generic leave cleanup.
+_NO_DISABLE = frozenset()
 
 
 class LayoutApplier:
@@ -547,6 +536,7 @@ class LayoutApplier:
         which performs the switch inside gnome-shell (no cross-process race,
         live re-theme via Main.loadTheme).
         """
+        data = cls._rewrite_shell_theme_mode(data, prefer_dark=None)
         settings_data, _switch = cls._split_shell_extension_switch_keys(data)
         ok, msg = run_cmd(["dconf", "load", "/"], stdin_text=settings_data, timeout=20)
         if not ok:
@@ -563,14 +553,7 @@ class LayoutApplier:
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
         target_enabled = cls._string_list(shell_values.get("enabled-extensions"))
 
-        # user-theme with an empty name throws on GNOME 50 ("Argument file may
-        # not be null") and lands in ERROR. Some layouts ship user-theme
-        # enabled but nameless — treat it as disabled so it doesn't error and
-        # clobber the Shell style.
-        ut_values = cls._section_key_values(data, "/org/gnome/shell/extensions/user-theme")
-        ut_name = cls._gvariant_string(ut_values.get("name"))
-        if _USER_THEME_UUID in target_enabled and not ut_name:
-            target_enabled = [u for u in target_enabled if u != _USER_THEME_UUID]
+        target_enabled = [u for u in target_enabled if u != _USER_THEME_UUID]
 
         # Keep selected system indicators stable across switches. Anything
         # currently enabled that is known to be persistent stays in the target,
@@ -584,11 +567,6 @@ class LayoutApplier:
             target_enabled = [*target_enabled, HELPER_UUID]
 
         reload_uuids = [u for u in target_enabled if u in _HELPER_RELOAD_UUIDS]
-        # user-theme must reload to re-apply its named stylesheet (e.g. Big-Blue)
-        # when switching in from a layout that used kiwi / a different shell theme.
-        if _USER_THEME_UUID in target_enabled and ut_name:
-            reload_uuids.append(_USER_THEME_UUID)
-
         ok, info = HelperClient.apply_layout(
             target_enabled,
             reload=reload_uuids,
@@ -610,13 +588,13 @@ class LayoutApplier:
         # Theme-order workaround for an old helper (v2): it calls Main.loadTheme()
         # AFTER enabling the appearance extensions, so loadTheme wipes the panel
         # styling kiwi/light-style applied (G-Unity ended up with the bare
-        # default bar instead of Kiwi's dark one). Reload those shell-theme
+        # default bar instead of Kiwi's dark one). Reload those Shell-style
         # owners once more so their styling lands on top. v3+ sequences loadTheme
         # before the enable step, so this is skipped (no double reload / flicker).
         if HelperClient.helper_version() < _HELPER_THEME_ORDER_FIXED_VERSION:
             for uuid in target_enabled:
                 if uuid in _HELPER_SHELL_THEME_UUIDS:
-                    log.info("theme-order: re-asserting shell theme %s", uuid)
+                    log.info("theme-order: re-asserting Shell styling %s", uuid)
                     HelperClient.reload_extension(uuid)
 
         log.info("helper apply ok: %s", info)
@@ -813,31 +791,22 @@ class LayoutApplier:
             return False, "a layout switch is already in progress"
         source_helper_uuid = info.get("uuid") or HelperClient.active_uuid()
 
+        data = cls._rewrite_shell_theme_mode(data, prefer_dark=None)
         settings_data, _switch = cls._split_shell_extension_switch_keys(data)
 
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
         target_enabled = cls._string_list(shell_values.get("enabled-extensions"))
 
-        # user-theme with an empty name throws on GNOME 50 ("Argument file may
-        # not be null") and lands in ERROR. Some layouts ship user-theme
-        # enabled but nameless — treat it as disabled so it doesn't error and
-        # clobber the Shell style.
-        ut_values = cls._section_key_values(data, "/org/gnome/shell/extensions/user-theme")
-        ut_name = cls._gvariant_string(ut_values.get("name"))
-        if _USER_THEME_UUID in target_enabled and not ut_name:
-            target_enabled = [u for u in target_enabled if u != _USER_THEME_UUID]
-        # Shell-theme owners enable FIRST: user-theme's enable() re-runs
-        # loadTheme with the named stylesheet, and light-style flips the
-        # shell variant — anything built BEFORE them (dash-to-panel bakes its
+        target_enabled = [u for u in target_enabled if u != _USER_THEME_UUID]
+        # Light Style enables first because it flips the shell variant —
+        # anything built before it (dash-to-panel bakes its
         # label colors from the theme at construction time) would render for
-        # the wrong theme. Shipped layouts already order them early — enforce
-        # it in code: user-theme, then light-style, then the rest.
-        for uuid in (_LIGHT_STYLE_UUID, _USER_THEME_UUID):
-            if uuid in target_enabled:
-                target_enabled = [
-                    uuid,
-                    *[u for u in target_enabled if u != uuid],
-                ]
+        # the wrong theme.
+        if _LIGHT_STYLE_UUID in target_enabled:
+            target_enabled = [
+                _LIGHT_STYLE_UUID,
+                *[u for u in target_enabled if u != _LIGHT_STYLE_UUID],
+            ]
 
         # Keep selected system indicators stable across switches.
         currently_enabled = set(cls._enabled_extensions())
@@ -1367,38 +1336,31 @@ class LayoutApplier:
         *,
         prefer_dark: Optional[bool],
     ) -> str:
-        """Keep Shell light/dark helper extensions aligned with user mode."""
-        if prefer_dark is None:
-            return text
-
+        """Align native Shell mode and retire legacy User Themes state."""
         shell_values = cls._section_key_values(text, "/org/gnome/shell")
         enabled = cls._string_list(shell_values.get("enabled-extensions"))
         disabled = cls._string_list(shell_values.get("disabled-extensions"))
-        user_theme_values = cls._section_key_values(
-            text,
-            "/org/gnome/shell/extensions/user-theme",
-        )
-        user_theme_name = cls._gvariant_string(user_theme_values.get("name"))
 
         def add_once(values: List[str], uuid: str) -> None:
             if uuid not in values:
                 values.append(uuid)
 
-        if prefer_dark:
+        enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
+        add_once(disabled, _USER_THEME_UUID)
+
+        if prefer_dark is True:
             enabled = [uuid for uuid in enabled if uuid != _LIGHT_STYLE_UUID]
             add_once(disabled, _LIGHT_STYLE_UUID)
-            if user_theme_name:
-                disabled = [uuid for uuid in disabled if uuid != _USER_THEME_UUID]
-                add_once(enabled, _USER_THEME_UUID)
-            else:
-                enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
-                add_once(disabled, _USER_THEME_UUID)
-        else:
-            enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
+        elif prefer_dark is False:
             disabled = [uuid for uuid in disabled if uuid != _LIGHT_STYLE_UUID]
             add_once(enabled, _LIGHT_STYLE_UUID)
-            add_once(disabled, _USER_THEME_UUID)
 
+        text = cls._replace_or_add_dconf_key(
+            text,
+            "/org/gnome/shell/extensions/user-theme",
+            "name",
+            "''",
+        )
         text = cls._replace_or_add_dconf_key(
             text,
             "/org/gnome/shell",
@@ -1429,7 +1391,7 @@ class LayoutApplier:
         """
         value = cls._current_color_scheme_value()
         if value is None:
-            return text
+            return cls._rewrite_shell_theme_mode(text, prefer_dark=None)
         prefer_dark = cls._prefers_dark({_COLOR_SCHEME_KEY: value})
         shell_dark = force_shell_dark or prefer_dark
 
@@ -1674,10 +1636,6 @@ class LayoutApplier:
     # as a logout, but per-extension. Other UUIDs (gsconnect, pamac,
     # appindicators, etc.) restore fine via Shell's auto-enable path.
     #
-    # ``user-theme`` is intentionally NOT here: it stays enabled
-    # throughout (see ``_NO_DISABLE``) so the global ``StTheme`` never
-    # reverts to default mid-switch, and other extensions register
-    # their stylesheets on top of the live Big-Blue theme.
     _RELOAD_AFTER_LOAD = ()
 
     @classmethod
@@ -1907,61 +1865,6 @@ class LayoutApplier:
             timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
         )
         return state is None or state in _LIVE_EXTENSION_STATES
-
-    @classmethod
-    def _enable_user_theme_after_load(cls, theme_name: str) -> bool:
-        ok, msg = run_cmd(
-            [
-                "dconf",
-                "write",
-                "/org/gnome/shell/extensions/user-theme/name",
-                cls._quote_gvariant_string(theme_name),
-            ],
-            timeout=5,
-        )
-        if not ok:
-            log.warning("could not write user-theme name before enable: %s", msg)
-            return False
-        time.sleep(cls._SETTLE_SEC if not theme_name else cls._DISABLE_STEP_SEC)
-
-        ok, msg = ShellReloader.enable_extension_dbus(
-            _USER_THEME_UUID,
-            enable=True,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if not ok:
-            log.warning("post-load EnableExtension failed for %s: %s", _USER_THEME_UUID, msg)
-            return False
-        time.sleep(cls._DISABLE_STEP_SEC)
-
-        state = ShellReloader.get_extension_state(
-            _USER_THEME_UUID,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if state is None:
-            return True
-        if state in _LIVE_EXTENSION_STATES:
-            return True
-
-        time.sleep(cls._SETTLE_SEC)
-        ok, msg = ShellReloader.enable_extension_dbus(
-            _USER_THEME_UUID,
-            enable=True,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if not ok:
-            log.warning("retry EnableExtension failed for %s: %s", _USER_THEME_UUID, msg)
-            return False
-        time.sleep(cls._DISABLE_STEP_SEC)
-
-        state = ShellReloader.get_extension_state(
-            _USER_THEME_UUID,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if state is not None and state not in _LIVE_EXTENSION_STATES:
-            log.warning("%s did not enter a live state after EnableExtension", _USER_THEME_UUID)
-            return False
-        return True
 
     @classmethod
     def _remove_enabled_extension_from_switch_data(cls, data: str, uuid: str) -> str:
@@ -2410,6 +2313,7 @@ class LayoutApplier:
                 data = cls._apply_gnome50_overview_default(data, layout_id)
 
         data = cls._retire_blur_my_shell(data)
+        data = cls._rewrite_shell_theme_mode(data, prefer_dark=None)
         cls._unit_cache = {}
         cls.last_apply_cleanroom = False
         cls.last_apply_staged = False
@@ -2516,29 +2420,13 @@ class LayoutApplier:
             target_enabled = set(target_enabled_order)
             if not target_enabled:
                 target_enabled = cls._parse_target_enabled_extensions(data)
-            user_theme_values = cls._section_key_values(
-                data,
-                "/org/gnome/shell/extensions/user-theme",
-            )
-            target_user_theme_name = cls._gvariant_string(user_theme_values.get("name"))
-            target_uses_user_theme = _USER_THEME_UUID in target_enabled
-            # GNOME's user-theme extension must only be enabled with a
-            # real theme name. On GNOME 50, enabling it with name='' throws
-            # "Argument file may not be null" and leaves Shell styling stale.
-            target_user_theme_live_enabled = target_uses_user_theme and bool(target_user_theme_name)
+            target_enabled.discard(_USER_THEME_UUID)
+            target_enabled_order = [
+                uuid for uuid in target_enabled_order if uuid != _USER_THEME_UUID
+            ]
             live_target_enabled = set(target_enabled)
-            if not target_user_theme_live_enabled:
-                live_target_enabled.discard(_USER_THEME_UUID)
             before_set = {u for u in (before_uuids or ()) if u}
-            user_theme_leaving = (
-                _USER_THEME_UUID in before_set and not target_user_theme_live_enabled
-            )
-            if not target_user_theme_live_enabled:
-                data = cls._remove_dconf_key(
-                    data,
-                    "/org/gnome/shell/extensions/user-theme",
-                    "name",
-                )
+            user_theme_leaving = _USER_THEME_UUID in before_set
             target_panel_uuid = next(
                 (uuid for uuid in _PANEL_UUIDS if uuid in target_enabled),
                 None,
@@ -2652,11 +2540,6 @@ class LayoutApplier:
                 log.warning("dconf load failed: %s", msg)
                 return False, f"dconf load failed: {msg}"
 
-            if target_uses_user_theme and not target_user_theme_live_enabled:
-                extension_switch_data = cls._disable_extension_in_switch_data(
-                    extension_switch_data,
-                    _USER_THEME_UUID,
-                )
             if extension_switch_data:
                 ok, msg = run_cmd(
                     ["dconf", "load", "/"],
@@ -2696,9 +2579,7 @@ class LayoutApplier:
             # Force fresh JS module init for a small allowlist of
             # visually-stateful extensions known to tolerate ReloadExtension.
             # Disable→Enable alone reuses the extension's JS module and
-            # leaves stale CSS references (e.g. user-theme keeps the
-            # previous shell-theme CSS partly applied; panel transparency
-            # from Big-Blue.css doesn't take effect until logout).
+            # leaves stale CSS references in the Shell theme.
             # ReloadExtension does disable + drop module + load fresh +
             # enable, which is what logout would do — but per-extension,
             # without restarting gnome-shell.
@@ -2717,8 +2598,8 @@ class LayoutApplier:
             # actors. That's how the dash-to-panel bottom bar leaks into
             # g-unity after a desk-ux→g-unity switch: DTP gets disabled
             # cleanly, then Reload brings it back as a ghost actor.
-            # Extensions that "stay enabled across the switch" (user-theme,
-            # big-shot) live in ``before ∩ after`` — already covered by
+            # Extensions that stay enabled across the switch live in
+            # ``before ∩ after`` — already covered by
             # ``after`` alone, no union needed.
             dtp_rebuilt = False
             if target_uses_dtp:
@@ -2746,8 +2627,7 @@ class LayoutApplier:
                 log.warning("skipping visual extension reloads after DBus timeouts")
 
             # Note: we previously toggled ``org.gnome.Shell.OverviewActive``
-            # true→false here to force a CSS style recompute on Main.panel
-            # (Big-Blue.css's transparent ``#panel`` rule wasn't repainting).
+            # true→false here to force a CSS style recompute on Main.panel.
             # That trick worked but flashed the Activities Overview for ~0.4 s,
             # which read to users as a "freeze" — especially layered on top
             # of the extension reloads that had just finished. The "Restart

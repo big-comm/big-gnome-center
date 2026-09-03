@@ -5,7 +5,7 @@
 // WHY THIS EXISTS
 // ---------------
 // GNOME Shell extensions (community-panel, community-menu, kiwi, light-style,
-// user-theme, …) are JavaScript modules living INSIDE the gnome-shell
+// …) are JavaScript modules living INSIDE the gnome-shell
 // process. An external process (the layout-switcher Python app) can only
 // reach the shell over D-Bus, and the only lever it has to switch extensions
 // is writing `org/gnome/shell/enabled-extensions` to dconf — which fires the
@@ -68,7 +68,7 @@ import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js'
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
 
-// Shell-theme owners toggled by the live color-scheme follower.
+// Shell appearance helpers managed by the live color-scheme follower.
 const USER_THEME_UUID = 'user-theme@gnome-shell-extensions.gcampax.github.com';
 const LIGHT_STYLE_UUID = 'light-style@gnome-shell-extensions.gcampax.github.com';
 const COMMUNITY_PANEL_UUID = 'community-panel@communitybig.org';
@@ -79,7 +79,6 @@ const KIWI_UUID = 'kiwi@kemma';
 const COMMUNITY_MENU_UUID = 'community-menu@communitybig.org';
 const APPINDICATOR_UUID = 'appindicatorsupport@rgcjonas.gmail.com';
 const STRUCTURAL_UUIDS = new Set([
-    USER_THEME_UUID,
     LIGHT_STYLE_UUID,
     COMMUNITY_PANEL_UUID,
     COMMUNITY_DOCK_UUID,
@@ -306,8 +305,8 @@ export default class LayoutSwitcherHelper extends Extension {
         this._syncBigGnomePanelClass();
         this._syncMinimalPanelClass();
         this._syncGUnitySurfaceClasses();
-        // Live appearance follower. Classic/Hybrid use GNOME's native Shell;
-        // the other Community layouts use their configured shell themes.
+        // Live appearance follower. Classic/Hybrid follow GNOME's native mode;
+        // the other Community layouts keep their project-owned styling.
         // Papient variants follow the app color scheme in all six layouts.
         if (!this._ifaceSettings) {
             try {
@@ -326,8 +325,8 @@ export default class LayoutSwitcherHelper extends Extension {
                 this._syncBigGnomePanelClass();
                 this._syncMinimalPanelClass();
                 this._syncGUnitySurfaceClasses();
-                // At login, preserve the saved Shell theme and extension
-                // choices. The delayed pass only refreshes derived visuals.
+                // At login, preserve current extension choices. The delayed
+                // pass only refreshes derived visuals.
                 this._sleep(1000).then(() => {
                     this._onColorSchemeChanged(false);
                     this._setupPanelSystemIndicator();
@@ -1732,7 +1731,7 @@ export default class LayoutSwitcherHelper extends Extension {
     _onColorSchemeChanged(reconcileShell = true) {
         // Debounce: GNOME Settings can emit several changes in a burst, and
         // the layout apply's own dconf load fires this too (skipped below —
-        // the apply already sequences the correct shell theme).
+        // the apply already sequences the correct Shell styling).
         if (this._schemeDebounce)
             GLib.Source.remove(this._schemeDebounce);
         this._schemeDebounce = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 400, () => {
@@ -1790,32 +1789,20 @@ export default class LayoutSwitcherHelper extends Extension {
 
             const nativeShell = this._activeLayoutLabel === 'Classic' ||
                 this._activeLayoutLabel === 'Hybrid';
-            this._shellSettings ??= new Gio.Settings({schema_id: 'org.gnome.shell'});
-            const enabled = this._shellSettings.get_strv('enabled-extensions');
-            const disabled = this._shellSettings.get_strv('disabled-extensions');
-            const configured = uuid => enabled.includes(uuid) && !disabled.includes(uuid);
-            const userThemeSettings = new Gio.Settings({
-                schema_id: 'org.gnome.shell.extensions.user-theme',
-            });
-            const currentShellTheme = userThemeSettings.get_string('name');
-            const managedNativeState = nativeShell &&
-                currentShellTheme === '' &&
-                !configured(USER_THEME_UUID) &&
-                configured(LIGHT_STYLE_UUID) === !previousDark;
-            const manageShell = reconcileShell && managedNativeState;
-            const wantOn = dark ? USER_THEME_UUID : LIGHT_STYLE_UUID;
-            const wantOff = dark ? LIGHT_STYLE_UUID : USER_THEME_UUID;
+            const manageShell = reconcileShell && nativeShell;
             logHelper(`color-scheme follow: ${dark ? 'dark' : 'light'} (native, ${
                 manageShell ? 'managed' : 'preserved'})`);
 
-            const shellThemeName = '';
             if (manageShell) {
-                if (currentShellTheme !== shellThemeName)
-                    userThemeSettings.set_string('name', shellThemeName);
+                const userThemeSettings = new Gio.Settings({
+                    schema_id: 'org.gnome.shell.extensions.user-theme',
+                });
+                if (userThemeSettings.get_string('name') !== '')
+                    userThemeSettings.set_string('name', '');
 
-                const turnOff = nativeShell && dark
+                const turnOff = dark
                     ? [LIGHT_STYLE_UUID, USER_THEME_UUID]
-                    : [wantOff];
+                    : [USER_THEME_UUID];
                 for (const uuid of turnOff) {
                     if (!isLive(uuid))
                         continue;
@@ -1835,12 +1822,12 @@ export default class LayoutSwitcherHelper extends Extension {
                 }
                 await this._sleep(50);
 
-                if (!(nativeShell && dark) && !isLive(wantOn)) {
-                    mgr.enableExtension(wantOn);
+                if (!dark && !isLive(LIGHT_STYLE_UUID)) {
+                    mgr.enableExtension(LIGHT_STYLE_UUID);
                     await this._waitState(
-                        mgr, wantOn, s => this._isSettledUp(s));
-                    if (mgr.lookup(wantOn)?.state === STATE_ERROR)
-                        logHelper(`${wantOn} errored while following color scheme`);
+                        mgr, LIGHT_STYLE_UUID, s => this._isSettledUp(s));
+                    if (mgr.lookup(LIGHT_STYLE_UUID)?.state === STATE_ERROR)
+                        logHelper(`${LIGHT_STYLE_UUID} errored while following color scheme`);
                 }
             }
             // Window-title label colors (unfocused + minimized): DTP's
@@ -2245,8 +2232,8 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     // Make the panel re-resolve its themed background for real. A style-class
-    // toggle and even loadTheme() do not repaint Big-Blue's transparent
-    // `#panel` rule; the one reliable trigger found is an Overview
+    // A style toggle and loadTheme() alone do not always repaint the panel;
+    // the reliable trigger found is an Overview
     // round-trip (the old "overview pulse" workaround, removed for flashing —
     // under the curtain it is invisible, so it returns here flash-free).
     async _panelRepaint() {
@@ -2491,9 +2478,7 @@ export default class LayoutSwitcherHelper extends Extension {
         }
 
         // Build up the target set in layout order — a fresh enable() reading
-        // the final dconf state, exactly like a login. user-theme is expected
-        // first in `order` (its enable() re-runs loadTheme with the named
-        // stylesheet; anything enabled before it would be re-themed over).
+        // the final dconf state, exactly like a login.
         for (const uuid of order) {
             const state = mgr.lookup(uuid)?.state;
             if (LIVE_STATES.has(state))
@@ -2743,8 +2728,7 @@ export default class LayoutSwitcherHelper extends Extension {
 
         // 3. Reload the base shell stylesheet *before* re-enabling the
         //    appearance extensions. loadTheme() rebuilds the global St theme
-        //    from disk (default, or user-theme's named stylesheet if it's
-        //    live), which CLOBBERS any panel styling an extension applied on
+        //    from disk, which CLOBBERS any panel styling an extension applied on
         //    enable. Extensions that paint the shell themselves (kiwi,
         //    light-style) must therefore enable *after* this, so their theming
         //    lands on top and survives.

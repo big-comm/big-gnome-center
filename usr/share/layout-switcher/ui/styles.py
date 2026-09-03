@@ -402,7 +402,7 @@ APP_CSS = """
 .boxed-list > row.activatable:hover { background-color: alpha(@accent_bg_color, 0.06); }
 .theme-name-active          { color: @accent_color; font-weight: 600; }
 
-/* ── Grid de temas (GTK / Shell) ─────────────────────────────────────── */
+/* ── Grid de temas ─────────────────────────────────────────────────── */
 .theme-surface {
     border-radius: 14px;
     background-color: alpha(@card_bg_color, 0.34);
