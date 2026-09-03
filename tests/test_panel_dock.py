@@ -282,7 +282,6 @@ def test_compatibility_adapter_imports_active_layout_once():
 def test_compatibility_adapter_imports_all_legacy_dock_settings_once():
     settings = settings_fixture()
     settings.active_layout = "BigGnome"
-    settings.runtime_active = True
     settings.dock.values["background-opacity"] = 0.44
     settings.dock.values["dash-max-icon-size"] = 52
     settings.dock.values["intellihide"] = False
@@ -305,7 +304,6 @@ def test_compatibility_adapter_does_not_import_classic_indicator():
     settings.active_layout = "Classic"
     settings.dock_active = False
     settings.community_panel_active = True
-    settings.runtime_active = True
 
     settings._import_active_layout_once()
 
@@ -332,7 +330,6 @@ def test_compatibility_adapter_imports_legacy_taskbar_opacity_once():
     settings.active_layout = "Hybrid"
     settings.dock_active = False
     settings.community_panel_active = True
-    settings.runtime_active = True
     settings.community_panel.values["trans-panel-opacity"] = 0.46
 
     settings._import_active_layout_once()
@@ -347,7 +344,6 @@ def test_compatibility_adapter_imports_legacy_taskbar_height_once():
     settings.active_layout = "Hybrid"
     settings.dock_active = False
     settings.community_panel_active = True
-    settings.runtime_active = True
     settings.community_panel.values["panel-sizes"] = '{"0":46}'
 
     settings._import_active_layout_once()
@@ -355,6 +351,37 @@ def test_compatibility_adapter_imports_legacy_taskbar_height_once():
     settings._import_active_layout_once()
 
     assert settings.runtime.values[("Hybrid", "panel-height")] == 46
+
+
+@pytest.mark.parametrize(
+    ("layout", "dock_active", "taskbar_active"),
+    [
+        ("BigGnome", True, False),
+        ("G-Unity", True, False),
+        ("Hybrid", False, True),
+        ("Desk UX", False, True),
+        ("Classic", False, True),
+        ("Minimal", False, False),
+    ],
+)
+def test_active_runtime_profiles_never_import_legacy_component_settings(
+    layout,
+    dock_active,
+    taskbar_active,
+):
+    settings = settings_fixture()
+    settings.active_layout = layout
+    settings.dock_active = dock_active
+    settings.community_panel_active = taskbar_active
+    settings.runtime_active = True
+    settings.panel.values["indicator-style"] = "dot"
+    settings.community_panel.values["dot-style-focused"] = "DOTS"
+
+    settings._import_active_layout_once()
+
+    assert settings.runtime.active_layout == layout
+    assert settings.runtime.imported == {layout}
+    assert settings.runtime.values == {}
 
 
 def test_live_writes_are_mirrored_to_layout_owned_runtime_settings():

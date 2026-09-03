@@ -149,6 +149,11 @@ class PanelDockSettings:
         self.runtime.set_active_layout(layout)
         if self.runtime.is_imported(layout):
             return
+        # Active runtime profiles already own their settings. Legacy values
+        # are only migration input while the standalone components are active.
+        if self.runtime_active:
+            self.runtime.mark_imported(layout)
+            return
         if self.dock_active:
             self._remember("dock-opacity", self._legacy_dock_opacity())
             self._remember("dock-visibility", self._legacy_dock_visibility())
