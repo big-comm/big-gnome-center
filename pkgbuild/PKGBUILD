@@ -15,7 +15,6 @@ depends=(
     'gnome-shell-extension-copyous'
     'gnome-shell-extension-gtk4-desktop-icons-ng'
     'gnome-shell-extension-legacy-theme-auto-switcher'
-    'gnome-shell-extensions'
 )
 makedepends=('git')
 checkdepends=('python-pytest')

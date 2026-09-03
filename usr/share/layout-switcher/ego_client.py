@@ -17,6 +17,8 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 
 import json
 import logging
+import re
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -240,6 +242,44 @@ def _parse_comments(raw: object) -> List[CommentEntry]:
     return out
 
 
+def _normalized_search_text(value: str) -> str:
+    """Normalize punctuation, accents and case for local relevance ranking."""
+    decomposed = unicodedata.normalize("NFKD", value or "")
+    ascii_text = "".join(char for char in decomposed if not unicodedata.combining(char))
+    return " ".join(re.findall(r"[\w]+", ascii_text.casefold()))
+
+
+def _rank_by_relevance(items: List[ExtensionSummary], query: str) -> List[ExtensionSummary]:
+    """Promote exact title/UUID matches while preserving server order for ties."""
+    normalized_query = _normalized_search_text(query)
+    if not normalized_query:
+        return items
+    query_terms = normalized_query.split()
+
+    def score(item: ExtensionSummary) -> int:
+        name = _normalized_search_text(item.name)
+        uuid = _normalized_search_text(item.uuid)
+        uuid_stem = _normalized_search_text(item.uuid.split("@", 1)[0])
+        creator = _normalized_search_text(item.creator)
+        description = _normalized_search_text(item.description)
+        if normalized_query in (name, uuid, uuid_stem):
+            return 0
+        if name.startswith(normalized_query):
+            return 1
+        if normalized_query in name:
+            return 2
+        if all(term in name.split() for term in query_terms):
+            return 3
+        if normalized_query in uuid:
+            return 4
+        searchable = " ".join((name, uuid, creator, description))
+        if all(term in searchable for term in query_terms):
+            return 5
+        return 6
+
+    return sorted(items, key=score)
+
+
 # ── API pública ───────────────────────────────────────────────────────────────
 
 
@@ -270,7 +310,7 @@ def search(
     if use_cache:
         cached = ego_cache.json_get("search", cache_key, EGO_CACHE_TTL_SEARCH)
         if cached is not None:
-            return _result_from_dict(cached)
+            return _result_from_dict(cached, query=query, sort=sort)
 
     url = f"{EGO_BASE_URL}/extension-query/?" + urllib.parse.urlencode(params)
     payload = _http_json(url)
@@ -278,18 +318,23 @@ def search(
         return None
 
     ego_cache.json_put("search", cache_key, payload)
-    return _result_from_dict(payload)
+    return _result_from_dict(payload, query=query, sort=sort)
 
 
-def _result_from_dict(payload: dict) -> SearchResult:
+def _result_from_dict(
+    payload: dict,
+    query: str = "",
+    sort: str = SORT_RELEVANCE,
+) -> SearchResult:
     raw_list = payload.get("extensions") or []
     items: List[ExtensionSummary] = []
     for item in raw_list:
         summary = _parse_summary(item)
         if summary is not None:
             items.append(summary)
+    ranked = _rank_by_relevance(items, query) if sort == SORT_RELEVANCE else items
     return SearchResult(
-        extensions=items,
+        extensions=ranked,
         page=int(payload.get("page", 1) or 1),
         num_pages=int(payload.get("numpages", 1) or 1),
         total=int(payload.get("total", len(items)) or len(items)),

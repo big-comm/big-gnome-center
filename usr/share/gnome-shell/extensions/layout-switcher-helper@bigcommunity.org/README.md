@@ -7,7 +7,7 @@ In-shell companion for the **Community Layout Switcher**. It performs the
 ## Why it exists
 
 The `layout-switcher` app is an **external process**. The GNOME Shell
-extensions a layout uses (`dash-to-panel`, `arcmenu`, `kiwi`, `light-style`, …)
+extensions a layout uses (`dash-to-panel`, `arcmenu`, `kiwi`, …)
 are JavaScript modules running **inside** the gnome-shell
 process. From outside, the only way to switch extensions is to write
 `org/gnome/shell/enabled-extensions` to dconf — which fires the Shell's

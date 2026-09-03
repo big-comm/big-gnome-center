@@ -6,21 +6,12 @@ from pathlib import Path
 from typing import List, Tuple
 
 from constants import ACCENT_COLORS
-from settings_store import Settings
-from shell_reloader import ShellReloader
 from theme_preview import is_icon_theme
 from utils import gsettings_get, gsettings_set
 
 _SHELL_SCHEMA = "org.gnome.shell"
-_LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
-_USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
-_SHELL_DARK_LAYOUTS = {
-    "BigGnome",
-    "Desk UX",
-    "Desk-UX",
-    "G-Unity",
-    "Minimal",
-}
+_LEGACY_LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
+_LEGACY_USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 
 
 class ThemeMgr:
@@ -155,12 +146,7 @@ class ThemeMgr:
         scheme = "prefer-dark" if dark else "prefer-light"
         ok, msg = gsettings_set("org.gnome.desktop.interface", "color-scheme", scheme)
         if ok:
-            active_layout = Settings().get("active_layout")
-            shell_dark = dark or active_layout in _SHELL_DARK_LAYOUTS
-            ThemeMgr._sync_shell_color_scheme(
-                shell_dark,
-                fixed_shell=active_layout in _SHELL_DARK_LAYOUTS,
-            )
+            ThemeMgr._retire_legacy_shell_theme_extensions()
             # Notifica o StyleManager do processo atual
             try:
                 import gi
@@ -191,11 +177,8 @@ class ThemeMgr:
         return [item for item in parsed if isinstance(item, str) and item]
 
     @staticmethod
-    def _sync_shell_color_scheme(
-        dark: bool,
-        *,
-        fixed_shell: bool = False,
-    ) -> None:
+    def _retire_legacy_shell_theme_extensions() -> None:
+        """Keep obsolete theme extensions out of the persisted Shell state."""
         enabled = ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "enabled-extensions"))
         disabled = ThemeMgr._string_list(gsettings_get(_SHELL_SCHEMA, "disabled-extensions"))
 
@@ -203,20 +186,14 @@ class ThemeMgr:
             if uuid not in values:
                 values.append(uuid)
 
-        enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
-        add_once(disabled, _USER_THEME_UUID)
+        legacy = {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+        enabled = [uuid for uuid in enabled if uuid not in legacy]
+        disabled = [uuid for uuid in disabled if uuid not in legacy]
+        for uuid in (_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID):
+            add_once(disabled, uuid)
 
-        if dark or fixed_shell:
-            enabled = [uuid for uuid in enabled if uuid != _LIGHT_STYLE_UUID]
-            add_once(disabled, _LIGHT_STYLE_UUID)
-        else:
-            disabled = [uuid for uuid in disabled if uuid != _LIGHT_STYLE_UUID]
-            add_once(enabled, _LIGHT_STYLE_UUID)
-
-        gsettings_set("org.gnome.shell.extensions.user-theme", "name", "''")
         gsettings_set(_SHELL_SCHEMA, "disabled-extensions", repr(disabled))
         gsettings_set(_SHELL_SCHEMA, "enabled-extensions", repr(enabled))
-        ShellReloader.reload_extension(_LIGHT_STYLE_UUID, timeout=5)
 
     # ── Consultas ─────────────────────────────────────────────────────────────
 

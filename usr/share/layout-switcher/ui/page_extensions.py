@@ -69,9 +69,6 @@ _CURATED_EXTENSION_DESCRIPTIONS = {
     "legacyschemeautoswitcher@joshimukul29.gmail.com": tr(
         "Keeps GTK 3 applications aligned with light and dark mode."
     ),
-    "light-style@gnome-shell-extensions.gcampax.github.com": tr(
-        "Uses the light GNOME Shell appearance."
-    ),
 }
 
 

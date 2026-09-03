@@ -8,7 +8,7 @@ In-shell companion for the **Community Layout Switcher**. It performs the
 
 The `layout-switcher` app is an **external process**. The GNOME Shell
 extensions a layout uses (`community-panel`, `community-menu`, `kiwi`,
-`light-style`, …) are JavaScript modules running **inside** the gnome-shell
+…) are JavaScript modules running **inside** the gnome-shell
 process. From outside, the only way to switch extensions is to write
 `org/gnome/shell/enabled-extensions` to dconf — which fires the Shell's
 gsettings listener **asynchronously and concurrently** with the rest of the

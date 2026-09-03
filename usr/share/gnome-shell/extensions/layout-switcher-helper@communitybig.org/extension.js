@@ -4,8 +4,8 @@
 //
 // WHY THIS EXISTS
 // ---------------
-// GNOME Shell extensions (community-panel, community-menu, kiwi, light-style,
-// …) are JavaScript modules living INSIDE the gnome-shell
+// GNOME Shell extensions (community-panel, community-menu, kiwi, …) are
+// JavaScript modules living INSIDE the gnome-shell
 // process. An external process (the layout-switcher Python app) can only
 // reach the shell over D-Bus, and the only lever it has to switch extensions
 // is writing `org/gnome/shell/enabled-extensions` to dconf — which fires the
@@ -68,9 +68,9 @@ import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js'
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
 
-// Shell appearance helpers managed by the live color-scheme follower.
-const USER_THEME_UUID = 'user-theme@gnome-shell-extensions.gcampax.github.com';
-const LIGHT_STYLE_UUID = 'light-style@gnome-shell-extensions.gcampax.github.com';
+// Retired external theme extensions. Kept only for in-place upgrade cleanup.
+const LEGACY_USER_THEME_UUID = 'user-theme@gnome-shell-extensions.gcampax.github.com';
+const LEGACY_LIGHT_STYLE_UUID = 'light-style@gnome-shell-extensions.gcampax.github.com';
 const COMMUNITY_PANEL_UUID = 'community-panel@communitybig.org';
 const PANEL_UUIDS = [COMMUNITY_PANEL_UUID];
 const COMMUNITY_DOCK_UUID = 'community-dock@communitybig.org';
@@ -79,7 +79,6 @@ const KIWI_UUID = 'kiwi@kemma';
 const COMMUNITY_MENU_UUID = 'community-menu@communitybig.org';
 const APPINDICATOR_UUID = 'appindicatorsupport@rgcjonas.gmail.com';
 const STRUCTURAL_UUIDS = new Set([
-    LIGHT_STYLE_UUID,
     COMMUNITY_PANEL_UUID,
     COMMUNITY_DOCK_UUID,
     RUNTIME_UUID,
@@ -119,7 +118,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 77;
+const HELPER_BUILD = 78;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -210,24 +209,9 @@ const FIXED_DARK_LAYOUTS = new Set([
     'BigGnome', 'Desk UX', 'G-Unity', 'Minimal',
 ]);
 
-// The stock `light-style` extension mutates Main.sessionMode.colorScheme (it
-// sets 'prefer-light' on enable and restores a saved value on disable). Toggled
-// during a layout switch, that saved value can be lost, leaving
-// sessionMode.colorScheme `undefined`. getStyleVariant() then returns '' and the
-// Shell's _getDefaultStylesheet() finds no base 'gnome-shell.css' in the
-// BigCommunity theme gresource (it only ships -dark/-light/-high-contrast), so
-// Main._defaultCssStylesheet becomes null and the next loadTheme() throws
-// "Argument file may not be null" — the shell renders unstyled (white panel).
-// Restore a valid scheme and re-resolve the default stylesheet (the color-scheme
-// notify drives Main._loadDefaultStylesheet) before we call loadTheme().
-// Returns true when it had to repair an invalid scheme.
-//
-// NOTE: we ALWAYS re-resolve (notify), not only when the scheme is invalid.
-// light-style can null Main._defaultCssStylesheet via a transient invalid scheme
-// during its disable() and then have the scheme end up valid again with no
-// further notify to recompute the stylesheet — so checking the current scheme is
-// not enough; we must drive Main._loadDefaultStylesheet() unconditionally so
-// _defaultCssStylesheet is non-null before loadTheme() reads it.
+// Re-resolve the default stylesheet before Main.loadTheme(). The notification
+// is intentionally unconditional: it also repairs stale/null stylesheet state
+// left by a legacy theme extension during an in-place upgrade.
 function sanitizeCustomStylesheets() {
     const themeContext = St.ThemeContext.get_for_stage(global.stage);
     const theme = themeContext.get_theme();
@@ -257,15 +241,16 @@ function sanitizeCustomStylesheets() {
     return removed;
 }
 
-function ensureValidColorScheme(forceDark = false, preferLight = false) {
+function applyShellColorScheme(layout, dark) {
     const previous = Main.sessionMode.colorScheme;
-    const repaired = !VALID_COLOR_SCHEMES.has(previous);
-    if (forceDark)
-        Main.sessionMode.colorScheme = 'force-dark';
-    else if (preferLight)
-        Main.sessionMode.colorScheme = 'prefer-light';
-    else if (repaired)
-        Main.sessionMode.colorScheme = 'prefer-dark';
+    let desired = previous;
+    if (FIXED_DARK_LAYOUTS.has(layout))
+        desired = 'force-dark';
+    else if (layout === 'Classic' || layout === 'Hybrid')
+        desired = dark ? 'prefer-dark' : 'prefer-light';
+    else if (!VALID_COLOR_SCHEMES.has(desired))
+        desired = 'prefer-dark';
+    Main.sessionMode.colorScheme = desired;
 
     // loadTheme() copies every custom stylesheet from the current theme.
     // Drop deleted cache files before the color-scheme notification triggers
@@ -274,8 +259,8 @@ function ensureValidColorScheme(forceDark = false, preferLight = false) {
     if (staleStylesheets)
         logHelper(`removed ${staleStylesheets} stale custom stylesheet(s)`);
     St.Settings.get().notify('color-scheme');
-    return repaired || staleStylesheets > 0 ||
-        Main.sessionMode.colorScheme !== previous;
+    return !VALID_COLOR_SCHEMES.has(previous) || staleStylesheets > 0 ||
+        desired !== previous;
 }
 
 export default class LayoutSwitcherHelper extends Extension {
@@ -320,15 +305,18 @@ export default class LayoutSwitcherHelper extends Extension {
                     () => this._syncNativeAccentPanelClass());
                 this._lastColorSchemeDark =
                     this._ifaceSettings.get_string('color-scheme') === 'prefer-dark';
+                applyShellColorScheme(
+                    this._activeLayoutLabel,
+                    this._lastColorSchemeDark,
+                );
                 this._syncLightOverviewPanelClass();
                 this._syncNativeAccentPanelClass();
                 this._syncBigGnomePanelClass();
                 this._syncMinimalPanelClass();
                 this._syncGUnitySurfaceClasses();
-                // At login, preserve current extension choices. The delayed
-                // pass only refreshes derived visuals.
+                // Retire old theme extensions after Shell startup settles.
                 this._sleep(1000).then(() => {
-                    this._onColorSchemeChanged(false);
+                    this._onColorSchemeChanged();
                     this._setupPanelSystemIndicator();
                     this._syncLightOverviewPanelClass();
                     this._syncNativeAccentPanelClass();
@@ -1284,7 +1272,18 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     _readActiveLayoutLabel() {
-        return this._readAppSettings().active_layout ?? '';
+        const saved = this._readAppSettings().active_layout;
+        if (saved)
+            return saved;
+        try {
+            const runtimeSettings = new Gio.Settings({
+                schema_id: 'org.communitybig.layout-switcher.runtime',
+            });
+            return runtimeSettings.get_string('active-layout');
+        } catch (e) {
+            logHelper(`runtime layout read failed: ${e}`);
+            return '';
+        }
     }
 
     _savedNotificationPosition() {
@@ -1742,6 +1741,30 @@ export default class LayoutSwitcherHelper extends Extension {
         });
     }
 
+    async _retireLegacyThemeExtensions(mgr) {
+        if (this._legacyThemeRetired)
+            return;
+
+        const legacy = [LEGACY_USER_THEME_UUID, LEGACY_LIGHT_STYLE_UUID];
+        for (const uuid of legacy) {
+            if (!LIVE_STATES.has(mgr.lookup(uuid)?.state))
+                continue;
+            this._moveExtensionLast(mgr, uuid);
+            mgr.disableExtension(uuid);
+            await this._waitState(mgr, uuid, state => this._isDown(state));
+        }
+
+        const shellSettings = new Gio.Settings({schema_id: 'org.gnome.shell'});
+        const enabled = shellSettings.get_strv('enabled-extensions')
+            .filter(uuid => !legacy.includes(uuid));
+        const disabled = shellSettings.get_strv('disabled-extensions')
+            .filter(uuid => !legacy.includes(uuid));
+        disabled.push(...legacy);
+        shellSettings.set_strv('disabled-extensions', disabled);
+        shellSettings.set_strv('enabled-extensions', enabled);
+        this._legacyThemeRetired = true;
+    }
+
     async _followColorScheme(reconcileShell = true) {
         if (this._busy() || this._cancelled || !this._ifaceSettings)
             return;
@@ -1754,6 +1777,7 @@ export default class LayoutSwitcherHelper extends Extension {
         let iconThemeChanged = false;
         this._applying = true;   // serialize against layout switches
         try {
+            await this._retireLegacyThemeExtensions(mgr);
             // Classic/Hybrid use an explicit -light icon design. The other
             // four layouts use the unsuffixed design in light mode.
             const explicitLightIcons = this._activeLayoutLabel === 'Classic' ||
@@ -1789,30 +1813,13 @@ export default class LayoutSwitcherHelper extends Extension {
 
             const nativeShell = this._activeLayoutLabel === 'Classic' ||
                 this._activeLayoutLabel === 'Hybrid';
-            const manageShell = reconcileShell && nativeShell;
+            const manageShell = reconcileShell &&
+                (nativeShell || FIXED_DARK_LAYOUTS.has(this._activeLayoutLabel));
             logHelper(`color-scheme follow: ${dark ? 'dark' : 'light'} (native, ${
                 manageShell ? 'managed' : 'preserved'})`);
 
             if (manageShell) {
-                const userThemeSettings = new Gio.Settings({
-                    schema_id: 'org.gnome.shell.extensions.user-theme',
-                });
-                if (userThemeSettings.get_string('name') !== '')
-                    userThemeSettings.set_string('name', '');
-
-                const turnOff = dark
-                    ? [LIGHT_STYLE_UUID, USER_THEME_UUID]
-                    : [USER_THEME_UUID];
-                for (const uuid of turnOff) {
-                    if (!isLive(uuid))
-                        continue;
-                    this._moveExtensionLast(mgr, uuid);
-                    mgr.disableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isDown(s));
-                }
-                if (nativeShell && dark)
-                    Main.sessionMode.colorScheme = 'prefer-dark';
-                ensureValidColorScheme();
+                applyShellColorScheme(this._activeLayoutLabel, dark);
                 try {
                     if (nativeShell)
                         Main.setThemeStylesheet(null);
@@ -1821,14 +1828,6 @@ export default class LayoutSwitcherHelper extends Extension {
                     logHelper(`loadTheme ERR ${e}`);
                 }
                 await this._sleep(50);
-
-                if (!dark && !isLive(LIGHT_STYLE_UUID)) {
-                    mgr.enableExtension(LIGHT_STYLE_UUID);
-                    await this._waitState(
-                        mgr, LIGHT_STYLE_UUID, s => this._isSettledUp(s));
-                    if (mgr.lookup(LIGHT_STYLE_UUID)?.state === STATE_ERROR)
-                        logHelper(`${LIGHT_STYLE_UUID} errored while following color scheme`);
-                }
             }
             // Window-title label colors (unfocused + minimized): DTP's
             // 'inherit' resolves to white regardless of the light shell
@@ -2461,10 +2460,8 @@ export default class LayoutSwitcherHelper extends Extension {
         // BEFORE the appearance extensions enable on top of it.
         const targetLayout = this._pendingLayoutLabel ||
             this._readActiveLayoutLabel();
-        if (ensureValidColorScheme(
-            FIXED_DARK_LAYOUTS.has(targetLayout),
-            target.has(LIGHT_STYLE_UUID),
-        ))
+        const dark = this._ifaceSettings?.get_string('color-scheme') === 'prefer-dark';
+        if (applyShellColorScheme(targetLayout, dark))
             steps.push('fix colorScheme');
         if (req.theme_reload !== false) {
             try {
@@ -2726,13 +2723,11 @@ export default class LayoutSwitcherHelper extends Extension {
             await this._sleep(stepMs);
         }
 
-        // 3. Reload the base shell stylesheet *before* re-enabling the
-        //    appearance extensions. loadTheme() rebuilds the global St theme
-        //    from disk, which CLOBBERS any panel styling an extension applied on
-        //    enable. Extensions that paint the shell themselves (kiwi,
-        //    light-style) must therefore enable *after* this, so their theming
-        //    lands on top and survives.
-        if (ensureValidColorScheme())
+        // 3. Select the Shell variant and reload its base stylesheet before
+        //    re-enabling appearance extensions.
+        const targetLayout = this._readActiveLayoutLabel();
+        const dark = this._ifaceSettings?.get_string('color-scheme') === 'prefer-dark';
+        if (applyShellColorScheme(targetLayout, dark))
             steps.push('fix colorScheme');
 
         if (req.theme_reload !== false) {

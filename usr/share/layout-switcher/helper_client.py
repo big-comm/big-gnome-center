@@ -7,7 +7,7 @@ The companion GNOME Shell extension
 from INSIDE gnome-shell (enable/disable/reload via ``Main.extensionManager``
 + ``Main.loadTheme``, sequenced on the shell's main loop). Doing it in-shell
 avoids the cross-process race that hangs gnome-shell on heavy transitions and
-lets appearance-owning extensions (dash-to-panel, community-menu, kiwi, light-style)
+lets appearance-owning extensions (dash-to-panel, community-menu, kiwi)
 re-apply their theme without a logout — neither of which is possible from an
 external process on GNOME 45+ (the D-Bus ReloadExtension was deprecated).
 

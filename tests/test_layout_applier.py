@@ -544,7 +544,7 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "color-scheme='prefer-dark'" in out
         assert "gtk-theme='adw-gtk3'\n" in out
         assert "icon-theme='bigicons-papient'\n" in out
-        assert "name=''" in out
+        assert "[org/gnome/shell/extensions/user-theme]" not in out
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
@@ -622,7 +622,7 @@ disabled-extensions=['community-menu@communitybig.org']
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
 
-        assert "name=''" in out
+        assert "[org/gnome/shell/extensions/user-theme]" not in out
         assert user_theme not in enabled
         assert light_style not in enabled
         assert light_style in disabled
@@ -658,11 +658,11 @@ disabled-extensions=['community-menu@communitybig.org']
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
-        assert light_style in enabled
+        assert light_style not in enabled
         assert user_theme not in enabled
         assert user_theme in disabled
-        assert light_style not in disabled
-        assert "name=''" in out
+        assert light_style in disabled
+        assert "[org/gnome/shell/extensions/user-theme]" not in out
 
     @patch("layout_applier.run_cmd")
     def test_preserve_user_color_scheme_uses_effective_gsettings(self, mock_run):
@@ -761,7 +761,7 @@ disabled-extensions=['community-menu@communitybig.org']
         assert light_style not in enabled
         assert light_style in disabled
         assert user_theme in disabled
-        assert "name=''" in out
+        assert "[org/gnome/shell/extensions/user-theme]" not in out
 
     @patch("layout_applier.run_cmd")
     def test_biggnome_preserves_light_apps_and_dark_shell(self, mock_run):
@@ -795,7 +795,7 @@ disabled-extensions=['community-menu@communitybig.org']
         assert light_style not in enabled
         assert light_style in disabled
         assert user_theme in disabled
-        assert "name=''" in out
+        assert "[org/gnome/shell/extensions/user-theme]" not in out
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.ShellReloader.reload_extension", return_value=True)
@@ -856,7 +856,7 @@ disabled-extensions=['community-menu@communitybig.org']
         assert mock_run.call_args_list[0].args[0] == ["dconf", "load", "/"]
         settings_data = mock_run.call_args_list[0].kwargs["stdin_text"]
         assert settings_data.startswith("[org/gnome/shell]\n")
-        assert "[org/gnome/shell/extensions/user-theme]\nname=''" in settings_data
+        assert "[org/gnome/shell/extensions/user-theme]" not in settings_data
         assert mock_run.call_args_list[1].args[0] == ["dconf", "load", "/"]
         assert (
             "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
@@ -1037,7 +1037,9 @@ disabled-extensions=['community-menu@communitybig.org']
         assert (
             "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
         ) in switch_data
-        assert "name=''" in mock_run.call_args_list[0].kwargs["stdin_text"]
+        assert "[org/gnome/shell/extensions/user-theme]" not in (
+            mock_run.call_args_list[0].kwargs["stdin_text"]
+        )
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
@@ -1220,7 +1222,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_keeps_light_style_with_migrated_panel_runtime(
+    def test_load_retires_light_style_with_migrated_panel_runtime(
         self,
         _mock_run,
         _has,
@@ -1234,7 +1236,7 @@ disabled-extensions=['community-menu@communitybig.org']
         _wait_live,
         _sleep,
     ):
-        """Light layouts migrate their panel without a standalone restart."""
+        """Light layouts retire Light Style while migrating their panel."""
         light_style = "light-style@gnome-shell-extensions.gcampax.github.com"
         dash_to_panel = "community-panel@communitybig.org"
         data = (
@@ -1248,6 +1250,11 @@ disabled-extensions=['community-menu@communitybig.org']
         assert ok is True
         mock_restart_dtp.assert_not_called()
         _enable_after_load.assert_not_called()
+        switch_data = _mock_run.call_args_list[1].kwargs["stdin_text"]
+        shell = LayoutApplier._section_key_values(switch_data, "/org/gnome/shell")
+        assert light_style not in LayoutApplier._string_list(
+            shell["enabled-extensions"]
+        )
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._enable_extensions_after_load", return_value=True)
@@ -1355,7 +1362,6 @@ disabled-extensions=['community-menu@communitybig.org']
             [
                 "community-panel@communitybig.org",
                 "arcmenu@arcmenu.com",
-                "light-style@gnome-shell-extensions.gcampax.github.com",
             ],
             sort=False,
         )
@@ -1385,7 +1391,7 @@ disabled-extensions=['community-menu@communitybig.org']
     @patch("layout_applier.LayoutApplier._persist_to_settings_file", return_value=(True, "/x"))
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     @patch("layout_applier.run_cmd", return_value=(True, ""))
-    def test_load_stages_dark_shell_extensions_after_light_style_leaves(
+    def test_load_retires_light_style_without_staging_shell_extensions(
         self,
         mock_run,
         _has,
@@ -1398,7 +1404,7 @@ disabled-extensions=['community-menu@communitybig.org']
         _wait_not_live,
         _sleep,
     ):
-        """Classic -> G-Unity starts Kiwi after Shell mode settles."""
+        """Legacy Light Style leaves without delaying runtime components."""
         arcmenu = "arcmenu@arcmenu.com"
         dash_to_panel = "community-panel@communitybig.org"
         community_dock = "community-dock@communitybig.org"
@@ -1420,16 +1426,17 @@ disabled-extensions=['community-menu@communitybig.org']
             [
                 "community-panel@communitybig.org",
                 "arcmenu@arcmenu.com",
-                "light-style@gnome-shell-extensions.gcampax.github.com",
             ],
             sort=False,
         )
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert f"'{community_dock}'" not in switch_data
-        assert "'layout-switcher-runtime@communitybig.org'" in switch_data
-        assert f"'{kiwi}'" not in switch_data
-        assert f"'{light_style}'" in switch_data
-        mock_enable_after_load.assert_called_once_with([kiwi])
+        shell = LayoutApplier._section_key_values(switch_data, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+        assert community_dock not in enabled
+        assert "layout-switcher-runtime@communitybig.org" in enabled
+        assert kiwi in enabled
+        assert light_style not in enabled
+        mock_enable_after_load.assert_not_called()
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._reload_visual_extensions")
@@ -1525,7 +1532,7 @@ disabled-extensions=['community-menu@communitybig.org']
         mock_disable.assert_called_once_with([community_dock], sort=False)
         settings_data = mock_run.call_args_list[0].kwargs["stdin_text"]
         assert "name='Legacy-Shell'" not in settings_data
-        assert "name=''" in settings_data
+        assert "[org/gnome/shell/extensions/user-theme]" not in settings_data
         assert mock_reset.call_args.kwargs["skip_subdirs"] == {
             "/org/gnome/shell/extensions/dash-to-dock/",
             "/org/gnome/shell/extensions/user-theme/",
@@ -2152,8 +2159,8 @@ class TestHelperIntegration:
     def test_helpers_expose_restricted_component_discovery(self):
         root = Path(__file__).resolve().parents[1]
         for uuid, build in (
-            ("layout-switcher-helper@bigcommunity.org", 42),
-            ("layout-switcher-helper@communitybig.org", 77),
+            ("layout-switcher-helper@bigcommunity.org", 43),
+            ("layout-switcher-helper@communitybig.org", 78),
         ):
             source = (
                 root / "usr/share/gnome-shell/extensions" / uuid / "extension.js"

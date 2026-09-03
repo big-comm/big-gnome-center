@@ -142,6 +142,7 @@ def test_retired_extensions_are_absent_from_layouts_and_dependencies():
 
     pkgbuild = (REPO_ROOT / "pkgbuild/PKGBUILD").read_text()
     assert "gnome-shell-extension-gsconnect" not in pkgbuild
+    assert "'gnome-shell-extensions'" not in pkgbuild
 
 
 def test_package_does_not_patch_external_kiwi_installations():
@@ -219,14 +220,11 @@ def test_original_layouts_retire_user_theme():
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         text = layout_file.read_text()
         enabled, disabled = _shell_extension_lists(text)
-        user_theme_values = _section_key_values(
-            text,
-            "org/gnome/shell/extensions/user-theme",
-        )
-
         assert USER_THEME_UUID not in enabled
         assert USER_THEME_UUID in disabled
-        assert user_theme_values["name"] == "''"
+        assert LIGHT_STYLE_UUID not in enabled
+        assert LIGHT_STYLE_UUID in disabled
+        assert "[org/gnome/shell/extensions/user-theme]" not in text
 
 
 def test_community_menu_layout_mapping_and_panel_order():
@@ -258,15 +256,10 @@ def test_community_menu_layout_mapping_and_panel_order():
             assert dtp_values["dot-color-override"] == "false"
             assert dtp_values["dot-size"] == "0"
             assert interface_values["icon-theme"] == "'bigicons-papient-light'"
-            user_theme_values = _section_key_values(
-                text,
-                "org/gnome/shell/extensions/user-theme",
-            )
-            assert user_theme_values["name"] == "''"
             assert USER_THEME_UUID not in enabled
             assert USER_THEME_UUID in disabled
-            assert LIGHT_STYLE_UUID in enabled
-            assert LIGHT_STYLE_UUID not in disabled
+            assert LIGHT_STYLE_UUID not in enabled
+            assert LIGHT_STYLE_UUID in disabled
         elif filename == "desk-ux.txt":
             assert interface_values["icon-theme"] == "'bigicons-papient-dark'"
             assert dtp_values["appicon-margin"] == "0"
@@ -305,8 +298,8 @@ def test_hybrid_uses_community_menu_and_compact_panel():
     assert interface_values["icon-theme"] == "'bigicons-papient-light'"
     assert USER_THEME_UUID not in enabled
     assert USER_THEME_UUID in disabled
-    assert LIGHT_STYLE_UUID in enabled
-    assert LIGHT_STYLE_UUID not in disabled
+    assert LIGHT_STYLE_UUID not in enabled
+    assert LIGHT_STYLE_UUID in disabled
     assert dtp_values["appicon-margin"] == "0"
     assert dtp_values["appicon-padding"] == "1"
     assert dtp_values["panel-sizes"] == "'{\"0\":38}'"

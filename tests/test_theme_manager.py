@@ -97,9 +97,7 @@ class TestAccentColor:
     @patch("theme_manager.ThemeMgr.apply")
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
     def test_native_layout_only_sets_gnome_accent(self, mock_set, mock_apply):
-        with patch("theme_manager.Settings") as mock_settings:
-            mock_settings.return_value.get.return_value = "Classic"
-            ok, msg = ThemeMgr.set_accent_color("purple")
+        ok, msg = ThemeMgr.set_accent_color("purple")
 
         assert ok is True
         assert msg == ""
@@ -136,37 +134,22 @@ class TestColorScheme:
     def test_color_scheme_default(self, mock_gs):
         assert ThemeMgr.color_scheme() == "prefer-light"
 
-    @patch("theme_manager.ThemeMgr._sync_shell_color_scheme")
+    @patch("theme_manager.ThemeMgr._retire_legacy_shell_theme_extensions")
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
     def test_hybrid_selects_native_shell(self, _mock_set, mock_sync):
-        with patch("theme_manager.Settings") as mock_settings:
-            mock_settings.return_value.get.return_value = "Hybrid"
-            ok, _msg = ThemeMgr.set_color_scheme(True)
+        ok, _msg = ThemeMgr.set_color_scheme(True)
 
         assert ok is True
-        mock_sync.assert_called_once_with(
-            True,
-            fixed_shell=False,
-        )
+        mock_sync.assert_called_once_with()
 
-    @patch("theme_manager.ThemeMgr._sync_shell_color_scheme")
+    @patch("theme_manager.ThemeMgr._retire_legacy_shell_theme_extensions")
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
     def test_desk_ux_keeps_structural_dark_shell(self, _mock_set, mock_sync):
-        with patch("theme_manager.Settings") as mock_settings:
-            mock_settings.return_value.get.return_value = "Desk UX"
-            ok, _msg = ThemeMgr.set_color_scheme(False)
+        ok, _msg = ThemeMgr.set_color_scheme(False)
 
         assert ok is True
-        mock_sync.assert_called_once_with(
-            True,
-            fixed_shell=True,
-        )
+        mock_sync.assert_called_once_with()
 
-    @pytest.mark.parametrize(
-        ("dark", "fixed_shell", "light_style_enabled"),
-        [(False, False, True), (True, False, False), (False, True, False)],
-    )
-    @patch("theme_manager.ShellReloader.reload_extension", return_value=True)
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
     @patch(
         "theme_manager.gsettings_get",
@@ -179,27 +162,14 @@ class TestColorScheme:
         self,
         _mock_get,
         mock_set,
-        mock_reload,
-        dark,
-        fixed_shell,
-        light_style_enabled,
     ):
-        ThemeMgr._sync_shell_color_scheme(dark, fixed_shell=fixed_shell)
+        ThemeMgr._retire_legacy_shell_theme_extensions()
 
         calls = [call.args for call in mock_set.call_args_list]
-        assert (
-            "org.gnome.shell.extensions.user-theme",
-            "name",
-            "''",
-        ) in calls
         disabled = next(value for schema, key, value in calls if key == "disabled-extensions")
         enabled = next(value for schema, key, value in calls if key == "enabled-extensions")
         assert "user-theme@gnome-shell-extensions.gcampax.github.com" in disabled
         assert "user-theme@gnome-shell-extensions.gcampax.github.com" not in enabled
-        assert (
-            "light-style@gnome-shell-extensions.gcampax.github.com" in enabled
-        ) is light_style_enabled
-        mock_reload.assert_called_once_with(
-            "light-style@gnome-shell-extensions.gcampax.github.com",
-            timeout=5,
-        )
+        assert "light-style@gnome-shell-extensions.gcampax.github.com" in disabled
+        assert "light-style@gnome-shell-extensions.gcampax.github.com" not in enabled
+        assert all(schema == "org.gnome.shell" for schema, _key, _value in calls)

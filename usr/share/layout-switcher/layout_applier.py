@@ -134,8 +134,8 @@ _COMMUNITY_PANEL_UUID = "community-panel@communitybig.org"
 _PANEL_UUIDS = (_COMMUNITY_PANEL_UUID,)
 _COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
 _RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
-_LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
-_USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
+_LEGACY_LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
+_LEGACY_USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
 _FROSTED_GLASS_DEFAULT_OPACITY = 37
@@ -159,7 +159,6 @@ _STRUCTURAL_EXTENSION_UUIDS = frozenset(
         _COMMUNITY_PANEL_UUID,
         _RUNTIME_UUID,
         _KIWI_UUID,
-        _LIGHT_STYLE_UUID,
     }
 )
 # Appearance-owning extensions the in-shell helper force-reloads when they
@@ -172,7 +171,6 @@ _HELPER_RELOAD_UUIDS = frozenset(
         "arcmenu@arcmenu.com",
         "community-menu@communitybig.org",
         "kiwi@kemma",
-        "light-style@gnome-shell-extensions.gcampax.github.com",
     }
 )
 # Dock/panel owners whose actor lingers after a plain disable(): when they
@@ -206,7 +204,6 @@ _PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect", "gtk4-ding"})
 _HELPER_SHELL_THEME_UUIDS = frozenset(
     {
         "kiwi@kemma",
-        "light-style@gnome-shell-extensions.gcampax.github.com",
     }
 )
 # First helper protocol version that loads the theme before re-enabling the
@@ -251,7 +248,6 @@ _FRAGILE_LIVE_LEAVING = frozenset(
         _COMMUNITY_DOCK_UUID,
         _COMMUNITY_PANEL_UUID,
         _KIWI_UUID,
-        _LIGHT_STYLE_UUID,
     }
 )
 _FRAGILE_LIVE_ENTERING = frozenset(
@@ -259,16 +255,11 @@ _FRAGILE_LIVE_ENTERING = frozenset(
         _COMMUNITY_PANEL_UUID,
     }
 )
-_SHELL_MODE_DEPENDENT_ENTERING = (
-    _COMMUNITY_DOCK_UUID,
-    _KIWI_UUID,
-)
 _EXTENSION_SETTINGS_SUBDIRS = {
     _ARCMENU_UUID: "/org/gnome/shell/extensions/arcmenu/",
     _COMMUNITY_MENU_UUID: "/org/gnome/shell/extensions/community-menu/",
     _COMMUNITY_DOCK_UUID: "/org/gnome/shell/extensions/dash-to-dock/",
     _COMMUNITY_PANEL_UUID: "/org/gnome/shell/extensions/dash-to-panel/",
-    _USER_THEME_UUID: "/org/gnome/shell/extensions/user-theme/",
 }
 
 # Extensions that should not be disabled during generic leave cleanup.
@@ -553,7 +544,11 @@ class LayoutApplier:
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
         target_enabled = cls._string_list(shell_values.get("enabled-extensions"))
 
-        target_enabled = [u for u in target_enabled if u != _USER_THEME_UUID]
+        target_enabled = [
+            uuid
+            for uuid in target_enabled
+            if uuid not in {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+        ]
 
         # Keep selected system indicators stable across switches. Anything
         # currently enabled that is known to be persistent stays in the target,
@@ -586,11 +581,8 @@ class LayoutApplier:
                 HelperClient.reload_extension(uuid)
 
         # Theme-order workaround for an old helper (v2): it calls Main.loadTheme()
-        # AFTER enabling the appearance extensions, so loadTheme wipes the panel
-        # styling kiwi/light-style applied (G-Unity ended up with the bare
-        # default bar instead of Kiwi's dark one). Reload those Shell-style
-        # owners once more so their styling lands on top. v3+ sequences loadTheme
-        # before the enable step, so this is skipped (no double reload / flicker).
+        # after enabling appearance extensions. Reload the remaining Shell-style
+        # owners so their styling lands on top.
         if HelperClient.helper_version() < _HELPER_THEME_ORDER_FIXED_VERSION:
             for uuid in target_enabled:
                 if uuid in _HELPER_SHELL_THEME_UUIDS:
@@ -797,16 +789,11 @@ class LayoutApplier:
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
         target_enabled = cls._string_list(shell_values.get("enabled-extensions"))
 
-        target_enabled = [u for u in target_enabled if u != _USER_THEME_UUID]
-        # Light Style enables first because it flips the shell variant —
-        # anything built before it (dash-to-panel bakes its
-        # label colors from the theme at construction time) would render for
-        # the wrong theme.
-        if _LIGHT_STYLE_UUID in target_enabled:
-            target_enabled = [
-                _LIGHT_STYLE_UUID,
-                *[u for u in target_enabled if u != _LIGHT_STYLE_UUID],
-            ]
+        target_enabled = [
+            uuid
+            for uuid in target_enabled
+            if uuid not in {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+        ]
 
         # Keep selected system indicators stable across switches.
         currently_enabled = set(cls._enabled_extensions())
@@ -1127,6 +1114,28 @@ class LayoutApplier:
         return joined
 
     @staticmethod
+    def _remove_dconf_section(text: str, section_path: str) -> str:
+        """Remove one complete section from a dconf dump string."""
+        clean_section = "/" + section_path.strip("/")
+        lines = text.splitlines()
+        out: List[str] = []
+        section = ""
+
+        for raw in lines:
+            stripped = raw.strip()
+            if stripped.startswith("[") and stripped.endswith("]"):
+                section = "/" + stripped[1:-1].strip("/")
+            if section != clean_section:
+                out.append(raw)
+
+        while len(out) > 1 and not out[-1].strip() and not out[-2].strip():
+            out.pop()
+        joined = "\n".join(out)
+        if text.endswith("\n") or not joined.endswith("\n"):
+            joined += "\n"
+        return joined
+
+    @staticmethod
     def _section_key_values(text: str, section_path: str) -> Dict[str, str]:
         """Return raw key values for one section from a dconf dump."""
         clean_section = "/" + section_path.strip("/")
@@ -1336,7 +1345,8 @@ class LayoutApplier:
         *,
         prefer_dark: Optional[bool],
     ) -> str:
-        """Align native Shell mode and retire legacy User Themes state."""
+        """Retire external Shell theme extensions from old layout states."""
+        del prefer_dark
         shell_values = cls._section_key_values(text, "/org/gnome/shell")
         enabled = cls._string_list(shell_values.get("enabled-extensions"))
         disabled = cls._string_list(shell_values.get("disabled-extensions"))
@@ -1345,21 +1355,15 @@ class LayoutApplier:
             if uuid not in values:
                 values.append(uuid)
 
-        enabled = [uuid for uuid in enabled if uuid != _USER_THEME_UUID]
-        add_once(disabled, _USER_THEME_UUID)
+        legacy = {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+        enabled = [uuid for uuid in enabled if uuid not in legacy]
+        disabled = [uuid for uuid in disabled if uuid not in legacy]
+        for uuid in (_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID):
+            add_once(disabled, uuid)
 
-        if prefer_dark is True:
-            enabled = [uuid for uuid in enabled if uuid != _LIGHT_STYLE_UUID]
-            add_once(disabled, _LIGHT_STYLE_UUID)
-        elif prefer_dark is False:
-            disabled = [uuid for uuid in disabled if uuid != _LIGHT_STYLE_UUID]
-            add_once(enabled, _LIGHT_STYLE_UUID)
-
-        text = cls._replace_or_add_dconf_key(
+        text = cls._remove_dconf_section(
             text,
             "/org/gnome/shell/extensions/user-theme",
-            "name",
-            "''",
         )
         text = cls._replace_or_add_dconf_key(
             text,
@@ -1487,8 +1491,7 @@ class LayoutApplier:
         }
         if not targets:
             return text
-        # Only 'prefer-dark' is dark here: 'default' means LIGHT apps/bar
-        # (light-style keeps the bar light under 'default' on these layouts).
+        # Only 'prefer-dark' is dark here: 'default' means light apps/bar.
         interface = cls._section_key_values(text, _INTERFACE_SECTION)
         scheme = cls._gvariant_string(interface.get("color-scheme"))
         if not scheme:
@@ -1764,36 +1767,6 @@ class LayoutApplier:
 
         live = cls._dash_to_panel_live_state(panel_uuid)
         return live is not False
-
-    @classmethod
-    def _restart_light_style_after_load(cls) -> bool:
-        ok, msg = ShellReloader.enable_extension_dbus(
-            _LIGHT_STYLE_UUID,
-            enable=False,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if not ok:
-            log.warning("post-load DisableExtension failed for %s: %s", _LIGHT_STYLE_UUID, msg)
-            return False
-        time.sleep(cls._DISABLE_STEP_SEC)
-
-        ok, msg = ShellReloader.enable_extension_dbus(
-            _LIGHT_STYLE_UUID,
-            enable=True,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if not ok:
-            log.warning("post-load EnableExtension failed for %s: %s", _LIGHT_STYLE_UUID, msg)
-            return False
-        time.sleep(cls._DISABLE_STEP_SEC)
-
-        state = ShellReloader.get_extension_state(
-            _LIGHT_STYLE_UUID,
-            timeout=cls._SHELL_DBUS_TIMEOUT_SEC,
-        )
-        if state is None:
-            return True
-        return state in _LIVE_EXTENSION_STATES
 
     @classmethod
     def _enable_extensions_after_load(cls, uuids: Iterable[str]) -> bool:
@@ -2420,13 +2393,16 @@ class LayoutApplier:
             target_enabled = set(target_enabled_order)
             if not target_enabled:
                 target_enabled = cls._parse_target_enabled_extensions(data)
-            target_enabled.discard(_USER_THEME_UUID)
+            target_enabled.difference_update(
+                {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+            )
             target_enabled_order = [
-                uuid for uuid in target_enabled_order if uuid != _USER_THEME_UUID
+                uuid
+                for uuid in target_enabled_order
+                if uuid not in {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
             ]
             live_target_enabled = set(target_enabled)
             before_set = {u for u in (before_uuids or ()) if u}
-            user_theme_leaving = _USER_THEME_UUID in before_set
             target_panel_uuid = next(
                 (uuid for uuid in _PANEL_UUIDS if uuid in target_enabled),
                 None,
@@ -2435,9 +2411,7 @@ class LayoutApplier:
             target_panel_menus = [
                 uuid for uuid in (_COMMUNITY_MENU_UUID, _ARCMENU_UUID) if uuid in target_enabled
             ]
-            target_uses_light_style = _LIGHT_STYLE_UUID in target_enabled
             target_panel_menus_after_dtp = target_panel_menus if target_uses_dtp else []
-            light_style_leaving = _LIGHT_STYLE_UUID in before_set and not target_uses_light_style
             leaving = before_set - live_target_enabled
             fragile_live_leaving = {uuid for uuid in leaving if uuid in _FRAGILE_LIVE_LEAVING}
             fragile_live_entering_order = [
@@ -2500,12 +2474,9 @@ class LayoutApplier:
                     for subdir in (cls._extension_settings_subdir(uuid),)
                     if subdir
                 )
-            if user_theme_leaving:
-                skip_orphan_subdirs.add(_EXTENSION_SETTINGS_SUBDIRS[_USER_THEME_UUID])
             cls._reset_orphan_keys(data, skip_subdirs=skip_orphan_subdirs)
             settings_data, extension_switch_data = cls._split_shell_extension_switch_keys(data)
             post_dtp_enabled: List[str] = []
-            post_shell_mode_enabled: List[str] = []
             if target_uses_dtp:
                 extension_switch_data = cls._remove_enabled_extension_from_switch_data(
                     extension_switch_data,
@@ -2517,14 +2488,6 @@ class LayoutApplier:
                     uuid,
                 )
                 post_dtp_enabled.append(uuid)
-            if light_style_leaving:
-                for uuid in target_enabled_order:
-                    if uuid in _SHELL_MODE_DEPENDENT_ENTERING and uuid not in before_set:
-                        extension_switch_data = cls._remove_enabled_extension_from_switch_data(
-                            extension_switch_data,
-                            uuid,
-                        )
-                        post_shell_mode_enabled.append(uuid)
             staged_enabled_order = [
                 uuid
                 for uuid in target_enabled_order
@@ -2555,27 +2518,13 @@ class LayoutApplier:
             # DisableExtension, so the final enabled-extensions load is the
             # point where we verify that the old panel and Shell mode are
             # actually gone.
-            for uuid in target_enabled_order:
-                if uuid == _LIGHT_STYLE_UUID:
-                    shell_dbus_available = cls._wait_extension_live(uuid) and shell_dbus_available
-                    break
             for uuid in cls._leaving_extensions_in_disable_order(
                 before_uuids,
                 fragile_live_leaving,
             ):
                 shell_dbus_available = cls._wait_extension_not_live(uuid) and shell_dbus_available
 
-            # Let Shell finish disabling light-style before extensions that
-            # sample panel colors during enable() (Kiwi/Community Dock) start.
             after_uuids = cls._enabled_extensions()
-            if post_shell_mode_enabled:
-                progress("Reloading components…")
-                time.sleep(cls._SETTLE_SEC)
-                shell_mode_ok = cls._enable_extensions_after_load(post_shell_mode_enabled)
-                shell_dbus_available = shell_dbus_available and shell_mode_ok
-                if shell_mode_ok:
-                    after_uuids = cls._enabled_extensions()
-
             # Force fresh JS module init for a small allowlist of
             # visually-stateful extensions known to tolerate ReloadExtension.
             # Disable→Enable alone reuses the extension's JS module and

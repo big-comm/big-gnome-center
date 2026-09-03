@@ -52,6 +52,17 @@ def test_extension_search_defaults_to_relevance():
     assert "self._sort = ego_client.SORT_RELEVANCE" in source
 
 
+def test_extension_search_discards_stale_async_results():
+    source = (ROOT / "usr/share/layout-switcher/ui/ext_browse_view.py").read_text()
+
+    assert "self._search_generation += 1" in source
+    assert "generation = self._search_generation" in source
+    assert "GLib.idle_add(self._on_search_done, generation, result)" in source
+    assert "if generation != self._search_generation:" in source
+    assert source.count("self._search_generation += 1") == 2
+    assert "if self._loading:\n            return" not in source
+
+
 def test_effect_assets_and_gallery_geometry():
     for name in ("cube.png", "lamp.png", "wobbly.png"):
         path = EFFECTS / name

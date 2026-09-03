@@ -390,9 +390,6 @@ workspace-background-corner-size=0
 workspace-popup=true
 workspaces-in-app-grid=true
 
-[org/gnome/shell/extensions/user-theme]
-name=''
-
 [org/gnome/shell/keybindings]
 toggle-message-tray=['<Super>e']
 

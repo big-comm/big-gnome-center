@@ -77,6 +77,9 @@ class ExtBrowseView(Gtk.Box):
         self._debounce_source: Optional[int] = None
         self._loading = False
         self._has_loaded_once = False
+        # Every request gets an id. A slow response from an older query must
+        # never replace results for the text currently shown in SearchEntry.
+        self._search_generation = 0
 
         self._build()
 
@@ -246,6 +249,9 @@ class ExtBrowseView(Gtk.Box):
 
     def _on_search_changed(self, entry) -> None:
         self._query = entry.get_text().strip()
+        # Invalidate the in-flight response immediately. Otherwise it can be
+        # rendered during the debounce interval under the new query text.
+        self._search_generation += 1
         # Debounce
         if self._debounce_source is not None:
             GLib.source_remove(self._debounce_source)
@@ -287,8 +293,8 @@ class ExtBrowseView(Gtk.Box):
         self._next_btn.set_sensitive(self._page < self._num_pages)
 
     def _run_search(self) -> None:
-        if self._loading:
-            return
+        self._search_generation += 1
+        generation = self._search_generation
         self._loading = True
         self._stack.set_visible_child_name("loading")
 
@@ -304,11 +310,13 @@ class ExtBrowseView(Gtk.Box):
                 sort=sort,
                 shell_version=shell,
             )
-            GLib.idle_add(self._on_search_done, result)
+            GLib.idle_add(self._on_search_done, generation, result)
 
         self._pool.submit(task)
 
-    def _on_search_done(self, result) -> bool:
+    def _on_search_done(self, generation: int, result) -> bool:
+        if generation != self._search_generation:
+            return False
         self._loading = False
         self._has_loaded_once = True
         if result is None:
