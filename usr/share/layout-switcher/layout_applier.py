@@ -193,14 +193,11 @@ _HELPER_TEARDOWN_UUIDS = frozenset(
 _HELPER_PERSIST_UUIDS = frozenset(
     {
         "appindicatorsupport@rgcjonas.gmail.com",
-        "gsconnect@andyholmes.github.io",
-        "drive-menu@gnome-shell-extensions.gcampax.github.com",
         _FROSTED_GLASS_UUID,
     }
 )
-# Persisting an extension process does not imply preserving all its settings.
-# GSConnect pairing data must survive layout switches. AppIndicator stays live
-# for stability, but its visual placement remains owned by original layouts.
+# Settings branches that layouts must never reset. GSConnect is no longer
+# bundled, but pairing data from existing installations must remain untouched.
 _PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect", "gtk4-ding"})
 # Extensions that paint the GNOME *shell* stylesheet themselves (the panel,
 # menus). Main.loadTheme() rebuilds the global St theme and clobbers their

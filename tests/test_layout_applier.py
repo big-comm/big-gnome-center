@@ -26,6 +26,14 @@ def test_pamac_updates_is_not_preserved_across_layout_switches():
     assert "pamac-updates@manjaro.org" not in _HELPER_PERSIST_UUIDS
 
 
+def test_retired_extensions_are_not_preserved_across_layout_switches():
+    assert "gsconnect@andyholmes.github.io" not in _HELPER_PERSIST_UUIDS
+    assert (
+        "drive-menu@gnome-shell-extensions.gcampax.github.com"
+        not in _HELPER_PERSIST_UUIDS
+    )
+
+
 @pytest.fixture(autouse=True)
 def required_helper_available():
     """Keep layout tests focused on the apply stage after helper preflight."""

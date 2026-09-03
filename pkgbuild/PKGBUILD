@@ -13,7 +13,6 @@ depends=(
     'gnome-shell-big-shot'
     'gnome-shell-extension-appindicator'
     'gnome-shell-extension-copyous'
-    'gnome-shell-extension-gsconnect'
     'gnome-shell-extension-gtk4-desktop-icons-ng'
     'gnome-shell-extension-legacy-theme-auto-switcher'
     'gnome-shell-extensions'

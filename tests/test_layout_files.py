@@ -34,6 +34,8 @@ LEGACY_LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
 BIG_SHOT_UUID = "big-shot@communitybig.org"
 LEGACY_BIG_SHOT_UUID = "big-shot@bigcommunity.org"
 PAMAC_UPDATES_UUID = "pamac-updates@manjaro.org"
+GSCONNECT_UUID = "gsconnect@andyholmes.github.io"
+REMOVABLE_DRIVE_MENU_UUID = "drive-menu@gnome-shell-extensions.gcampax.github.com"
 COPYOUS_SECTION = "org/gnome/shell/extensions/copyous"
 COMMUNITY_MENU_LAYOUTS = {
     "classic.txt": "APPS_ONLY",
@@ -129,6 +131,17 @@ def test_no_layout_enables_the_pamac_updates_extension():
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         enabled, _disabled = _shell_extension_lists(layout_file.read_text())
         assert PAMAC_UPDATES_UUID not in enabled
+
+
+def test_retired_extensions_are_absent_from_layouts_and_dependencies():
+    retired = {GSCONNECT_UUID, REMOVABLE_DRIVE_MENU_UUID}
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        text = layout_file.read_text()
+        for uuid in retired:
+            assert uuid not in text, f"{layout_file.name} still references {uuid}"
+
+    pkgbuild = (REPO_ROOT / "pkgbuild/PKGBUILD").read_text()
+    assert "gnome-shell-extension-gsconnect" not in pkgbuild
 
 
 def test_package_does_not_patch_external_kiwi_installations():
