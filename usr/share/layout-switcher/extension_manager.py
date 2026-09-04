@@ -445,35 +445,37 @@ class ExtMgr:
             return False, "invalid extension UUID"
 
         user_path = EXT_USER_DIR / uuid
-        system_path = EXT_SYS_DIR / uuid
-        if not user_path.exists() and not system_path.exists():
-            return False, "extension not found"
-
-        from shell_reloader import ShellReloader
-
         if user_path.exists():
+            from shell_reloader import ShellReloader
+
             # Stop user code before deleting it from disk.
             ShellReloader.apply_extension_state(uuid, False)
             try:
                 shutil.rmtree(str(user_path))
             except Exception as exc:
                 return False, str(exc)
-        else:
-            if not _PKEXEC.is_file():
-                return False, "pkexec not found"
-            if not _SYSTEM_EXTENSION_REMOVER.is_file():
-                return False, "system extension remover not found"
+            ShellReloader.reload_all()
+            return True, ""
 
-            ok, msg = run_cmd(
-                [str(_PKEXEC), str(_SYSTEM_EXTENSION_REMOVER), uuid],
-                timeout=180,
-            )
-            if not ok:
-                return False, msg or "administrator authentication was cancelled"
+        system_path = EXT_SYS_DIR / uuid
+        if not system_path.exists():
+            return False, "extension not found"
+        if not _PKEXEC.is_file():
+            return False, "pkexec not found"
+        if not _SYSTEM_EXTENSION_REMOVER.is_file():
+            return False, "system extension remover not found"
 
-            # The Shell still knows the loaded UUID after its files are gone.
-            ShellReloader.apply_extension_state(uuid, False)
+        ok, msg = run_cmd(
+            [str(_PKEXEC), str(_SYSTEM_EXTENSION_REMOVER), uuid],
+            timeout=180,
+        )
+        if not ok:
+            return False, msg or "administrator authentication was cancelled"
 
+        from shell_reloader import ShellReloader
+
+        # The Shell still knows the loaded UUID after its files are gone.
+        ShellReloader.apply_extension_state(uuid, False)
         ShellReloader.reload_all()
         return True, ""
 

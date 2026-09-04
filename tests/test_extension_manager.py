@@ -312,11 +312,14 @@ class TestUpdate:
 class TestRemove:
     def test_remove_user_extension(self, tmp_path):
         ext_dir = tmp_path / "test-ext@foo.com"
+        system_dir = tmp_path / "system"
         ext_dir.mkdir()
         (ext_dir / "metadata.json").write_text("{}")
 
         with (
             patch("extension_manager.EXT_USER_DIR", tmp_path),
+            patch("extension_manager.EXT_SYS_DIR", system_dir),
+            patch("extension_manager.run_cmd") as mock_run,
             patch(
                 "shell_reloader.ShellReloader.apply_extension_state",
                 return_value=(True, ""),
@@ -326,6 +329,7 @@ class TestRemove:
             ok, msg = ExtMgr.remove("test-ext@foo.com")
             assert ok is True
             assert not ext_dir.exists()
+            mock_run.assert_not_called()
 
     def test_remove_nonexistent(self, tmp_path):
         with (
