@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 85" in controller
+    assert "RUNTIME_BUILD = 86" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -361,16 +361,17 @@ def test_runtime_owns_taskbar_opacity_and_reports_effective_alpha():
     assert "Math.round(panel.dynamicTransparency.alpha * 100)" in runtime
 
 
-def test_runtime_owns_minimal_native_panel_opacity():
+def test_runtime_owns_minimal_native_panel_opacity_and_visibility():
     controller = (RUNTIME / "runtimeController.js").read_text()
     profiles = (RUNTIME / "layoutProfiles.js").read_text()
     integration = (RUNTIME / "nativePanelOpacityIntegration.js").read_text()
 
     assert "new NativePanelOpacityIntegration()" in controller
-    assert "this._nativePanelOpacity.activate(panelOpacity)" in controller
+    assert "this._nativePanelOpacity.activate(panelOpacity, panelVisibility)" in controller
     assert "this._nativePanelOpacity.deactivate()" in controller
     assert "nativePanelOpacity:" in controller
     assert "panelOpacity: 65" in profiles
+    assert "panelVisibility: 'always-visible'" in profiles
     assert "Main.panel" in integration
     assert "get_background_color()" in integration
     assert "background-color: rgba(" in integration
@@ -380,6 +381,11 @@ def test_runtime_owns_minimal_native_panel_opacity():
     assert "this._panel.set_style(this._originalStyle)" in integration
     assert "styleOwned:" in integration
     assert "styleSignalOwned:" in integration
+    assert "visibilitySignalsOwned:" in integration
+    assert "_focusWindowTouchesPanel()" in integration
+    assert "Main.layoutManager.addTopChrome" in integration
+    assert "'leave-event'" in integration
+    assert "this._panelActorData.affectsStruts" in integration
     assert "restoreConflicts:" in integration
 
 

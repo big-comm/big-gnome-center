@@ -83,6 +83,7 @@ const LAYOUT_PROFILES = new Map([
         indicator: 'none',
         hover: 'default',
         panelOpacity: 65,
+        panelVisibility: 'always-visible',
         skipStartupOverview: false,
     })],
 ]);

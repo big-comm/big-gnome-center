@@ -395,6 +395,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={native_panel_opacity}",
         ),
         _check(
+            native_panel_opacity.get("visibilitySignalsOwned")
+            is expected_native_panel,
+            "native-panel-visibility-signals",
+            f"owned={expected_native_panel}",
+            f"integration={native_panel_opacity}",
+        ),
+        _check(
             (
                 native_panel_opacity.get("opacity") == expected.get("opacity")
                 and native_panel_opacity.get("effectiveOpacity")
@@ -410,6 +417,22 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "native-panel-opacity-state",
             "native panel opacity matches runtime state",
             f"expected={expected.get('opacity')}, integration={native_panel_opacity}",
+        ),
+        _check(
+            (
+                native_panel_opacity.get("visibility") == expected.get("visibility")
+                and native_panel_opacity.get("affectsStruts")
+                is (expected.get("visibility") == "always-visible")
+            )
+            if expected_native_panel
+            else (
+                native_panel_opacity.get("visibility") is None
+                and native_panel_opacity.get("affectsStruts") is None
+                and native_panel_opacity.get("pointerReveal") is False
+            ),
+            "native-panel-visibility-state",
+            "native panel visibility matches runtime state",
+            f"expected={expected.get('visibility')}, integration={native_panel_opacity}",
         ),
         _check(
             native_panel_opacity.get("restoreConflicts") == 0

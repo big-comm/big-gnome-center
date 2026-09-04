@@ -92,6 +92,16 @@ class PanelDockSettings:
             )
         )
 
+    def _runtime_owns_panel_visibility(self) -> bool:
+        return (
+            self.runtime_active
+            and self.runtime.supports_layout(self.active_layout)
+            and (
+                self.community_panel_active
+                or self.active_layout == "Minimal"
+            )
+        )
+
     def restore_layout_defaults(self) -> None:
         if not self.runtime.supports_layout(self.active_layout):
             return
@@ -130,7 +140,11 @@ class PanelDockSettings:
                 or self.active_layout == "Minimal"
             ):
                 self.set_panel_opacity(defaults["panel-opacity"])
-            if self.dock_active or self.community_panel_active:
+            if (
+                self.dock_active
+                or self.community_panel_active
+                or self.active_layout == "Minimal"
+            ):
                 self.set_panel_visibility(defaults["panel-visibility"])
             if self.active_layout != "Classic" and (
                 self.dock_active or self.community_panel_active
@@ -438,11 +452,7 @@ class PanelDockSettings:
         )
 
     def panel_visibility(self) -> str:
-        if (
-            self.runtime_active
-            and self.community_panel_active
-            and self.runtime.supports_layout(self.active_layout)
-        ):
+        if self._runtime_owns_panel_visibility():
             mode = self.runtime.get(
                 self.active_layout, "panel-visibility", "always-visible"
             )
@@ -465,11 +475,7 @@ class PanelDockSettings:
         if mode not in VISIBILITY_MODES:
             raise ValueError(f"invalid panel visibility: {mode}")
         self._remember("panel-visibility", mode)
-        if (
-            self.runtime_active
-            and self.community_panel_active
-            and self.runtime.supports_layout(self.active_layout)
-        ):
+        if self._runtime_owns_panel_visibility():
             return
         if self.community_panel_active:
             intelligent = mode == "intelligent"

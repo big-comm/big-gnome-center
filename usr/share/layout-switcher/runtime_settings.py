@@ -53,6 +53,7 @@ LAYOUT_DEFAULTS = {
     },
     "Minimal": {
         "panel-opacity": 65,
+        "panel-visibility": "always-visible",
         "skip-startup-overview": False,
     },
 }
