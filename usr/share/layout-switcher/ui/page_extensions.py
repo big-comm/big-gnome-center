@@ -10,7 +10,7 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
 import shutil
-from typing import Dict
+from typing import Dict, Iterable, List
 
 import gi
 
@@ -30,6 +30,17 @@ from utils import run_cmd
 
 
 _BIG_SHOT_DESCRIPTION = tr("Captures, annotates and records the screen.")
+_HIDDEN_SYSTEM_EXTENSION_UUIDS = frozenset(
+    {
+        # Private runtime/resource and upgrade-compatibility hosts.
+        "community-dock@communitybig.org",
+        "community-menu@bigcommunity.org",
+        "community-panel@communitybig.org",
+        "layout-switcher-helper@bigcommunity.org",
+        # Pamac already exposes updates through the system indicator.
+        "pamac-updates@manjaro.org",
+    }
+)
 _CURATED_EXTENSION_DESCRIPTIONS = {
     "appindicatorsupport@rgcjonas.gmail.com": tr(
         "Shows application tray icons in the system panel."
@@ -70,6 +81,15 @@ _CURATED_EXTENSION_DESCRIPTIONS = {
         "Keeps GTK 3 applications aligned with light and dark mode."
     ),
 }
+
+
+def _visible_installed_extensions(extensions: Iterable[Dict]) -> List[Dict]:
+    """Hide system-only implementation details while keeping user copies manageable."""
+    return [
+        ext
+        for ext in extensions
+        if ext.get("user") or ext.get("uuid") not in _HIDDEN_SYSTEM_EXTENSION_UUIDS
+    ]
 
 
 def _installed_extension_description(ext: Dict) -> str:
@@ -621,7 +641,7 @@ class ExtensionsPage(Gtk.Box):
         run_cmd(["xdg-open", "https://extensions.gnome.org"], timeout=5)
 
     def refresh_installed(self) -> None:
-        exts = ExtMgr.list_installed()
+        exts = _visible_installed_extensions(ExtMgr.list_installed())
         self._installed_exts = exts
         self._refresh_global_btn()
 
