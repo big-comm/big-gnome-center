@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 86" in controller
+    assert "RUNTIME_BUILD = 89" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -385,6 +385,12 @@ def test_runtime_owns_minimal_native_panel_opacity_and_visibility():
     assert "_focusWindowTouchesPanel()" in integration
     assert "Main.layoutManager.addTopChrome" in integration
     assert "'leave-event'" in integration
+    assert "'shown'" in integration
+    assert "'notify::visible'" in integration
+    assert "Main.overview.visibleTarget" in integration
+    assert "inOverview:" in integration
+    assert "this._applyPanelTracking(this._visibility, inOverview)" in integration
+    assert "mode !== 'always-visible' && !inOverview" in integration
     assert "this._panelActorData.affectsStruts" in integration
     assert "restoreConflicts:" in integration
 

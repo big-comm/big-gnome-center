@@ -79,7 +79,8 @@ export class NativePanelOpacityIntegration {
             : null;
         this._originalAffectsStruts = this._panelActorData?.affectsStruts;
         this._originalTrackFullscreen = this._panelActorData?.trackFullscreen;
-        this._inOverview = Main.overview.visible;
+        this._inOverview = Boolean(
+            Main.overview.visible || Main.overview.visibleTarget);
         this._captureBackground();
 
         panel.reactive = true;
@@ -131,9 +132,17 @@ export class NativePanelOpacityIntegration {
             this._inOverview = true;
             this._applyVisibility();
         });
+        this._connect(Main.overview, 'shown', () => {
+            this._inOverview = true;
+            this._applyVisibility();
+        });
         this._connect(Main.overview, 'hidden', () => {
             this._inOverview = false;
             this._applyVisibility();
+        });
+        this._connect(this._panelBox, 'notify::visible', () => {
+            if (this._overviewActive() && !this._panelBox.visible)
+                this._applyVisibility();
         });
         this._watchFocusWindow();
     }
@@ -217,17 +226,18 @@ export class NativePanelOpacityIntegration {
             return;
         this._applyingVisibility = true;
         try {
+            const inOverview = this._overviewActive();
             const monitorFullscreen = Boolean(
-                this._focusMonitor()?.inFullscreen) && !this._inOverview;
+                this._focusMonitor()?.inFullscreen) && !inOverview;
             if (monitorFullscreen)
                 return;
 
-            this._applyPanelTracking(this._visibility);
+            this._applyPanelTracking(this._visibility, inOverview);
             let visible = this._visibility === 'always-visible' || this._pointerReveal;
             if (this._visibility === 'always-hidden')
-                visible = this._inOverview || this._pointerReveal;
+                visible = inOverview || this._pointerReveal;
             else if (this._visibility === 'intelligent')
-                visible = this._inOverview || this._pointerReveal ||
+                visible = inOverview || this._pointerReveal ||
                     !this._focusWindowTouchesPanel();
 
             if (visible)
@@ -239,8 +249,13 @@ export class NativePanelOpacityIntegration {
         }
     }
 
-    _applyPanelTracking(mode) {
-        const overlayMode = mode !== 'always-visible';
+    _overviewActive() {
+        return this._inOverview || Boolean(
+            Main.overview.visible || Main.overview.visibleTarget);
+    }
+
+    _applyPanelTracking(mode, inOverview = false) {
+        const overlayMode = mode !== 'always-visible' && !inOverview;
         if (this._revealZone)
             this._revealZone.reactive = overlayMode;
         if (!this._panelActorData || this._overlayMode === overlayMode)
@@ -404,6 +419,7 @@ export class NativePanelOpacityIntegration {
             effectiveOpacity,
             visibility: this._visibility,
             visible: active ? Boolean(this._panelBox.visible) : null,
+            inOverview: active ? this._overviewActive() : false,
             affectsStruts: active
                 ? Boolean(this._panelActorData?.affectsStruts)
                 : null,
