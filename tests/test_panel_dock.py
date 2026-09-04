@@ -831,7 +831,7 @@ def test_community_panel_indicator_styles_map_to_native_taskbar_styles():
 
 
 def test_window_exposes_panel_and_dock_navigation():
-    window = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
+    window = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
 
     assert "from ui.page_panel_dock import PanelDockPage" in window
     assert '"panel-dock": lambda: PanelDockPage' in window
@@ -840,8 +840,8 @@ def test_window_exposes_panel_and_dock_navigation():
 
 
 def test_minimal_keeps_session_controls_reachable():
-    window = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
-    layouts = (ROOT / "usr/share/layout-switcher/ui/page_layouts.py").read_text()
+    window = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
+    layouts = (ROOT / "usr/share/big-gnome-center/ui/page_layouts.py").read_text()
 
     assert "def refresh_layout_capabilities(self)" in window
     assert "panel_dock_row.set_sensitive(True)" in window
@@ -851,14 +851,14 @@ def test_minimal_keeps_session_controls_reachable():
 
 
 def test_panel_controls_refresh_after_extension_state_settles():
-    window = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
+    window = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
 
     assert 'panel_dock_page = self._pages.get("panel-dock")' in window
     assert "panel_dock_page.refresh()" in window
 
 
 def test_first_upgrade_keeps_restart_action_visible():
-    layouts = (ROOT / "usr/share/layout-switcher/ui/page_layouts.py").read_text()
+    layouts = (ROOT / "usr/share/big-gnome-center/ui/page_layouts.py").read_text()
 
     assert 'getattr(LayoutApplier, "last_apply_staged", False)' in layouts
     assert "timeout=0 if staged else 20" in layouts
@@ -866,7 +866,7 @@ def test_first_upgrade_keeps_restart_action_visible():
 
 
 def test_page_exposes_opacity_and_visibility_controls():
-    page = (ROOT / "usr/share/layout-switcher/ui/page_panel_dock.py").read_text()
+    page = (ROOT / "usr/share/big-gnome-center/ui/page_panel_dock.py").read_text()
 
     assert 'tr("Dock transparency")' in page
     assert 'tr("Dock size")' in page
@@ -940,7 +940,7 @@ def test_magnification_ui_is_translated_for_all_app_locales():
     localedir = ROOT / "usr/share/locale"
 
     for locale in APP_LOCALES:
-        catalog = gettext.translation("layout-switcher", localedir, [locale])
+        catalog = gettext.translation("big-gnome-center", localedir, [locale])
         for message in messages:
             translated = catalog.gettext(message)
             assert translated

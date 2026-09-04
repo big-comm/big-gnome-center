@@ -4,7 +4,6 @@
 from unittest.mock import call, patch
 
 import helper_client
-
 from helper_client import (
     ARCMENU_UUID,
     BIG_SHOT_UUID,
@@ -25,7 +24,7 @@ from helper_client import (
 class TestIsAvailable:
     @patch(
         "helper_client.HelperClient._call",
-        return_value='{"helper":"layout-switcher","version":1}',
+        return_value='{"helper":"big-gnome-center","version":1}',
     )
     def test_available(self, _mock):
         assert HelperClient.is_available() is True
@@ -232,7 +231,7 @@ class TestActiveUuid:
     @patch(
         "helper_client.HelperClient.ping_info",
         return_value={
-            "helper": "layout-switcher",
+            "helper": "big-gnome-center",
             "uuid": HELPER_UUID,
             "version": 26,
         },

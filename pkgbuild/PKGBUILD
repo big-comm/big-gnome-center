@@ -1,7 +1,7 @@
 # Maintainer: Tales A. Mendonça <talesam@gmail.com>
 
-pkgname=layout-switcher
-pkgdesc="Manage GNOME layouts, extensions and themes"
+pkgname=big-gnome-center
+pkgdesc="Manage the BigLinux GNOME desktop"
 depends=(
     # Runtime
     'python'
@@ -20,15 +20,15 @@ depends=(
 makedepends=('git')
 checkdepends=('python-pytest')
 #optdepends=('')
-conflicts=('gnome-layout-switcher')
-provides=('gnome-layout-switcher')
-replaces=('gnome-layout-switcher')
+conflicts=('layout-switcher' 'gnome-layout-switcher')
+provides=('layout-switcher' 'gnome-layout-switcher')
+replaces=('layout-switcher' 'gnome-layout-switcher')
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')
 license=('MIT' 'GPL-2.0-or-later' 'GPL-3.0-or-later' 'CC-BY-4.0')
-url="https://github.com/big-comm/${pkgname}"
-source=("git+${url}.git")
+url="https://github.com/big-comm/layout-switcher"
+source=("${pkgname}::git+${url}.git")
 md5sums=('SKIP')
 
 # Automatically detect and use the correct install file

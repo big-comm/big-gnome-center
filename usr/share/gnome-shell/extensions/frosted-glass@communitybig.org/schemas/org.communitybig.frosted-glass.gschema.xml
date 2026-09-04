@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Shared by the Shell extension and Layout Switcher's GTK controls. -->
+<!-- Shared by the Shell extension and Big Gnome Center's GTK controls. -->
 <schemalist gettext-domain="layout-switcher">
   <schema id="org.communitybig.frosted-glass" path="/org/communitybig/frosted-glass/">
     <key name="enabled" type="b">

@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 RUNTIME = ROOT / f"usr/share/gnome-shell/extensions/{RUNTIME_UUID}"
-LAYOUTS = ROOT / "usr/share/layout-switcher/layouts"
+LAYOUTS = ROOT / "usr/share/big-gnome-center/layouts"
 SUPPORTED_LOCALES = (
     "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
     "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt", "ro", "ru",
@@ -28,7 +28,7 @@ def test_unified_runtime_has_distinct_identity_and_supported_shells():
     metadata = json.loads((RUNTIME / "metadata.json").read_text())
 
     assert metadata["uuid"] == RUNTIME_UUID
-    assert metadata["name"] == "Layout Switcher Shell Runtime"
+    assert metadata["name"] == "Big Gnome Center Shell Runtime"
     assert {"50", "51"}.issubset(metadata["shell-version"])
     assert metadata["version"] == 2
 
@@ -871,7 +871,7 @@ def test_runtime_owns_dock_actor_construction():
     assert "export const DockedDash" in engine
     assert "this._extension.createDockActor(params)" in engine
     assert "const dock = new DockedDash(params)" not in engine
-    assert "Layout Switcher Dock actor factory is required" in engine
+    assert "Big Gnome Center Dock actor factory is required" in engine
 
 
 def test_private_dock_modules_resolve_code_from_the_unified_runtime():

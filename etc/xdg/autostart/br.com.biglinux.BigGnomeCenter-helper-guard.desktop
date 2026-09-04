@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Big Gnome Center Helper Guard
+Comment=Keep the layout helper enabled and check extension updates
+Exec=/usr/bin/big-gnome-center-helper-guard
+Icon=big-gnome-center
+OnlyShowIn=GNOME;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-AutoRestart=true

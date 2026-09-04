@@ -5,13 +5,13 @@ from pathlib import Path
 
 import runtime_audit
 from runtime_audit import (
-    AuditEnvironmentError,
     COMMUNITY_DOCK_UUID,
     COMMUNITY_MENU_UUID,
     COMMUNITY_PANEL_UUID,
     DESKTOP_ICONS_UUID,
     HELPER_UUID,
     RUNTIME_UUID,
+    AuditEnvironmentError,
     Snapshot,
     _extension_state_from_output,
     audit_snapshot,

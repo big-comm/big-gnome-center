@@ -1,4 +1,4 @@
-// Layout Switcher private Dock module.
+// Big Gnome Center private Dock module.
 import {
     Clutter,
     Cogl,

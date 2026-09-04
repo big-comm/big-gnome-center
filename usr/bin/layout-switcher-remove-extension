@@ -1,13 +1,1 @@
-#!/usr/bin/python3
-# SPDX-License-Identifier: MIT
-"""PolicyKit entry point for removing one system GNOME Shell extension."""
-
-import sys
-
-sys.dont_write_bytecode = True
-sys.path.insert(0, "/usr/share/layout-switcher")
-
-from system_extension_remover import main
-
-
-raise SystemExit(main())
+big-gnome-center-remove-extension

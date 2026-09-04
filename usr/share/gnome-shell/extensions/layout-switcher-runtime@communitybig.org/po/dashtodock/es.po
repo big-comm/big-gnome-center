@@ -1,11 +1,11 @@
-# Spanish translations for Layout Switcher package.
-# Copyright (C) 2026 THE Layout Switcher'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Layout Switcher Dock package.
+# Spanish translations for Big Gnome Center package.
+# Copyright (C) 2026 THE Big Gnome Center'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Big Gnome Center Dock package.
 # Automatically generated, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Layout Switcher Dock\n"
+"Project-Id-Version: Big Gnome Center Dock\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-29 15:39-0300\n"
 "PO-Revision-Date: 2026-08-29 15:39-0300\n"

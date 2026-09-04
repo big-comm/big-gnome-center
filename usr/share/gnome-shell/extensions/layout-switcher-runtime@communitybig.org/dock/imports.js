@@ -1,4 +1,4 @@
-// Layout Switcher private Dock module.
+// Big Gnome Center private Dock module.
 export * as AppIconIndicators from './appIconIndicators.js';
 export * as AppIcons from './appIcons.js';
 export * as AppIconsDecorator from './appIconsDecorator.js';

@@ -1,6 +1,6 @@
-# Layout Switcher Shell Runtime
+# Big Gnome Center Shell Runtime
 
-Unified GNOME Shell controller for the six supported Layout Switcher profiles.
+Unified GNOME Shell controller for the six supported Big Gnome Center profiles.
 
 The controller selects Dock, Taskbar, or native GNOME behavior from the current
 layout. Dock and Taskbar actors, lifecycle, and executable modules are owned
@@ -11,4 +11,4 @@ catalogs before constructing either surface. Both domains cover all 29
 supported locales.
 
 This extension has no preferences window. User-facing settings belong to the
-Layout Switcher application.
+Big Gnome Center application.

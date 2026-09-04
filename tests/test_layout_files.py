@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-LAYOUT_DIR = REPO_ROOT / "usr/share/layout-switcher/layouts"
+LAYOUT_DIR = REPO_ROOT / "usr/share/big-gnome-center/layouts"
 MONITOR_KEYED_DTP_KEYS = {
     "panel-anchors",
     "panel-element-positions",
@@ -146,7 +146,7 @@ def test_retired_extensions_are_absent_from_layouts_and_dependencies():
 
 
 def test_package_does_not_patch_external_kiwi_installations():
-    assert not (REPO_ROOT / "usr/share/layout-switcher/patches/patch-kiwi-focus.sh").exists()
+    assert not (REPO_ROOT / "usr/share/big-gnome-center/patches/patch-kiwi-focus.sh").exists()
     assert not (REPO_ROOT / "usr/share/libalpm/hooks/zz-layout-switcher-kiwi.hook").exists()
 
 
@@ -316,7 +316,7 @@ def test_hybrid_uses_community_menu_and_compact_panel():
 
 def test_normal_layout_switch_uses_only_shell_curtain():
     source = (
-        Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/ui/page_layouts.py"
+        Path(__file__).resolve().parents[1] / "usr/share/big-gnome-center/ui/page_layouts.py"
     ).read_text()
     apply_source = source.split("    def _apply(", 1)[1].split("    def _done(", 1)[0]
 
@@ -329,7 +329,7 @@ def test_normal_layout_switch_uses_only_shell_curtain():
 
 def test_layout_confirmation_dialog_uses_wide_horizontal_actions():
     source = (
-        Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/ui/page_layouts.py"
+        Path(__file__).resolve().parents[1] / "usr/share/big-gnome-center/ui/page_layouts.py"
     ).read_text()
 
     assert "_LAYOUT_DIALOG_WIDTH = 520" in source

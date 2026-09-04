@@ -1,4 +1,4 @@
-// Layout Switcher private Dock module.
+// Big Gnome Center private Dock module.
 import Gettext from 'gettext';
 import * as ShellExtension from 'resource:///org/gnome/shell/extensions/extension.js';
 

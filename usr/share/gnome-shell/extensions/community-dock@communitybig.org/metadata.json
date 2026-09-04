@@ -1,8 +1,8 @@
 {
   "uuid": "community-dock@communitybig.org",
   "name": "Community Dock Runtime Resources",
-  "description": "Private resources for the Layout Switcher Shell runtime.",
+  "description": "Private resources for the Big Gnome Center Shell runtime.",
   "shell-version": ["50", "51"],
-  "url": "https://github.com/BigCommunity/layout-switcher",
+  "url": "https://github.com/big-comm/layout-switcher",
   "version": 1
 }

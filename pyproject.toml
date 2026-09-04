@@ -1,13 +1,13 @@
 [project]
-name = "layout-switcher"
-version = "2.18.0"
-description = "GNOME layout switcher — switch desktop layouts, extensions, and themes"
+name = "big-gnome-center"
+version = "3.0.0"
+description = "BigLinux GNOME desktop configuration center"
 requires-python = ">=3.10"
 
 [tool.ruff]
 target-version = "py310"
 line-length = 100
-src = ["usr/share/layout-switcher"]
+src = ["usr/share/big-gnome-center"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
@@ -16,11 +16,11 @@ ignore = ["E402"]
 
 [tool.ruff.lint.per-file-ignores]
 # CSS-in-Python string → long lines unavoidable
-"usr/share/layout-switcher/ui/styles.py" = ["E501"]
+"usr/share/big-gnome-center/ui/styles.py" = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["usr/share/layout-switcher"]
+pythonpath = ["usr/share/big-gnome-center"]

@@ -44,7 +44,7 @@ import {getOrientationProp} from './utils.js';
 
 const CLASSIC_SHORTCUT_IDS = [
     'org.bigcommunity.CommRelease.desktop',
-    'org.communitybig.layout-switcher.desktop',
+    'br.com.biglinux.BigGnomeCenter.desktop',
     'br.com.biglinux-settings.desktop',
     'org.gnome.Calculator.desktop',
     'org.gnome.TextEditor.desktop',

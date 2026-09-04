@@ -135,12 +135,12 @@ visible during extraction.
 
 Canonical sources:
 
-- `usr/share/layout-switcher/layouts/biggnome.txt`
-- `usr/share/layout-switcher/layouts/g-unity.txt`
-- `usr/share/layout-switcher/layouts/hybrid.txt`
-- `usr/share/layout-switcher/layouts/desk-ux.txt`
-- `usr/share/layout-switcher/layouts/classic.txt`
-- `usr/share/layout-switcher/layouts/minimal.txt`
+- `usr/share/big-gnome-center/layouts/biggnome.txt`
+- `usr/share/big-gnome-center/layouts/g-unity.txt`
+- `usr/share/big-gnome-center/layouts/hybrid.txt`
+- `usr/share/big-gnome-center/layouts/desk-ux.txt`
+- `usr/share/big-gnome-center/layouts/classic.txt`
+- `usr/share/big-gnome-center/layouts/minimal.txt`
 
 The extraction must copy only keys proven to affect an active contract. A key
 present in a dormant section is not evidence of use.

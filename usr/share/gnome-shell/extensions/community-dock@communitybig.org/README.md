@@ -1,6 +1,6 @@
 # Community Dock
 
-Resource host retained for Layout Switcher Dock schemas, stylesheet, media,
+Resource host retained for Big Gnome Center Dock schemas, stylesheet, media,
 license, and upstream attribution. It is not an activatable GNOME Shell
 extension and contains no JavaScript runtime.
 

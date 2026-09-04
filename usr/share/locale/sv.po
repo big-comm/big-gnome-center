@@ -1,9 +1,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: layout-switcher\n"
+"Project-Id-Version: big-gnome-center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"POT-Creation-Date: 2026-09-04 20:16-0300\n"
 "PO-Revision-Date: 2026-08-20 22:31-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -14,785 +14,1008 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:149
-msgid "Desktop Cube"
-msgstr "Desktop Cube"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:25
+#: usr/share/big-gnome-center/ui/window.py:410
+#: usr/share/big-gnome-center/ui/window.py:507
+msgid "Desktop"
+msgstr "Skrivbord"
 
-#: usr/share/layout-switcher/constants.py:150
-msgid "Rotate workspaces on a 3D cube"
-msgstr "Rotera arbetsytor på en 3D-kub"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:27
+#: usr/share/big-gnome-center/ui/desktop_icons.py:46
+msgid "Desktop icons"
+msgstr "Skrivbordsikoner"
 
-#: usr/share/layout-switcher/constants.py:160
-msgid "Magic Lamp"
-msgstr "Magic Lamp"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:28
+#: usr/share/big-gnome-center/ui/desktop_icons.py:67
+msgid "Show files and folders on the desktop"
+msgstr "Visa filer och mappar på skrivbordet"
 
-#: usr/share/layout-switcher/constants.py:161
-msgid "Genie effect when minimizing windows"
-msgstr "Genie-effekt vid minimering av fönster"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:34
+msgid "Desktop icon settings"
+msgstr "Inställningar för skrivbordsikoner"
 
-#: usr/share/layout-switcher/constants.py:171
-msgid "Compiz Windows"
-msgstr "Compiz Windows"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:69
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "GTK4 Desktop Icons NG är inte installerat"
 
-#: usr/share/layout-switcher/constants.py:172
-msgid "Wobbly windows and extra animations"
-msgstr "Gungande fönster och extra animationer"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons enabled"
+msgstr "Skrivbordsikoner aktiverade"
 
-#: usr/share/layout-switcher/constants.py:199
-msgid "Default Big Gnome layout"
-msgstr "Standard Big Gnome-layout"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons disabled"
+msgstr "Skrivbordsikoner inaktiverade"
 
-#: usr/share/layout-switcher/constants.py:206
-msgid "Clean and contemporary desktop"
-msgstr "Rent och modernt skrivbord"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:92
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "Det gick inte att ändra skrivbordsikoner: {message}"
 
-#: usr/share/layout-switcher/constants.py:213
-msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
-msgstr "Centrerad dock-aktivitetsfält, Windows 11 / Deepin / Pop!_OS-stil"
-
-#: usr/share/layout-switcher/constants.py:220
-msgid "Unity-style layout with left dock and top bar"
-msgstr "Unity-stil layout med vänster docka och toppfält"
-
-#: usr/share/layout-switcher/constants.py:227
-msgid "Traditional desktop with taskbar and system tray"
-msgstr "Traditionellt skrivbord med aktivitetsfält och systemfält"
-
-#: usr/share/layout-switcher/constants.py:234
-msgid "Near-vanilla GNOME with minimal distro tweaks"
-msgstr "Nästan ren GNOME med minimala distributionstweaks"
-
-#: usr/share/layout-switcher/ui/dialog_backups.py:64
+#: usr/share/big-gnome-center/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "Säkerhetskopior"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:79
+#: usr/share/big-gnome-center/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "Skapa säkerhetskopia nu"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:81
+#: usr/share/big-gnome-center/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "Ta en ögonblicksbild av aktuella dconf-inställningar"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:94
+#: usr/share/big-gnome-center/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "Inga säkerhetskopior än"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:96
+#: usr/share/big-gnome-center/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr ""
 "En säkerhetskopia skapas automatiskt varje gång du tillämpar en layout."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:149
+#: usr/share/big-gnome-center/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "Senaste"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:154
+#: usr/share/big-gnome-center/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "Återställ denna säkerhetskopia"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:162
+#: usr/share/big-gnome-center/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "Radera denna säkerhetskopia"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:185
+#: usr/share/big-gnome-center/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "Säkerhetskopia skapad"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:188
-#: usr/share/layout-switcher/ui/page_layouts.py:265
+#: usr/share/big-gnome-center/ui/dialog_backups.py:188
+#: usr/share/big-gnome-center/ui/page_layouts.py:241
 msgid "Backup failed"
 msgstr "Säkerhetskopiering misslyckades"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:193
+#: usr/share/big-gnome-center/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "Återställa denna säkerhetskopia?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:195
+#: usr/share/big-gnome-center/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
-msgstr "Alla aktuella dconf-inställningar kommer att skrivas över med ögonblicksbilden från {ts}."
+msgstr ""
+"Alla aktuella dconf-inställningar kommer att skrivas över med "
+"ögonblicksbilden från {ts}."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
-#: usr/share/layout-switcher/ui/page_effects.py:293
-#: usr/share/layout-switcher/ui/page_effects.py:337
-#: usr/share/layout-switcher/ui/page_extensions.py:402
-#: usr/share/layout-switcher/ui/page_extensions.py:445
-#: usr/share/layout-switcher/ui/page_extensions.py:905
-#: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:241
-#: usr/share/layout-switcher/ui/page_layouts.py:253
+#: usr/share/big-gnome-center/ui/dialog_backups.py:198
+#: usr/share/big-gnome-center/ui/dialog_backups.py:231
+#: usr/share/big-gnome-center/ui/page_effects.py:293
+#: usr/share/big-gnome-center/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_extensions.py:481
+#: usr/share/big-gnome-center/ui/page_extensions.py:521
+#: usr/share/big-gnome-center/ui/page_extensions.py:987
+#: usr/share/big-gnome-center/ui/page_fonts.py:567
+#: usr/share/big-gnome-center/ui/page_layouts.py:287
+#: usr/share/big-gnome-center/ui/page_layouts.py:297
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:161
 msgid "Restore"
 msgstr "Återställ"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:219
+#: usr/share/big-gnome-center/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "Säkerhetskopia återställd"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:223
+#: usr/share/big-gnome-center/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "Återställning misslyckades"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:228
+#: usr/share/big-gnome-center/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "Ta bort denna säkerhetskopia?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:232
+#: usr/share/big-gnome-center/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "Ta bort"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:252
+#: usr/share/big-gnome-center/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "Säkerhetskopia borttagen"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:255
+#: usr/share/big-gnome-center/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "Borttagning misslyckades"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:41
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:41
 msgid "Relevance"
 msgstr "Relevans"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Popularitet"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:43
 msgid "Downloads"
 msgstr "Hämtningar"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:43
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:44
 msgid "Recent"
 msgstr "Senaste"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:44
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:45
 msgid "Name"
 msgstr "Namn"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:93
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:97
 msgid "Search extensions on extensions.gnome.org"
 msgstr "Sök efter tillägg på extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:101
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:105
 msgid "Sort by"
 msgstr "Sortera efter"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:112
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:116
 #, python-brace-format
 msgid "Only compatible with GNOME {ver}"
 msgstr "Endast kompatibel med GNOME {ver}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:139
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:143
 msgid "Browse extensions"
 msgstr "Bläddra bland tillägg"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:140
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:144
 msgid "Search above or hit Enter to load popular extensions."
 msgstr "Sök ovan eller tryck på Retur för att ladda populära tillägg."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:143
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:147
 msgid "Load popular"
 msgstr "Ladda populära"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:159
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:163
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:97
 msgid "Loading…"
 msgstr "Läser in…"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:166
-#: usr/share/layout-switcher/ui/page_extensions.py:621
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:170
+#: usr/share/big-gnome-center/ui/page_extensions.py:697
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:104
 msgid "No results"
 msgstr "Inga resultat"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:167
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:171
 msgid "Try a different search or sort."
 msgstr "Prova en annan sökning eller sortering."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:173
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:177
 msgid "Could not reach extensions.gnome.org"
 msgstr "Kunde inte nå extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:174
-#: usr/share/layout-switcher/ui/ext_detail_view.py:111
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:178
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:111
 msgid "Check your network connection and try again."
 msgstr "Kontrollera din nätverksanslutning och försök igen."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:177
-#: usr/share/layout-switcher/ui/ext_detail_view.py:114
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:181
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:114
 msgid "Retry"
 msgstr "Försök igen"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:334
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:220
+#: usr/share/big-gnome-center/ui/page_fonts.py:334
 msgid "Previous page"
 msgstr "Föregående sida"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:227
-#: usr/share/layout-switcher/ui/page_fonts.py:346
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:346
 msgid "Next page"
 msgstr "Nästa sida"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:238
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:242
 msgid "Shell"
 msgstr "Skal"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:284
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:291
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "Sida {p} av {t}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:345
-#: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:280
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:354
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:147
+#: usr/share/big-gnome-center/ui/page_effects.py:184
+#: usr/share/big-gnome-center/ui/page_extensions.py:359
 #, python-brace-format
 msgid "by {author}"
 msgstr "av {author}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:358
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:367
 msgid "Details"
 msgstr "Detaljer"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:361
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:370
 msgid "View extension details"
 msgstr "Visa tilläggsinformation"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:83
-#: usr/share/layout-switcher/ui/page_extensions.py:574
-#: usr/share/layout-switcher/ui/page_fonts.py:487
-#: usr/share/layout-switcher/ui/page_fonts.py:529
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:378
+#: usr/share/big-gnome-center/ui/page_extensions.py:161
+#: usr/share/big-gnome-center/ui/page_extensions.py:650
+#: usr/share/big-gnome-center/ui/page_fonts.py:487
+#: usr/share/big-gnome-center/ui/page_fonts.py:529
 msgid "Installed"
 msgstr "Installerade"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:375
-#: usr/share/layout-switcher/ui/ext_detail_view.py:64
-#: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:238
-#: usr/share/layout-switcher/ui/page_effects.py:294
-#: usr/share/layout-switcher/ui/page_extensions.py:341
-#: usr/share/layout-switcher/ui/page_extensions.py:403
-#: usr/share/layout-switcher/ui/page_fonts.py:490
-#: usr/share/layout-switcher/ui/page_fonts.py:493
-#: usr/share/layout-switcher/ui/page_fonts.py:534
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:384
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:64
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:397
+#: usr/share/big-gnome-center/ui/page_effects.py:238
+#: usr/share/big-gnome-center/ui/page_effects.py:294
+#: usr/share/big-gnome-center/ui/page_extensions.py:420
+#: usr/share/big-gnome-center/ui/page_extensions.py:482
+#: usr/share/big-gnome-center/ui/page_fonts.py:490
+#: usr/share/big-gnome-center/ui/page_fonts.py:493
+#: usr/share/big-gnome-center/ui/page_fonts.py:534
 msgid "Install"
 msgstr "Installera"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:412
-#: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:315
-#: usr/share/layout-switcher/ui/page_extensions.py:423
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:421
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:431
+#: usr/share/big-gnome-center/ui/page_effects.py:315
+#: usr/share/big-gnome-center/ui/page_extensions.py:502
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr ""
-"{name} är installerat och aktiverat. Starta om sessionen för att använda "
-"det."
+"{name} är installerat och aktiverat. Starta om sessionen för att använda det."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:321
-#: usr/share/layout-switcher/ui/page_extensions.py:429
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:429
+#: usr/share/big-gnome-center/ui/page_effects.py:321
+#: usr/share/big-gnome-center/ui/page_extensions.py:508
 msgid "Install failed"
 msgstr "Installation misslyckades"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:103
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:103
 msgid "Loading extension details…"
 msgstr "Läser in tilläggsinformation…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:110
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:110
 msgid "Could not load details"
 msgstr "Kunde inte ladda detaljer"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:206
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:206
 #, python-brace-format
 msgid "{n} ratings"
 msgstr "{n} betyg"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:209
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:209
 msgid "downloads"
 msgstr "nedladdningar"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:212
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:212
 msgid "compatibility"
 msgstr "kompatibilitet"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:254
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:254
 msgid "Description"
 msgstr "Beskrivning"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:269
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:269
 msgid "Recent comments"
 msgstr "Senaste kommentarer"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:282
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:282
 msgid "View all comments on extensions.gnome.org"
 msgstr "Visa alla kommentarer på extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:343
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:343
 msgid "Links"
 msgstr "Länkar"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:350
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:350
 msgid "Homepage"
 msgstr "Hemsida"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:255
-#: usr/share/layout-switcher/ui/page_extensions.py:358
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:354
+#: usr/share/big-gnome-center/ui/page_effects.py:255
+#: usr/share/big-gnome-center/ui/page_extensions.py:437
 msgid "View on GNOME Extensions"
 msgstr "Visa på GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:359
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:359
 #, python-brace-format
 msgid "License: {lic}"
 msgstr "Licens: {lic}"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:579
-#: usr/share/layout-switcher/ui/page_extensions.py:719
-#: usr/share/layout-switcher/ui/page_extensions.py:730
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:387
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/ui/page_extensions.py:803
+#: usr/share/big-gnome-center/ui/page_extensions.py:814
 msgid "Update"
 msgstr "Uppdatera"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:392
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:392
 msgid "Open prefs"
 msgstr "Öppna inställningar"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:409
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:409
 msgid "Working…"
 msgstr "Arbetar…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:428
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:428
 #, python-brace-format
 msgid "{name} updated"
 msgstr "{name} uppdaterat"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:437
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:437
 msgid "Operation failed"
 msgstr "Åtgärden misslyckades"
 
-#: usr/share/layout-switcher/ui/page_effects.py:114
-#: usr/share/layout-switcher/ui/page_extensions.py:225
+#: usr/share/big-gnome-center/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "Översta mitten"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "Nedersta mitten"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "Övre höger"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "Övre vänster"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "Nedre vänster"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "Nedre höger"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "Position för aviseringar"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "Välj var aviseringsbanderoller ska visas."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "Visa aviseringar vid {position}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:143
+#: usr/share/big-gnome-center/ui/page_desktop.py:287
+msgid "Default"
+msgstr "Standard"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:194
+#: usr/share/big-gnome-center/ui/page_desktop.py:199
+#: usr/share/big-gnome-center/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "Applikationsmeny"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "Tillgänglig för Classic, Desk-UX och Hybrid-layouter."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:200
+#: usr/share/big-gnome-center/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "Använd Community-menyn som programmeny"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "Menystil"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "Välj utseendet för Community-menyn."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Super-tangenten"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "Välj vad som händer när du trycker på Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "Öppna menyn"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "Öppna översikten"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "Använd menystilen {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "Community-menyn är inte installerad"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "{position}-positionen för aviseringar har tillämpats"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "Kunde inte ändra positionen för aviseringar: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "Förhandsvisning av aviseringar"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "Aviseringar kommer att visas här."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "Programmenyn är aktiverad"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "Programmenyn är inaktiverad"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "Kunde inte ändra applikationsmenyn: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "Menystilen {name} har tillämpats"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "Kunde inte ändra menystilen: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "Super-tangenten öppnar applikationsmenyn"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "Super-tangenten öppnar översikten"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "Kunde inte ändra Super-tangenten: {message}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "Andra visuella effekter"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:114
+#: usr/share/big-gnome-center/ui/page_extensions.py:304
 msgid "System extension"
 msgstr "Systemtillägg"
 
-#: usr/share/layout-switcher/ui/page_effects.py:131
+#: usr/share/big-gnome-center/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name} (aktiverat)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:133
+#: usr/share/big-gnome-center/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name} (inaktiverat)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:135
+#: usr/share/big-gnome-center/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (inte installerat)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "Förhandsvisning av effekten {name}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "On"
 msgstr "På"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "Off"
 msgstr "Av"
 
-#: usr/share/layout-switcher/ui/page_effects.py:203
-#: usr/share/layout-switcher/ui/page_extensions.py:303
-#: usr/share/layout-switcher/ui/page_extensions.py:763
+#: usr/share/big-gnome-center/ui/page_effects.py:203
+#: usr/share/big-gnome-center/ui/page_extensions.py:382
+#: usr/share/big-gnome-center/ui/page_extensions.py:847
 msgid "Toggle"
 msgstr "Växla"
 
-#: usr/share/layout-switcher/ui/page_effects.py:211
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_effects.py:338
-#: usr/share/layout-switcher/ui/page_extensions.py:313
-#: usr/share/layout-switcher/ui/page_extensions.py:317
-#: usr/share/layout-switcher/ui/page_extensions.py:446
-#: usr/share/layout-switcher/ui/page_extensions.py:801
-#: usr/share/layout-switcher/ui/page_extensions.py:802
+#: usr/share/big-gnome-center/ui/page_effects.py:211
+#: usr/share/big-gnome-center/ui/page_effects.py:215
+#: usr/share/big-gnome-center/ui/page_effects.py:335
+#: usr/share/big-gnome-center/ui/page_extensions.py:392
+#: usr/share/big-gnome-center/ui/page_extensions.py:396
+#: usr/share/big-gnome-center/ui/page_extensions.py:522
+#: usr/share/big-gnome-center/ui/page_extensions.py:882
+#: usr/share/big-gnome-center/ui/page_extensions.py:883
+#: usr/share/big-gnome-center/ui/page_startup.py:116
+#: usr/share/big-gnome-center/ui/page_startup.py:119
 msgid "Remove"
 msgstr "Ta bort"
 
-#: usr/share/layout-switcher/ui/page_effects.py:223
-#: usr/share/layout-switcher/ui/page_extensions.py:325
-#: usr/share/layout-switcher/ui/page_extensions.py:744
-#: usr/share/layout-switcher/ui/page_extensions.py:748
+#: usr/share/big-gnome-center/ui/page_effects.py:223
+#: usr/share/big-gnome-center/ui/page_extensions.py:404
+#: usr/share/big-gnome-center/ui/page_extensions.py:828
+#: usr/share/big-gnome-center/ui/page_extensions.py:832
 msgid "Settings"
 msgstr "Inställningar"
 
-#: usr/share/layout-switcher/ui/page_effects.py:234
-#: usr/share/layout-switcher/ui/page_extensions.py:253
-#: usr/share/layout-switcher/ui/page_extensions.py:337
+#: usr/share/big-gnome-center/ui/page_effects.py:234
+#: usr/share/big-gnome-center/ui/page_extensions.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:416
 msgid "Not installed"
 msgstr "Ej installerad"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:249
-#: usr/share/layout-switcher/ui/page_extensions.py:388
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:328
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "enabled"
 msgstr "aktiverad"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:251
-#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:330
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
 msgid "disabled"
 msgstr "inaktiverad"
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:392
-#: usr/share/layout-switcher/ui/page_extensions.py:777
-#: usr/share/layout-switcher/ui/page_extensions.py:929
-#: usr/share/layout-switcher/ui/page_layouts.py:429
-#: usr/share/layout-switcher/ui/page_layouts.py:473
-#: usr/share/layout-switcher/ui/page_themes.py:332
-#: usr/share/layout-switcher/ui/page_themes.py:343
+#: usr/share/big-gnome-center/ui/page_effects.py:283
+#: usr/share/big-gnome-center/ui/page_extensions.py:471
+#: usr/share/big-gnome-center/ui/page_extensions.py:861
+#: usr/share/big-gnome-center/ui/page_extensions.py:1011
+#: usr/share/big-gnome-center/ui/page_themes.py:363
+#: usr/share/big-gnome-center/ui/page_themes.py:374
+#: usr/share/big-gnome-center/ui/page_startup.py:150
+#: usr/share/big-gnome-center/ui/page_startup.py:167
+#: usr/share/big-gnome-center/ui/page_layouts.py:492
+#: usr/share/big-gnome-center/ui/page_layouts.py:536
 msgid "Error"
 msgstr "Fel"
 
-#: usr/share/layout-switcher/ui/page_effects.py:290
+#: usr/share/big-gnome-center/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "Installera effekt?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:291
-#: usr/share/layout-switcher/ui/page_extensions.py:400
+#: usr/share/big-gnome-center/ui/page_effects.py:291
+#: usr/share/big-gnome-center/ui/page_extensions.py:479
 msgid "Will try to install automatically."
 msgstr "Försöker installera automatiskt."
 
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:409
-#: usr/share/layout-switcher/ui/page_fonts.py:513
+#: usr/share/big-gnome-center/ui/page_effects.py:302
+#: usr/share/big-gnome-center/ui/page_extensions.py:488
+#: usr/share/big-gnome-center/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "Installerar…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:330
-#: usr/share/layout-switcher/ui/page_extensions.py:438
-msgid "System extension — cannot remove"
-msgstr "Systemtillägg — kan inte tas bort"
-
-#: usr/share/layout-switcher/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_effects.py:331
 msgid "Remove effect?"
 msgstr "Ta bort effekt?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:335
-#: usr/share/layout-switcher/ui/page_extensions.py:443
+#: usr/share/big-gnome-center/ui/page_effects.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:519
 msgid "This cannot be undone."
 msgstr "Detta kan inte ångras."
 
-#: usr/share/layout-switcher/ui/page_effects.py:350
-#: usr/share/layout-switcher/ui/page_extensions.py:458
+#: usr/share/big-gnome-center/ui/page_effects.py:347
+#: usr/share/big-gnome-center/ui/page_extensions.py:534
 msgid "removed"
 msgstr "borttagen"
 
-#: usr/share/layout-switcher/ui/page_effects.py:352
-#: usr/share/layout-switcher/ui/page_extensions.py:460
+#: usr/share/big-gnome-center/ui/page_effects.py:349
+#: usr/share/big-gnome-center/ui/page_extensions.py:536
 msgid "Remove failed"
 msgstr "Borttagning misslyckades"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:81
+#: usr/share/big-gnome-center/ui/page_extensions.py:31
+msgid "Captures, annotates and records the screen."
+msgstr "Fångar, kommenterar och spelar in skärmen."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:45
+msgid "Shows application tray icons in the system panel."
+msgstr "Visar programikoner i systempanelen."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:50
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Tillhandahåller programstartare och öppna fönster i en docka."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:53
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Tillhandahåller programmenyn som används av skrivbordslayouter."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:56
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr ""
+"Tillhandahåller aktivitetsfältet och systempanelen som används av layouterna."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:59
+msgid "Keeps a searchable history of copied content."
+msgstr "Bevarar en sökbar historik över kopierat innehåll."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shows removable devices and lets you safely eject them."
+msgstr "Visar flyttbara enheter och låter dig mata ut dem säkert."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:65
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Lägger till kontrollerad oskärpa och transparens på skrivbordet."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:68
+msgid "Connects phones to share files, notifications and other features."
+msgstr ""
+"Ansluter telefoner för att dela filer, aviseringar och andra funktioner."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:71
+msgid "Shows files and folders on the desktop."
+msgstr "Visar filer och mappar på skrivbordet."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:74
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Tillämpar layoutändringar säkert i GNOME Shell."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:77
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr ""
+"Tillhandahåller körmiljön för docka och aktivitetsfält som används av "
+"layouterna."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:80
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "Håller GTK 3-program anpassade till ljust och mörkt läge."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:104
+msgid "Description not provided by the developer."
+msgstr "Utvecklaren angav ingen beskrivning."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:159
 msgid "Featured"
 msgstr "Utvalda"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:82
-#: usr/share/layout-switcher/ui/page_extensions.py:131
+#: usr/share/big-gnome-center/ui/page_extensions.py:160
+#: usr/share/big-gnome-center/ui/page_extensions.py:209
 msgid "Browse"
 msgstr "Bläddra"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:237
+#: usr/share/big-gnome-center/ui/page_extensions.py:316
 msgid "Update available"
 msgstr "Uppdatering tillgänglig"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:399
+#: usr/share/big-gnome-center/ui/page_extensions.py:478
 msgid "Install extension?"
 msgstr "Installera tillägg?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/big-gnome-center/ui/page_extensions.py:518
 msgid "Remove extension?"
 msgstr "Ta bort tillägg?"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:245
-#: usr/share/layout-switcher/ui/page_extensions.py:522
-#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/big-gnome-center/ui/page_extensions.py:570
+#: usr/share/big-gnome-center/ui/page_extensions.py:578
+#: usr/share/big-gnome-center/ui/window.py:413
+#: usr/share/big-gnome-center/ui/window.py:510
+msgid "Extensions"
+msgstr "Tillägg"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/extension_update_monitor.py:236
 msgid "Update all"
 msgstr "Uppdatera alla"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:530
+#: usr/share/big-gnome-center/ui/page_extensions.py:606
 msgid "Open GNOME Extensions"
 msgstr "Öppna GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:674
 msgid "No extensions installed"
 msgstr "Inga tillägg installerade"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "installed"
 msgstr "installerad"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:616
+#: usr/share/big-gnome-center/ui/page_extensions.py:692
 msgid "update available"
 msgstr "uppdatering tillgänglig"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:632
+#: usr/share/big-gnome-center/ui/page_extensions.py:708
 msgid "Enabled"
 msgstr "Aktiverad"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:633
+#: usr/share/big-gnome-center/ui/page_extensions.py:709
 msgid "Disabled"
 msgstr "Inaktiverad"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/big-gnome-center/ui/page_extensions.py:779
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Teknisk identifierare: {uuid}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:781
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Version: {version}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:784
+#: usr/share/big-gnome-center/ui/page_extensions.py:844
+#: usr/share/big-gnome-center/ui/page_extensions.py:845
+#: usr/share/big-gnome-center/ui/page_extensions.py:891
+#: usr/share/big-gnome-center/shell_reloader.py:280
+msgid "Required for layout switching"
+msgstr "Krävs för att växla layouter"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:808
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "Uppdatera från v{old} till v{new}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:795
-msgid ""
-"This extension cannot be removed here because it was installed by the "
-"system."
-msgstr ""
-"Detta tillägg kan inte tas bort här eftersom det installerades av systemet."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:843
+#: usr/share/big-gnome-center/ui/page_extensions.py:925
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} uppdaterad till v{ver}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:848
-#: usr/share/layout-switcher/ui/page_fonts.py:147
-#: usr/share/layout-switcher/ui/page_fonts.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:281
+#: usr/share/big-gnome-center/ui/page_extensions.py:930
+#: usr/share/big-gnome-center/ui/page_fonts.py:147
+#: usr/share/big-gnome-center/ui/page_fonts.py:216
+#: usr/share/big-gnome-center/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "Uppdatering misslyckades"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:872
+#: usr/share/big-gnome-center/ui/page_extensions.py:954
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "Uppdaterade {n} tillägg"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:877
+#: usr/share/big-gnome-center/ui/page_extensions.py:959
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "Uppdaterade {n}/{t}; misslyckades: {f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
-#: usr/share/layout-switcher/ui/page_extensions.py:906
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
+#: usr/share/big-gnome-center/ui/page_extensions.py:988
 msgid "Disable All"
 msgstr "Inaktivera alla"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
 msgid "Enable All"
 msgstr "Aktivera alla"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:902
+#: usr/share/big-gnome-center/ui/page_extensions.py:984
 msgid "Disable all extensions?"
 msgstr "Inaktivera alla tillägg?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:903
+#: usr/share/big-gnome-center/ui/page_extensions.py:985
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr "Alla tillägg kommer att inaktiveras. Du kan aktivera dem igen senare."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions disabled"
 msgstr "Alla tillägg inaktiverade"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions enabled"
 msgstr "Alla tillägg aktiverade"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:76
+#: usr/share/big-gnome-center/ui/page_fonts.py:76
 msgid "Preferred fonts"
 msgstr "Föredragna typsnitt"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:80
+#: usr/share/big-gnome-center/ui/page_fonts.py:80
 msgid "Interface text"
 msgstr "Gränssnittstext"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:86
+#: usr/share/big-gnome-center/ui/page_fonts.py:86
 msgid "Document text"
 msgstr "Dokumenttext"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:92
+#: usr/share/big-gnome-center/ui/page_fonts.py:92
 msgid "Monospace text"
 msgstr "Fastbreddtext"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:109
-#: usr/share/layout-switcher/ui/page_fonts.py:601
+#: usr/share/big-gnome-center/ui/page_fonts.py:109
+#: usr/share/big-gnome-center/ui/page_fonts.py:601
 msgid "(not set)"
 msgstr "(inte inställt)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:129
+#: usr/share/big-gnome-center/ui/page_fonts.py:129
 msgid "Choose font"
 msgstr "Välj teckensnitt"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:145
+#: usr/share/big-gnome-center/ui/page_fonts.py:145
 msgid "Font updated"
 msgstr "Teckensnitt uppdaterat"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:155
+#: usr/share/big-gnome-center/ui/page_fonts.py:155
 msgid "Hinting"
 msgstr "Hintning"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:163
+#: usr/share/big-gnome-center/ui/page_fonts.py:163
 msgid "Full"
 msgstr "Fullständig"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:164
+#: usr/share/big-gnome-center/ui/page_fonts.py:164
 msgid "Medium"
 msgstr "Medel"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:165
+#: usr/share/big-gnome-center/ui/page_fonts.py:165
 msgid "Slight"
 msgstr "Lätt"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:166
-#: usr/share/layout-switcher/ui/page_fonts.py:185
+#: usr/share/big-gnome-center/ui/page_fonts.py:166
+#: usr/share/big-gnome-center/ui/page_fonts.py:185
 msgid "None"
 msgstr "Ingen"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:173
+#: usr/share/big-gnome-center/ui/page_fonts.py:173
 msgid "Smoothing"
 msgstr "Utjämning"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:183
+#: usr/share/big-gnome-center/ui/page_fonts.py:183
 msgid "Subpixel (for LCD screens)"
 msgstr "Subpixel (för LCD-skärmar)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:184
+#: usr/share/big-gnome-center/ui/page_fonts.py:184
 msgid "Standard (grayscale)"
 msgstr "Standard (gråskala)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:228
+#: usr/share/big-gnome-center/ui/page_fonts.py:228
 msgid "Size"
 msgstr "Storlek"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:231
-#: usr/share/layout-switcher/ui/page_fonts.py:251
+#: usr/share/big-gnome-center/ui/page_fonts.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:251
 msgid "Scale factor"
 msgstr "Skalfaktor"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:239
+#: usr/share/big-gnome-center/ui/page_fonts.py:239
 msgid "Decrease"
 msgstr "Minska"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:246
+#: usr/share/big-gnome-center/ui/page_fonts.py:246
 msgid "Increase"
 msgstr "Öka"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:287
+#: usr/share/big-gnome-center/ui/page_fonts.py:287
 msgid "Google Fonts"
 msgstr "Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:297
+#: usr/share/big-gnome-center/ui/page_fonts.py:297
 msgid "Search Google Fonts…"
 msgstr "Sök Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:308
-#: usr/share/layout-switcher/ui/page_fonts.py:363
+#: usr/share/big-gnome-center/ui/page_fonts.py:308
+#: usr/share/big-gnome-center/ui/page_fonts.py:363
 msgid "Loading Google Fonts…"
 msgstr "Laddar Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:312
+#: usr/share/big-gnome-center/ui/page_fonts.py:312
 msgid "Refresh Google Fonts list"
 msgstr "Uppdatera Google Fonts-listan"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:424
+#: usr/share/big-gnome-center/ui/page_fonts.py:424
 #, python-brace-format
 msgid "Page {page} of {pages}"
 msgstr "Sida {page} av {pages}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:431
+#: usr/share/big-gnome-center/ui/page_fonts.py:431
 msgid "Internet connection is required to load the Google Fonts list."
 msgstr "Internetanslutning krävs för att ladda Google Fonts-listan."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:435
+#: usr/share/big-gnome-center/ui/page_fonts.py:435
 #, python-brace-format
 msgid "{n} fonts found"
 msgstr "{n} typsnitt hittades"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:440
+#: usr/share/big-gnome-center/ui/page_fonts.py:440
 #, python-brace-format
 msgid "Showing top {shown} of {total} Google Fonts"
 msgstr "Visar {shown} av {total} Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:449
+#: usr/share/big-gnome-center/ui/page_fonts.py:449
 msgid "No fonts found"
 msgstr "Inga typsnitt hittades"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:502
+#: usr/share/big-gnome-center/ui/page_fonts.py:502
 msgid "Sans serif"
 msgstr "Sans-serif"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:503
+#: usr/share/big-gnome-center/ui/page_fonts.py:503
 msgid "Serif"
 msgstr "Serif"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:504
+#: usr/share/big-gnome-center/ui/page_fonts.py:504
 msgid "Monospace"
 msgstr "Monospace"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:505
+#: usr/share/big-gnome-center/ui/page_fonts.py:505
 msgid "Display"
 msgstr "Display"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:506
+#: usr/share/big-gnome-center/ui/page_fonts.py:506
 msgid "Handwriting"
 msgstr "Handstil"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:507
+#: usr/share/big-gnome-center/ui/page_fonts.py:507
 msgid "Exact Google Fonts family name"
 msgstr "Exakt namn på Google Fonts-teckensnittsfamilj"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:531
+#: usr/share/big-gnome-center/ui/page_fonts.py:531
 #, python-brace-format
 msgid "{family} installed"
 msgstr "{family} installerat"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:537
+#: usr/share/big-gnome-center/ui/page_fonts.py:537
 msgid "Internet connection is required to install Google Fonts."
 msgstr "Internetanslutning krävs för att installera Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:538
+#: usr/share/big-gnome-center/ui/page_fonts.py:538
 msgid "Font not found on Google Fonts."
 msgstr "Teckensnittet hittades inte på Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:539
+#: usr/share/big-gnome-center/ui/page_fonts.py:539
 msgid "Font download failed."
 msgstr "Nedladdning av teckensnitt misslyckades."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:540
+#: usr/share/big-gnome-center/ui/page_fonts.py:540
 msgid "The font download is too large."
 msgstr "Teckensnittsnedladdningen är för stor."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:541
+#: usr/share/big-gnome-center/ui/page_fonts.py:541
 msgid "Could not install the font."
 msgstr "Det gick inte att installera teckensnittet."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:542
+#: usr/share/big-gnome-center/ui/page_fonts.py:542
 msgid "Enter a font family name."
 msgstr "Ange ett teckensnittsfamiljnamn."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:544
+#: usr/share/big-gnome-center/ui/page_fonts.py:544
 msgid "Font installation failed."
 msgstr "Installation av typsnitt misslyckades."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:552
+#: usr/share/big-gnome-center/ui/page_fonts.py:552
 msgid "Reset to system defaults"
 msgstr "Återställ till systemstandard"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:561
+#: usr/share/big-gnome-center/ui/page_fonts.py:561
 msgid "Reset all font settings?"
 msgstr "Återställ alla teckensnittsinställningar?"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:563
+#: usr/share/big-gnome-center/ui/page_fonts.py:563
 msgid ""
 "Interface, document and monospace fonts will return to system defaults. "
 "Rendering and scale settings will reset too."
@@ -800,411 +1023,387 @@ msgstr ""
 "Typsnitt för gränssnitt, dokument och fast bredd återgår till systemets "
 "standardvärden. Återgivnings- och skalningsinställningar återställs också."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:568
+#: usr/share/big-gnome-center/ui/page_fonts.py:568
 msgid "Reset"
 msgstr "Återställ"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:587
+#: usr/share/big-gnome-center/ui/page_fonts.py:587
 msgid "Fonts reset to defaults"
 msgstr "Teckensnitt återställda till standard"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:34
-msgid "Disabling extensions…"
-msgstr "Inaktiverar tillägg…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:24
+msgid "Always visible"
+msgstr "Alltid synlig"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:35
-msgid "Loading layout…"
-msgstr "Läser in layout…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:25
+msgid "Always hidden (show at edge)"
+msgstr "Alltid dold (visas vid kanten)"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:36
-msgid "Reloading components…"
-msgstr "Läser om komponenter…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:26
+msgid "Intelligent hiding"
+msgstr "Smart döljande"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:64
-msgid "Layout status"
-msgstr "Layoutstatus"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:29
+msgid "Dot"
+msgstr "Punkt"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:152
-msgid "Contains your saved customizations"
-msgstr "Innehåller dina sparade anpassningar"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:30
+msgid "Hybrid line"
+msgstr "Hybridlinje"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:156
-msgid "Modified"
-msgstr "Ändrad"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:31
+msgid "Desk UX line"
+msgstr "Desk UX-linje"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:170
-#: usr/share/layout-switcher/ui/page_layouts.py:219
-#: usr/share/layout-switcher/ui/page_themes.py:318
-msgid "Active"
-msgstr "Aktiv"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:34
+msgid "Standard"
+msgstr "Standard"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:190
-#: usr/share/layout-switcher/ui/page_layouts.py:217
-msgid "Coming soon"
-msgstr "Kommer snart"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:35
+msgid "Gentle lift"
+msgstr "Skonsam lyftning"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:237
-msgid ""
-"You have previously modified this layout. Apply the original system default "
-"or resume your changes?"
-msgstr ""
-"Du har tidigare ändrat den här layouten. Vill du använda systemets "
-"ursprungliga standard eller återuppta dina ändringar?"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Förstoring"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:242
-msgid "Resume my changes"
-msgstr "Återuppta mina ändringar"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:69
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:565
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:568
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
+msgid "Dock"
+msgstr "Docka"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:243
-msgid "Apply original"
-msgstr "Använd original"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:70
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:570
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "Konfigurera Community Dockens utseende och synlighet."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:249
-msgid ""
-"Apply this layout? A backup of your current configuration will be created "
-"automatically."
-msgstr ""
-"Vill du tillämpa denna layout? En säkerhetskopia av din nuvarande "
-"konfiguration skapas automatiskt."
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:76
+msgid "Dock transparency"
+msgstr "Dock-transparens"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:254
-msgid "Apply"
-msgstr "Tillämpa"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:83
+msgid "Dock size"
+msgstr "Dock-storlek"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:295
-msgid "Applying"
-msgstr "Tillämpas"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Förstoringsintensitet"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:325
-msgid "Snapshot not found"
-msgstr "Ögonblicksbild hittades inte"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Välj hur mycket närliggande dockikoner ska växa."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:353
-msgid "Layout file not found"
-msgstr "Layoutfil hittades inte"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:106
+msgid "Dock visibility"
+msgstr "Dock-synlighet"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:392
-#: usr/share/layout-switcher/ui/page_layouts.py:400
-#: usr/share/layout-switcher/ui/page_layouts.py:409
-msgid "applied"
-msgstr "tillämpad"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:115
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
+msgid "Panel"
+msgstr "Panel"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:402
-msgid "Undo"
-msgstr "Ångra"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:116
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:582
+msgid "Configure the system panel appearance and visibility."
+msgstr "Konfigurera systempanelens utseende och synlighet."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
-msgid "Restart the session for the 100% clean state"
-msgstr "Starta om sessionen för ett 100 % rent tillstånd"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:122
+msgid "Panel transparency"
+msgstr "Paneltransparens"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:422
-msgid "Restart now"
-msgstr "Starta om nu"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:129
+msgid "Panel height"
+msgstr "Panelhöjd"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:446
-msgid "Cannot restart session"
-msgstr "Kan inte starta om sessionen"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:135
+msgid "Panel visibility"
+msgstr "Panelsynlighet"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:453
-#: usr/share/layout-switcher/ui/page_layouts.py:455
-msgid "Restoring previous layout…"
-msgstr "Återställer föregående layout…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:142
+msgid "Session"
+msgstr "Session"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:485
-msgid "Layout restored"
-msgstr "Layout återställd"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:143
+msgid "Choose how this layout starts after login."
+msgstr "Välj hur denna layout startar efter inloggning."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:487
-msgid "Previous layout restored"
-msgstr "Föregående layout återställd"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:146
+msgid "Open desktop after login"
+msgstr "Öppna skrivbordet efter inloggning"
 
-#: usr/share/layout-switcher/ui/page_themes.py:68
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:147
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Hoppa över den inledande aktivitetsöversikten för denna layout."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:158
+msgid "Restore layout defaults"
+msgstr "Återställ layoutens standardvärden"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:159
+msgid "Reset appearance and session options for the active layout."
+msgstr "Återställ utseende och sessionsalternativ för den aktiva layouten."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:180
+msgid "Application menu position"
+msgstr "Programmenyns position"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:184
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Placera BigGnome-menyn i valfri ände av dockan."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Left"
+msgstr "Vänster"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Right"
+msgstr "Höger"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:217
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Placera programmenyn på {side}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:261
+msgid "Icon hover effect"
+msgstr "Hover-effekt för ikoner"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:265
+msgid "Choose how dock icons react to the pointer."
+msgstr "Välj hur dock-ikoner reagerar på pekaren."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:295
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Använd {effect} hover-effekten"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:338
+msgid "Running app indicator"
+msgstr "Indikator för körande program"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:342
+msgid "Choose the mark shown below running applications."
+msgstr "Välj markeringen som visas under körande program."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:379
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "Använd {style}-indikatorn"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:436
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Transparent"
+msgstr "Transparent"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:449
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Opaque"
+msgstr "Ogenomskinlig"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:459
+msgid "Choose how this component behaves on the desktop."
+msgstr "Välj hur den här komponenten beter sig på skrivbordet."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:473
+msgid "Smaller"
+msgstr "Mindre"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:489
+msgid "Larger"
+msgstr "Större"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:562
+msgid "Taskbar"
+msgstr "Aktivitetsfält"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:563
+msgid "Configure running application indicators."
+msgstr "Konfigurera indikatorer för körande program."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:566
+msgid "Available when Community Dock is active."
+msgstr "Tillgängligt när Community Dock är aktiv."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:574
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "Tillgängligt när Community Dock eller Community Panel är aktiv."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:578
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "Konfigurera Community Panelens utseende och synlighet."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:684
+msgid "Dock visibility updated"
+msgstr "Dock-synlighet uppdaterad"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:691
+msgid "Panel visibility updated"
+msgstr "Panelens synlighet uppdaterad"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:701
+msgid "Indicator style updated"
+msgstr "Indikatorstil uppdaterad"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:712
+msgid "Icon hover effect updated"
+msgstr "Hover-effekten för ikoner har uppdaterats"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:722
+msgid "Application menu position updated"
+msgstr "Programmenyns position uppdaterad"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:732
+msgid "Login start updated"
+msgstr "Start vid inloggning uppdaterad"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:739
+msgid "Layout appearance and session defaults restored"
+msgstr "Layoutens utseende och sessionsstandarder återställda"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Blå"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Teal"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:22
+msgid "Green"
+msgstr "Grön"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Gul"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Orange"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:25
+msgid "Red"
+msgstr "Röd"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Rosa"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Lila"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Skiffer"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "Filtrera teman…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:109
+#: usr/share/big-gnome-center/ui/page_themes.py:108
+msgid "Colors"
+msgstr "Färger"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:109
 msgid "Icons"
 msgstr "Ikoner"
 
+#: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
 msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:414
-#: usr/share/layout-switcher/ui/window.py:511
-#: usr/share/layout-switcher/ui/page_startup.py:45
-msgid "Startup Applications"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:168
+#: usr/share/big-gnome-center/ui/frosted_glass.py:145
+#: usr/share/big-gnome-center/ui/frosted_glass.py:239
+msgid "Accent color"
+msgstr "Accentfärg"
 
-#: usr/share/layout-switcher/ui/dialog_startup_apps.py:68
-#: usr/share/layout-switcher/ui/page_startup.py:51
-#: usr/share/layout-switcher/ui/page_startup.py:54
-msgid "Add a startup application"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:177
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "Välj den färg som används för knappar, markeringar och högdagrar."
 
-#: usr/share/layout-switcher/ui/dialog_startup_apps.py:84
-msgid "Search applications"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:210
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color} accentfärg"
 
-#: usr/share/layout-switcher/ui/page_startup.py:46
-msgid "Startup applications are automatically started when you log in."
-msgstr ""
-
-#: usr/share/layout-switcher/ui/page_startup.py:87
-msgid "No Startup Applications"
-msgstr ""
-
-
-#: usr/share/layout-switcher/ui/page_themes.py:240
+#: usr/share/big-gnome-center/ui/page_themes.py:263
 msgid "No themes found"
 msgstr "Inga teman hittades"
 
-#: usr/share/layout-switcher/ui/page_themes.py:241
+#: usr/share/big-gnome-center/ui/page_themes.py:264
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "Installera teman i ~/.themes eller /usr/share/themes"
 
-#: usr/share/layout-switcher/ui/page_themes.py:247
+#: usr/share/big-gnome-center/ui/page_themes.py:270
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "{n} teman tillgängliga"
 
-#: usr/share/layout-switcher/ui/page_themes.py:316
+#: usr/share/big-gnome-center/ui/page_themes.py:347
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} tema"
 
-#: usr/share/layout-switcher/ui/window.py:71
-#: usr/share/layout-switcher/ui/window.py:377
-msgid "Layout Switcher"
-msgstr "Layout Switcher"
+#: usr/share/big-gnome-center/ui/page_themes.py:349
+#: usr/share/big-gnome-center/ui/page_layouts.py:172
+#: usr/share/big-gnome-center/ui/page_layouts.py:221
+msgid "Active"
+msgstr "Aktiv"
 
-#: usr/share/layout-switcher/ui/window.py:229
-#: usr/share/layout-switcher/ui/window.py:230
-msgid "Show Sidebar"
-msgstr "Visa sidofält"
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:68
+#: usr/share/big-gnome-center/ui/page_startup.py:51
+#: usr/share/big-gnome-center/ui/page_startup.py:54
+msgid "Add a startup application"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:236
-#: usr/share/layout-switcher/ui/window.py:401
-#: usr/share/layout-switcher/ui/window.py:484
-msgid "Layouts"
-msgstr "Layouter"
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
+msgid "Search applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:242
-msgid "Menu"
-msgstr "Meny"
+#: usr/share/big-gnome-center/ui/page_startup.py:45
+#: usr/share/big-gnome-center/ui/window.py:414
+#: usr/share/big-gnome-center/ui/window.py:511
+msgid "Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:243
-msgid "Main menu"
-msgstr "Huvudmeny"
+#: usr/share/big-gnome-center/ui/page_startup.py:46
+msgid "Startup applications are automatically started when you log in."
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:247
-msgid "Check for updates"
-msgstr "Sök efter uppdateringar"
+#: usr/share/big-gnome-center/ui/page_startup.py:87
+msgid "No Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:248
-msgid "Auto-update extensions"
-msgstr "Uppdatera tillägg automatiskt"
-
-#: usr/share/layout-switcher/ui/window.py:250
-msgid "Backups…"
-msgstr "Säkerhetskopior…"
-
-#: usr/share/layout-switcher/ui/window.py:251
-msgid "About"
-msgstr "Om"
-
-#: usr/share/layout-switcher/ui/window.py:260
-msgid "Welcome! Choose a desktop layout below to get started."
-msgstr "Välkommen! Välj en skrivbordslayout nedan för att komma igång."
-
-#: usr/share/layout-switcher/ui/window.py:261
-msgid "Got it"
-msgstr "Förstått"
-
-#: usr/share/layout-switcher/ui/window.py:402
-#: usr/share/layout-switcher/ui/window.py:485
-msgid "Fonts"
-msgstr "Typsnitt"
-
-#: usr/share/layout-switcher/ui/window.py:403
-#: usr/share/layout-switcher/ui/window.py:486
-msgid "Themes"
-msgstr "Teman"
-
-#: usr/share/layout-switcher/ui/window.py:406
-#: usr/share/layout-switcher/ui/window.py:489
-msgid "Effects"
-msgstr "Effekter"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:494
-#: usr/share/layout-switcher/ui/page_extensions.py:502
-#: usr/share/layout-switcher/ui/window.py:407
-#: usr/share/layout-switcher/ui/window.py:490
-msgid "Extensions"
-msgstr "Tillägg"
-
-#: usr/share/layout-switcher/ui/window.py:528
-msgid "Community Layout Switcher"
-msgstr "Community Layout Switcher"
-
-#: usr/share/layout-switcher/ui/window.py:533
-msgid "Layouts, effects and themes for your GNOME desktop."
-msgstr "Layouter, effekter och teman för din GNOME-skrivbordsmiljö."
-
-#: usr/share/layout-switcher/ui/window.py:599
-msgid "Applying…"
-msgstr "Tillämpar…"
-
-#: usr/share/layout-switcher/ui/window.py:706
-msgid "All extensions up to date"
-msgstr "Alla tillägg är uppdaterade"
-
-#: usr/share/layout-switcher/ui/window.py:721
-#, python-brace-format
-msgid "Auto-updated {n} extensions"
-msgstr "Automatiskt uppdaterade {n} tillägg"
-
-#: usr/share/layout-switcher/ui/window.py:726
-#, python-brace-format
-msgid "{n} update(s) available"
-msgstr "{n} uppdatering(ar) tillgängliga"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update enabled"
-msgstr "Automatisk uppdatering aktiverad"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update disabled"
-msgstr "Automatisk uppdatering inaktiverad"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:238
-msgid "Extension updates available"
-msgstr "Tilläggsuppdateringar tillgängliga"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:239
-#, python-brace-format
-msgid "Available updates: {names}"
-msgstr "Tillgängliga uppdateringar: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:243
-#: usr/share/layout-switcher/extension_update_monitor.py:244
-#: usr/share/layout-switcher/extension_update_monitor.py:336
-#: usr/share/layout-switcher/extension_update_monitor.py:337
-msgid "View updates"
-msgstr "Visa uppdateringar"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:306
-msgid "Extension updates installed"
-msgstr "Tilläggsuppdateringar installerade"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:307
-#: usr/share/layout-switcher/extension_update_monitor.py:322
-#, python-brace-format
-msgid "Updated: {names}"
-msgstr "Uppdaterade: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:311
-#: usr/share/layout-switcher/extension_update_monitor.py:312
-msgid "View extensions"
-msgstr "Visa tillägg"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:328
-#, python-brace-format
-msgid "Failed: {names}"
-msgstr "Misslyckades: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:333
-msgid "Some extension updates failed"
-msgstr "Vissa tilläggsuppdateringar misslyckades"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:338
-msgid "Try again"
-msgstr "Försök igen"
-
-#: usr/share/layout-switcher/helper_client.py:113
-msgid "The required layout helper is not installed."
-msgstr "Den nödvändiga layout-hjälparen är inte installerad."
-
-#: usr/share/layout-switcher/helper_client.py:152
-msgid "The required layout helper did not start."
-msgstr "Den nödvändiga layout-hjälparen startade inte."
-
-#: usr/share/layout-switcher/helper_guard.py:78
-msgid "Layout helper restored"
-msgstr "Layout-hjälparen återställd"
-
-#: usr/share/layout-switcher/helper_guard.py:79
-msgid "The required layout helper was re-enabled automatically."
-msgstr "Den nödvändiga layout-hjälparen aktiverades automatiskt igen."
-
-#: usr/share/layout-switcher/layout_applier.py:2254
-msgid "Layout Switcher Helper is required to apply layouts."
-msgstr "Layout Switcher Helper krävs för att tillämpa layouter."
-
-#: usr/share/layout-switcher/shell_reloader.py:280
-#: usr/share/layout-switcher/ui/page_extensions.py:704
-#: usr/share/layout-switcher/ui/page_extensions.py:760
-#: usr/share/layout-switcher/ui/page_extensions.py:761
-msgid "Required for layout switching"
-msgstr "Krävs för att växla layouter"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:28
-#: usr/share/layout-switcher/ui/window.py:404
-#: usr/share/layout-switcher/ui/window.py:487
-msgid "Desktop"
-msgstr "Skrivbord"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:32
-#: usr/share/layout-switcher/ui/desktop_icons.py:51
-msgid "Desktop icons"
-msgstr "Skrivbordsikoner"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:33
-#: usr/share/layout-switcher/ui/desktop_icons.py:72
-msgid "Show files and folders on the desktop"
-msgstr "Visa filer och mappar på skrivbordet"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:39
-msgid "Desktop icon settings"
-msgstr "Inställningar för skrivbordsikoner"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:74
-msgid "GTK4 Desktop Icons NG is not installed"
-msgstr "GTK4 Desktop Icons NG är inte installerat"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:95
-msgid "Desktop icons enabled"
-msgstr "Skrivbordsikoner aktiverade"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:97
-msgid "Desktop icons disabled"
-msgstr "Skrivbordsikoner inaktiverade"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:102
-#, python-brace-format
-msgid "Could not change desktop icons: {message}"
-msgstr "Det gick inte att ändra skrivbordsikoner: {message}"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
 msgstr "Oskärpa i översikt"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Frosted glass"
 msgstr "Frostat glas"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:67
+#: usr/share/big-gnome-center/ui/frosted_glass.py:76
 msgid "Blur for the workspace and application overview"
 msgstr "Oskärpa för arbetsyte- och programöversikten"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:69
+#: usr/share/big-gnome-center/ui/frosted_glass.py:78
 msgid "Unified blur for windows and GNOME Shell surfaces"
 msgstr "Enhetlig oskärpa för fönster och GNOME Shell-ytor"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:79
+#: usr/share/big-gnome-center/ui/frosted_glass.py:88
 msgid "unknown"
 msgstr "okänd"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:82
+#: usr/share/big-gnome-center/ui/frosted_glass.py:92
 #, python-brace-format
 msgid ""
 "Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
@@ -1212,722 +1411,527 @@ msgstr ""
 "Oskärpa i översikt kräver GNOME 50 eller nyare. Detta skrivbord är GNOME "
 "{version}."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:89
+#: usr/share/big-gnome-center/ui/frosted_glass.py:101
 msgid ""
-"Install or update Layout Switcher to make Frosted Glass settings available."
+"Install or update Big Gnome Center to make Frosted Glass settings available."
 msgstr ""
-"Installera eller uppdatera Layout Switcher för att göra inställningarna för "
+"Installera eller uppdatera Big Gnome Center för att göra inställningarna för "
 "Frosted Glass tillgängliga."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:110
+#: usr/share/big-gnome-center/ui/frosted_glass.py:127
 msgid "Enable overview blur"
 msgstr "Aktivera suddighet i översikt"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:111
-#: usr/share/layout-switcher/ui/frosted_glass.py:190
+#: usr/share/big-gnome-center/ui/frosted_glass.py:128
+#: usr/share/big-gnome-center/ui/frosted_glass.py:207
 msgid "Workspace and application overview"
 msgstr "Arbetsyte- och programöversikt"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:122
-#: usr/share/layout-switcher/ui/frosted_glass.py:206
+#: usr/share/big-gnome-center/ui/frosted_glass.py:137
+#: usr/share/big-gnome-center/ui/frosted_glass.py:223
 msgid "Material"
 msgstr "Material"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Blur strength"
 msgstr "Suddighetens styrka"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Less"
 msgstr "Mindre"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "More"
 msgstr "Mer"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
 msgid "Material opacity"
 msgstr "Materialets opacitet"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:199
-msgid "Transparent"
-msgstr "Transparent"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:212
-msgid "Opaque"
-msgstr "Ogenomskinlig"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:137
-#: usr/share/layout-switcher/ui/frosted_glass.py:196
-#: usr/share/layout-switcher/ui/frosted_glass.py:198
+#: usr/share/big-gnome-center/ui/frosted_glass.py:156
+#: usr/share/big-gnome-center/ui/frosted_glass.py:213
+#: usr/share/big-gnome-center/ui/frosted_glass.py:215
 msgid "Not available in this session"
 msgstr "Inte tillgängligt i denna session"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:147
+#: usr/share/big-gnome-center/ui/frosted_glass.py:166
 msgid "Enable frosted glass"
 msgstr "Aktivera frostat glas"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:148
+#: usr/share/big-gnome-center/ui/frosted_glass.py:167
 msgid "Apply the material without changing the active desktop layout"
 msgstr "Applicera materialet utan att ändra den aktiva skrivbordslayouten"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:160
+#: usr/share/big-gnome-center/ui/frosted_glass.py:177
 msgid "Surfaces"
 msgstr "Ytor"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:161
+#: usr/share/big-gnome-center/ui/frosted_glass.py:178
 msgid "Choose independently where the material is applied."
 msgstr "Välj självständigt var materialet appliceras."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "Windows"
 msgstr "Fönster"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "GTK, Qt and other application windows"
 msgstr "GTK-, Qt- och andra programfönster"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
-#: usr/share/layout-switcher/ui/page_panel_dock.py:74
-msgid "Panel"
-msgstr "Panel"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
 msgid "GNOME panel and Community Panel"
 msgstr "GNOME-panel och Community-panel"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
-#: usr/share/layout-switcher/ui/page_panel_dock.py:55
-#: usr/share/layout-switcher/ui/page_panel_dock.py:254
-#: usr/share/layout-switcher/ui/page_panel_dock.py:257
-msgid "Dock"
-msgstr "Docka"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
 msgid "Community Dock surfaces"
 msgstr "Community-dockytor"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:169
+#: usr/share/big-gnome-center/ui/frosted_glass.py:186
 msgid "Layout menus"
 msgstr "Layoutmenyer"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:170
+#: usr/share/big-gnome-center/ui/frosted_glass.py:187
 msgid "Application menus used by Classic, Hybrid and Desk-UX"
 msgstr "Applikationsmenyer som används av Classic, Hybrid och Desk-UX"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:174
+#: usr/share/big-gnome-center/ui/frosted_glass.py:191
 msgid "Quick Settings"
 msgstr "Snabbinställningar"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:175
+#: usr/share/big-gnome-center/ui/frosted_glass.py:192
 msgid "System settings menu in the panel"
 msgstr "Systeminställningsmeny i panelen"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:179
+#: usr/share/big-gnome-center/ui/frosted_glass.py:196
 msgid "Calendar and notifications"
 msgstr "Kalender och aviseringar"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:180
+#: usr/share/big-gnome-center/ui/frosted_glass.py:197
 msgid "Date, calendar and notification menu in the panel"
 msgstr "Datum-, kalender- och aviseringsmeny i panelen"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:184
+#: usr/share/big-gnome-center/ui/frosted_glass.py:201
 msgid "System dialogs"
 msgstr "Systemdialoger"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:185
+#: usr/share/big-gnome-center/ui/frosted_glass.py:202
 msgid "Power, restart and other GNOME Shell dialogs"
 msgstr "Ström-, omstarts- och andra GNOME Shell-dialoger"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:189
+#: usr/share/big-gnome-center/ui/frosted_glass.py:206
 msgid "Overview"
 msgstr "Överblick"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:209
+#: usr/share/big-gnome-center/ui/frosted_glass.py:226
 msgid "Rendering mode"
 msgstr "Renderingsläge"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:210
+#: usr/share/big-gnome-center/ui/frosted_glass.py:227
 msgid "Automatic balances visual quality and power usage"
 msgstr "Automatiskt balanserar visuell kvalitet och strömförbrukning"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Automatic"
 msgstr "Automatiskt"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Dynamic"
 msgstr "Dynamiskt"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Static"
 msgstr "Statiskt"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:228
+#: usr/share/big-gnome-center/ui/frosted_glass.py:249
 msgid "Behavior"
 msgstr "Beteende"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:229
+#: usr/share/big-gnome-center/ui/frosted_glass.py:250
 msgid "Application identifiers can be separated by commas."
 msgstr "Programidentifierare kan avgränsas med kommatecken."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:231
+#: usr/share/big-gnome-center/ui/frosted_glass.py:252
 msgid "Application exceptions"
 msgstr "Programundantag"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Keep blur"
 msgstr "Behåll oskärpa"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Make opaque"
 msgstr "Gör ogenomskinlig"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Disable blur"
 msgstr "Inaktivera oskärpa"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:239
+#: usr/share/big-gnome-center/ui/frosted_glass.py:260
 msgid "Maximized windows"
 msgstr "Maximerade fönster"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:242
+#: usr/share/big-gnome-center/ui/frosted_glass.py:263
 msgid "Fullscreen windows"
 msgstr "Helskärmsfönster"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:246
+#: usr/share/big-gnome-center/ui/frosted_glass.py:267
 msgid "Power saving"
 msgstr "Strömsparläge"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:247
+#: usr/share/big-gnome-center/ui/frosted_glass.py:268
 msgid "Used on battery and with the power-saver profile"
 msgstr "Används på batteri och med strömsparprofilen"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Keep selected mode"
 msgstr "Behåll valt läge"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Use static blur"
 msgstr "Använd statisk oskärpa"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:334
+#: usr/share/big-gnome-center/ui/frosted_glass.py:399
 msgid "Frosted glass enabled"
 msgstr "Frostat glas aktiverat"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:339
+#: usr/share/big-gnome-center/ui/frosted_glass.py:403
 #, python-brace-format
 msgid "Could not enable Frosted Glass: {message}"
 msgstr "Kunde inte aktivera Frostat glas: {message}"
 
-#: usr/share/layout-switcher/ui/page_desktop.py:39
-msgid "Top center"
-msgstr "Översta mitten"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:40
-msgid "Bottom center"
-msgstr "Nedersta mitten"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:41
-msgid "Top right"
-msgstr "Övre höger"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:42
-msgid "Top left"
-msgstr "Övre vänster"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:43
-msgid "Bottom left"
-msgstr "Nedre vänster"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:44
-msgid "Bottom right"
-msgstr "Nedre höger"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:88
-msgid "Notification position"
-msgstr "Position för aviseringar"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:89
-msgid "Choose where notification banners appear."
-msgstr "Välj var aviseringsbanderoller ska visas."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:129
-#, python-brace-format
-msgid "Show notifications at {position}"
-msgstr "Visa aviseringar vid {position}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:143
-#: usr/share/layout-switcher/ui/page_desktop.py:287
-msgid "Default"
-msgstr "Standard"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:194
-#: usr/share/layout-switcher/ui/page_desktop.py:199
-#: usr/share/layout-switcher/ui/page_desktop.py:206
-msgid "Application menu"
-msgstr "Applikationsmeny"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Tillgänglig för Classic, Desk-UX och Hybrid-layouter."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:200
-#: usr/share/layout-switcher/ui/page_desktop.py:469
-msgid "Use Community Menu as the application menu"
-msgstr "Använd Community-menyn som programmeny"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:220
-msgid "Menu style"
-msgstr "Menystil"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:226
-msgid "Choose the appearance of Community Menu."
-msgstr "Välj utseendet för Community-menyn."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:258
-msgid "Super key"
-msgstr "Super-tangenten"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:259
-msgid "Choose what happens when pressing Super"
-msgstr "Välj vad som händer när du trycker på Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open menu"
-msgstr "Öppna menyn"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open overview"
-msgstr "Öppna översikten"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:273
-#, python-brace-format
-msgid "Use the {name} menu style"
-msgstr "Använd menystilen {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:471
-msgid "Community Menu is not installed"
-msgstr "Community-menyn är inte installerad"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:516
-#, python-brace-format
-msgid "{position} notification position applied"
-msgstr "{position}-positionen för aviseringar har tillämpats"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:523
-#, python-brace-format
-msgid "Could not change the notification position: {message}"
-msgstr "Kunde inte ändra positionen för aviseringar: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:534
-msgid "Notification preview"
-msgstr "Förhandsvisning av aviseringar"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:535
-msgid "Notifications will appear here."
-msgstr "Aviseringar kommer att visas här."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu enabled"
-msgstr "Programmenyn är aktiverad"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu disabled"
-msgstr "Programmenyn är inaktiverad"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:559
-#, python-brace-format
-msgid "Could not change the application menu: {message}"
-msgstr "Kunde inte ändra applikationsmenyn: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:597
-#, python-brace-format
-msgid "{name} menu style applied"
-msgstr "Menystilen {name} har tillämpats"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:600
-#, python-brace-format
-msgid "Could not change the menu style: {message}"
-msgstr "Kunde inte ändra menystilen: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:631
-msgid "Super opens the application menu"
-msgstr "Super-tangenten öppnar applikationsmenyn"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:633
-msgid "Super opens the overview"
-msgstr "Super-tangenten öppnar översikten"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:637
-#, python-brace-format
-msgid "Could not change the Super key: {message}"
-msgstr "Kunde inte ändra Super-tangenten: {message}"
-
-#: usr/share/layout-switcher/ui/page_effects.py:60
-msgid "Other visual effects"
-msgstr "Andra visuella effekter"
-
-#: usr/share/layout-switcher/ui/page_effects.py:150
-#, python-brace-format
-msgid "{name} effect preview"
-msgstr "Förhandsvisning av effekten {name}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:20
-msgid "Always visible"
-msgstr "Alltid synlig"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:21
-msgid "Always hidden (show at edge)"
-msgstr "Alltid dold (visas vid kanten)"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:22
-msgid "Intelligent hiding"
-msgstr "Smart döljande"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:25
-msgid "Dot"
-msgstr "Punkt"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:26
-msgid "Hybrid line"
-msgstr "Hybridlinje"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:27
-msgid "Desk UX line"
-msgstr "Desk UX-linje"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:56
-#: usr/share/layout-switcher/ui/page_panel_dock.py:259
-msgid "Configure the Community Dock appearance and visibility."
-msgstr "Konfigurera Community Dockens utseende och synlighet."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:62
-msgid "Dock transparency"
-msgstr "Dock-transparens"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:65
-msgid "Dock visibility"
-msgstr "Dock-synlighet"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:75
-#: usr/share/layout-switcher/ui/page_panel_dock.py:271
-msgid "Configure the system panel appearance and visibility."
-msgstr "Konfigurera systempanelens utseende och synlighet."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Panel transparency"
-msgstr "Paneltransparens"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:84
-msgid "Panel visibility"
-msgstr "Panelsynlighet"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:101
-msgid "Running app indicator"
-msgstr "Indikator för körande program"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:105
-msgid "Choose the mark shown below running applications."
-msgstr "Välj markeringen som visas under körande program."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:142
-#, python-brace-format
-msgid "Use the {style} indicator"
-msgstr "Använd {style}-indikatorn"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:222
-msgid "Choose how this component behaves on the desktop."
-msgstr "Välj hur den här komponenten beter sig på skrivbordet."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:251
-msgid "Taskbar"
-msgstr "Aktivitetsfält"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:252
-msgid "Configure running application indicators."
-msgstr "Konfigurera indikatorer för körande program."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:255
-msgid "Available when Community Dock is active."
-msgstr "Tillgängligt när Community Dock är aktiv."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:263
-msgid "Available when Community Dock or Community Panel is active."
-msgstr "Tillgängligt när Community Dock eller Community Panel är aktiv."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:267
-msgid "Configure the Community Panel appearance and visibility."
-msgstr "Konfigurera Community Panelens utseende och synlighet."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:321
-msgid "Dock visibility updated"
-msgstr "Dock-synlighet uppdaterad"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:328
-msgid "Panel visibility updated"
-msgstr "Panelens synlighet uppdaterad"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:338
-msgid "Indicator style updated"
-msgstr "Indikatorstil uppdaterad"
-
-#: usr/share/layout-switcher/ui/page_themes.py:20
-msgid "Blue"
-msgstr "Blå"
-
-#: usr/share/layout-switcher/ui/page_themes.py:21
-msgid "Teal"
-msgstr "Teal"
-
-#: usr/share/layout-switcher/ui/page_themes.py:22
-msgid "Green"
-msgstr "Grön"
-
-#: usr/share/layout-switcher/ui/page_themes.py:23
-msgid "Yellow"
-msgstr "Gul"
-
-#: usr/share/layout-switcher/ui/page_themes.py:24
-msgid "Orange"
-msgstr "Orange"
-
-#: usr/share/layout-switcher/ui/page_themes.py:25
-msgid "Red"
-msgstr "Röd"
-
-#: usr/share/layout-switcher/ui/page_themes.py:26
-msgid "Pink"
-msgstr "Rosa"
-
-#: usr/share/layout-switcher/ui/page_themes.py:27
-msgid "Purple"
-msgstr "Lila"
-
-#: usr/share/layout-switcher/ui/page_themes.py:28
-msgid "Slate"
-msgstr "Skiffer"
-
-#: usr/share/layout-switcher/ui/page_themes.py:29
-msgid "Maia"
-msgstr "Maia"
-
-#: usr/share/layout-switcher/ui/page_themes.py:108
-msgid "Colors"
-msgstr "Färger"
-
-#: usr/share/layout-switcher/ui/page_themes.py:165
-msgid "Accent color"
-msgstr "Accentfärg"
-
-#: usr/share/layout-switcher/ui/page_themes.py:174
-msgid "Choose the color used for buttons, selections, and highlights."
-msgstr "Välj den färg som används för knappar, markeringar och högdagrar."
-
-#: usr/share/layout-switcher/ui/page_themes.py:207
-#, python-brace-format
-msgid "{color} accent color"
-msgstr "{color} accentfärg"
-
-#: usr/share/layout-switcher/ui/window.py:405
-#: usr/share/layout-switcher/ui/window.py:488
+#: usr/share/big-gnome-center/ui/page_layouts.py:34
+msgid "Disabling extensions…"
+msgstr "Inaktiverar tillägg…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:35
+msgid "Loading layout…"
+msgstr "Läser in layout…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:36
+msgid "Reloading components…"
+msgstr "Läser om komponenter…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:66
+msgid "Layout status"
+msgstr "Layoutstatus"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:154
+msgid "Contains your saved customizations"
+msgstr "Innehåller dina sparade anpassningar"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:158
+#: usr/share/big-gnome-center/ui/page_layouts.py:272
+msgid "Modified"
+msgstr "Ändrad"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:192
+#: usr/share/big-gnome-center/ui/page_layouts.py:219
+msgid "Coming soon"
+msgstr "Kommer snart"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:283
+msgid ""
+"You have previously modified this layout. Apply the original system default "
+"or resume your changes?"
+msgstr ""
+"Du har tidigare ändrat den här layouten. Vill du använda systemets "
+"ursprungliga standard eller återuppta dina ändringar?"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:288
+msgid "Resume my changes"
+msgstr "Återuppta mina ändringar"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:289
+msgid "Apply original"
+msgstr "Använd original"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:293
+msgid ""
+"Apply this layout? A backup of your current configuration will be created "
+"automatically."
+msgstr ""
+"Vill du tillämpa denna layout? En säkerhetskopia av din nuvarande "
+"konfiguration skapas automatiskt."
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:298
+msgid "Apply"
+msgstr "Tillämpa"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:353
+msgid "Applying"
+msgstr "Tillämpas"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:383
+msgid "Snapshot not found"
+msgstr "Ögonblicksbild hittades inte"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:411
+msgid "Layout file not found"
+msgstr "Layoutfil hittades inte"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:452
+#: usr/share/big-gnome-center/ui/page_layouts.py:460
+#: usr/share/big-gnome-center/ui/page_layouts.py:469
+msgid "applied"
+msgstr "tillämpad"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:462
+msgid "Undo"
+msgstr "Ångra"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:480
+msgid "Restart the session for the 100% clean state"
+msgstr "Starta om sessionen för ett 100 % rent tillstånd"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:485
+msgid "Restart now"
+msgstr "Starta om nu"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:509
+msgid "Cannot restart session"
+msgstr "Kan inte starta om sessionen"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:516
+#: usr/share/big-gnome-center/ui/page_layouts.py:518
+msgid "Restoring previous layout…"
+msgstr "Återställer föregående layout…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:550
+msgid "Layout restored"
+msgstr "Layout återställd"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:552
+msgid "Previous layout restored"
+msgstr "Föregående layout återställd"
+
+#: usr/share/big-gnome-center/ui/window.py:72
+#: usr/share/big-gnome-center/ui/window.py:383
+#: usr/share/big-gnome-center/ui/window.py:550
+msgid "Big Gnome Center"
+msgstr "Big Gnome Center"
+
+#: usr/share/big-gnome-center/ui/window.py:233
+#: usr/share/big-gnome-center/ui/window.py:234
+msgid "Show Sidebar"
+msgstr "Visa sidofält"
+
+#: usr/share/big-gnome-center/ui/window.py:240
+#: usr/share/big-gnome-center/ui/window.py:407
+#: usr/share/big-gnome-center/ui/window.py:504
+msgid "Layouts"
+msgstr "Layouter"
+
+#: usr/share/big-gnome-center/ui/window.py:246
+msgid "Menu"
+msgstr "Meny"
+
+#: usr/share/big-gnome-center/ui/window.py:247
+msgid "Main menu"
+msgstr "Huvudmeny"
+
+#: usr/share/big-gnome-center/ui/window.py:251
+msgid "Check for updates"
+msgstr "Sök efter uppdateringar"
+
+#: usr/share/big-gnome-center/ui/window.py:252
+msgid "Auto-update extensions"
+msgstr "Uppdatera tillägg automatiskt"
+
+#: usr/share/big-gnome-center/ui/window.py:254
+msgid "Backups…"
+msgstr "Säkerhetskopior…"
+
+#: usr/share/big-gnome-center/ui/window.py:255
+msgid "About"
+msgstr "Om"
+
+#: usr/share/big-gnome-center/ui/window.py:264
+msgid "Welcome! Choose a desktop layout below to get started."
+msgstr "Välkommen! Välj en skrivbordslayout nedan för att komma igång."
+
+#: usr/share/big-gnome-center/ui/window.py:265
+msgid "Got it"
+msgstr "Förstått"
+
+#: usr/share/big-gnome-center/ui/window.py:408
+#: usr/share/big-gnome-center/ui/window.py:505
+msgid "Fonts"
+msgstr "Typsnitt"
+
+#: usr/share/big-gnome-center/ui/window.py:409
+#: usr/share/big-gnome-center/ui/window.py:506
+msgid "Themes"
+msgstr "Teman"
+
+#: usr/share/big-gnome-center/ui/window.py:411
+#: usr/share/big-gnome-center/ui/window.py:508
 msgid "Panel and Dock"
 msgstr "Panel och Docker"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Dock size"
-msgstr "Dock-storlek"
+#: usr/share/big-gnome-center/ui/window.py:412
+#: usr/share/big-gnome-center/ui/window.py:509
+msgid "Effects"
+msgstr "Effekter"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:114
-msgid "Panel height"
-msgstr "Panelhöjd"
+#: usr/share/big-gnome-center/ui/window.py:555
+msgid "Layouts, effects and themes for your GNOME desktop."
+msgstr "Layouter, effekter och teman för din GNOME-skrivbordsmiljö."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:450
-msgid "Smaller"
-msgstr "Mindre"
+#: usr/share/big-gnome-center/ui/window.py:621
+msgid "Applying…"
+msgstr "Tillämpar…"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:466
-msgid "Larger"
-msgstr "Större"
+#: usr/share/big-gnome-center/ui/window.py:728
+msgid "All extensions up to date"
+msgstr "Alla tillägg är uppdaterade"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:143
-msgid "Restore layout defaults"
-msgstr "Återställ layoutens standardvärden"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:33
-msgid "Standard"
-msgstr "Standard"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:34
-msgid "Gentle lift"
-msgstr "Skonsam lyftning"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:245
-msgid "Icon hover effect"
-msgstr "Hover-effekt för ikoner"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:249
-msgid "Choose how dock icons react to the pointer."
-msgstr "Välj hur dock-ikoner reagerar på pekaren."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#: usr/share/big-gnome-center/ui/window.py:743
 #, python-brace-format
-msgid "Use the {effect} hover effect"
-msgstr "Använd {effect} hover-effekten"
+msgid "Auto-updated {n} extensions"
+msgstr "Automatiskt uppdaterade {n} tillägg"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:658
-msgid "Icon hover effect updated"
-msgstr "Hover-effekten för ikoner har uppdaterats"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:32
-msgid "Captures, annotates and records the screen."
-msgstr "Fångar, kommenterar och spelar in skärmen."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:35
-msgid "Shows application tray icons in the system panel."
-msgstr "Visar programikoner i systempanelen."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:40
-msgid "Provides application launchers and running windows in a dock."
-msgstr "Tillhandahåller programstartare och öppna fönster i en docka."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:43
-msgid "Provides the applications menu used by desktop layouts."
-msgstr "Tillhandahåller programmenyn som används av skrivbordslayouter."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:46
-msgid "Provides the taskbar and system panel used by desktop layouts."
-msgstr ""
-"Tillhandahåller aktivitetsfältet och systempanelen som används av "
-"layouterna."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:49
-msgid "Keeps a searchable history of copied content."
-msgstr "Bevarar en sökbar historik över kopierat innehåll."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:52
-msgid "Shows removable devices and lets you safely eject them."
-msgstr "Visar flyttbara enheter och låter dig mata ut dem säkert."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:55
-msgid "Adds controlled blur and transparency to the desktop."
-msgstr "Lägger till kontrollerad oskärpa och transparens på skrivbordet."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:58
-msgid "Connects phones to share files, notifications and other features."
-msgstr ""
-"Ansluter telefoner för att dela filer, aviseringar och andra funktioner."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:61
-msgid "Shows files and folders on the desktop."
-msgstr "Visar filer och mappar på skrivbordet."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-msgid "Applies layout changes safely inside GNOME Shell."
-msgstr "Tillämpar layoutändringar säkert i GNOME Shell."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:67
-msgid "Provides the dock and taskbar runtime used by desktop layouts."
-msgstr ""
-"Tillhandahåller körmiljön för docka och aktivitetsfält som används av "
-"layouterna."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:70
-msgid "Keeps GTK 3 applications aligned with light and dark mode."
-msgstr "Håller GTK 3-program anpassade till ljust och mörkt läge."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:73
-msgid "Uses the light GNOME Shell appearance."
-msgstr "Använder GNOME Shells ljusa utseende."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:76
-msgid "Loads the Shell theme selected by the active layout."
-msgstr "Läser in Shell-temat som valts av den aktiva layouten."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:91
-msgid "Description not provided by the developer."
-msgstr "Utvecklaren angav ingen beskrivning."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:770
+#: usr/share/big-gnome-center/ui/window.py:748
 #, python-brace-format
-msgid "Technical identifier: {uuid}"
-msgstr "Teknisk identifierare: {uuid}"
+msgid "{n} update(s) available"
+msgstr "{n} uppdatering(ar) tillgängliga"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:772
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update enabled"
+msgstr "Automatisk uppdatering aktiverad"
+
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update disabled"
+msgstr "Automatisk uppdatering inaktiverad"
+
+#: usr/share/big-gnome-center/constants.py:166
+msgid "Desktop Cube"
+msgstr "Desktop Cube"
+
+#: usr/share/big-gnome-center/constants.py:167
+msgid "Rotate workspaces on a 3D cube"
+msgstr "Rotera arbetsytor på en 3D-kub"
+
+#: usr/share/big-gnome-center/constants.py:177
+msgid "Magic Lamp"
+msgstr "Magic Lamp"
+
+#: usr/share/big-gnome-center/constants.py:178
+msgid "Genie effect when minimizing windows"
+msgstr "Genie-effekt vid minimering av fönster"
+
+#: usr/share/big-gnome-center/constants.py:188
+msgid "Compiz Windows"
+msgstr "Compiz Windows"
+
+#: usr/share/big-gnome-center/constants.py:189
+msgid "Wobbly windows and extra animations"
+msgstr "Gungande fönster och extra animationer"
+
+#: usr/share/big-gnome-center/constants.py:216
+msgid "Default Big Gnome layout"
+msgstr "Standard Big Gnome-layout"
+
+#: usr/share/big-gnome-center/constants.py:223
+msgid "Clean and contemporary desktop"
+msgstr "Rent och modernt skrivbord"
+
+#: usr/share/big-gnome-center/constants.py:230
+msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
+msgstr "Centrerad dock-aktivitetsfält, Windows 11 / Deepin / Pop!_OS-stil"
+
+#: usr/share/big-gnome-center/constants.py:237
+msgid "Unity-style layout with left dock and top bar"
+msgstr "Unity-stil layout med vänster docka och toppfält"
+
+#: usr/share/big-gnome-center/constants.py:244
+msgid "Traditional desktop with taskbar and system tray"
+msgstr "Traditionellt skrivbord med aktivitetsfält och systemfält"
+
+#: usr/share/big-gnome-center/constants.py:251
+msgid "Near-vanilla GNOME with minimal distro tweaks"
+msgstr "Nästan ren GNOME med minimala distributionstweaks"
+
+#: usr/share/big-gnome-center/helper_guard.py:86
+msgid "Layout helper restored"
+msgstr "Layout-hjälparen återställd"
+
+#: usr/share/big-gnome-center/helper_guard.py:87
+msgid "The required layout helper was re-enabled automatically."
+msgstr "Den nödvändiga layout-hjälparen aktiverades automatiskt igen."
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:231
+msgid "Extension updates available"
+msgstr "Tilläggsuppdateringar tillgängliga"
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:232
 #, python-brace-format
-msgid "Version: {version}"
-msgstr "Version: {version}"
+msgid "Available updates: {names}"
+msgstr "Tillgängliga uppdateringar: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:127
-msgid "Session"
-msgstr "Session"
+#: usr/share/big-gnome-center/extension_update_monitor.py:234
+#: usr/share/big-gnome-center/extension_update_monitor.py:235
+#: usr/share/big-gnome-center/extension_update_monitor.py:315
+#: usr/share/big-gnome-center/extension_update_monitor.py:316
+msgid "View updates"
+msgstr "Visa uppdateringar"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:128
-msgid "Choose how this layout starts after login."
-msgstr "Välj hur denna layout startar efter inloggning."
+#: usr/share/big-gnome-center/extension_update_monitor.py:295
+msgid "Extension updates installed"
+msgstr "Tilläggsuppdateringar installerade"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:131
-msgid "Open desktop after login"
-msgstr "Öppna skrivbordet efter inloggning"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:132
-msgid "Skip the initial Activities overview for this layout."
-msgstr "Hoppa över den inledande aktivitetsöversikten för denna layout."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:144
-msgid "Reset appearance and session options for the active layout."
-msgstr "Återställ utseende och sessionsalternativ för den aktiva layouten."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:165
-msgid "Application menu position"
-msgstr "Programmenyns position"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:169
-msgid "Place the BigGnome menu at either end of the Dock."
-msgstr "Placera BigGnome-menyn i valfri ände av dockan."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Left"
-msgstr "Vänster"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Right"
-msgstr "Höger"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#: usr/share/big-gnome-center/extension_update_monitor.py:296
+#: usr/share/big-gnome-center/extension_update_monitor.py:308
 #, python-brace-format
-msgid "Place the application menu on the {side}"
-msgstr "Placera programmenyn på {side}"
+msgid "Updated: {names}"
+msgstr "Uppdaterade: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:668
-msgid "Application menu position updated"
-msgstr "Programmenyns position uppdaterad"
+#: usr/share/big-gnome-center/extension_update_monitor.py:298
+#: usr/share/big-gnome-center/extension_update_monitor.py:299
+msgid "View extensions"
+msgstr "Visa tillägg"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:678
-msgid "Login start updated"
-msgstr "Start vid inloggning uppdaterad"
+#: usr/share/big-gnome-center/extension_update_monitor.py:310
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Misslyckades: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:685
-msgid "Layout appearance and session defaults restored"
-msgstr "Layoutens utseende och sessionsstandarder återställda"
+#: usr/share/big-gnome-center/extension_update_monitor.py:312
+msgid "Some extension updates failed"
+msgstr "Vissa tilläggsuppdateringar misslyckades"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:36
-msgid "Magnification"
-msgstr "Förstoring"
+#: usr/share/big-gnome-center/extension_update_monitor.py:317
+msgid "Try again"
+msgstr "Försök igen"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:97
-msgid "Magnification intensity"
-msgstr "Förstoringsintensitet"
+#: usr/share/big-gnome-center/layout_applier.py:2256
+msgid "Big Gnome Center Helper is required to apply layouts."
+msgstr "Big Gnome Center Helper krävs för att tillämpa layouter."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:102
-msgid "Choose how much nearby Dock icons grow."
-msgstr "Välj hur mycket närliggande dockikoner ska växa."
+#: usr/share/big-gnome-center/helper_client.py:261
+msgid "The required layout helper is not installed."
+msgstr "Den nödvändiga layout-hjälparen är inte installerad."
+
+#: usr/share/big-gnome-center/helper_client.py:300
+msgid "The required layout helper did not start."
+msgstr "Den nödvändiga layout-hjälparen startade inte."
+
+#~ msgid "System extension — cannot remove"
+#~ msgstr "Systemtillägg — kan inte tas bort"
+
+#~ msgid ""
+#~ "This extension cannot be removed here because it was installed by the "
+#~ "system."
+#~ msgstr ""
+#~ "Detta tillägg kan inte tas bort här eftersom det installerades av "
+#~ "systemet."
+
+#~ msgid "Uses the light GNOME Shell appearance."
+#~ msgstr "Använder GNOME Shells ljusa utseende."
+
+#~ msgid "Loads the Shell theme selected by the active layout."
+#~ msgstr "Läser in Shell-temat som valts av den aktiva layouten."

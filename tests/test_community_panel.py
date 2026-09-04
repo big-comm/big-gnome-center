@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PANEL = ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org"
-LAYOUTS = ROOT / "usr/share/layout-switcher/layouts"
+LAYOUTS = ROOT / "usr/share/big-gnome-center/layouts"
 
 
 def _section(layout: str, name: str) -> str:
@@ -229,7 +229,7 @@ def test_helper_and_applier_own_only_community_panel():
         ROOT
         / "usr/share/gnome-shell/extensions/layout-switcher-helper@communitybig.org/extension.js"
     ).read_text()
-    applier = (ROOT / "usr/share/layout-switcher/layout_applier.py").read_text()
+    applier = (ROOT / "usr/share/big-gnome-center/layout_applier.py").read_text()
 
     assert "const COMMUNITY_PANEL_UUID = 'community-panel@communitybig.org'" in helper
     assert "const PANEL_UUIDS = [COMMUNITY_PANEL_UUID]" in helper

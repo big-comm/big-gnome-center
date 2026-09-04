@@ -10,7 +10,7 @@ from theme_manager import ThemeMgr
 
 @pytest.fixture(autouse=True)
 def _isolate_layout_snapshot_marker(monkeypatch, tmp_path):
-    marker = tmp_path / "settings.gnome.layout-switcher.sha256"
+    marker = tmp_path / "settings.gnome.big-gnome-center.sha256"
     monkeypatch.setattr(
         ThemeMgr,
         "_layout_snapshot_marker",

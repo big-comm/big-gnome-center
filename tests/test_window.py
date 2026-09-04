@@ -3,8 +3,7 @@
 
 from pathlib import Path
 
-
-SOURCE = Path(__file__).parents[1] / "usr/share/layout-switcher/ui/window.py"
+SOURCE = Path(__file__).parents[1] / "usr/share/big-gnome-center/ui/window.py"
 
 
 def test_main_window_uses_gtk4_compatible_sizing_api():

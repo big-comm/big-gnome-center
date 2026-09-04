@@ -9,10 +9,10 @@ The actionable remaining-work checklist is maintained in
 ## Goal
 
 Replace the bundled Dash to Dock and Dash to Panel forks with a focused Shell
-runtime owned by Layout Switcher. Preserve the six accepted layouts while
+runtime owned by Big Gnome Center. Preserve the six accepted layouts while
 removing unused preferences, menus, schemas, assets, and runtime branches.
 
-User-facing configuration must exist only in Layout Switcher.
+User-facing configuration must exist only in Big Gnome Center.
 
 ## Architecture decision
 
@@ -22,17 +22,17 @@ Dock, taskbar, and panel code must still run inside GNOME Shell as GJS.
 Target architecture:
 
 ```text
-Layout Switcher GTK app
+Big Gnome Center GTK app
   -> own GSettings schema
-  -> Layout Switcher Helper (switch orchestration only)
-  -> Layout Switcher Shell runtime (dock, taskbar, panel)
+  -> Big Gnome Center Helper (switch orchestration only)
+  -> Big Gnome Center Shell runtime (dock, taskbar, panel)
 ```
 
 The Shell runtime must:
 
 - have no `prefs.js` or independent preferences window;
 - expose no Dash to Dock or Dash to Panel settings action;
-- use only Layout Switcher-owned settings;
+- use only Big Gnome Center-owned settings;
 - activate modules according to the current layout;
 - remain modular so one component failure does not break layout switching;
 - support GNOME 50 and GNOME 51 without version-specific user configuration.
@@ -182,14 +182,14 @@ are recorded and must not be normalized blindly during extraction.
 - [x] Remove Dock and Panel preferences entry points.
 - [x] Remove settings items from application context menus.
 - [ ] Keep runtime behavior unchanged.
-- [x] Confirm source exposes supported controls only through Layout Switcher.
+- [x] Confirm source exposes supported controls only through Big Gnome Center.
 - [x] Remove preference UI files after package validation.
 
 Gate: all six layouts visually accepted on GNOME 50.
 
 ### Phase 2 — Own settings model
 
-- [x] Create a Layout Switcher-owned runtime schema.
+- [x] Create a Big Gnome Center-owned runtime schema.
 - [x] Define layout defaults separately from user overrides.
 - [x] Add per-layout reset behavior.
 - [x] Add the per-layout reset backend; expose it after the size controls land.
@@ -272,7 +272,7 @@ Gate: user approval for testing repository publication.
 
 ## Accepted decisions
 
-- [x] Centralize all user-facing Dock and Panel configuration in Layout Switcher.
+- [x] Centralize all user-facing Dock and Panel configuration in Big Gnome Center.
 - [x] Keep a Shell-side runtime because GNOME Shell actors require it.
 - [x] Remove independent fork preference screens and settings menu entries.
 - [x] Migrate incrementally with visual approval between phases.

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Export canonical factory layouts without starting the GTK application.
+
+set -euo pipefail
+
+APP_DIR="/usr/share/big-gnome-center"
+if [[ ! -f "${APP_DIR}/layout_exporter.py" ]]; then
+    SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+    APP_DIR="${SCRIPT_DIR}/../share/big-gnome-center"
+fi
+
+exec python3 "${APP_DIR}/layout_exporter.py" "$@"

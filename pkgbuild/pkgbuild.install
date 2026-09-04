@@ -11,7 +11,7 @@ reset="\e[0m"                # Reset text formatting
 # Print status messages
 printMsg() {
     local message=$1
-    echo -e "${blueDark}[${lightBlue}layout-switcher${blueDark}]${reset} ${cyan}→${reset} ${white}${message}${reset}"
+    echo -e "${blueDark}[${lightBlue}big-gnome-center${blueDark}]${reset} ${cyan}→${reset} ${white}${message}${reset}"
 }
 
 # Function executed before package installation

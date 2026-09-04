@@ -49,7 +49,7 @@ def required_helper_available():
 
 class TestLayoutApplier:
     def test_all_layouts_show_file_size_as_the_first_grid_caption(self):
-        layouts_dir = ROOT / "usr/share/layout-switcher/layouts"
+        layouts_dir = ROOT / "usr/share/big-gnome-center/layouts"
         for layout in layouts_dir.glob("*.txt"):
             icon_view = LayoutApplier._section_key_values(
                 layout.read_text(),
@@ -1719,7 +1719,7 @@ class TestCuratedLayoutFiles:
 
     def test_desk_ux_dtp_position_and_size_are_explicit(self):
         """Desk UX must not depend on inherited DTP defaults."""
-        text = Path("usr/share/layout-switcher/layouts/desk-ux.txt").read_text(encoding="utf-8")
+        text = Path("usr/share/big-gnome-center/layouts/desk-ux.txt").read_text(encoding="utf-8")
         values = LayoutApplier._section_key_values(
             text,
             "/org/gnome/shell/extensions/dash-to-panel",

@@ -10,8 +10,7 @@ from ui.page_extensions import (
     _visible_installed_extensions,
 )
 
-
-SOURCE = Path(__file__).parents[1] / "usr/share/layout-switcher/ui/page_extensions.py"
+SOURCE = Path(__file__).parents[1] / "usr/share/big-gnome-center/ui/page_extensions.py"
 
 
 def test_installed_list_hides_system_runtime_and_legacy_duplicates():

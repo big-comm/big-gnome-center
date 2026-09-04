@@ -343,7 +343,7 @@ class TestRemove:
         user_dir = tmp_path / "user"
         system_dir = tmp_path / "system"
         pkexec = tmp_path / "pkexec"
-        remover = tmp_path / "layout-switcher-remove-extension"
+        remover = tmp_path / "big-gnome-center-remove-extension"
         user_dir.mkdir()
         (system_dir / "test-ext@foo.com").mkdir(parents=True)
         pkexec.touch()
@@ -392,7 +392,7 @@ class TestRemove:
         user_dir = tmp_path / "user"
         system_dir = tmp_path / "system"
         pkexec = tmp_path / "pkexec"
-        remover = tmp_path / "layout-switcher-remove-extension"
+        remover = tmp_path / "big-gnome-center-remove-extension"
         user_dir.mkdir()
         (system_dir / "test-ext@foo.com").mkdir(parents=True)
         pkexec.touch()

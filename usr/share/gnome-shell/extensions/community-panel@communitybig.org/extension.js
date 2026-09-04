@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-2.0-or-later
- * Rollback adapter for the Layout Switcher-owned Taskbar/Panel lifecycle.
+ * Rollback adapter for the Big Gnome Center-owned Taskbar/Panel lifecycle.
  */
 
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js'

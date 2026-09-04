@@ -1,9 +1,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: layout-switcher\n"
+"Project-Id-Version: big-gnome-center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"POT-Creation-Date: 2026-09-04 20:16-0300\n"
 "PO-Revision-Date: 2026-08-20 22:21-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Croatian <hr@li.org>\n"
@@ -11,789 +11,1010 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:149
-msgid "Desktop Cube"
-msgstr "Desktop Cube"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:25
+#: usr/share/big-gnome-center/ui/window.py:410
+#: usr/share/big-gnome-center/ui/window.py:507
+msgid "Desktop"
+msgstr "Radna površina"
 
-#: usr/share/layout-switcher/constants.py:150
-msgid "Rotate workspaces on a 3D cube"
-msgstr "Rotirajte radne površine na 3D kocki"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:27
+#: usr/share/big-gnome-center/ui/desktop_icons.py:46
+msgid "Desktop icons"
+msgstr "Ikone na radnoj površini"
 
-#: usr/share/layout-switcher/constants.py:160
-msgid "Magic Lamp"
-msgstr "Magic Lamp"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:28
+#: usr/share/big-gnome-center/ui/desktop_icons.py:67
+msgid "Show files and folders on the desktop"
+msgstr "Prikaži datoteke i mape na radnoj površini"
 
-#: usr/share/layout-switcher/constants.py:161
-msgid "Genie effect when minimizing windows"
-msgstr "Efekt duha pri minimiziranju prozora"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:34
+msgid "Desktop icon settings"
+msgstr "Postavke ikona na radnoj površini"
 
-#: usr/share/layout-switcher/constants.py:171
-msgid "Compiz Windows"
-msgstr "Compiz Windows"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:69
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "GTK4 Desktop Icons NG nije instaliran"
 
-#: usr/share/layout-switcher/constants.py:172
-msgid "Wobbly windows and extra animations"
-msgstr "Drhtavi prozori i dodatne animacije"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons enabled"
+msgstr "Ikone na radnoj površini omogućene"
 
-#: usr/share/layout-switcher/constants.py:199
-msgid "Default Big Gnome layout"
-msgstr "Zadani Big Gnome izgled"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons disabled"
+msgstr "Ikone na radnoj površini onemogućene"
 
-#: usr/share/layout-switcher/constants.py:206
-msgid "Clean and contemporary desktop"
-msgstr "Čista i suvremena radna površina"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:92
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "Nije moguće promijeniti ikone na radnoj površini: {message}"
 
-#: usr/share/layout-switcher/constants.py:213
-msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
-msgstr "Centrirani dock-traka zadataka, stil Windows 11 / Deepin / Pop!_OS"
-
-#: usr/share/layout-switcher/constants.py:220
-msgid "Unity-style layout with left dock and top bar"
-msgstr "Unity-stil izgleda s lijevim dockom i gornjom trakom"
-
-#: usr/share/layout-switcher/constants.py:227
-msgid "Traditional desktop with taskbar and system tray"
-msgstr "Tradicionalna radna površina s trakom zadataka i sistemskom ladicom"
-
-#: usr/share/layout-switcher/constants.py:234
-msgid "Near-vanilla GNOME with minimal distro tweaks"
-msgstr "Gotovo neizmijenjeni GNOME s minimalnim prilagodbama distribucije"
-
-#: usr/share/layout-switcher/ui/dialog_backups.py:64
+#: usr/share/big-gnome-center/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "Sigurnosne kopije"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:79
+#: usr/share/big-gnome-center/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "Izradi sigurnosnu kopiju sada"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:81
+#: usr/share/big-gnome-center/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "Snimi trenutne dconf postavke"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:94
+#: usr/share/big-gnome-center/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "Još nema sigurnosnih kopija"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:96
+#: usr/share/big-gnome-center/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr ""
 "Sigurnosna kopija se automatski izrađuje svaki put kad primijenite raspored."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:149
+#: usr/share/big-gnome-center/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "Najnovije"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:154
+#: usr/share/big-gnome-center/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "Vrati ovu sigurnosnu kopiju"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:162
+#: usr/share/big-gnome-center/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "Izbriši ovu sigurnosnu kopiju"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:185
+#: usr/share/big-gnome-center/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "Sigurnosna kopija izrađena"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:188
-#: usr/share/layout-switcher/ui/page_layouts.py:265
+#: usr/share/big-gnome-center/ui/dialog_backups.py:188
+#: usr/share/big-gnome-center/ui/page_layouts.py:241
 msgid "Backup failed"
 msgstr "Izrada sigurnosne kopije nije uspjela"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:193
+#: usr/share/big-gnome-center/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "Želite li vratiti ovu sigurnosnu kopiju?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:195
+#: usr/share/big-gnome-center/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
 msgstr "Sve trenutačne dconf postavke bit će prebrisane snimkom iz {ts}."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
-#: usr/share/layout-switcher/ui/page_effects.py:293
-#: usr/share/layout-switcher/ui/page_effects.py:337
-#: usr/share/layout-switcher/ui/page_extensions.py:402
-#: usr/share/layout-switcher/ui/page_extensions.py:445
-#: usr/share/layout-switcher/ui/page_extensions.py:905
-#: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:241
-#: usr/share/layout-switcher/ui/page_layouts.py:253
+#: usr/share/big-gnome-center/ui/dialog_backups.py:198
+#: usr/share/big-gnome-center/ui/dialog_backups.py:231
+#: usr/share/big-gnome-center/ui/page_effects.py:293
+#: usr/share/big-gnome-center/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_extensions.py:481
+#: usr/share/big-gnome-center/ui/page_extensions.py:521
+#: usr/share/big-gnome-center/ui/page_extensions.py:987
+#: usr/share/big-gnome-center/ui/page_fonts.py:567
+#: usr/share/big-gnome-center/ui/page_layouts.py:287
+#: usr/share/big-gnome-center/ui/page_layouts.py:297
 msgid "Cancel"
 msgstr "Odustani"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:161
 msgid "Restore"
 msgstr "Vrati"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:219
+#: usr/share/big-gnome-center/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "Sigurnosna kopija vraćena"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:223
+#: usr/share/big-gnome-center/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "Vraćanje nije uspjelo"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:228
+#: usr/share/big-gnome-center/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "Izbrisati ovu sigurnosnu kopiju?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:232
+#: usr/share/big-gnome-center/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "Izbriši"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:252
+#: usr/share/big-gnome-center/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "Sigurnosna kopija izbrisana"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:255
+#: usr/share/big-gnome-center/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "Brisanje nije uspjelo"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:41
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:41
 msgid "Relevance"
 msgstr "Relevantnost"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Popularnost"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:43
 msgid "Downloads"
 msgstr "Preuzimanja"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:43
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:44
 msgid "Recent"
 msgstr "Nedavno"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:44
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:45
 msgid "Name"
 msgstr "Naziv"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:93
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:97
 msgid "Search extensions on extensions.gnome.org"
 msgstr "Pretraži ekstenzije na extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:101
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:105
 msgid "Sort by"
 msgstr "Sortiraj po"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:112
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:116
 #, python-brace-format
 msgid "Only compatible with GNOME {ver}"
 msgstr "Samo kompatibilno s GNOME {ver}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:139
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:143
 msgid "Browse extensions"
 msgstr "Pregledaj proširenja"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:140
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:144
 msgid "Search above or hit Enter to load popular extensions."
 msgstr ""
 "Pretražite iznad ili pritisnite Enter za učitavanje popularnih ekstenzija."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:143
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:147
 msgid "Load popular"
 msgstr "Učitaj popularne"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:159
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:163
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:97
 msgid "Loading…"
 msgstr "Učitavanje…"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:166
-#: usr/share/layout-switcher/ui/page_extensions.py:621
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:170
+#: usr/share/big-gnome-center/ui/page_extensions.py:697
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:104
 msgid "No results"
 msgstr "Nema rezultata"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:167
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:171
 msgid "Try a different search or sort."
 msgstr "Pokušajte s drugačijim pretraživanjem ili sortiranjem."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:173
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:177
 msgid "Could not reach extensions.gnome.org"
 msgstr "Nije moguće doći do extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:174
-#: usr/share/layout-switcher/ui/ext_detail_view.py:111
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:178
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:111
 msgid "Check your network connection and try again."
 msgstr "Provjerite mrežnu vezu i pokušajte ponovno."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:177
-#: usr/share/layout-switcher/ui/ext_detail_view.py:114
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:181
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:114
 msgid "Retry"
 msgstr "Pokušaj ponovno"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:334
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:220
+#: usr/share/big-gnome-center/ui/page_fonts.py:334
 msgid "Previous page"
 msgstr "Prethodna stranica"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:227
-#: usr/share/layout-switcher/ui/page_fonts.py:346
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:346
 msgid "Next page"
 msgstr "Sljedeća stranica"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:238
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:242
 msgid "Shell"
 msgstr "Ljuska"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:284
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:291
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "Stranica {p} od {t}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:345
-#: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:280
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:354
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:147
+#: usr/share/big-gnome-center/ui/page_effects.py:184
+#: usr/share/big-gnome-center/ui/page_extensions.py:359
 #, python-brace-format
 msgid "by {author}"
 msgstr "od {author}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:358
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:367
 msgid "Details"
 msgstr "Pojedinosti"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:361
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:370
 msgid "View extension details"
 msgstr "Pregledaj detalje proširenja"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:83
-#: usr/share/layout-switcher/ui/page_extensions.py:574
-#: usr/share/layout-switcher/ui/page_fonts.py:487
-#: usr/share/layout-switcher/ui/page_fonts.py:529
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:378
+#: usr/share/big-gnome-center/ui/page_extensions.py:161
+#: usr/share/big-gnome-center/ui/page_extensions.py:650
+#: usr/share/big-gnome-center/ui/page_fonts.py:487
+#: usr/share/big-gnome-center/ui/page_fonts.py:529
 msgid "Installed"
 msgstr "Instalirano"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:375
-#: usr/share/layout-switcher/ui/ext_detail_view.py:64
-#: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:238
-#: usr/share/layout-switcher/ui/page_effects.py:294
-#: usr/share/layout-switcher/ui/page_extensions.py:341
-#: usr/share/layout-switcher/ui/page_extensions.py:403
-#: usr/share/layout-switcher/ui/page_fonts.py:490
-#: usr/share/layout-switcher/ui/page_fonts.py:493
-#: usr/share/layout-switcher/ui/page_fonts.py:534
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:384
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:64
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:397
+#: usr/share/big-gnome-center/ui/page_effects.py:238
+#: usr/share/big-gnome-center/ui/page_effects.py:294
+#: usr/share/big-gnome-center/ui/page_extensions.py:420
+#: usr/share/big-gnome-center/ui/page_extensions.py:482
+#: usr/share/big-gnome-center/ui/page_fonts.py:490
+#: usr/share/big-gnome-center/ui/page_fonts.py:493
+#: usr/share/big-gnome-center/ui/page_fonts.py:534
 msgid "Install"
 msgstr "Instaliraj"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:412
-#: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:315
-#: usr/share/layout-switcher/ui/page_extensions.py:423
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:421
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:431
+#: usr/share/big-gnome-center/ui/page_effects.py:315
+#: usr/share/big-gnome-center/ui/page_extensions.py:502
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr ""
 "{name} instalirano i omogućeno. Ponovno pokrenite sesiju da biste ga "
 "koristili."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:321
-#: usr/share/layout-switcher/ui/page_extensions.py:429
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:429
+#: usr/share/big-gnome-center/ui/page_effects.py:321
+#: usr/share/big-gnome-center/ui/page_extensions.py:508
 msgid "Install failed"
 msgstr "Instalacija nije uspjela"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:103
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:103
 msgid "Loading extension details…"
 msgstr "Učitavanje detalja proširenja…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:110
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:110
 msgid "Could not load details"
 msgstr "Nije moguće učitati pojedinosti"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:206
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:206
 #, python-brace-format
 msgid "{n} ratings"
 msgstr "{n} ocjena"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:209
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:209
 msgid "downloads"
 msgstr "preuzimanja"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:212
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:212
 msgid "compatibility"
 msgstr "kompatibilnost"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:254
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:254
 msgid "Description"
 msgstr "Opis"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:269
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:269
 msgid "Recent comments"
 msgstr "Nedavni komentari"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:282
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:282
 msgid "View all comments on extensions.gnome.org"
 msgstr "Pogledajte sve komentare na extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:343
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:343
 msgid "Links"
 msgstr "Poveznice"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:350
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:350
 msgid "Homepage"
 msgstr "Početna stranica"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:255
-#: usr/share/layout-switcher/ui/page_extensions.py:358
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:354
+#: usr/share/big-gnome-center/ui/page_effects.py:255
+#: usr/share/big-gnome-center/ui/page_extensions.py:437
 msgid "View on GNOME Extensions"
 msgstr "Pogledaj na GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:359
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:359
 #, python-brace-format
 msgid "License: {lic}"
 msgstr "Licenca: {lic}"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:579
-#: usr/share/layout-switcher/ui/page_extensions.py:719
-#: usr/share/layout-switcher/ui/page_extensions.py:730
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:387
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/ui/page_extensions.py:803
+#: usr/share/big-gnome-center/ui/page_extensions.py:814
 msgid "Update"
 msgstr "Ažuriraj"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:392
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:392
 msgid "Open prefs"
 msgstr "Otvori postavke"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:409
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:409
 msgid "Working…"
 msgstr "Radim…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:428
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:428
 #, python-brace-format
 msgid "{name} updated"
 msgstr "{name} ažurirano"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:437
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:437
 msgid "Operation failed"
 msgstr "Operacija nije uspjela"
 
-#: usr/share/layout-switcher/ui/page_effects.py:114
-#: usr/share/layout-switcher/ui/page_extensions.py:225
+#: usr/share/big-gnome-center/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "Gore sredina"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "Dolje sredina"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "Gore desno"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "Gore lijevo"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "Dolje lijevo"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "Dolje desno"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "Pozicija obavijesti"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "Odaberite gdje se pojavljuju bannere s obavijestima."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "Prikaži obavijesti na {position}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:143
+#: usr/share/big-gnome-center/ui/page_desktop.py:287
+msgid "Default"
+msgstr "Zadano"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:194
+#: usr/share/big-gnome-center/ui/page_desktop.py:199
+#: usr/share/big-gnome-center/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "Izbornik aplikacija"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "Dostupno za Classic, Desk-UX i Hybrid rasporede."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:200
+#: usr/share/big-gnome-center/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "Upotrijebi Community Menu kao aplikacijski izbornik"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "Stil izbornika"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "Odaberite izgled Community Menua."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Super tipka"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "Odaberite što se događa pri pritisku tipke Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "Otvori izbornik"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "Otvori pregled"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "Upotrijebi stil izbornika {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "Community Menu nije instaliran"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "Položaj obavijesti {position} je primijenjen"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "Promjena položaja obavijesti nije uspjela: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "Pregled obavijesti"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "Obavijesti će se pojaviti ovdje."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "Aplikacijski izbornik omogućen"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "Aplikacijski izbornik onemogućen"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "Nije moguće promijeniti izbornik aplikacija: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "Primijenjen stil izbornika {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "Nije moguće promijeniti stil izbornika: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "Tipka Super otvara izbornik aplikacija"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "Tipka Super otvara pregled"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "Nije moguće promijeniti tipku Super: {message}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "Ostali vizualni efekti"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:114
+#: usr/share/big-gnome-center/ui/page_extensions.py:304
 msgid "System extension"
 msgstr "Sistemска ekstenzija"
 
-#: usr/share/layout-switcher/ui/page_effects.py:131
+#: usr/share/big-gnome-center/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name} (omogućeno)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:133
+#: usr/share/big-gnome-center/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name} (onemogućeno)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:135
+#: usr/share/big-gnome-center/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (nije instalirano)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "Pregled efekta {name}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "On"
 msgstr "Uključeno"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "Off"
 msgstr "Isključeno"
 
-#: usr/share/layout-switcher/ui/page_effects.py:203
-#: usr/share/layout-switcher/ui/page_extensions.py:303
-#: usr/share/layout-switcher/ui/page_extensions.py:763
+#: usr/share/big-gnome-center/ui/page_effects.py:203
+#: usr/share/big-gnome-center/ui/page_extensions.py:382
+#: usr/share/big-gnome-center/ui/page_extensions.py:847
 msgid "Toggle"
 msgstr "Prebaci"
 
-#: usr/share/layout-switcher/ui/page_effects.py:211
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_effects.py:338
-#: usr/share/layout-switcher/ui/page_extensions.py:313
-#: usr/share/layout-switcher/ui/page_extensions.py:317
-#: usr/share/layout-switcher/ui/page_extensions.py:446
-#: usr/share/layout-switcher/ui/page_extensions.py:801
-#: usr/share/layout-switcher/ui/page_extensions.py:802
+#: usr/share/big-gnome-center/ui/page_effects.py:211
+#: usr/share/big-gnome-center/ui/page_effects.py:215
+#: usr/share/big-gnome-center/ui/page_effects.py:335
+#: usr/share/big-gnome-center/ui/page_extensions.py:392
+#: usr/share/big-gnome-center/ui/page_extensions.py:396
+#: usr/share/big-gnome-center/ui/page_extensions.py:522
+#: usr/share/big-gnome-center/ui/page_extensions.py:882
+#: usr/share/big-gnome-center/ui/page_extensions.py:883
+#: usr/share/big-gnome-center/ui/page_startup.py:116
+#: usr/share/big-gnome-center/ui/page_startup.py:119
 msgid "Remove"
 msgstr "Ukloni"
 
-#: usr/share/layout-switcher/ui/page_effects.py:223
-#: usr/share/layout-switcher/ui/page_extensions.py:325
-#: usr/share/layout-switcher/ui/page_extensions.py:744
-#: usr/share/layout-switcher/ui/page_extensions.py:748
+#: usr/share/big-gnome-center/ui/page_effects.py:223
+#: usr/share/big-gnome-center/ui/page_extensions.py:404
+#: usr/share/big-gnome-center/ui/page_extensions.py:828
+#: usr/share/big-gnome-center/ui/page_extensions.py:832
 msgid "Settings"
 msgstr "Postavke"
 
-#: usr/share/layout-switcher/ui/page_effects.py:234
-#: usr/share/layout-switcher/ui/page_extensions.py:253
-#: usr/share/layout-switcher/ui/page_extensions.py:337
+#: usr/share/big-gnome-center/ui/page_effects.py:234
+#: usr/share/big-gnome-center/ui/page_extensions.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:416
 msgid "Not installed"
 msgstr "Nije instalirano"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:249
-#: usr/share/layout-switcher/ui/page_extensions.py:388
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:328
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "enabled"
 msgstr "omogućeno"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:251
-#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:330
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
 msgid "disabled"
 msgstr "onemogućeno"
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:392
-#: usr/share/layout-switcher/ui/page_extensions.py:777
-#: usr/share/layout-switcher/ui/page_extensions.py:929
-#: usr/share/layout-switcher/ui/page_layouts.py:429
-#: usr/share/layout-switcher/ui/page_layouts.py:473
-#: usr/share/layout-switcher/ui/page_themes.py:332
-#: usr/share/layout-switcher/ui/page_themes.py:343
+#: usr/share/big-gnome-center/ui/page_effects.py:283
+#: usr/share/big-gnome-center/ui/page_extensions.py:471
+#: usr/share/big-gnome-center/ui/page_extensions.py:861
+#: usr/share/big-gnome-center/ui/page_extensions.py:1011
+#: usr/share/big-gnome-center/ui/page_themes.py:363
+#: usr/share/big-gnome-center/ui/page_themes.py:374
+#: usr/share/big-gnome-center/ui/page_startup.py:150
+#: usr/share/big-gnome-center/ui/page_startup.py:167
+#: usr/share/big-gnome-center/ui/page_layouts.py:492
+#: usr/share/big-gnome-center/ui/page_layouts.py:536
 msgid "Error"
 msgstr "Pogreška"
 
-#: usr/share/layout-switcher/ui/page_effects.py:290
+#: usr/share/big-gnome-center/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "Instalirati efekt?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:291
-#: usr/share/layout-switcher/ui/page_extensions.py:400
+#: usr/share/big-gnome-center/ui/page_effects.py:291
+#: usr/share/big-gnome-center/ui/page_extensions.py:479
 msgid "Will try to install automatically."
 msgstr "Pokušat će se automatski instalirati."
 
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:409
-#: usr/share/layout-switcher/ui/page_fonts.py:513
+#: usr/share/big-gnome-center/ui/page_effects.py:302
+#: usr/share/big-gnome-center/ui/page_extensions.py:488
+#: usr/share/big-gnome-center/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "Instalira se…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:330
-#: usr/share/layout-switcher/ui/page_extensions.py:438
-msgid "System extension — cannot remove"
-msgstr "Sustavna ekstenzija — ne može se ukloniti"
-
-#: usr/share/layout-switcher/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_effects.py:331
 msgid "Remove effect?"
 msgstr "Ukloniti efekt?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:335
-#: usr/share/layout-switcher/ui/page_extensions.py:443
+#: usr/share/big-gnome-center/ui/page_effects.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:519
 msgid "This cannot be undone."
 msgstr "Ovo se ne može poništiti."
 
-#: usr/share/layout-switcher/ui/page_effects.py:350
-#: usr/share/layout-switcher/ui/page_extensions.py:458
+#: usr/share/big-gnome-center/ui/page_effects.py:347
+#: usr/share/big-gnome-center/ui/page_extensions.py:534
 msgid "removed"
 msgstr "uklonjeno"
 
-#: usr/share/layout-switcher/ui/page_effects.py:352
-#: usr/share/layout-switcher/ui/page_extensions.py:460
+#: usr/share/big-gnome-center/ui/page_effects.py:349
+#: usr/share/big-gnome-center/ui/page_extensions.py:536
 msgid "Remove failed"
 msgstr "Uklanjanje nije uspjelo"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:81
+#: usr/share/big-gnome-center/ui/page_extensions.py:31
+msgid "Captures, annotates and records the screen."
+msgstr "Snimа, označava i zapisuje zaslon."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:45
+msgid "Shows application tray icons in the system panel."
+msgstr "Prikazuje ikone aplikacija na sistemskoj ploči."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:50
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Pruža pokretače aplikacija i pokrenute prozore na doku."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:53
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Pruža izbornik aplikacija koji koriste rasporedi radne površine."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:56
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr "Pruža programsku traku i sistemsku ploču koje koriste rasporedi."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:59
+msgid "Keeps a searchable history of copied content."
+msgstr "Čuva pretraživu povijest kopiranog sadržaja."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shows removable devices and lets you safely eject them."
+msgstr "Prikazuje prijenosne uređaje i omogućuje njihovo sigurno izbacivanje."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:65
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Dodaje kontrolirano zamućenje i prozirnost radnoj površini."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:68
+msgid "Connects phones to share files, notifications and other features."
+msgstr ""
+"Povezuje telefone za dijeljenje datoteka, obavijesti i drugih značajki."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:71
+msgid "Shows files and folders on the desktop."
+msgstr "Prikazuje datoteke i mape na radnoj površini."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:74
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Sigurno primjenjuje promjene rasporeda unutar GNOME Shella."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:77
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr "Pruža izvršno okruženje doka i programske trake za rasporede."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:80
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "Usklađuje GTK 3 aplikacije sa svijetlim i tamnim načinom rada."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:104
+msgid "Description not provided by the developer."
+msgstr "Razvojni programer nije naveo opis."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:159
 msgid "Featured"
 msgstr "Istaknuto"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:82
-#: usr/share/layout-switcher/ui/page_extensions.py:131
+#: usr/share/big-gnome-center/ui/page_extensions.py:160
+#: usr/share/big-gnome-center/ui/page_extensions.py:209
 msgid "Browse"
 msgstr "Pregledaj"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:237
+#: usr/share/big-gnome-center/ui/page_extensions.py:316
 msgid "Update available"
 msgstr "Ažuriranje dostupno"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:399
+#: usr/share/big-gnome-center/ui/page_extensions.py:478
 msgid "Install extension?"
 msgstr "Instalirati proširenje?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/big-gnome-center/ui/page_extensions.py:518
 msgid "Remove extension?"
 msgstr "Ukloniti proširenje?"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:245
-#: usr/share/layout-switcher/ui/page_extensions.py:522
-#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/big-gnome-center/ui/page_extensions.py:570
+#: usr/share/big-gnome-center/ui/page_extensions.py:578
+#: usr/share/big-gnome-center/ui/window.py:413
+#: usr/share/big-gnome-center/ui/window.py:510
+msgid "Extensions"
+msgstr "Ekstenzije"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/extension_update_monitor.py:236
 msgid "Update all"
 msgstr "Ažuriraj sve"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:530
+#: usr/share/big-gnome-center/ui/page_extensions.py:606
 msgid "Open GNOME Extensions"
 msgstr "Otvori GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:674
 msgid "No extensions installed"
 msgstr "Nema instaliranih proširenja"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "installed"
 msgstr "instalirano"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:616
+#: usr/share/big-gnome-center/ui/page_extensions.py:692
 msgid "update available"
 msgstr "ažuriranje dostupno"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:632
+#: usr/share/big-gnome-center/ui/page_extensions.py:708
 msgid "Enabled"
 msgstr "Omogućeno"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:633
+#: usr/share/big-gnome-center/ui/page_extensions.py:709
 msgid "Disabled"
 msgstr "Onemogućeno"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/big-gnome-center/ui/page_extensions.py:779
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Tehnički identifikator: {uuid}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:781
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Verzija: {version}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:784
+#: usr/share/big-gnome-center/ui/page_extensions.py:844
+#: usr/share/big-gnome-center/ui/page_extensions.py:845
+#: usr/share/big-gnome-center/ui/page_extensions.py:891
+#: usr/share/big-gnome-center/shell_reloader.py:280
+msgid "Required for layout switching"
+msgstr "Potrebno za izmjenu izgleda"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:808
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "Ažuriraj s v{old} na v{new}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:795
-msgid ""
-"This extension cannot be removed here because it was installed by the "
-"system."
-msgstr "Ova se ekstenzija ovdje ne može ukloniti jer ju je instalirao sustav."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:843
+#: usr/share/big-gnome-center/ui/page_extensions.py:925
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} ažurirano na v{ver}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:848
-#: usr/share/layout-switcher/ui/page_fonts.py:147
-#: usr/share/layout-switcher/ui/page_fonts.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:281
+#: usr/share/big-gnome-center/ui/page_extensions.py:930
+#: usr/share/big-gnome-center/ui/page_fonts.py:147
+#: usr/share/big-gnome-center/ui/page_fonts.py:216
+#: usr/share/big-gnome-center/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "Ažuriranje nije uspjelo"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:872
+#: usr/share/big-gnome-center/ui/page_extensions.py:954
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "Ažurirano {n} proširenja"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:877
+#: usr/share/big-gnome-center/ui/page_extensions.py:959
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "Ažurirano {n}/{t}; neuspješno: {f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
-#: usr/share/layout-switcher/ui/page_extensions.py:906
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
+#: usr/share/big-gnome-center/ui/page_extensions.py:988
 msgid "Disable All"
 msgstr "Onemogući sve"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
 msgid "Enable All"
 msgstr "Omogući sve"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:902
+#: usr/share/big-gnome-center/ui/page_extensions.py:984
 msgid "Disable all extensions?"
 msgstr "Onemogućiti sve ekstenzije?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:903
+#: usr/share/big-gnome-center/ui/page_extensions.py:985
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr ""
 "Sve će ekstenzije biti onemogućene. Možete ih ponovno omogućiti kasnije."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions disabled"
 msgstr "Sve ekstenzije onemogućene"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions enabled"
 msgstr "Sve ekstenzije omogućene"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:76
+#: usr/share/big-gnome-center/ui/page_fonts.py:76
 msgid "Preferred fonts"
 msgstr "Preferirani fontovi"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:80
+#: usr/share/big-gnome-center/ui/page_fonts.py:80
 msgid "Interface text"
 msgstr "Tekst sučelja"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:86
+#: usr/share/big-gnome-center/ui/page_fonts.py:86
 msgid "Document text"
 msgstr "Tekst dokumenta"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:92
+#: usr/share/big-gnome-center/ui/page_fonts.py:92
 msgid "Monospace text"
 msgstr "Monospace tekst"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:109
-#: usr/share/layout-switcher/ui/page_fonts.py:601
+#: usr/share/big-gnome-center/ui/page_fonts.py:109
+#: usr/share/big-gnome-center/ui/page_fonts.py:601
 msgid "(not set)"
 msgstr "(nije postavljeno)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:129
+#: usr/share/big-gnome-center/ui/page_fonts.py:129
 msgid "Choose font"
 msgstr "Odaberi font"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:145
+#: usr/share/big-gnome-center/ui/page_fonts.py:145
 msgid "Font updated"
 msgstr "Font ažuriran"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:155
+#: usr/share/big-gnome-center/ui/page_fonts.py:155
 msgid "Hinting"
 msgstr "Podešavanje naznaka"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:163
+#: usr/share/big-gnome-center/ui/page_fonts.py:163
 msgid "Full"
 msgstr "Puno"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:164
+#: usr/share/big-gnome-center/ui/page_fonts.py:164
 msgid "Medium"
 msgstr "Srednje"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:165
+#: usr/share/big-gnome-center/ui/page_fonts.py:165
 msgid "Slight"
 msgstr "Blago"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:166
-#: usr/share/layout-switcher/ui/page_fonts.py:185
+#: usr/share/big-gnome-center/ui/page_fonts.py:166
+#: usr/share/big-gnome-center/ui/page_fonts.py:185
 msgid "None"
 msgstr "Nema"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:173
+#: usr/share/big-gnome-center/ui/page_fonts.py:173
 msgid "Smoothing"
 msgstr "Zaglađivanje"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:183
+#: usr/share/big-gnome-center/ui/page_fonts.py:183
 msgid "Subpixel (for LCD screens)"
 msgstr "Subpiksel (za LCD zaslone)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:184
+#: usr/share/big-gnome-center/ui/page_fonts.py:184
 msgid "Standard (grayscale)"
 msgstr "Standardno (sive nijanse)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:228
+#: usr/share/big-gnome-center/ui/page_fonts.py:228
 msgid "Size"
 msgstr "Veličina"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:231
-#: usr/share/layout-switcher/ui/page_fonts.py:251
+#: usr/share/big-gnome-center/ui/page_fonts.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:251
 msgid "Scale factor"
 msgstr "Faktor skaliranja"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:239
+#: usr/share/big-gnome-center/ui/page_fonts.py:239
 msgid "Decrease"
 msgstr "Smanji"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:246
+#: usr/share/big-gnome-center/ui/page_fonts.py:246
 msgid "Increase"
 msgstr "Povećaj"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:287
+#: usr/share/big-gnome-center/ui/page_fonts.py:287
 msgid "Google Fonts"
 msgstr "Google Fontovi"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:297
+#: usr/share/big-gnome-center/ui/page_fonts.py:297
 msgid "Search Google Fonts…"
 msgstr "Pretraži Google Fontove…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:308
-#: usr/share/layout-switcher/ui/page_fonts.py:363
+#: usr/share/big-gnome-center/ui/page_fonts.py:308
+#: usr/share/big-gnome-center/ui/page_fonts.py:363
 msgid "Loading Google Fonts…"
 msgstr "Učitavanje Google Fontova…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:312
+#: usr/share/big-gnome-center/ui/page_fonts.py:312
 msgid "Refresh Google Fonts list"
 msgstr "Osvježi popis Google Fontova"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:424
+#: usr/share/big-gnome-center/ui/page_fonts.py:424
 #, python-brace-format
 msgid "Page {page} of {pages}"
 msgstr "Stranica {page} od {pages}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:431
+#: usr/share/big-gnome-center/ui/page_fonts.py:431
 msgid "Internet connection is required to load the Google Fonts list."
 msgstr "Za učitavanje popisa Google Fonts potrebna je internetska veza."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:435
+#: usr/share/big-gnome-center/ui/page_fonts.py:435
 #, python-brace-format
 msgid "{n} fonts found"
 msgstr "Pronađeno {n} fontova"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:440
+#: usr/share/big-gnome-center/ui/page_fonts.py:440
 #, python-brace-format
 msgid "Showing top {shown} of {total} Google Fonts"
 msgstr "Prikazuje se prvih {shown} od {total} Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:449
+#: usr/share/big-gnome-center/ui/page_fonts.py:449
 msgid "No fonts found"
 msgstr "Nije pronađen nijedan font"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:502
+#: usr/share/big-gnome-center/ui/page_fonts.py:502
 msgid "Sans serif"
 msgstr "Bez serifa"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:503
+#: usr/share/big-gnome-center/ui/page_fonts.py:503
 msgid "Serif"
 msgstr "Serif"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:504
+#: usr/share/big-gnome-center/ui/page_fonts.py:504
 msgid "Monospace"
 msgstr "Monospace"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:505
+#: usr/share/big-gnome-center/ui/page_fonts.py:505
 msgid "Display"
 msgstr "Display"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:506
+#: usr/share/big-gnome-center/ui/page_fonts.py:506
 msgid "Handwriting"
 msgstr "Rukopisni"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:507
+#: usr/share/big-gnome-center/ui/page_fonts.py:507
 msgid "Exact Google Fonts family name"
 msgstr "Točan naziv obitelji Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:531
+#: usr/share/big-gnome-center/ui/page_fonts.py:531
 #, python-brace-format
 msgid "{family} installed"
 msgstr "{family} instalirano"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:537
+#: usr/share/big-gnome-center/ui/page_fonts.py:537
 msgid "Internet connection is required to install Google Fonts."
 msgstr "Za instalaciju Google Fonts potrebna je internetska veza."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:538
+#: usr/share/big-gnome-center/ui/page_fonts.py:538
 msgid "Font not found on Google Fonts."
 msgstr "Font nije pronađen na Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:539
+#: usr/share/big-gnome-center/ui/page_fonts.py:539
 msgid "Font download failed."
 msgstr "Preuzimanje fonta nije uspjelo."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:540
+#: usr/share/big-gnome-center/ui/page_fonts.py:540
 msgid "The font download is too large."
 msgstr "Preuzimanje fonta je preveliko."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:541
+#: usr/share/big-gnome-center/ui/page_fonts.py:541
 msgid "Could not install the font."
 msgstr "Font nije moguće instalirati."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:542
+#: usr/share/big-gnome-center/ui/page_fonts.py:542
 msgid "Enter a font family name."
 msgstr "Unesite naziv obitelji fonta."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:544
+#: usr/share/big-gnome-center/ui/page_fonts.py:544
 msgid "Font installation failed."
 msgstr "Instalacija fonta nije uspjela."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:552
+#: usr/share/big-gnome-center/ui/page_fonts.py:552
 msgid "Reset to system defaults"
 msgstr "Vraćanje na tvorničke postavke sustava"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:561
+#: usr/share/big-gnome-center/ui/page_fonts.py:561
 msgid "Reset all font settings?"
 msgstr "Želite li resetirati sve postavke fonta?"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:563
+#: usr/share/big-gnome-center/ui/page_fonts.py:563
 msgid ""
 "Interface, document and monospace fonts will return to system defaults. "
 "Rendering and scale settings will reset too."
@@ -801,411 +1022,387 @@ msgstr ""
 "Fontovi za sučelje, dokumente i monospace vratit će se na sustavne zadane "
 "postavke. Postavke prikaza i mjerila također će se resetirati."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:568
+#: usr/share/big-gnome-center/ui/page_fonts.py:568
 msgid "Reset"
 msgstr "Resetiraj"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:587
+#: usr/share/big-gnome-center/ui/page_fonts.py:587
 msgid "Fonts reset to defaults"
 msgstr "Fontovi vraćeni na tvorničke postavke"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:34
-msgid "Disabling extensions…"
-msgstr "Onemogućavanje proširenja…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:24
+msgid "Always visible"
+msgstr "Uvijek vidljivo"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:35
-msgid "Loading layout…"
-msgstr "Učitavanje rasporeda…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:25
+msgid "Always hidden (show at edge)"
+msgstr "Uvijek skriveno (prikaži na rubu)"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:36
-msgid "Reloading components…"
-msgstr "Ponovno učitavanje komponenti…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:26
+msgid "Intelligent hiding"
+msgstr "Pametno skrivanje"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:64
-msgid "Layout status"
-msgstr "Status izgleda"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:29
+msgid "Dot"
+msgstr "Točka"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:152
-msgid "Contains your saved customizations"
-msgstr "Sadrži vaše spremljene prilagodbe"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:30
+msgid "Hybrid line"
+msgstr "Hibridna linija"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:156
-msgid "Modified"
-msgstr "Izmijenjeno"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:31
+msgid "Desk UX line"
+msgstr "Desk UX linija"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:170
-#: usr/share/layout-switcher/ui/page_layouts.py:219
-#: usr/share/layout-switcher/ui/page_themes.py:318
-msgid "Active"
-msgstr "Aktivno"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:34
+msgid "Standard"
+msgstr "Standardno"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:190
-#: usr/share/layout-switcher/ui/page_layouts.py:217
-msgid "Coming soon"
-msgstr "Uskoro"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:35
+msgid "Gentle lift"
+msgstr "Nježno podizanje"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:237
-msgid ""
-"You have previously modified this layout. Apply the original system default "
-"or resume your changes?"
-msgstr ""
-"Već ste izmijenili ovaj raspored. Primijeniti izvorne zadane postavke "
-"sustava ili nastaviti s vašim izmjenama?"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Povećanje"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:242
-msgid "Resume my changes"
-msgstr "Nastavi moje izmjene"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:69
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:565
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:568
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
+msgid "Dock"
+msgstr "Dock"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:243
-msgid "Apply original"
-msgstr "Primijeni izvorno"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:70
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:570
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "Konfigurirajte izgled i vidljivost Community Docka."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:249
-msgid ""
-"Apply this layout? A backup of your current configuration will be created "
-"automatically."
-msgstr ""
-"Primijeniti ovaj izgled? Sigurnosna kopija vaše trenutne konfiguracije bit "
-"će automatski kreirana."
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:76
+msgid "Dock transparency"
+msgstr "Prozirnost doka"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:254
-msgid "Apply"
-msgstr "Primijeni"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:83
+msgid "Dock size"
+msgstr "Veličina docka"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:295
-msgid "Applying"
-msgstr "Primjena"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intenzitet povećanja"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:325
-msgid "Snapshot not found"
-msgstr "Snimka nije pronađena"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Odaberite koliko će ikone Docka u blizini narasti."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:353
-msgid "Layout file not found"
-msgstr "Datoteka izgleda nije pronađena"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:106
+msgid "Dock visibility"
+msgstr "Vidljivost doka"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:392
-#: usr/share/layout-switcher/ui/page_layouts.py:400
-#: usr/share/layout-switcher/ui/page_layouts.py:409
-msgid "applied"
-msgstr "primijenjeno"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:115
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
+msgid "Panel"
+msgstr "Ploča"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:402
-msgid "Undo"
-msgstr "Poništi"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:116
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:582
+msgid "Configure the system panel appearance and visibility."
+msgstr "Konfigurirajte izgled i vidljivost sistemske ploče."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
-msgid "Restart the session for the 100% clean state"
-msgstr "Ponovno pokrenite sesiju za 100 % čisto stanje"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:122
+msgid "Panel transparency"
+msgstr "Prozirnost ploče"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:422
-msgid "Restart now"
-msgstr "Ponovno pokreni sada"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:129
+msgid "Panel height"
+msgstr "Visina ploče"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:446
-msgid "Cannot restart session"
-msgstr "Nije moguće ponovno pokrenuti sesiju"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:135
+msgid "Panel visibility"
+msgstr "Vidljivost ploče"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:453
-#: usr/share/layout-switcher/ui/page_layouts.py:455
-msgid "Restoring previous layout…"
-msgstr "Vraćanje prethodnog rasporeda…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:142
+msgid "Session"
+msgstr "Sesija"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:485
-msgid "Layout restored"
-msgstr "Izgled vraćen"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:143
+msgid "Choose how this layout starts after login."
+msgstr "Odaberite kako se ovaj raspored pokreće nakon prijave."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:487
-msgid "Previous layout restored"
-msgstr "Prethodni izgled vraćen"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:146
+msgid "Open desktop after login"
+msgstr "Otvori radnu površinu nakon prijave"
 
-#: usr/share/layout-switcher/ui/page_themes.py:68
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:147
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Preskoči početni pregled aktivnosti za ovaj raspored."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:158
+msgid "Restore layout defaults"
+msgstr "Vrati zadane postavke izgleda"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:159
+msgid "Reset appearance and session options for the active layout."
+msgstr "Poništi izgled i mogućnosti sesije aktivnog rasporeda."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:180
+msgid "Application menu position"
+msgstr "Položaj izbornika aplikacija"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:184
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Postavite izbornik BigGnome na bilo koji kraj doka."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Left"
+msgstr "Lijevo"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Right"
+msgstr "Desno"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:217
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Postavi izbornik aplikacija na {side}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:261
+msgid "Icon hover effect"
+msgstr "Učinak pri lebdenju nad ikonom"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:265
+msgid "Choose how dock icons react to the pointer."
+msgstr "Odaberite kako ikone docka reagiraju na pokazivač."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:295
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Koristi učinak lebdenja {effect}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:338
+msgid "Running app indicator"
+msgstr "Indikator pokrenutih aplikacija"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:342
+msgid "Choose the mark shown below running applications."
+msgstr "Odaberite oznaku prikazanu ispod pokrenutih aplikacija."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:379
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "Koristi indikator {style}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:436
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Transparent"
+msgstr "Prozirno"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:449
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Opaque"
+msgstr "Neprozirno"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:459
+msgid "Choose how this component behaves on the desktop."
+msgstr "Odaberite kako se ova komponenta ponaša na radnoj površini."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:473
+msgid "Smaller"
+msgstr "Manje"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:489
+msgid "Larger"
+msgstr "Veće"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:562
+msgid "Taskbar"
+msgstr "Traka zadataka"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:563
+msgid "Configure running application indicators."
+msgstr "Konfigurirajte indikatore pokrenutih aplikacija."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:566
+msgid "Available when Community Dock is active."
+msgstr "Dostupno kada je Community Dock aktivan."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:574
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "Dostupno kada su Community Dock ili Community Panel aktivni."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:578
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "Konfigurirajte izgled i vidljivost Community Panela."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:684
+msgid "Dock visibility updated"
+msgstr "Vidljivost doka ažurirana"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:691
+msgid "Panel visibility updated"
+msgstr "Vidljivost ploče ažurirana"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:701
+msgid "Indicator style updated"
+msgstr "Stil pokazatelja ažuriran"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:712
+msgid "Icon hover effect updated"
+msgstr "Učinak lebdenja nad ikonom ažuriran"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:722
+msgid "Application menu position updated"
+msgstr "Položaj izbornika aplikacija ažuriran"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:732
+msgid "Login start updated"
+msgstr "Pokretanje pri prijavi ažurirano"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:739
+msgid "Layout appearance and session defaults restored"
+msgstr "Izgled i zadane postavke sesije rasporeda vraćeni"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Plava"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Tirkizna"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:22
+msgid "Green"
+msgstr "Zelena"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Žuta"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Narančasta"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:25
+msgid "Red"
+msgstr "Crvena"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Ružičasta"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Ljubičasta"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Škriljevac"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "Filtriraj teme…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:109
+#: usr/share/big-gnome-center/ui/page_themes.py:108
+msgid "Colors"
+msgstr "Boje"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:109
 msgid "Icons"
 msgstr "Ikone"
 
+#: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
 msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:414
-#: usr/share/layout-switcher/ui/window.py:511
-#: usr/share/layout-switcher/ui/page_startup.py:45
-msgid "Startup Applications"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:168
+#: usr/share/big-gnome-center/ui/frosted_glass.py:145
+#: usr/share/big-gnome-center/ui/frosted_glass.py:239
+msgid "Accent color"
+msgstr "Naglašena boja"
 
-#: usr/share/layout-switcher/ui/dialog_startup_apps.py:68
-#: usr/share/layout-switcher/ui/page_startup.py:51
-#: usr/share/layout-switcher/ui/page_startup.py:54
-msgid "Add a startup application"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:177
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "Odaberite boju koja se koristi za gumbe, odabire i isticanja."
 
-#: usr/share/layout-switcher/ui/dialog_startup_apps.py:84
-msgid "Search applications"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:210
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color} akcentna boja"
 
-#: usr/share/layout-switcher/ui/page_startup.py:46
-msgid "Startup applications are automatically started when you log in."
-msgstr ""
-
-#: usr/share/layout-switcher/ui/page_startup.py:87
-msgid "No Startup Applications"
-msgstr ""
-
-
-#: usr/share/layout-switcher/ui/page_themes.py:240
+#: usr/share/big-gnome-center/ui/page_themes.py:263
 msgid "No themes found"
 msgstr "Nema pronađenih tema"
 
-#: usr/share/layout-switcher/ui/page_themes.py:241
+#: usr/share/big-gnome-center/ui/page_themes.py:264
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "Instalirajte teme u ~/.themes ili /usr/share/themes"
 
-#: usr/share/layout-switcher/ui/page_themes.py:247
+#: usr/share/big-gnome-center/ui/page_themes.py:270
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "{n} dostupnih tema"
 
-#: usr/share/layout-switcher/ui/page_themes.py:316
+#: usr/share/big-gnome-center/ui/page_themes.py:347
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} tema"
 
-#: usr/share/layout-switcher/ui/window.py:71
-#: usr/share/layout-switcher/ui/window.py:377
-msgid "Layout Switcher"
-msgstr "Layout Switcher"
+#: usr/share/big-gnome-center/ui/page_themes.py:349
+#: usr/share/big-gnome-center/ui/page_layouts.py:172
+#: usr/share/big-gnome-center/ui/page_layouts.py:221
+msgid "Active"
+msgstr "Aktivno"
 
-#: usr/share/layout-switcher/ui/window.py:229
-#: usr/share/layout-switcher/ui/window.py:230
-msgid "Show Sidebar"
-msgstr "Prikaži bočnu traku"
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:68
+#: usr/share/big-gnome-center/ui/page_startup.py:51
+#: usr/share/big-gnome-center/ui/page_startup.py:54
+msgid "Add a startup application"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:236
-#: usr/share/layout-switcher/ui/window.py:401
-#: usr/share/layout-switcher/ui/window.py:484
-msgid "Layouts"
-msgstr "Izgledi"
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
+msgid "Search applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:242
-msgid "Menu"
-msgstr "Izbornik"
+#: usr/share/big-gnome-center/ui/page_startup.py:45
+#: usr/share/big-gnome-center/ui/window.py:414
+#: usr/share/big-gnome-center/ui/window.py:511
+msgid "Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:243
-msgid "Main menu"
-msgstr "Glavni izbornik"
+#: usr/share/big-gnome-center/ui/page_startup.py:46
+msgid "Startup applications are automatically started when you log in."
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:247
-msgid "Check for updates"
-msgstr "Provjeri ima li ažuriranja"
+#: usr/share/big-gnome-center/ui/page_startup.py:87
+msgid "No Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:248
-msgid "Auto-update extensions"
-msgstr "Automatsko ažuriranje proširenja"
-
-#: usr/share/layout-switcher/ui/window.py:250
-msgid "Backups…"
-msgstr "Sigurnosne kopije…"
-
-#: usr/share/layout-switcher/ui/window.py:251
-msgid "About"
-msgstr "O aplikaciji"
-
-#: usr/share/layout-switcher/ui/window.py:260
-msgid "Welcome! Choose a desktop layout below to get started."
-msgstr "Dobrodošli! Odaberite izgled radne površine ispod za početak."
-
-#: usr/share/layout-switcher/ui/window.py:261
-msgid "Got it"
-msgstr "Razumijem"
-
-#: usr/share/layout-switcher/ui/window.py:402
-#: usr/share/layout-switcher/ui/window.py:485
-msgid "Fonts"
-msgstr "Fontovi"
-
-#: usr/share/layout-switcher/ui/window.py:403
-#: usr/share/layout-switcher/ui/window.py:486
-msgid "Themes"
-msgstr "Teme"
-
-#: usr/share/layout-switcher/ui/window.py:406
-#: usr/share/layout-switcher/ui/window.py:489
-msgid "Effects"
-msgstr "Efekti"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:494
-#: usr/share/layout-switcher/ui/page_extensions.py:502
-#: usr/share/layout-switcher/ui/window.py:407
-#: usr/share/layout-switcher/ui/window.py:490
-msgid "Extensions"
-msgstr "Ekstenzije"
-
-#: usr/share/layout-switcher/ui/window.py:528
-msgid "Community Layout Switcher"
-msgstr "Community Layout Switcher"
-
-#: usr/share/layout-switcher/ui/window.py:533
-msgid "Layouts, effects and themes for your GNOME desktop."
-msgstr "Izgled, efekti i teme za vaš GNOME desktop."
-
-#: usr/share/layout-switcher/ui/window.py:599
-msgid "Applying…"
-msgstr "Primjena…"
-
-#: usr/share/layout-switcher/ui/window.py:706
-msgid "All extensions up to date"
-msgstr "Sva proširenja su ažurirana"
-
-#: usr/share/layout-switcher/ui/window.py:721
-#, python-brace-format
-msgid "Auto-updated {n} extensions"
-msgstr "Automatski ažurirano {n} proširenja"
-
-#: usr/share/layout-switcher/ui/window.py:726
-#, python-brace-format
-msgid "{n} update(s) available"
-msgstr "{n} ažuriranje(a) dostupno"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update enabled"
-msgstr "Automatsko ažuriranje omogućeno"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update disabled"
-msgstr "Automatsko ažuriranje onemogućeno"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:238
-msgid "Extension updates available"
-msgstr "Dostupna ažuriranja proširenja"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:239
-#, python-brace-format
-msgid "Available updates: {names}"
-msgstr "Dostupna ažuriranja: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:243
-#: usr/share/layout-switcher/extension_update_monitor.py:244
-#: usr/share/layout-switcher/extension_update_monitor.py:336
-#: usr/share/layout-switcher/extension_update_monitor.py:337
-msgid "View updates"
-msgstr "Prikaži ažuriranja"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:306
-msgid "Extension updates installed"
-msgstr "Ažuriranja proširenja instalirana"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:307
-#: usr/share/layout-switcher/extension_update_monitor.py:322
-#, python-brace-format
-msgid "Updated: {names}"
-msgstr "Ažurirano: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:311
-#: usr/share/layout-switcher/extension_update_monitor.py:312
-msgid "View extensions"
-msgstr "Prikaži proširenja"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:328
-#, python-brace-format
-msgid "Failed: {names}"
-msgstr "Neuspješno: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:333
-msgid "Some extension updates failed"
-msgstr "Neka ažuriranja proširenja nisu uspjela"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:338
-msgid "Try again"
-msgstr "Pokušaj ponovno"
-
-#: usr/share/layout-switcher/helper_client.py:113
-msgid "The required layout helper is not installed."
-msgstr "Potrebni pomoćnik za izgled nije instaliran."
-
-#: usr/share/layout-switcher/helper_client.py:152
-msgid "The required layout helper did not start."
-msgstr "Potrebni pomoćnik za izgled nije se pokrenuo."
-
-#: usr/share/layout-switcher/helper_guard.py:78
-msgid "Layout helper restored"
-msgstr "Pomoćnik za izgled obnovljen"
-
-#: usr/share/layout-switcher/helper_guard.py:79
-msgid "The required layout helper was re-enabled automatically."
-msgstr "Potrebni pomoćnik za izgled automatski je ponovno omogućen."
-
-#: usr/share/layout-switcher/layout_applier.py:2254
-msgid "Layout Switcher Helper is required to apply layouts."
-msgstr "Pomoćnik za izmjenu izgleda potreban je za primjenu izgleda."
-
-#: usr/share/layout-switcher/shell_reloader.py:280
-#: usr/share/layout-switcher/ui/page_extensions.py:704
-#: usr/share/layout-switcher/ui/page_extensions.py:760
-#: usr/share/layout-switcher/ui/page_extensions.py:761
-msgid "Required for layout switching"
-msgstr "Potrebno za izmjenu izgleda"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:28
-#: usr/share/layout-switcher/ui/window.py:404
-#: usr/share/layout-switcher/ui/window.py:487
-msgid "Desktop"
-msgstr "Radna površina"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:32
-#: usr/share/layout-switcher/ui/desktop_icons.py:51
-msgid "Desktop icons"
-msgstr "Ikone na radnoj površini"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:33
-#: usr/share/layout-switcher/ui/desktop_icons.py:72
-msgid "Show files and folders on the desktop"
-msgstr "Prikaži datoteke i mape na radnoj površini"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:39
-msgid "Desktop icon settings"
-msgstr "Postavke ikona na radnoj površini"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:74
-msgid "GTK4 Desktop Icons NG is not installed"
-msgstr "GTK4 Desktop Icons NG nije instaliran"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:95
-msgid "Desktop icons enabled"
-msgstr "Ikone na radnoj površini omogućene"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:97
-msgid "Desktop icons disabled"
-msgstr "Ikone na radnoj površini onemogućene"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:102
-#, python-brace-format
-msgid "Could not change desktop icons: {message}"
-msgstr "Nije moguće promijeniti ikone na radnoj površini: {message}"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
 msgstr "Zamućenje pregleda"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Frosted glass"
 msgstr "Matirano staklo"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:67
+#: usr/share/big-gnome-center/ui/frosted_glass.py:76
 msgid "Blur for the workspace and application overview"
 msgstr "Zamućenje za pregled radnih prostora i aplikacija"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:69
+#: usr/share/big-gnome-center/ui/frosted_glass.py:78
 msgid "Unified blur for windows and GNOME Shell surfaces"
 msgstr "Ujednačeno zamućenje za prozore i GNOME Shell površine"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:79
+#: usr/share/big-gnome-center/ui/frosted_glass.py:88
 msgid "unknown"
 msgstr "nepoznato"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:82
+#: usr/share/big-gnome-center/ui/frosted_glass.py:92
 #, python-brace-format
 msgid ""
 "Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
@@ -1213,719 +1410,526 @@ msgstr ""
 "Zamućenje pregleda zahtijeva GNOME 50 ili noviji. Ova radna površina je "
 "GNOME {version}."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:89
+#: usr/share/big-gnome-center/ui/frosted_glass.py:101
 msgid ""
-"Install or update Layout Switcher to make Frosted Glass settings available."
+"Install or update Big Gnome Center to make Frosted Glass settings available."
 msgstr ""
-"Instalirajte ili ažurirajte Layout Switcher kako bi postavke Matiranog "
+"Instalirajte ili ažurirajte Big Gnome Center kako bi postavke Matiranog "
 "stakla bile dostupne."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:110
+#: usr/share/big-gnome-center/ui/frosted_glass.py:127
 msgid "Enable overview blur"
 msgstr "Omogući zamućenje pregleda"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:111
-#: usr/share/layout-switcher/ui/frosted_glass.py:190
+#: usr/share/big-gnome-center/ui/frosted_glass.py:128
+#: usr/share/big-gnome-center/ui/frosted_glass.py:207
 msgid "Workspace and application overview"
 msgstr "Pregled radnih površina i aplikacija"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:122
-#: usr/share/layout-switcher/ui/frosted_glass.py:206
+#: usr/share/big-gnome-center/ui/frosted_glass.py:137
+#: usr/share/big-gnome-center/ui/frosted_glass.py:223
 msgid "Material"
 msgstr "Materijal"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Blur strength"
 msgstr "Jačina zamućenja"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Less"
 msgstr "Manje"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "More"
 msgstr "Više"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
 msgid "Material opacity"
 msgstr "Neprozirnost materijala"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:199
-msgid "Transparent"
-msgstr "Prozirno"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:212
-msgid "Opaque"
-msgstr "Neprozirno"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:137
-#: usr/share/layout-switcher/ui/frosted_glass.py:196
-#: usr/share/layout-switcher/ui/frosted_glass.py:198
+#: usr/share/big-gnome-center/ui/frosted_glass.py:156
+#: usr/share/big-gnome-center/ui/frosted_glass.py:213
+#: usr/share/big-gnome-center/ui/frosted_glass.py:215
 msgid "Not available in this session"
 msgstr "Nije dostupno u ovoj sesiji"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:147
+#: usr/share/big-gnome-center/ui/frosted_glass.py:166
 msgid "Enable frosted glass"
 msgstr "Omogući matirano staklo"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:148
+#: usr/share/big-gnome-center/ui/frosted_glass.py:167
 msgid "Apply the material without changing the active desktop layout"
 msgstr "Primijeni materijal bez promjene aktivnog izgleda radne površine"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:160
+#: usr/share/big-gnome-center/ui/frosted_glass.py:177
 msgid "Surfaces"
 msgstr "Površine"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:161
+#: usr/share/big-gnome-center/ui/frosted_glass.py:178
 msgid "Choose independently where the material is applied."
 msgstr "Odaberite neovisno gdje će se materijal primijeniti."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "Windows"
 msgstr "Prozori"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "GTK, Qt and other application windows"
 msgstr "GTK, Qt i drugi prozori aplikacija"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
-#: usr/share/layout-switcher/ui/page_panel_dock.py:74
-msgid "Panel"
-msgstr "Ploča"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
 msgid "GNOME panel and Community Panel"
 msgstr "GNOME ploča i ploča zajednice"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
-#: usr/share/layout-switcher/ui/page_panel_dock.py:55
-#: usr/share/layout-switcher/ui/page_panel_dock.py:254
-#: usr/share/layout-switcher/ui/page_panel_dock.py:257
-msgid "Dock"
-msgstr "Dock"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
 msgid "Community Dock surfaces"
 msgstr "Površine Docka zajednice"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:169
+#: usr/share/big-gnome-center/ui/frosted_glass.py:186
 msgid "Layout menus"
 msgstr "Izbornici rasporeda"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:170
+#: usr/share/big-gnome-center/ui/frosted_glass.py:187
 msgid "Application menus used by Classic, Hybrid and Desk-UX"
 msgstr "Izbornici aplikacija koje koriste Classic, Hybrid i Desk-UX"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:174
+#: usr/share/big-gnome-center/ui/frosted_glass.py:191
 msgid "Quick Settings"
 msgstr "Brze postavke"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:175
+#: usr/share/big-gnome-center/ui/frosted_glass.py:192
 msgid "System settings menu in the panel"
 msgstr "Izbornik postavki sustava na ploči"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:179
+#: usr/share/big-gnome-center/ui/frosted_glass.py:196
 msgid "Calendar and notifications"
 msgstr "Kalendar i obavijesti"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:180
+#: usr/share/big-gnome-center/ui/frosted_glass.py:197
 msgid "Date, calendar and notification menu in the panel"
 msgstr "Izbornik datuma, kalendara i obavijesti na ploči"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:184
+#: usr/share/big-gnome-center/ui/frosted_glass.py:201
 msgid "System dialogs"
 msgstr "Dijalozi sustava"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:185
+#: usr/share/big-gnome-center/ui/frosted_glass.py:202
 msgid "Power, restart and other GNOME Shell dialogs"
-msgstr ""
-"Dijalozi za napajanje, ponovno pokretanje i drugi GNOME Shell dijalozi"
+msgstr "Dijalozi za napajanje, ponovno pokretanje i drugi GNOME Shell dijalozi"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:189
+#: usr/share/big-gnome-center/ui/frosted_glass.py:206
 msgid "Overview"
 msgstr "Pregled"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:209
+#: usr/share/big-gnome-center/ui/frosted_glass.py:226
 msgid "Rendering mode"
 msgstr "Način prikaza"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:210
+#: usr/share/big-gnome-center/ui/frosted_glass.py:227
 msgid "Automatic balances visual quality and power usage"
 msgstr "Automatski uravnotežuje vizualnu kvalitetu i potrošnju energije"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Automatic"
 msgstr "Automatski"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Dynamic"
 msgstr "Dinamično"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Static"
 msgstr "Statično"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:228
+#: usr/share/big-gnome-center/ui/frosted_glass.py:249
 msgid "Behavior"
 msgstr "Ponašanje"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:229
+#: usr/share/big-gnome-center/ui/frosted_glass.py:250
 msgid "Application identifiers can be separated by commas."
 msgstr "Identifikatori aplikacija mogu biti odvojeni zarezima."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:231
+#: usr/share/big-gnome-center/ui/frosted_glass.py:252
 msgid "Application exceptions"
 msgstr "Izuzeci aplikacija"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Keep blur"
 msgstr "Zadrži zamućenje"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Make opaque"
 msgstr "Učini neprozirnim"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Disable blur"
 msgstr "Onemogući zamućenje"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:239
+#: usr/share/big-gnome-center/ui/frosted_glass.py:260
 msgid "Maximized windows"
 msgstr "Maksimizirani prozori"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:242
+#: usr/share/big-gnome-center/ui/frosted_glass.py:263
 msgid "Fullscreen windows"
 msgstr "Prozori preko cijelog zaslona"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:246
+#: usr/share/big-gnome-center/ui/frosted_glass.py:267
 msgid "Power saving"
 msgstr "Ušteda energije"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:247
+#: usr/share/big-gnome-center/ui/frosted_glass.py:268
 msgid "Used on battery and with the power-saver profile"
 msgstr "Koristi se na bateriju i s profilom za uštedu energije"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Keep selected mode"
 msgstr "Zadrži odabrani način"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Use static blur"
 msgstr "Koristi statičko zamućenje"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:334
+#: usr/share/big-gnome-center/ui/frosted_glass.py:399
 msgid "Frosted glass enabled"
 msgstr "Mat staklo omogućeno"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:339
+#: usr/share/big-gnome-center/ui/frosted_glass.py:403
 #, python-brace-format
 msgid "Could not enable Frosted Glass: {message}"
 msgstr "Mat staklo nije moguće omogućiti: {message}"
 
-#: usr/share/layout-switcher/ui/page_desktop.py:39
-msgid "Top center"
-msgstr "Gore sredina"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:40
-msgid "Bottom center"
-msgstr "Dolje sredina"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:41
-msgid "Top right"
-msgstr "Gore desno"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:42
-msgid "Top left"
-msgstr "Gore lijevo"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:43
-msgid "Bottom left"
-msgstr "Dolje lijevo"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:44
-msgid "Bottom right"
-msgstr "Dolje desno"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:88
-msgid "Notification position"
-msgstr "Pozicija obavijesti"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:89
-msgid "Choose where notification banners appear."
-msgstr "Odaberite gdje se pojavljuju bannere s obavijestima."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:129
-#, python-brace-format
-msgid "Show notifications at {position}"
-msgstr "Prikaži obavijesti na {position}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:143
-#: usr/share/layout-switcher/ui/page_desktop.py:287
-msgid "Default"
-msgstr "Zadano"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:194
-#: usr/share/layout-switcher/ui/page_desktop.py:199
-#: usr/share/layout-switcher/ui/page_desktop.py:206
-msgid "Application menu"
-msgstr "Izbornik aplikacija"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Dostupno za Classic, Desk-UX i Hybrid rasporede."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:200
-#: usr/share/layout-switcher/ui/page_desktop.py:469
-msgid "Use Community Menu as the application menu"
-msgstr "Upotrijebi Community Menu kao aplikacijski izbornik"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:220
-msgid "Menu style"
-msgstr "Stil izbornika"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:226
-msgid "Choose the appearance of Community Menu."
-msgstr "Odaberite izgled Community Menua."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:258
-msgid "Super key"
-msgstr "Super tipka"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:259
-msgid "Choose what happens when pressing Super"
-msgstr "Odaberite što se događa pri pritisku tipke Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open menu"
-msgstr "Otvori izbornik"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open overview"
-msgstr "Otvori pregled"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:273
-#, python-brace-format
-msgid "Use the {name} menu style"
-msgstr "Upotrijebi stil izbornika {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:471
-msgid "Community Menu is not installed"
-msgstr "Community Menu nije instaliran"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:516
-#, python-brace-format
-msgid "{position} notification position applied"
-msgstr "Položaj obavijesti {position} je primijenjen"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:523
-#, python-brace-format
-msgid "Could not change the notification position: {message}"
-msgstr "Promjena položaja obavijesti nije uspjela: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:534
-msgid "Notification preview"
-msgstr "Pregled obavijesti"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:535
-msgid "Notifications will appear here."
-msgstr "Obavijesti će se pojaviti ovdje."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu enabled"
-msgstr "Aplikacijski izbornik omogućen"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu disabled"
-msgstr "Aplikacijski izbornik onemogućen"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:559
-#, python-brace-format
-msgid "Could not change the application menu: {message}"
-msgstr "Nije moguće promijeniti izbornik aplikacija: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:597
-#, python-brace-format
-msgid "{name} menu style applied"
-msgstr "Primijenjen stil izbornika {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:600
-#, python-brace-format
-msgid "Could not change the menu style: {message}"
-msgstr "Nije moguće promijeniti stil izbornika: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:631
-msgid "Super opens the application menu"
-msgstr "Tipka Super otvara izbornik aplikacija"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:633
-msgid "Super opens the overview"
-msgstr "Tipka Super otvara pregled"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:637
-#, python-brace-format
-msgid "Could not change the Super key: {message}"
-msgstr "Nije moguće promijeniti tipku Super: {message}"
-
-#: usr/share/layout-switcher/ui/page_effects.py:60
-msgid "Other visual effects"
-msgstr "Ostali vizualni efekti"
-
-#: usr/share/layout-switcher/ui/page_effects.py:150
-#, python-brace-format
-msgid "{name} effect preview"
-msgstr "Pregled efekta {name}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:20
-msgid "Always visible"
-msgstr "Uvijek vidljivo"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:21
-msgid "Always hidden (show at edge)"
-msgstr "Uvijek skriveno (prikaži na rubu)"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:22
-msgid "Intelligent hiding"
-msgstr "Pametno skrivanje"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:25
-msgid "Dot"
-msgstr "Točka"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:26
-msgid "Hybrid line"
-msgstr "Hibridna linija"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:27
-msgid "Desk UX line"
-msgstr "Desk UX linija"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:56
-#: usr/share/layout-switcher/ui/page_panel_dock.py:259
-msgid "Configure the Community Dock appearance and visibility."
-msgstr "Konfigurirajte izgled i vidljivost Community Docka."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:62
-msgid "Dock transparency"
-msgstr "Prozirnost doka"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:65
-msgid "Dock visibility"
-msgstr "Vidljivost doka"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:75
-#: usr/share/layout-switcher/ui/page_panel_dock.py:271
-msgid "Configure the system panel appearance and visibility."
-msgstr "Konfigurirajte izgled i vidljivost sistemske ploče."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Panel transparency"
-msgstr "Prozirnost ploče"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:84
-msgid "Panel visibility"
-msgstr "Vidljivost ploče"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:101
-msgid "Running app indicator"
-msgstr "Indikator pokrenutih aplikacija"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:105
-msgid "Choose the mark shown below running applications."
-msgstr "Odaberite oznaku prikazanu ispod pokrenutih aplikacija."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:142
-#, python-brace-format
-msgid "Use the {style} indicator"
-msgstr "Koristi indikator {style}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:222
-msgid "Choose how this component behaves on the desktop."
-msgstr "Odaberite kako se ova komponenta ponaša na radnoj površini."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:251
-msgid "Taskbar"
-msgstr "Traka zadataka"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:252
-msgid "Configure running application indicators."
-msgstr "Konfigurirajte indikatore pokrenutih aplikacija."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:255
-msgid "Available when Community Dock is active."
-msgstr "Dostupno kada je Community Dock aktivan."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:263
-msgid "Available when Community Dock or Community Panel is active."
-msgstr "Dostupno kada su Community Dock ili Community Panel aktivni."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:267
-msgid "Configure the Community Panel appearance and visibility."
-msgstr "Konfigurirajte izgled i vidljivost Community Panela."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:321
-msgid "Dock visibility updated"
-msgstr "Vidljivost doka ažurirana"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:328
-msgid "Panel visibility updated"
-msgstr "Vidljivost ploče ažurirana"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:338
-msgid "Indicator style updated"
-msgstr "Stil pokazatelja ažuriran"
-
-#: usr/share/layout-switcher/ui/page_themes.py:20
-msgid "Blue"
-msgstr "Plava"
-
-#: usr/share/layout-switcher/ui/page_themes.py:21
-msgid "Teal"
-msgstr "Tirkizna"
-
-#: usr/share/layout-switcher/ui/page_themes.py:22
-msgid "Green"
-msgstr "Zelena"
-
-#: usr/share/layout-switcher/ui/page_themes.py:23
-msgid "Yellow"
-msgstr "Žuta"
-
-#: usr/share/layout-switcher/ui/page_themes.py:24
-msgid "Orange"
-msgstr "Narančasta"
-
-#: usr/share/layout-switcher/ui/page_themes.py:25
-msgid "Red"
-msgstr "Crvena"
-
-#: usr/share/layout-switcher/ui/page_themes.py:26
-msgid "Pink"
-msgstr "Ružičasta"
-
-#: usr/share/layout-switcher/ui/page_themes.py:27
-msgid "Purple"
-msgstr "Ljubičasta"
-
-#: usr/share/layout-switcher/ui/page_themes.py:28
-msgid "Slate"
-msgstr "Škriljevac"
-
-#: usr/share/layout-switcher/ui/page_themes.py:29
-msgid "Maia"
-msgstr "Maia"
-
-#: usr/share/layout-switcher/ui/page_themes.py:108
-msgid "Colors"
-msgstr "Boje"
-
-#: usr/share/layout-switcher/ui/page_themes.py:165
-msgid "Accent color"
-msgstr "Naglašena boja"
-
-#: usr/share/layout-switcher/ui/page_themes.py:174
-msgid "Choose the color used for buttons, selections, and highlights."
-msgstr "Odaberite boju koja se koristi za gumbe, odabire i isticanja."
-
-#: usr/share/layout-switcher/ui/page_themes.py:207
-#, python-brace-format
-msgid "{color} accent color"
-msgstr "{color} akcentna boja"
-
-#: usr/share/layout-switcher/ui/window.py:405
-#: usr/share/layout-switcher/ui/window.py:488
+#: usr/share/big-gnome-center/ui/page_layouts.py:34
+msgid "Disabling extensions…"
+msgstr "Onemogućavanje proširenja…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:35
+msgid "Loading layout…"
+msgstr "Učitavanje rasporeda…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:36
+msgid "Reloading components…"
+msgstr "Ponovno učitavanje komponenti…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:66
+msgid "Layout status"
+msgstr "Status izgleda"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:154
+msgid "Contains your saved customizations"
+msgstr "Sadrži vaše spremljene prilagodbe"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:158
+#: usr/share/big-gnome-center/ui/page_layouts.py:272
+msgid "Modified"
+msgstr "Izmijenjeno"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:192
+#: usr/share/big-gnome-center/ui/page_layouts.py:219
+msgid "Coming soon"
+msgstr "Uskoro"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:283
+msgid ""
+"You have previously modified this layout. Apply the original system default "
+"or resume your changes?"
+msgstr ""
+"Već ste izmijenili ovaj raspored. Primijeniti izvorne zadane postavke "
+"sustava ili nastaviti s vašim izmjenama?"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:288
+msgid "Resume my changes"
+msgstr "Nastavi moje izmjene"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:289
+msgid "Apply original"
+msgstr "Primijeni izvorno"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:293
+msgid ""
+"Apply this layout? A backup of your current configuration will be created "
+"automatically."
+msgstr ""
+"Primijeniti ovaj izgled? Sigurnosna kopija vaše trenutne konfiguracije bit "
+"će automatski kreirana."
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:298
+msgid "Apply"
+msgstr "Primijeni"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:353
+msgid "Applying"
+msgstr "Primjena"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:383
+msgid "Snapshot not found"
+msgstr "Snimka nije pronađena"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:411
+msgid "Layout file not found"
+msgstr "Datoteka izgleda nije pronađena"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:452
+#: usr/share/big-gnome-center/ui/page_layouts.py:460
+#: usr/share/big-gnome-center/ui/page_layouts.py:469
+msgid "applied"
+msgstr "primijenjeno"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:462
+msgid "Undo"
+msgstr "Poništi"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:480
+msgid "Restart the session for the 100% clean state"
+msgstr "Ponovno pokrenite sesiju za 100 % čisto stanje"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:485
+msgid "Restart now"
+msgstr "Ponovno pokreni sada"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:509
+msgid "Cannot restart session"
+msgstr "Nije moguće ponovno pokrenuti sesiju"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:516
+#: usr/share/big-gnome-center/ui/page_layouts.py:518
+msgid "Restoring previous layout…"
+msgstr "Vraćanje prethodnog rasporeda…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:550
+msgid "Layout restored"
+msgstr "Izgled vraćen"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:552
+msgid "Previous layout restored"
+msgstr "Prethodni izgled vraćen"
+
+#: usr/share/big-gnome-center/ui/window.py:72
+#: usr/share/big-gnome-center/ui/window.py:383
+#: usr/share/big-gnome-center/ui/window.py:550
+msgid "Big Gnome Center"
+msgstr "Big Gnome Center"
+
+#: usr/share/big-gnome-center/ui/window.py:233
+#: usr/share/big-gnome-center/ui/window.py:234
+msgid "Show Sidebar"
+msgstr "Prikaži bočnu traku"
+
+#: usr/share/big-gnome-center/ui/window.py:240
+#: usr/share/big-gnome-center/ui/window.py:407
+#: usr/share/big-gnome-center/ui/window.py:504
+msgid "Layouts"
+msgstr "Izgledi"
+
+#: usr/share/big-gnome-center/ui/window.py:246
+msgid "Menu"
+msgstr "Izbornik"
+
+#: usr/share/big-gnome-center/ui/window.py:247
+msgid "Main menu"
+msgstr "Glavni izbornik"
+
+#: usr/share/big-gnome-center/ui/window.py:251
+msgid "Check for updates"
+msgstr "Provjeri ima li ažuriranja"
+
+#: usr/share/big-gnome-center/ui/window.py:252
+msgid "Auto-update extensions"
+msgstr "Automatsko ažuriranje proširenja"
+
+#: usr/share/big-gnome-center/ui/window.py:254
+msgid "Backups…"
+msgstr "Sigurnosne kopije…"
+
+#: usr/share/big-gnome-center/ui/window.py:255
+msgid "About"
+msgstr "O aplikaciji"
+
+#: usr/share/big-gnome-center/ui/window.py:264
+msgid "Welcome! Choose a desktop layout below to get started."
+msgstr "Dobrodošli! Odaberite izgled radne površine ispod za početak."
+
+#: usr/share/big-gnome-center/ui/window.py:265
+msgid "Got it"
+msgstr "Razumijem"
+
+#: usr/share/big-gnome-center/ui/window.py:408
+#: usr/share/big-gnome-center/ui/window.py:505
+msgid "Fonts"
+msgstr "Fontovi"
+
+#: usr/share/big-gnome-center/ui/window.py:409
+#: usr/share/big-gnome-center/ui/window.py:506
+msgid "Themes"
+msgstr "Teme"
+
+#: usr/share/big-gnome-center/ui/window.py:411
+#: usr/share/big-gnome-center/ui/window.py:508
 msgid "Panel and Dock"
 msgstr "Ploča i Dock"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Dock size"
-msgstr "Veličina docka"
+#: usr/share/big-gnome-center/ui/window.py:412
+#: usr/share/big-gnome-center/ui/window.py:509
+msgid "Effects"
+msgstr "Efekti"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:114
-msgid "Panel height"
-msgstr "Visina ploče"
+#: usr/share/big-gnome-center/ui/window.py:555
+msgid "Layouts, effects and themes for your GNOME desktop."
+msgstr "Izgled, efekti i teme za vaš GNOME desktop."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:450
-msgid "Smaller"
-msgstr "Manje"
+#: usr/share/big-gnome-center/ui/window.py:621
+msgid "Applying…"
+msgstr "Primjena…"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:466
-msgid "Larger"
-msgstr "Veće"
+#: usr/share/big-gnome-center/ui/window.py:728
+msgid "All extensions up to date"
+msgstr "Sva proširenja su ažurirana"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:143
-msgid "Restore layout defaults"
-msgstr "Vrati zadane postavke izgleda"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:33
-msgid "Standard"
-msgstr "Standardno"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:34
-msgid "Gentle lift"
-msgstr "Nježno podizanje"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:245
-msgid "Icon hover effect"
-msgstr "Učinak pri lebdenju nad ikonom"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:249
-msgid "Choose how dock icons react to the pointer."
-msgstr "Odaberite kako ikone docka reagiraju na pokazivač."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#: usr/share/big-gnome-center/ui/window.py:743
 #, python-brace-format
-msgid "Use the {effect} hover effect"
-msgstr "Koristi učinak lebdenja {effect}"
+msgid "Auto-updated {n} extensions"
+msgstr "Automatski ažurirano {n} proširenja"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:658
-msgid "Icon hover effect updated"
-msgstr "Učinak lebdenja nad ikonom ažuriran"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:32
-msgid "Captures, annotates and records the screen."
-msgstr "Snimа, označava i zapisuje zaslon."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:35
-msgid "Shows application tray icons in the system panel."
-msgstr "Prikazuje ikone aplikacija na sistemskoj ploči."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:40
-msgid "Provides application launchers and running windows in a dock."
-msgstr "Pruža pokretače aplikacija i pokrenute prozore na doku."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:43
-msgid "Provides the applications menu used by desktop layouts."
-msgstr "Pruža izbornik aplikacija koji koriste rasporedi radne površine."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:46
-msgid "Provides the taskbar and system panel used by desktop layouts."
-msgstr "Pruža programsku traku i sistemsku ploču koje koriste rasporedi."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:49
-msgid "Keeps a searchable history of copied content."
-msgstr "Čuva pretraživu povijest kopiranog sadržaja."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:52
-msgid "Shows removable devices and lets you safely eject them."
-msgstr "Prikazuje prijenosne uređaje i omogućuje njihovo sigurno izbacivanje."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:55
-msgid "Adds controlled blur and transparency to the desktop."
-msgstr "Dodaje kontrolirano zamućenje i prozirnost radnoj površini."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:58
-msgid "Connects phones to share files, notifications and other features."
-msgstr ""
-"Povezuje telefone za dijeljenje datoteka, obavijesti i drugih značajki."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:61
-msgid "Shows files and folders on the desktop."
-msgstr "Prikazuje datoteke i mape na radnoj površini."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-msgid "Applies layout changes safely inside GNOME Shell."
-msgstr "Sigurno primjenjuje promjene rasporeda unutar GNOME Shella."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:67
-msgid "Provides the dock and taskbar runtime used by desktop layouts."
-msgstr "Pruža izvršno okruženje doka i programske trake za rasporede."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:70
-msgid "Keeps GTK 3 applications aligned with light and dark mode."
-msgstr "Usklađuje GTK 3 aplikacije sa svijetlim i tamnim načinom rada."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:73
-msgid "Uses the light GNOME Shell appearance."
-msgstr "Koristi svijetli izgled GNOME Shella."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:76
-msgid "Loads the Shell theme selected by the active layout."
-msgstr "Učitava temu Shella koju je odabrao aktivni raspored."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:91
-msgid "Description not provided by the developer."
-msgstr "Razvojni programer nije naveo opis."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:770
+#: usr/share/big-gnome-center/ui/window.py:748
 #, python-brace-format
-msgid "Technical identifier: {uuid}"
-msgstr "Tehnički identifikator: {uuid}"
+msgid "{n} update(s) available"
+msgstr "{n} ažuriranje(a) dostupno"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:772
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update enabled"
+msgstr "Automatsko ažuriranje omogućeno"
+
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update disabled"
+msgstr "Automatsko ažuriranje onemogućeno"
+
+#: usr/share/big-gnome-center/constants.py:166
+msgid "Desktop Cube"
+msgstr "Desktop Cube"
+
+#: usr/share/big-gnome-center/constants.py:167
+msgid "Rotate workspaces on a 3D cube"
+msgstr "Rotirajte radne površine na 3D kocki"
+
+#: usr/share/big-gnome-center/constants.py:177
+msgid "Magic Lamp"
+msgstr "Magic Lamp"
+
+#: usr/share/big-gnome-center/constants.py:178
+msgid "Genie effect when minimizing windows"
+msgstr "Efekt duha pri minimiziranju prozora"
+
+#: usr/share/big-gnome-center/constants.py:188
+msgid "Compiz Windows"
+msgstr "Compiz Windows"
+
+#: usr/share/big-gnome-center/constants.py:189
+msgid "Wobbly windows and extra animations"
+msgstr "Drhtavi prozori i dodatne animacije"
+
+#: usr/share/big-gnome-center/constants.py:216
+msgid "Default Big Gnome layout"
+msgstr "Zadani Big Gnome izgled"
+
+#: usr/share/big-gnome-center/constants.py:223
+msgid "Clean and contemporary desktop"
+msgstr "Čista i suvremena radna površina"
+
+#: usr/share/big-gnome-center/constants.py:230
+msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
+msgstr "Centrirani dock-traka zadataka, stil Windows 11 / Deepin / Pop!_OS"
+
+#: usr/share/big-gnome-center/constants.py:237
+msgid "Unity-style layout with left dock and top bar"
+msgstr "Unity-stil izgleda s lijevim dockom i gornjom trakom"
+
+#: usr/share/big-gnome-center/constants.py:244
+msgid "Traditional desktop with taskbar and system tray"
+msgstr "Tradicionalna radna površina s trakom zadataka i sistemskom ladicom"
+
+#: usr/share/big-gnome-center/constants.py:251
+msgid "Near-vanilla GNOME with minimal distro tweaks"
+msgstr "Gotovo neizmijenjeni GNOME s minimalnim prilagodbama distribucije"
+
+#: usr/share/big-gnome-center/helper_guard.py:86
+msgid "Layout helper restored"
+msgstr "Pomoćnik za izgled obnovljen"
+
+#: usr/share/big-gnome-center/helper_guard.py:87
+msgid "The required layout helper was re-enabled automatically."
+msgstr "Potrebni pomoćnik za izgled automatski je ponovno omogućen."
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:231
+msgid "Extension updates available"
+msgstr "Dostupna ažuriranja proširenja"
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:232
 #, python-brace-format
-msgid "Version: {version}"
-msgstr "Verzija: {version}"
+msgid "Available updates: {names}"
+msgstr "Dostupna ažuriranja: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:127
-msgid "Session"
-msgstr "Sesija"
+#: usr/share/big-gnome-center/extension_update_monitor.py:234
+#: usr/share/big-gnome-center/extension_update_monitor.py:235
+#: usr/share/big-gnome-center/extension_update_monitor.py:315
+#: usr/share/big-gnome-center/extension_update_monitor.py:316
+msgid "View updates"
+msgstr "Prikaži ažuriranja"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:128
-msgid "Choose how this layout starts after login."
-msgstr "Odaberite kako se ovaj raspored pokreće nakon prijave."
+#: usr/share/big-gnome-center/extension_update_monitor.py:295
+msgid "Extension updates installed"
+msgstr "Ažuriranja proširenja instalirana"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:131
-msgid "Open desktop after login"
-msgstr "Otvori radnu površinu nakon prijave"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:132
-msgid "Skip the initial Activities overview for this layout."
-msgstr "Preskoči početni pregled aktivnosti za ovaj raspored."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:144
-msgid "Reset appearance and session options for the active layout."
-msgstr "Poništi izgled i mogućnosti sesije aktivnog rasporeda."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:165
-msgid "Application menu position"
-msgstr "Položaj izbornika aplikacija"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:169
-msgid "Place the BigGnome menu at either end of the Dock."
-msgstr "Postavite izbornik BigGnome na bilo koji kraj doka."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Left"
-msgstr "Lijevo"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Right"
-msgstr "Desno"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#: usr/share/big-gnome-center/extension_update_monitor.py:296
+#: usr/share/big-gnome-center/extension_update_monitor.py:308
 #, python-brace-format
-msgid "Place the application menu on the {side}"
-msgstr "Postavi izbornik aplikacija na {side}"
+msgid "Updated: {names}"
+msgstr "Ažurirano: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:668
-msgid "Application menu position updated"
-msgstr "Položaj izbornika aplikacija ažuriran"
+#: usr/share/big-gnome-center/extension_update_monitor.py:298
+#: usr/share/big-gnome-center/extension_update_monitor.py:299
+msgid "View extensions"
+msgstr "Prikaži proširenja"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:678
-msgid "Login start updated"
-msgstr "Pokretanje pri prijavi ažurirano"
+#: usr/share/big-gnome-center/extension_update_monitor.py:310
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Neuspješno: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:685
-msgid "Layout appearance and session defaults restored"
-msgstr "Izgled i zadane postavke sesije rasporeda vraćeni"
+#: usr/share/big-gnome-center/extension_update_monitor.py:312
+msgid "Some extension updates failed"
+msgstr "Neka ažuriranja proširenja nisu uspjela"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:36
-msgid "Magnification"
-msgstr "Povećanje"
+#: usr/share/big-gnome-center/extension_update_monitor.py:317
+msgid "Try again"
+msgstr "Pokušaj ponovno"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:97
-msgid "Magnification intensity"
-msgstr "Intenzitet povećanja"
+#: usr/share/big-gnome-center/layout_applier.py:2256
+msgid "Big Gnome Center Helper is required to apply layouts."
+msgstr "Pomoćnik za izmjenu izgleda potreban je za primjenu izgleda."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:102
-msgid "Choose how much nearby Dock icons grow."
-msgstr "Odaberite koliko će ikone Docka u blizini narasti."
+#: usr/share/big-gnome-center/helper_client.py:261
+msgid "The required layout helper is not installed."
+msgstr "Potrebni pomoćnik za izgled nije instaliran."
+
+#: usr/share/big-gnome-center/helper_client.py:300
+msgid "The required layout helper did not start."
+msgstr "Potrebni pomoćnik za izgled nije se pokrenuo."
+
+#~ msgid "System extension — cannot remove"
+#~ msgstr "Sustavna ekstenzija — ne može se ukloniti"
+
+#~ msgid ""
+#~ "This extension cannot be removed here because it was installed by the "
+#~ "system."
+#~ msgstr ""
+#~ "Ova se ekstenzija ovdje ne može ukloniti jer ju je instalirao sustav."
+
+#~ msgid "Uses the light GNOME Shell appearance."
+#~ msgstr "Koristi svijetli izgled GNOME Shella."
+
+#~ msgid "Loads the Shell theme selected by the active layout."
+#~ msgstr "Učitava temu Shella koju je odabrao aktivni raspored."

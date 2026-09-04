@@ -7,7 +7,7 @@ Status: Build 76 accepts stable/testing upgrade and rollback paths
 ## Purpose
 
 Track only the work that remains after the accepted GNOME 50 checkpoint. The
-goal is a smaller Layout Switcher-owned Shell runtime without changing the six
+goal is a smaller Big Gnome Center-owned Shell runtime without changing the six
 approved layouts or exposing upstream Dock and Panel complexity to users.
 
 This report is the execution checklist. The longer migration document keeps the
@@ -29,7 +29,7 @@ The current source deliberately stops at the last safe boundary:
 - Dock construction, lifecycle, and executable modules belong to the unified
   runtime;
 - independent Dock and Panel preference screens are removed;
-- supported controls and per-layout defaults belong to Layout Switcher;
+- supported controls and per-layout defaults belong to Big Gnome Center;
 - external Dash to Dock and Dash to Panel packages are not package dependencies
   and are not modified or uninstalled from user systems.
 
@@ -40,7 +40,7 @@ unified runtime exact construction and reverse-order teardown ownership.
 ## Current architecture
 
 ```text
-Layout Switcher GTK app
+Big Gnome Center GTK app
   -> owned runtime schema and per-layout overrides
   -> helper extension for safe switch orchestration
   -> unified Shell runtime UUID
@@ -828,7 +828,7 @@ emits its exact parameter count. `Super+2`, launch, focus, overview exit, and
 maximize pass on both Shell versions without a runtime JS exception.
 
 Strict audits report zero failures and only the expected SSH `tty` warning.
-Shell journals contain no Layout Switcher or Community Panel exception after
+Shell journals contain no Big Gnome Center or Community Panel exception after
 the build 64 session restart. Known external warnings remain: Copyous and
 GSConnect on GNOME 51, retired Community Dock metadata lookup, KMS priority,
 and Brave's corrected invalid Wayland geometry warning.
@@ -862,7 +862,7 @@ longer destroy and reconstruct an active Dock. Runtime telemetry reports a
 manager generation plus configured and effective Dock opacity and icon size.
 The owned Dock indicator and hover controllers no longer read the old custom
 Community schema. Inherited Dash-to-Dock and Dash-to-Panel settings remain only
-as private renderer adapters; they are not the Layout Switcher persistence
+as private renderer adapters; they are not the Big Gnome Center persistence
 contract.
 
 GNOME 50.4 and 51.beta each passed Taskbar indicator/hover 10 slow and 20
@@ -900,7 +900,7 @@ indicator pixels, hover motion, and visibility transitions by eye.
 
 - [x] Stop mirroring new writes to inherited Dock and Panel schemas while the
   unified runtime owns the active component.
-- [x] Move every supported runtime key to the Layout Switcher-owned schema.
+- [x] Move every supported runtime key to the Big Gnome Center-owned schema.
 - [x] Keep one-time import for existing stable and testing users.
 - [x] Preserve unrelated extensions and user settings during migration.
 - [x] Make `Restore layout defaults` clear only the active layout overrides.
@@ -985,7 +985,7 @@ Add a deferred option only after a concrete user need and a separate approval.
 
 - [x] Only the unified runtime implements Dock and Taskbar actors.
 - [ ] Compatibility engines are absent from the shipped package.
-- [ ] All supported configuration exists only in Layout Switcher.
+- [ ] All supported configuration exists only in Big Gnome Center.
 - [ ] The six layout contracts match the accepted visual baseline.
 - [ ] Light/dark transitions and status icons never retain stale state.
 - [x] Clean install, stable upgrade, testing upgrade, reboot, and rollback pass.

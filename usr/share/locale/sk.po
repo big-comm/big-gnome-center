@@ -1,9 +1,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: layout-switcher\n"
+"Project-Id-Version: big-gnome-center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"POT-Creation-Date: 2026-09-04 20:16-0300\n"
 "PO-Revision-Date: 2026-08-20 22:30-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Slovak <sk@li.org>\n"
@@ -14,785 +14,1003 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:149
-msgid "Desktop Cube"
-msgstr "Desktop Cube"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:25
+#: usr/share/big-gnome-center/ui/window.py:410
+#: usr/share/big-gnome-center/ui/window.py:507
+msgid "Desktop"
+msgstr "Pracovná plocha"
 
-#: usr/share/layout-switcher/constants.py:150
-msgid "Rotate workspaces on a 3D cube"
-msgstr "Otáčať pracovné plochy v 3D kocke"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:27
+#: usr/share/big-gnome-center/ui/desktop_icons.py:46
+msgid "Desktop icons"
+msgstr "Ikony na pracovnej ploche"
 
-#: usr/share/layout-switcher/constants.py:160
-msgid "Magic Lamp"
-msgstr "Magic Lamp"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:28
+#: usr/share/big-gnome-center/ui/desktop_icons.py:67
+msgid "Show files and folders on the desktop"
+msgstr "Zobraziť súbory a priečinky na pracovnej ploche"
 
-#: usr/share/layout-switcher/constants.py:161
-msgid "Genie effect when minimizing windows"
-msgstr "Efekt džina pri minimalizovaní okien"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:34
+msgid "Desktop icon settings"
+msgstr "Nastavenia ikon na pracovnej ploche"
 
-#: usr/share/layout-switcher/constants.py:171
-msgid "Compiz Windows"
-msgstr "Compiz Windows"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:69
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "GTK4 Desktop Icons NG nie je nainštalovaný"
 
-#: usr/share/layout-switcher/constants.py:172
-msgid "Wobbly windows and extra animations"
-msgstr "Vlnité okná a ďalšie animácie"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons enabled"
+msgstr "Ikony na pracovnej ploche sú povolené"
 
-#: usr/share/layout-switcher/constants.py:199
-msgid "Default Big Gnome layout"
-msgstr "Predvolené veľké rozloženie Gnome"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons disabled"
+msgstr "Ikony na pracovnej ploche sú zakázané"
 
-#: usr/share/layout-switcher/constants.py:206
-msgid "Clean and contemporary desktop"
-msgstr "Čistá a moderná pracovná plocha"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:92
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "Nepodarilo sa zmeniť ikony na pracovnej ploche: {message}"
 
-#: usr/share/layout-switcher/constants.py:213
-msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
-msgstr "Centrovaný dock-panel úloh, štýl Windows 11 / Deepin / Pop!_OS"
-
-#: usr/share/layout-switcher/constants.py:220
-msgid "Unity-style layout with left dock and top bar"
-msgstr "Rozloženie v štýle Unity s ľavým dockom a horným panelom"
-
-#: usr/share/layout-switcher/constants.py:227
-msgid "Traditional desktop with taskbar and system tray"
-msgstr "Tradičná pracovná plocha s panelom úloh a systémovou lištou"
-
-#: usr/share/layout-switcher/constants.py:234
-msgid "Near-vanilla GNOME with minimal distro tweaks"
-msgstr "Takmer čistý GNOME s minimálnymi úpravami distribúcie"
-
-#: usr/share/layout-switcher/ui/dialog_backups.py:64
+#: usr/share/big-gnome-center/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "Zálohy"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:79
+#: usr/share/big-gnome-center/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "Vytvoriť zálohu teraz"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:81
+#: usr/share/big-gnome-center/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "Zachytiť aktuálne nastavenia dconf"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:94
+#: usr/share/big-gnome-center/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "Zatiaľ žiadne zálohy"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:96
+#: usr/share/big-gnome-center/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr "Záloha sa vytvorí automaticky vždy, keď použijete rozloženie."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:149
+#: usr/share/big-gnome-center/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "Najnovšie"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:154
+#: usr/share/big-gnome-center/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "Obnoviť túto zálohu"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:162
+#: usr/share/big-gnome-center/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "Odstrániť túto zálohu"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:185
+#: usr/share/big-gnome-center/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "Záloha vytvorená"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:188
-#: usr/share/layout-switcher/ui/page_layouts.py:265
+#: usr/share/big-gnome-center/ui/dialog_backups.py:188
+#: usr/share/big-gnome-center/ui/page_layouts.py:241
 msgid "Backup failed"
 msgstr "Záloha zlyhala"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:193
+#: usr/share/big-gnome-center/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "Obnoviť túto zálohu?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:195
+#: usr/share/big-gnome-center/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
 msgstr "Všetky aktuálne nastavenia dconf budú prepísané snímkou z {ts}."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
-#: usr/share/layout-switcher/ui/page_effects.py:293
-#: usr/share/layout-switcher/ui/page_effects.py:337
-#: usr/share/layout-switcher/ui/page_extensions.py:402
-#: usr/share/layout-switcher/ui/page_extensions.py:445
-#: usr/share/layout-switcher/ui/page_extensions.py:905
-#: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:241
-#: usr/share/layout-switcher/ui/page_layouts.py:253
+#: usr/share/big-gnome-center/ui/dialog_backups.py:198
+#: usr/share/big-gnome-center/ui/dialog_backups.py:231
+#: usr/share/big-gnome-center/ui/page_effects.py:293
+#: usr/share/big-gnome-center/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_extensions.py:481
+#: usr/share/big-gnome-center/ui/page_extensions.py:521
+#: usr/share/big-gnome-center/ui/page_extensions.py:987
+#: usr/share/big-gnome-center/ui/page_fonts.py:567
+#: usr/share/big-gnome-center/ui/page_layouts.py:287
+#: usr/share/big-gnome-center/ui/page_layouts.py:297
 msgid "Cancel"
 msgstr "Zrušiť"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:161
 msgid "Restore"
 msgstr "Obnoviť"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:219
+#: usr/share/big-gnome-center/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "Záloha obnovená"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:223
+#: usr/share/big-gnome-center/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "Obnovenie zlyhalo"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:228
+#: usr/share/big-gnome-center/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "Vymazať túto zálohu?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:232
+#: usr/share/big-gnome-center/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "Vymazať"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:252
+#: usr/share/big-gnome-center/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "Záloha vymazaná"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:255
+#: usr/share/big-gnome-center/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "Vymazanie zlyhalo"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:41
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:41
 msgid "Relevance"
 msgstr "Relevantnosť"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Popularita"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:43
 msgid "Downloads"
 msgstr "Stiahnutia"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:43
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:44
 msgid "Recent"
 msgstr "Nedávne"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:44
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:45
 msgid "Name"
 msgstr "Názov"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:93
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:97
 msgid "Search extensions on extensions.gnome.org"
 msgstr "Hľadať rozšírenia na extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:101
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:105
 msgid "Sort by"
 msgstr "Zoradiť podľa"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:112
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:116
 #, python-brace-format
 msgid "Only compatible with GNOME {ver}"
 msgstr "Len kompatibilné s GNOME {ver}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:139
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:143
 msgid "Browse extensions"
 msgstr "Prehliadať rozšírenia"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:140
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:144
 msgid "Search above or hit Enter to load popular extensions."
 msgstr ""
 "Vyhľadajte vyššie alebo stlačte Enter pre načítanie populárnych rozšírení."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:143
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:147
 msgid "Load popular"
 msgstr "Načítať populárne"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:159
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:163
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:97
 msgid "Loading…"
 msgstr "Načítava sa…"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:166
-#: usr/share/layout-switcher/ui/page_extensions.py:621
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:170
+#: usr/share/big-gnome-center/ui/page_extensions.py:697
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:104
 msgid "No results"
 msgstr "Žiadne výsledky"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:167
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:171
 msgid "Try a different search or sort."
 msgstr "Skúste iné vyhľadávanie alebo zoradenie."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:173
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:177
 msgid "Could not reach extensions.gnome.org"
 msgstr "Nepodarilo sa pripojiť k extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:174
-#: usr/share/layout-switcher/ui/ext_detail_view.py:111
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:178
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:111
 msgid "Check your network connection and try again."
 msgstr "Skontrolujte sieťové pripojenie a skúste znova."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:177
-#: usr/share/layout-switcher/ui/ext_detail_view.py:114
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:181
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:114
 msgid "Retry"
 msgstr "Znova"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:334
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:220
+#: usr/share/big-gnome-center/ui/page_fonts.py:334
 msgid "Previous page"
 msgstr "Predchádzajúca strana"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:227
-#: usr/share/layout-switcher/ui/page_fonts.py:346
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:346
 msgid "Next page"
 msgstr "Nasledujúca strana"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:238
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:242
 msgid "Shell"
 msgstr "Shell"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:284
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:291
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "Strana {p} z {t}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:345
-#: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:280
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:354
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:147
+#: usr/share/big-gnome-center/ui/page_effects.py:184
+#: usr/share/big-gnome-center/ui/page_extensions.py:359
 #, python-brace-format
 msgid "by {author}"
 msgstr "od {author}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:358
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:367
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:361
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:370
 msgid "View extension details"
 msgstr "Zobraziť podrobnosti rozšírenia"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:83
-#: usr/share/layout-switcher/ui/page_extensions.py:574
-#: usr/share/layout-switcher/ui/page_fonts.py:487
-#: usr/share/layout-switcher/ui/page_fonts.py:529
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:378
+#: usr/share/big-gnome-center/ui/page_extensions.py:161
+#: usr/share/big-gnome-center/ui/page_extensions.py:650
+#: usr/share/big-gnome-center/ui/page_fonts.py:487
+#: usr/share/big-gnome-center/ui/page_fonts.py:529
 msgid "Installed"
 msgstr "Nainštalované"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:375
-#: usr/share/layout-switcher/ui/ext_detail_view.py:64
-#: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:238
-#: usr/share/layout-switcher/ui/page_effects.py:294
-#: usr/share/layout-switcher/ui/page_extensions.py:341
-#: usr/share/layout-switcher/ui/page_extensions.py:403
-#: usr/share/layout-switcher/ui/page_fonts.py:490
-#: usr/share/layout-switcher/ui/page_fonts.py:493
-#: usr/share/layout-switcher/ui/page_fonts.py:534
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:384
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:64
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:397
+#: usr/share/big-gnome-center/ui/page_effects.py:238
+#: usr/share/big-gnome-center/ui/page_effects.py:294
+#: usr/share/big-gnome-center/ui/page_extensions.py:420
+#: usr/share/big-gnome-center/ui/page_extensions.py:482
+#: usr/share/big-gnome-center/ui/page_fonts.py:490
+#: usr/share/big-gnome-center/ui/page_fonts.py:493
+#: usr/share/big-gnome-center/ui/page_fonts.py:534
 msgid "Install"
 msgstr "Inštalovať"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:412
-#: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:315
-#: usr/share/layout-switcher/ui/page_extensions.py:423
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:421
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:431
+#: usr/share/big-gnome-center/ui/page_effects.py:315
+#: usr/share/big-gnome-center/ui/page_extensions.py:502
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr ""
 "{name} je nainštalované a povolené. Reštartujte reláciu, aby ste ho mohli "
 "používať."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:321
-#: usr/share/layout-switcher/ui/page_extensions.py:429
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:429
+#: usr/share/big-gnome-center/ui/page_effects.py:321
+#: usr/share/big-gnome-center/ui/page_extensions.py:508
 msgid "Install failed"
 msgstr "Inštalácia zlyhala"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:103
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:103
 msgid "Loading extension details…"
 msgstr "Načítavajú sa podrobnosti rozšírenia…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:110
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:110
 msgid "Could not load details"
 msgstr "Nepodarilo sa načítať podrobnosti"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:206
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:206
 #, python-brace-format
 msgid "{n} ratings"
 msgstr "{n} hodnotení"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:209
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:209
 msgid "downloads"
 msgstr "stiahnutí"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:212
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:212
 msgid "compatibility"
 msgstr "kompatibilita"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:254
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:254
 msgid "Description"
 msgstr "Popis"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:269
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:269
 msgid "Recent comments"
 msgstr "Nedávne komentáre"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:282
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:282
 msgid "View all comments on extensions.gnome.org"
 msgstr "Zobraziť všetky komentáre na extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:343
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:343
 msgid "Links"
 msgstr "Odkazy"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:350
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:350
 msgid "Homepage"
 msgstr "Domovská stránka"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:255
-#: usr/share/layout-switcher/ui/page_extensions.py:358
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:354
+#: usr/share/big-gnome-center/ui/page_effects.py:255
+#: usr/share/big-gnome-center/ui/page_extensions.py:437
 msgid "View on GNOME Extensions"
 msgstr "Zobraziť na GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:359
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:359
 #, python-brace-format
 msgid "License: {lic}"
 msgstr "Licencia: {lic}"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:579
-#: usr/share/layout-switcher/ui/page_extensions.py:719
-#: usr/share/layout-switcher/ui/page_extensions.py:730
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:387
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/ui/page_extensions.py:803
+#: usr/share/big-gnome-center/ui/page_extensions.py:814
 msgid "Update"
 msgstr "Aktualizovať"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:392
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:392
 msgid "Open prefs"
 msgstr "Otvoriť nastavenia"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:409
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:409
 msgid "Working…"
 msgstr "Pracujem…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:428
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:428
 #, python-brace-format
 msgid "{name} updated"
 msgstr "{name} aktualizované"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:437
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:437
 msgid "Operation failed"
 msgstr "Operácia zlyhala"
 
-#: usr/share/layout-switcher/ui/page_effects.py:114
-#: usr/share/layout-switcher/ui/page_extensions.py:225
+#: usr/share/big-gnome-center/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "Hore v strede"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "Dole v strede"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "Vpravo hore"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "Vľavo hore"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "Vľavo dole"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "Vpravo dole"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "Pozícia upozornení"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "Vyberte, kde sa majú zobrazovať bannery upozornení."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "Zobrazovať upozornenia na {position}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:143
+#: usr/share/big-gnome-center/ui/page_desktop.py:287
+msgid "Default"
+msgstr "Predvolené"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:194
+#: usr/share/big-gnome-center/ui/page_desktop.py:199
+#: usr/share/big-gnome-center/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "Ponuka aplikácií"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "Dostupné pre rozloženia Classic, Desk-UX a Hybrid."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:200
+#: usr/share/big-gnome-center/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "Použiť menu komunity ako ponuku aplikácií"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "Štýl ponuky"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "Vyberte vzhľad menu komunity."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Kláves Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "Vyberte, čo sa stane po stlačení klávesu Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "Otvoriť ponuku"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "Otvoriť prehľad"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "Použiť štýl ponuky {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "Menu komunity nie je nainštalované"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "Pozícia upozornení {position} bola použitá"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "Nepodarilo sa zmeniť pozíciu upozornení: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "Náhľad upozornenia"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "Upozornenia sa tu budú zobrazovať."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "Ponuka aplikácií zapnutá"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "Ponuka aplikácií vypnutá"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "Ponuku aplikácií sa nepodarilo zmeniť: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "Použitý štýl ponuky {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "Štýl ponuky sa nepodarilo zmeniť: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "Super otvára ponuku aplikácií"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "Super otvára prehľad"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "Kláves Super sa nepodarilo zmeniť: {message}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "Ďalšie vizuálne efekty"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:114
+#: usr/share/big-gnome-center/ui/page_extensions.py:304
 msgid "System extension"
 msgstr "Systémové rozšírenie"
 
-#: usr/share/layout-switcher/ui/page_effects.py:131
+#: usr/share/big-gnome-center/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name} (povolené)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:133
+#: usr/share/big-gnome-center/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name} (zakázané)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:135
+#: usr/share/big-gnome-center/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (nenainštalované)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "Ukážka efektu {name}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "On"
 msgstr "Zapnuté"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "Off"
 msgstr "Vypnuté"
 
-#: usr/share/layout-switcher/ui/page_effects.py:203
-#: usr/share/layout-switcher/ui/page_extensions.py:303
-#: usr/share/layout-switcher/ui/page_extensions.py:763
+#: usr/share/big-gnome-center/ui/page_effects.py:203
+#: usr/share/big-gnome-center/ui/page_extensions.py:382
+#: usr/share/big-gnome-center/ui/page_extensions.py:847
 msgid "Toggle"
 msgstr "Prepnúť"
 
-#: usr/share/layout-switcher/ui/page_effects.py:211
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_effects.py:338
-#: usr/share/layout-switcher/ui/page_extensions.py:313
-#: usr/share/layout-switcher/ui/page_extensions.py:317
-#: usr/share/layout-switcher/ui/page_extensions.py:446
-#: usr/share/layout-switcher/ui/page_extensions.py:801
-#: usr/share/layout-switcher/ui/page_extensions.py:802
+#: usr/share/big-gnome-center/ui/page_effects.py:211
+#: usr/share/big-gnome-center/ui/page_effects.py:215
+#: usr/share/big-gnome-center/ui/page_effects.py:335
+#: usr/share/big-gnome-center/ui/page_extensions.py:392
+#: usr/share/big-gnome-center/ui/page_extensions.py:396
+#: usr/share/big-gnome-center/ui/page_extensions.py:522
+#: usr/share/big-gnome-center/ui/page_extensions.py:882
+#: usr/share/big-gnome-center/ui/page_extensions.py:883
+#: usr/share/big-gnome-center/ui/page_startup.py:116
+#: usr/share/big-gnome-center/ui/page_startup.py:119
 msgid "Remove"
 msgstr "Odstrániť"
 
-#: usr/share/layout-switcher/ui/page_effects.py:223
-#: usr/share/layout-switcher/ui/page_extensions.py:325
-#: usr/share/layout-switcher/ui/page_extensions.py:744
-#: usr/share/layout-switcher/ui/page_extensions.py:748
+#: usr/share/big-gnome-center/ui/page_effects.py:223
+#: usr/share/big-gnome-center/ui/page_extensions.py:404
+#: usr/share/big-gnome-center/ui/page_extensions.py:828
+#: usr/share/big-gnome-center/ui/page_extensions.py:832
 msgid "Settings"
 msgstr "Nastavenia"
 
-#: usr/share/layout-switcher/ui/page_effects.py:234
-#: usr/share/layout-switcher/ui/page_extensions.py:253
-#: usr/share/layout-switcher/ui/page_extensions.py:337
+#: usr/share/big-gnome-center/ui/page_effects.py:234
+#: usr/share/big-gnome-center/ui/page_extensions.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:416
 msgid "Not installed"
 msgstr "Nenainštalované"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:249
-#: usr/share/layout-switcher/ui/page_extensions.py:388
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:328
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "enabled"
 msgstr "povolené"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:251
-#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:330
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
 msgid "disabled"
 msgstr "zakázané"
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:392
-#: usr/share/layout-switcher/ui/page_extensions.py:777
-#: usr/share/layout-switcher/ui/page_extensions.py:929
-#: usr/share/layout-switcher/ui/page_layouts.py:429
-#: usr/share/layout-switcher/ui/page_layouts.py:473
-#: usr/share/layout-switcher/ui/page_themes.py:332
-#: usr/share/layout-switcher/ui/page_themes.py:343
+#: usr/share/big-gnome-center/ui/page_effects.py:283
+#: usr/share/big-gnome-center/ui/page_extensions.py:471
+#: usr/share/big-gnome-center/ui/page_extensions.py:861
+#: usr/share/big-gnome-center/ui/page_extensions.py:1011
+#: usr/share/big-gnome-center/ui/page_themes.py:363
+#: usr/share/big-gnome-center/ui/page_themes.py:374
+#: usr/share/big-gnome-center/ui/page_startup.py:150
+#: usr/share/big-gnome-center/ui/page_startup.py:167
+#: usr/share/big-gnome-center/ui/page_layouts.py:492
+#: usr/share/big-gnome-center/ui/page_layouts.py:536
 msgid "Error"
 msgstr "Chyba"
 
-#: usr/share/layout-switcher/ui/page_effects.py:290
+#: usr/share/big-gnome-center/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "Nainštalovať efekt?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:291
-#: usr/share/layout-switcher/ui/page_extensions.py:400
+#: usr/share/big-gnome-center/ui/page_effects.py:291
+#: usr/share/big-gnome-center/ui/page_extensions.py:479
 msgid "Will try to install automatically."
 msgstr "Pokúsi sa nainštalovať automaticky."
 
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:409
-#: usr/share/layout-switcher/ui/page_fonts.py:513
+#: usr/share/big-gnome-center/ui/page_effects.py:302
+#: usr/share/big-gnome-center/ui/page_extensions.py:488
+#: usr/share/big-gnome-center/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "Inštaluje sa…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:330
-#: usr/share/layout-switcher/ui/page_extensions.py:438
-msgid "System extension — cannot remove"
-msgstr "Systémové rozšírenie — nemožno odstrániť"
-
-#: usr/share/layout-switcher/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_effects.py:331
 msgid "Remove effect?"
 msgstr "Odstrániť efekt?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:335
-#: usr/share/layout-switcher/ui/page_extensions.py:443
+#: usr/share/big-gnome-center/ui/page_effects.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:519
 msgid "This cannot be undone."
 msgstr "Toto sa nedá vrátiť späť."
 
-#: usr/share/layout-switcher/ui/page_effects.py:350
-#: usr/share/layout-switcher/ui/page_extensions.py:458
+#: usr/share/big-gnome-center/ui/page_effects.py:347
+#: usr/share/big-gnome-center/ui/page_extensions.py:534
 msgid "removed"
 msgstr "odstránené"
 
-#: usr/share/layout-switcher/ui/page_effects.py:352
-#: usr/share/layout-switcher/ui/page_extensions.py:460
+#: usr/share/big-gnome-center/ui/page_effects.py:349
+#: usr/share/big-gnome-center/ui/page_extensions.py:536
 msgid "Remove failed"
 msgstr "Odstránenie zlyhalo"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:81
+#: usr/share/big-gnome-center/ui/page_extensions.py:31
+msgid "Captures, annotates and records the screen."
+msgstr "Zachytáva, anotuje a nahráva obrazovku."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:45
+msgid "Shows application tray icons in the system panel."
+msgstr "Zobrazuje ikony aplikácií v systémovom paneli."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:50
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Poskytuje spúšťače aplikácií a spustené okná v doku."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:53
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Poskytuje ponuku aplikácií používanú rozloženiami pracovnej plochy."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:56
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr "Poskytuje panel úloh a systémový panel používaný rozloženiami."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:59
+msgid "Keeps a searchable history of copied content."
+msgstr "Uchováva prehľadateľnú históriu skopírovaného obsahu."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shows removable devices and lets you safely eject them."
+msgstr "Zobrazuje vymeniteľné zariadenia a umožňuje ich bezpečné vysunutie."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:65
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Pridáva riadené rozmazanie a priehľadnosť pracovnej ploche."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:68
+msgid "Connects phones to share files, notifications and other features."
+msgstr "Prepája telefóny na zdieľanie súborov, upozornení a ďalších funkcií."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:71
+msgid "Shows files and folders on the desktop."
+msgstr "Zobrazuje súbory a priečinky na pracovnej ploche."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:74
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Bezpečne aplikuje zmeny rozloženia v GNOME Shell."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:77
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr "Poskytuje runtime doku a panela úloh používaný rozloženiami."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:80
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "Udržiava aplikácie GTK 3 zosúladené so svetlým a tmavým režimom."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:104
+msgid "Description not provided by the developer."
+msgstr "Vývojár neposkytol popis."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:159
 msgid "Featured"
 msgstr "Odporúčané"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:82
-#: usr/share/layout-switcher/ui/page_extensions.py:131
+#: usr/share/big-gnome-center/ui/page_extensions.py:160
+#: usr/share/big-gnome-center/ui/page_extensions.py:209
 msgid "Browse"
 msgstr "Prehľadávať"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:237
+#: usr/share/big-gnome-center/ui/page_extensions.py:316
 msgid "Update available"
 msgstr "Aktualizácia k dispozícii"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:399
+#: usr/share/big-gnome-center/ui/page_extensions.py:478
 msgid "Install extension?"
 msgstr "Nainštalovať rozšírenie?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/big-gnome-center/ui/page_extensions.py:518
 msgid "Remove extension?"
 msgstr "Odstrániť rozšírenie?"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:245
-#: usr/share/layout-switcher/ui/page_extensions.py:522
-#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/big-gnome-center/ui/page_extensions.py:570
+#: usr/share/big-gnome-center/ui/page_extensions.py:578
+#: usr/share/big-gnome-center/ui/window.py:413
+#: usr/share/big-gnome-center/ui/window.py:510
+msgid "Extensions"
+msgstr "Rozšírenia"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/extension_update_monitor.py:236
 msgid "Update all"
 msgstr "Aktualizovať všetko"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:530
+#: usr/share/big-gnome-center/ui/page_extensions.py:606
 msgid "Open GNOME Extensions"
 msgstr "Otvoriť GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:674
 msgid "No extensions installed"
 msgstr "Žiadne rozšírenia nie sú nainštalované"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "installed"
 msgstr "nainštalované"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:616
+#: usr/share/big-gnome-center/ui/page_extensions.py:692
 msgid "update available"
 msgstr "aktualizácia k dispozícii"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:632
+#: usr/share/big-gnome-center/ui/page_extensions.py:708
 msgid "Enabled"
 msgstr "Povolené"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:633
+#: usr/share/big-gnome-center/ui/page_extensions.py:709
 msgid "Disabled"
 msgstr "Zakázané"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/big-gnome-center/ui/page_extensions.py:779
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Technický identifikátor: {uuid}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:781
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Verzia: {version}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:784
+#: usr/share/big-gnome-center/ui/page_extensions.py:844
+#: usr/share/big-gnome-center/ui/page_extensions.py:845
+#: usr/share/big-gnome-center/ui/page_extensions.py:891
+#: usr/share/big-gnome-center/shell_reloader.py:280
+msgid "Required for layout switching"
+msgstr "Vyžadované na prepínanie rozložení"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:808
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "Aktualizovať z v{old} na v{new}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:795
-msgid ""
-"This extension cannot be removed here because it was installed by the "
-"system."
-msgstr ""
-"Toto rozšírenie tu nemožno odstrániť, pretože bolo nainštalované systémom."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:843
+#: usr/share/big-gnome-center/ui/page_extensions.py:925
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} aktualizované na v{ver}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:848
-#: usr/share/layout-switcher/ui/page_fonts.py:147
-#: usr/share/layout-switcher/ui/page_fonts.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:281
+#: usr/share/big-gnome-center/ui/page_extensions.py:930
+#: usr/share/big-gnome-center/ui/page_fonts.py:147
+#: usr/share/big-gnome-center/ui/page_fonts.py:216
+#: usr/share/big-gnome-center/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "Aktualizácia zlyhala"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:872
+#: usr/share/big-gnome-center/ui/page_extensions.py:954
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "Aktualizované rozšírenia {n}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:877
+#: usr/share/big-gnome-center/ui/page_extensions.py:959
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "Aktualizované {n}/{t}; zlyhalo: {f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
-#: usr/share/layout-switcher/ui/page_extensions.py:906
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
+#: usr/share/big-gnome-center/ui/page_extensions.py:988
 msgid "Disable All"
 msgstr "Zakázať všetko"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
 msgid "Enable All"
 msgstr "Povoliť všetko"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:902
+#: usr/share/big-gnome-center/ui/page_extensions.py:984
 msgid "Disable all extensions?"
 msgstr "Zakázať všetky rozšírenia?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:903
+#: usr/share/big-gnome-center/ui/page_extensions.py:985
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr "Všetky rozšírenia budú zakázané. Neskôr ich môžete opäť povoliť."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions disabled"
 msgstr "Všetky rozšírenia sú zakázané"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions enabled"
 msgstr "Všetky rozšírenia sú povolené"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:76
+#: usr/share/big-gnome-center/ui/page_fonts.py:76
 msgid "Preferred fonts"
 msgstr "Preferované písma"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:80
+#: usr/share/big-gnome-center/ui/page_fonts.py:80
 msgid "Interface text"
 msgstr "Text rozhrania"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:86
+#: usr/share/big-gnome-center/ui/page_fonts.py:86
 msgid "Document text"
 msgstr "Text dokumentu"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:92
+#: usr/share/big-gnome-center/ui/page_fonts.py:92
 msgid "Monospace text"
 msgstr "Neproporcionálny text"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:109
-#: usr/share/layout-switcher/ui/page_fonts.py:601
+#: usr/share/big-gnome-center/ui/page_fonts.py:109
+#: usr/share/big-gnome-center/ui/page_fonts.py:601
 msgid "(not set)"
 msgstr "(nenastavené)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:129
+#: usr/share/big-gnome-center/ui/page_fonts.py:129
 msgid "Choose font"
 msgstr "Vybrať písmo"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:145
+#: usr/share/big-gnome-center/ui/page_fonts.py:145
 msgid "Font updated"
 msgstr "Písmo aktualizované"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:155
+#: usr/share/big-gnome-center/ui/page_fonts.py:155
 msgid "Hinting"
 msgstr "Hinting"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:163
+#: usr/share/big-gnome-center/ui/page_fonts.py:163
 msgid "Full"
 msgstr "Plný"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:164
+#: usr/share/big-gnome-center/ui/page_fonts.py:164
 msgid "Medium"
 msgstr "Stredný"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:165
+#: usr/share/big-gnome-center/ui/page_fonts.py:165
 msgid "Slight"
 msgstr "Jemný"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:166
-#: usr/share/layout-switcher/ui/page_fonts.py:185
+#: usr/share/big-gnome-center/ui/page_fonts.py:166
+#: usr/share/big-gnome-center/ui/page_fonts.py:185
 msgid "None"
 msgstr "Žiadny"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:173
+#: usr/share/big-gnome-center/ui/page_fonts.py:173
 msgid "Smoothing"
 msgstr "Vyhladzovanie"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:183
+#: usr/share/big-gnome-center/ui/page_fonts.py:183
 msgid "Subpixel (for LCD screens)"
 msgstr "Subpixel (pre LCD obrazovky)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:184
+#: usr/share/big-gnome-center/ui/page_fonts.py:184
 msgid "Standard (grayscale)"
 msgstr "Štandardné (odtiene sivej)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:228
+#: usr/share/big-gnome-center/ui/page_fonts.py:228
 msgid "Size"
 msgstr "Veľkosť"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:231
-#: usr/share/layout-switcher/ui/page_fonts.py:251
+#: usr/share/big-gnome-center/ui/page_fonts.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:251
 msgid "Scale factor"
 msgstr "Faktor mierky"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:239
+#: usr/share/big-gnome-center/ui/page_fonts.py:239
 msgid "Decrease"
 msgstr "Znížiť"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:246
+#: usr/share/big-gnome-center/ui/page_fonts.py:246
 msgid "Increase"
 msgstr "Zvýšiť"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:287
+#: usr/share/big-gnome-center/ui/page_fonts.py:287
 msgid "Google Fonts"
 msgstr "Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:297
+#: usr/share/big-gnome-center/ui/page_fonts.py:297
 msgid "Search Google Fonts…"
 msgstr "Hľadať v Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:308
-#: usr/share/layout-switcher/ui/page_fonts.py:363
+#: usr/share/big-gnome-center/ui/page_fonts.py:308
+#: usr/share/big-gnome-center/ui/page_fonts.py:363
 msgid "Loading Google Fonts…"
 msgstr "Načítavam Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:312
+#: usr/share/big-gnome-center/ui/page_fonts.py:312
 msgid "Refresh Google Fonts list"
 msgstr "Obnoviť zoznam Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:424
+#: usr/share/big-gnome-center/ui/page_fonts.py:424
 #, python-brace-format
 msgid "Page {page} of {pages}"
 msgstr "Strana {page} z {pages}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:431
+#: usr/share/big-gnome-center/ui/page_fonts.py:431
 msgid "Internet connection is required to load the Google Fonts list."
 msgstr "Na načítanie zoznamu Google Fonts je potrebné internetové pripojenie."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:435
+#: usr/share/big-gnome-center/ui/page_fonts.py:435
 #, python-brace-format
 msgid "{n} fonts found"
 msgstr "Nájdené písma: {n}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:440
+#: usr/share/big-gnome-center/ui/page_fonts.py:440
 #, python-brace-format
 msgid "Showing top {shown} of {total} Google Fonts"
 msgstr "Zobrazuje sa prvých {shown} z {total} Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:449
+#: usr/share/big-gnome-center/ui/page_fonts.py:449
 msgid "No fonts found"
 msgstr "Nenašli sa žiadne písma"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:502
+#: usr/share/big-gnome-center/ui/page_fonts.py:502
 msgid "Sans serif"
 msgstr "Bezpätkové"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:503
+#: usr/share/big-gnome-center/ui/page_fonts.py:503
 msgid "Serif"
 msgstr "Pätkové"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:504
+#: usr/share/big-gnome-center/ui/page_fonts.py:504
 msgid "Monospace"
 msgstr "Monospace"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:505
+#: usr/share/big-gnome-center/ui/page_fonts.py:505
 msgid "Display"
 msgstr "Dekoračné"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:506
+#: usr/share/big-gnome-center/ui/page_fonts.py:506
 msgid "Handwriting"
 msgstr "Rukopisné"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:507
+#: usr/share/big-gnome-center/ui/page_fonts.py:507
 msgid "Exact Google Fonts family name"
 msgstr "Presný názov rodiny písma Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:531
+#: usr/share/big-gnome-center/ui/page_fonts.py:531
 #, python-brace-format
 msgid "{family} installed"
 msgstr "Nainštalované: {family}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:537
+#: usr/share/big-gnome-center/ui/page_fonts.py:537
 msgid "Internet connection is required to install Google Fonts."
 msgstr "Na inštaláciu Google Fonts je potrebné internetové pripojenie."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:538
+#: usr/share/big-gnome-center/ui/page_fonts.py:538
 msgid "Font not found on Google Fonts."
 msgstr "Písmo sa nenašlo v Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:539
+#: usr/share/big-gnome-center/ui/page_fonts.py:539
 msgid "Font download failed."
 msgstr "Sťahovanie písma zlyhalo."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:540
+#: usr/share/big-gnome-center/ui/page_fonts.py:540
 msgid "The font download is too large."
 msgstr "Sťahovaný súbor písma je príliš veľký."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:541
+#: usr/share/big-gnome-center/ui/page_fonts.py:541
 msgid "Could not install the font."
 msgstr "Písmo sa nepodarilo nainštalovať."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:542
+#: usr/share/big-gnome-center/ui/page_fonts.py:542
 msgid "Enter a font family name."
 msgstr "Zadajte názov rodiny písma."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:544
+#: usr/share/big-gnome-center/ui/page_fonts.py:544
 msgid "Font installation failed."
 msgstr "Inštalácia písma zlyhala."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:552
+#: usr/share/big-gnome-center/ui/page_fonts.py:552
 msgid "Reset to system defaults"
 msgstr "Obnoviť na systémové predvolené hodnoty"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:561
+#: usr/share/big-gnome-center/ui/page_fonts.py:561
 msgid "Reset all font settings?"
 msgstr "Obnoviť všetky nastavenia písma?"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:563
+#: usr/share/big-gnome-center/ui/page_fonts.py:563
 msgid ""
 "Interface, document and monospace fonts will return to system defaults. "
 "Rendering and scale settings will reset too."
@@ -800,412 +1018,387 @@ msgstr ""
 "Písma rozhrania, dokumentu a neproporcionálne písma sa vrátia na systémové "
 "predvolené hodnoty. Obnovia sa aj nastavenia vykresľovania a mierky."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:568
+#: usr/share/big-gnome-center/ui/page_fonts.py:568
 msgid "Reset"
 msgstr "Obnoviť"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:587
+#: usr/share/big-gnome-center/ui/page_fonts.py:587
 msgid "Fonts reset to defaults"
 msgstr "Písma obnovené na predvolené hodnoty"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:34
-msgid "Disabling extensions…"
-msgstr "Zakazujú sa rozšírenia…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:24
+msgid "Always visible"
+msgstr "Vždy viditeľné"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:35
-msgid "Loading layout…"
-msgstr "Načítava sa rozloženie…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:25
+msgid "Always hidden (show at edge)"
+msgstr "Vždy skryté (zobraziť pri okraji)"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:36
-msgid "Reloading components…"
-msgstr "Znova sa načítavajú súčasti…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:26
+msgid "Intelligent hiding"
+msgstr "Inteligentné skrývanie"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:64
-msgid "Layout status"
-msgstr "Stav rozloženia"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:29
+msgid "Dot"
+msgstr "Bodka"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:152
-msgid "Contains your saved customizations"
-msgstr "Obsahuje vaše uložené prispôsobenia"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:30
+msgid "Hybrid line"
+msgstr "Hybridná čiara"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:156
-msgid "Modified"
-msgstr "Zmenené"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:31
+msgid "Desk UX line"
+msgstr "Desk UX čiara"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:170
-#: usr/share/layout-switcher/ui/page_layouts.py:219
-#: usr/share/layout-switcher/ui/page_themes.py:318
-msgid "Active"
-msgstr "Aktívne"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:34
+msgid "Standard"
+msgstr "Štandardné"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:190
-#: usr/share/layout-switcher/ui/page_layouts.py:217
-msgid "Coming soon"
-msgstr "Čoskoro"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:35
+msgid "Gentle lift"
+msgstr "Jemné zdvihnutie"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:237
-msgid ""
-"You have previously modified this layout. Apply the original system default "
-"or resume your changes?"
-msgstr ""
-"Toto rozloženie ste už upravili. Použiť pôvodné systémové predvolené "
-"nastavenie alebo obnoviť vaše zmeny?"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Zväčšenie"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:242
-msgid "Resume my changes"
-msgstr "Obnoviť moje zmeny"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:69
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:565
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:568
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
+msgid "Dock"
+msgstr "Dock"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:243
-msgid "Apply original"
-msgstr "Použiť originál"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:70
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:570
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "Konfigurácia vzhľadu a viditeľnosti dokovacej lišty Community Dock."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:249
-msgid ""
-"Apply this layout? A backup of your current configuration will be created "
-"automatically."
-msgstr ""
-"Použiť toto rozloženie? Záloha vašej aktuálnej konfigurácie bude automaticky"
-" vytvorená."
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:76
+msgid "Dock transparency"
+msgstr "Priehľadnosť doku"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:254
-msgid "Apply"
-msgstr "Použiť"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:83
+msgid "Dock size"
+msgstr "Veľkosť doku"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:295
-msgid "Applying"
-msgstr "Aplikovanie"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intenzita zväčšenia"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:325
-msgid "Snapshot not found"
-msgstr "Snímka nenájdená"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Vyberte, ako veľmi sa zväčšia blízke ikony v docku."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:353
-msgid "Layout file not found"
-msgstr "Súbor rozloženia nenájdený"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:106
+msgid "Dock visibility"
+msgstr "Viditeľnosť doku"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:392
-#: usr/share/layout-switcher/ui/page_layouts.py:400
-#: usr/share/layout-switcher/ui/page_layouts.py:409
-msgid "applied"
-msgstr "aplikované"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:115
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
+msgid "Panel"
+msgstr "Panel"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:402
-msgid "Undo"
-msgstr "Späť"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:116
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:582
+msgid "Configure the system panel appearance and visibility."
+msgstr "Nakonfigurujte vzhľad a viditeľnosť systémového panela."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
-msgid "Restart the session for the 100% clean state"
-msgstr "Reštartujte reláciu pre 100 % čistý stav"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:122
+msgid "Panel transparency"
+msgstr "Priehľadnosť panela"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:422
-msgid "Restart now"
-msgstr "Reštartovať teraz"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:129
+msgid "Panel height"
+msgstr "Výška panela"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:446
-msgid "Cannot restart session"
-msgstr "Reláciu nemožno reštartovať"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:135
+msgid "Panel visibility"
+msgstr "Viditeľnosť panela"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:453
-#: usr/share/layout-switcher/ui/page_layouts.py:455
-msgid "Restoring previous layout…"
-msgstr "Obnovuje sa predchádzajúce rozloženie…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:142
+msgid "Session"
+msgstr "Relácia"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:485
-msgid "Layout restored"
-msgstr "Rozloženie obnovené"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:143
+msgid "Choose how this layout starts after login."
+msgstr "Vyberte, ako sa toto rozloženie spustí po prihlásení."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:487
-msgid "Previous layout restored"
-msgstr "Predchádzajúce rozloženie obnovené"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:146
+msgid "Open desktop after login"
+msgstr "Otvoriť pracovnú plochu po prihlásení"
 
-#: usr/share/layout-switcher/ui/page_themes.py:68
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:147
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Preskočiť úvodný prehľad aktivít pre toto rozloženie."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:158
+msgid "Restore layout defaults"
+msgstr "Obnoviť predvolené nastavenia rozloženia"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:159
+msgid "Reset appearance and session options for the active layout."
+msgstr "Obnoviť vzhľad a možnosti relácie aktívneho rozloženia."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:180
+msgid "Application menu position"
+msgstr "Umiestnenie ponuky aplikácií"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:184
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Umiestnite ponuku BigGnome na ktorýkoľvek koniec doku."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Left"
+msgstr "Vľavo"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Right"
+msgstr "Vpravo"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:217
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Umiestniť ponuku aplikácií na stranu {side}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:261
+msgid "Icon hover effect"
+msgstr "Efekt pri prechode myšou nad ikonami"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:265
+msgid "Choose how dock icons react to the pointer."
+msgstr "Vyberte, ako reagujú ikony doku na ukazovateľ."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:295
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Použiť efekt {effect} pri prechode"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:338
+msgid "Running app indicator"
+msgstr "Indikátor spustených aplikácií"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:342
+msgid "Choose the mark shown below running applications."
+msgstr "Vyberte označenie zobrazené pri spustených aplikáciách."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:379
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "Použiť indikátor {style}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:436
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Transparent"
+msgstr "Priehľadný"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:449
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Opaque"
+msgstr "Nepriehľadný"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:459
+msgid "Choose how this component behaves on the desktop."
+msgstr "Vyberte, ako sa tento komponent správa na pracovnej ploche."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:473
+msgid "Smaller"
+msgstr "Menšie"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:489
+msgid "Larger"
+msgstr "Väčšie"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:562
+msgid "Taskbar"
+msgstr "Panel úloh"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:563
+msgid "Configure running application indicators."
+msgstr "Nakonfigurujte indikátory spustených aplikácií."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:566
+msgid "Available when Community Dock is active."
+msgstr "Dostupné, keď je aktívny komunitný dok."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:574
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "Dostupné, keď je aktívny komunitný dok alebo komunitný panel."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:578
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "Nakonfigurujte vzhľad a viditeľnosť komunitného panela."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:684
+msgid "Dock visibility updated"
+msgstr "Viditeľnosť doku sa aktualizovala"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:691
+msgid "Panel visibility updated"
+msgstr "Viditeľnosť panela je aktualizovaná"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:701
+msgid "Indicator style updated"
+msgstr "Štýl indikátora je aktualizovaný"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:712
+msgid "Icon hover effect updated"
+msgstr "Efekt pri prechode myšou nad ikonami bol aktualizovaný"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:722
+msgid "Application menu position updated"
+msgstr "Umiestnenie ponuky aplikácií aktualizované"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:732
+msgid "Login start updated"
+msgstr "Spúšťanie po prihlásení aktualizované"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:739
+msgid "Layout appearance and session defaults restored"
+msgstr "Vzhľad a predvolené nastavenia relácie rozloženia obnovené"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Modrá"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Tyrkysová"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:22
+msgid "Green"
+msgstr "Zelená"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Žltá"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Oranžová"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:25
+msgid "Red"
+msgstr "Červená"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Ružová"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Fialová"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Bridlicová"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "Filtrovať témy…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:109
+#: usr/share/big-gnome-center/ui/page_themes.py:108
+msgid "Colors"
+msgstr "Farby"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:109
 msgid "Icons"
 msgstr "Ikony"
 
+#: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
 msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:414
-#: usr/share/layout-switcher/ui/window.py:511
-#: usr/share/layout-switcher/ui/page_startup.py:45
-msgid "Startup Applications"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:168
+#: usr/share/big-gnome-center/ui/frosted_glass.py:145
+#: usr/share/big-gnome-center/ui/frosted_glass.py:239
+msgid "Accent color"
+msgstr "Akcentová farba"
 
-#: usr/share/layout-switcher/ui/dialog_startup_apps.py:68
-#: usr/share/layout-switcher/ui/page_startup.py:51
-#: usr/share/layout-switcher/ui/page_startup.py:54
-msgid "Add a startup application"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:177
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "Vyberte farbu použitú pre tlačidlá, výbery a zvýraznenia."
 
-#: usr/share/layout-switcher/ui/dialog_startup_apps.py:84
-msgid "Search applications"
-msgstr ""
+#: usr/share/big-gnome-center/ui/page_themes.py:210
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color} akcentová farba"
 
-#: usr/share/layout-switcher/ui/page_startup.py:46
-msgid "Startup applications are automatically started when you log in."
-msgstr ""
-
-#: usr/share/layout-switcher/ui/page_startup.py:87
-msgid "No Startup Applications"
-msgstr ""
-
-
-#: usr/share/layout-switcher/ui/page_themes.py:240
+#: usr/share/big-gnome-center/ui/page_themes.py:263
 msgid "No themes found"
 msgstr "Žiadne témy nenájdené"
 
-#: usr/share/layout-switcher/ui/page_themes.py:241
+#: usr/share/big-gnome-center/ui/page_themes.py:264
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "Inštalujte témy do ~/.themes alebo /usr/share/themes"
 
-#: usr/share/layout-switcher/ui/page_themes.py:247
+#: usr/share/big-gnome-center/ui/page_themes.py:270
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "{n} dostupných tém"
 
-#: usr/share/layout-switcher/ui/page_themes.py:316
+#: usr/share/big-gnome-center/ui/page_themes.py:347
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} téma"
 
-#: usr/share/layout-switcher/ui/window.py:71
-#: usr/share/layout-switcher/ui/window.py:377
-msgid "Layout Switcher"
-msgstr "Layout Switcher"
+#: usr/share/big-gnome-center/ui/page_themes.py:349
+#: usr/share/big-gnome-center/ui/page_layouts.py:172
+#: usr/share/big-gnome-center/ui/page_layouts.py:221
+msgid "Active"
+msgstr "Aktívne"
 
-#: usr/share/layout-switcher/ui/window.py:229
-#: usr/share/layout-switcher/ui/window.py:230
-msgid "Show Sidebar"
-msgstr "Zobraziť bočný panel"
-
-#: usr/share/layout-switcher/ui/window.py:236
-#: usr/share/layout-switcher/ui/window.py:401
-#: usr/share/layout-switcher/ui/window.py:484
-msgid "Layouts"
-msgstr "Rozloženia"
-
-#: usr/share/layout-switcher/ui/window.py:242
-msgid "Menu"
-msgstr "Ponuka"
-
-#: usr/share/layout-switcher/ui/window.py:243
-msgid "Main menu"
-msgstr "Hlavná ponuka"
-
-#: usr/share/layout-switcher/ui/window.py:247
-msgid "Check for updates"
-msgstr "Skontrolovať aktualizácie"
-
-#: usr/share/layout-switcher/ui/window.py:248
-msgid "Auto-update extensions"
-msgstr "Automaticky aktualizovať rozšírenia"
-
-#: usr/share/layout-switcher/ui/window.py:250
-msgid "Backups…"
-msgstr "Zálohy…"
-
-#: usr/share/layout-switcher/ui/window.py:251
-msgid "About"
-msgstr "O aplikácii"
-
-#: usr/share/layout-switcher/ui/window.py:260
-msgid "Welcome! Choose a desktop layout below to get started."
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:68
+#: usr/share/big-gnome-center/ui/page_startup.py:51
+#: usr/share/big-gnome-center/ui/page_startup.py:54
+msgid "Add a startup application"
 msgstr ""
-"Vitajte! Vyberte si nižšie rozloženie pracovnej plochy, aby ste mohli začať."
 
-#: usr/share/layout-switcher/ui/window.py:261
-msgid "Got it"
-msgstr "Rozumiem"
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
+msgid "Search applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:402
-#: usr/share/layout-switcher/ui/window.py:485
-msgid "Fonts"
-msgstr "Písma"
+#: usr/share/big-gnome-center/ui/page_startup.py:45
+#: usr/share/big-gnome-center/ui/window.py:414
+#: usr/share/big-gnome-center/ui/window.py:511
+msgid "Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:403
-#: usr/share/layout-switcher/ui/window.py:486
-msgid "Themes"
-msgstr "Témy"
+#: usr/share/big-gnome-center/ui/page_startup.py:46
+msgid "Startup applications are automatically started when you log in."
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:406
-#: usr/share/layout-switcher/ui/window.py:489
-msgid "Effects"
-msgstr "Efekty"
+#: usr/share/big-gnome-center/ui/page_startup.py:87
+msgid "No Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/page_extensions.py:494
-#: usr/share/layout-switcher/ui/page_extensions.py:502
-#: usr/share/layout-switcher/ui/window.py:407
-#: usr/share/layout-switcher/ui/window.py:490
-msgid "Extensions"
-msgstr "Rozšírenia"
-
-#: usr/share/layout-switcher/ui/window.py:528
-msgid "Community Layout Switcher"
-msgstr "Community Layout Switcher"
-
-#: usr/share/layout-switcher/ui/window.py:533
-msgid "Layouts, effects and themes for your GNOME desktop."
-msgstr "Rozloženia, efekty a témy pre vašu GNOME plochu."
-
-#: usr/share/layout-switcher/ui/window.py:599
-msgid "Applying…"
-msgstr "Aplikuje sa…"
-
-#: usr/share/layout-switcher/ui/window.py:706
-msgid "All extensions up to date"
-msgstr "Všetky rozšírenia sú aktuálne"
-
-#: usr/share/layout-switcher/ui/window.py:721
-#, python-brace-format
-msgid "Auto-updated {n} extensions"
-msgstr "Automaticky aktualizované {n} rozšírenia"
-
-#: usr/share/layout-switcher/ui/window.py:726
-#, python-brace-format
-msgid "{n} update(s) available"
-msgstr "{n} dostupná aktualizácia/aktualizácie"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update enabled"
-msgstr "Automatická aktualizácia zapnutá"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update disabled"
-msgstr "Automatická aktualizácia vypnutá"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:238
-msgid "Extension updates available"
-msgstr "Sú dostupné aktualizácie rozšírení"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:239
-#, python-brace-format
-msgid "Available updates: {names}"
-msgstr "Dostupné aktualizácie: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:243
-#: usr/share/layout-switcher/extension_update_monitor.py:244
-#: usr/share/layout-switcher/extension_update_monitor.py:336
-#: usr/share/layout-switcher/extension_update_monitor.py:337
-msgid "View updates"
-msgstr "Zobraziť aktualizácie"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:306
-msgid "Extension updates installed"
-msgstr "Aktualizácie rozšírení sú nainštalované"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:307
-#: usr/share/layout-switcher/extension_update_monitor.py:322
-#, python-brace-format
-msgid "Updated: {names}"
-msgstr "Aktualizované: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:311
-#: usr/share/layout-switcher/extension_update_monitor.py:312
-msgid "View extensions"
-msgstr "Zobraziť rozšírenia"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:328
-#, python-brace-format
-msgid "Failed: {names}"
-msgstr "Zlyhalo: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:333
-msgid "Some extension updates failed"
-msgstr "Niektoré aktualizácie rozšírení zlyhali"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:338
-msgid "Try again"
-msgstr "Skúsiť znova"
-
-#: usr/share/layout-switcher/helper_client.py:113
-msgid "The required layout helper is not installed."
-msgstr "Požadovaný layout helper nie je nainštalovaný."
-
-#: usr/share/layout-switcher/helper_client.py:152
-msgid "The required layout helper did not start."
-msgstr "Požadovaný layout helper sa nespustil."
-
-#: usr/share/layout-switcher/helper_guard.py:78
-msgid "Layout helper restored"
-msgstr "Layout helper bol obnovený"
-
-#: usr/share/layout-switcher/helper_guard.py:79
-msgid "The required layout helper was re-enabled automatically."
-msgstr "Požadovaný layout helper bol automaticky znovu povolený."
-
-#: usr/share/layout-switcher/layout_applier.py:2254
-msgid "Layout Switcher Helper is required to apply layouts."
-msgstr "Layout Switcher Helper je potrebný na aplikovanie rozložení."
-
-#: usr/share/layout-switcher/shell_reloader.py:280
-#: usr/share/layout-switcher/ui/page_extensions.py:704
-#: usr/share/layout-switcher/ui/page_extensions.py:760
-#: usr/share/layout-switcher/ui/page_extensions.py:761
-msgid "Required for layout switching"
-msgstr "Vyžadované na prepínanie rozložení"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:28
-#: usr/share/layout-switcher/ui/window.py:404
-#: usr/share/layout-switcher/ui/window.py:487
-msgid "Desktop"
-msgstr "Pracovná plocha"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:32
-#: usr/share/layout-switcher/ui/desktop_icons.py:51
-msgid "Desktop icons"
-msgstr "Ikony na pracovnej ploche"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:33
-#: usr/share/layout-switcher/ui/desktop_icons.py:72
-msgid "Show files and folders on the desktop"
-msgstr "Zobraziť súbory a priečinky na pracovnej ploche"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:39
-msgid "Desktop icon settings"
-msgstr "Nastavenia ikon na pracovnej ploche"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:74
-msgid "GTK4 Desktop Icons NG is not installed"
-msgstr "GTK4 Desktop Icons NG nie je nainštalovaný"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:95
-msgid "Desktop icons enabled"
-msgstr "Ikony na pracovnej ploche sú povolené"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:97
-msgid "Desktop icons disabled"
-msgstr "Ikony na pracovnej ploche sú zakázané"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:102
-#, python-brace-format
-msgid "Could not change desktop icons: {message}"
-msgstr "Nepodarilo sa zmeniť ikony na pracovnej ploche: {message}"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
 msgstr "Rozmazanie prehľadu"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Frosted glass"
 msgstr "Frosted Glass"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:67
+#: usr/share/big-gnome-center/ui/frosted_glass.py:76
 msgid "Blur for the workspace and application overview"
 msgstr "Rozmazanie pracovnej plochy a prehľadu aplikácií"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:69
+#: usr/share/big-gnome-center/ui/frosted_glass.py:78
 msgid "Unified blur for windows and GNOME Shell surfaces"
 msgstr "Jednotné rozmazanie okien a plôch GNOME Shell"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:79
+#: usr/share/big-gnome-center/ui/frosted_glass.py:88
 msgid "unknown"
 msgstr "neznáme"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:82
+#: usr/share/big-gnome-center/ui/frosted_glass.py:92
 #, python-brace-format
 msgid ""
 "Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
@@ -1213,717 +1406,527 @@ msgstr ""
 "Rozmazanie prehľadu vyžaduje GNOME 50 alebo novší. Táto pracovná plocha je "
 "GNOME {version}."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:89
+#: usr/share/big-gnome-center/ui/frosted_glass.py:101
 msgid ""
-"Install or update Layout Switcher to make Frosted Glass settings available."
+"Install or update Big Gnome Center to make Frosted Glass settings available."
 msgstr ""
-"Nainštalujte alebo aktualizujte Layout Switcher, aby boli dostupné "
+"Nainštalujte alebo aktualizujte Big Gnome Center, aby boli dostupné "
 "nastavenia Frosted Glass."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:110
+#: usr/share/big-gnome-center/ui/frosted_glass.py:127
 msgid "Enable overview blur"
 msgstr "Povoliť rozmazanie prehľadu"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:111
-#: usr/share/layout-switcher/ui/frosted_glass.py:190
+#: usr/share/big-gnome-center/ui/frosted_glass.py:128
+#: usr/share/big-gnome-center/ui/frosted_glass.py:207
 msgid "Workspace and application overview"
 msgstr "Prehľad pracovných plôch a aplikácií"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:122
-#: usr/share/layout-switcher/ui/frosted_glass.py:206
+#: usr/share/big-gnome-center/ui/frosted_glass.py:137
+#: usr/share/big-gnome-center/ui/frosted_glass.py:223
 msgid "Material"
 msgstr "Materiál"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Blur strength"
 msgstr "Intenzita rozmazania"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Less"
 msgstr "Menej"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "More"
 msgstr "Viac"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
 msgid "Material opacity"
 msgstr "Priehľadnosť materiálu"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:199
-msgid "Transparent"
-msgstr "Priehľadný"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:212
-msgid "Opaque"
-msgstr "Nepriehľadný"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:137
-#: usr/share/layout-switcher/ui/frosted_glass.py:196
-#: usr/share/layout-switcher/ui/frosted_glass.py:198
+#: usr/share/big-gnome-center/ui/frosted_glass.py:156
+#: usr/share/big-gnome-center/ui/frosted_glass.py:213
+#: usr/share/big-gnome-center/ui/frosted_glass.py:215
 msgid "Not available in this session"
 msgstr "V tomto sedení nie je k dispozícii"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:147
+#: usr/share/big-gnome-center/ui/frosted_glass.py:166
 msgid "Enable frosted glass"
 msgstr "Povoliť matné sklo"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:148
+#: usr/share/big-gnome-center/ui/frosted_glass.py:167
 msgid "Apply the material without changing the active desktop layout"
 msgstr "Použiť materiál bez zmeny aktívneho rozloženia pracovnej plochy"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:160
+#: usr/share/big-gnome-center/ui/frosted_glass.py:177
 msgid "Surfaces"
 msgstr "Plochy"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:161
+#: usr/share/big-gnome-center/ui/frosted_glass.py:178
 msgid "Choose independently where the material is applied."
 msgstr "Vyberte nezávisle, kde sa materiál použije."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "Windows"
 msgstr "Okná"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "GTK, Qt and other application windows"
 msgstr "Okná aplikácií GTK, Qt a ďalších"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
-#: usr/share/layout-switcher/ui/page_panel_dock.py:74
-msgid "Panel"
-msgstr "Panel"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
 msgid "GNOME panel and Community Panel"
 msgstr "Panel GNOME a komunitný panel"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
-#: usr/share/layout-switcher/ui/page_panel_dock.py:55
-#: usr/share/layout-switcher/ui/page_panel_dock.py:254
-#: usr/share/layout-switcher/ui/page_panel_dock.py:257
-msgid "Dock"
-msgstr "Dock"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
 msgid "Community Dock surfaces"
 msgstr "Plochy komunitného Docku"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:169
+#: usr/share/big-gnome-center/ui/frosted_glass.py:186
 msgid "Layout menus"
 msgstr "Ponuky rozložení"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:170
+#: usr/share/big-gnome-center/ui/frosted_glass.py:187
 msgid "Application menus used by Classic, Hybrid and Desk-UX"
 msgstr "Ponuky aplikácií používané v Classic, Hybrid a Desk-UX"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:174
+#: usr/share/big-gnome-center/ui/frosted_glass.py:191
 msgid "Quick Settings"
 msgstr "Rýchle nastavenia"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:175
+#: usr/share/big-gnome-center/ui/frosted_glass.py:192
 msgid "System settings menu in the panel"
 msgstr "Ponuka systémových nastavení v paneli"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:179
+#: usr/share/big-gnome-center/ui/frosted_glass.py:196
 msgid "Calendar and notifications"
 msgstr "Kalendár a upozornenia"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:180
+#: usr/share/big-gnome-center/ui/frosted_glass.py:197
 msgid "Date, calendar and notification menu in the panel"
 msgstr "Ponuka dátumu, kalendára a upozornení v paneli"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:184
+#: usr/share/big-gnome-center/ui/frosted_glass.py:201
 msgid "System dialogs"
 msgstr "Systémové dialógy"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:185
+#: usr/share/big-gnome-center/ui/frosted_glass.py:202
 msgid "Power, restart and other GNOME Shell dialogs"
 msgstr "Dialógy vypnutia, reštartu a ďalšie dialógy GNOME Shell"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:189
+#: usr/share/big-gnome-center/ui/frosted_glass.py:206
 msgid "Overview"
 msgstr "Prehľad"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:209
+#: usr/share/big-gnome-center/ui/frosted_glass.py:226
 msgid "Rendering mode"
 msgstr "Režim vykresľovania"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:210
+#: usr/share/big-gnome-center/ui/frosted_glass.py:227
 msgid "Automatic balances visual quality and power usage"
 msgstr "Automaticky vyvažuje vizuálnu kvalitu a spotrebu energie"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Automatic"
 msgstr "Automaticky"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Dynamic"
 msgstr "Dynamicky"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Static"
 msgstr "Staticky"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:228
+#: usr/share/big-gnome-center/ui/frosted_glass.py:249
 msgid "Behavior"
 msgstr "Správanie"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:229
+#: usr/share/big-gnome-center/ui/frosted_glass.py:250
 msgid "Application identifiers can be separated by commas."
 msgstr "Identifikátory aplikácií môžu byť oddelené čiarkami."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:231
+#: usr/share/big-gnome-center/ui/frosted_glass.py:252
 msgid "Application exceptions"
 msgstr "Výnimky aplikácií"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Keep blur"
 msgstr "Ponechať rozmazanie"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Make opaque"
 msgstr "Spraviť nepriehľadné"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Disable blur"
 msgstr "Vypnúť rozmazanie"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:239
+#: usr/share/big-gnome-center/ui/frosted_glass.py:260
 msgid "Maximized windows"
 msgstr "Maximalizované okná"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:242
+#: usr/share/big-gnome-center/ui/frosted_glass.py:263
 msgid "Fullscreen windows"
 msgstr "Okná na celú obrazovku"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:246
+#: usr/share/big-gnome-center/ui/frosted_glass.py:267
 msgid "Power saving"
 msgstr "Úspora energie"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:247
+#: usr/share/big-gnome-center/ui/frosted_glass.py:268
 msgid "Used on battery and with the power-saver profile"
 msgstr "Používa sa na batériu a s profilom úspory energie"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Keep selected mode"
 msgstr "Ponechať vybraný režim"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Use static blur"
 msgstr "Použiť statické rozmazanie"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:334
+#: usr/share/big-gnome-center/ui/frosted_glass.py:399
 msgid "Frosted glass enabled"
 msgstr "Matné sklo povolené"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:339
+#: usr/share/big-gnome-center/ui/frosted_glass.py:403
 #, python-brace-format
 msgid "Could not enable Frosted Glass: {message}"
 msgstr "Nepodarilo sa povoliť matné sklo: {message}"
 
-#: usr/share/layout-switcher/ui/page_desktop.py:39
-msgid "Top center"
-msgstr "Hore v strede"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:40
-msgid "Bottom center"
-msgstr "Dole v strede"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:41
-msgid "Top right"
-msgstr "Vpravo hore"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:42
-msgid "Top left"
-msgstr "Vľavo hore"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:43
-msgid "Bottom left"
-msgstr "Vľavo dole"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:44
-msgid "Bottom right"
-msgstr "Vpravo dole"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:88
-msgid "Notification position"
-msgstr "Pozícia upozornení"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:89
-msgid "Choose where notification banners appear."
-msgstr "Vyberte, kde sa majú zobrazovať bannery upozornení."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:129
-#, python-brace-format
-msgid "Show notifications at {position}"
-msgstr "Zobrazovať upozornenia na {position}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:143
-#: usr/share/layout-switcher/ui/page_desktop.py:287
-msgid "Default"
-msgstr "Predvolené"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:194
-#: usr/share/layout-switcher/ui/page_desktop.py:199
-#: usr/share/layout-switcher/ui/page_desktop.py:206
-msgid "Application menu"
-msgstr "Ponuka aplikácií"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Dostupné pre rozloženia Classic, Desk-UX a Hybrid."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:200
-#: usr/share/layout-switcher/ui/page_desktop.py:469
-msgid "Use Community Menu as the application menu"
-msgstr "Použiť menu komunity ako ponuku aplikácií"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:220
-msgid "Menu style"
-msgstr "Štýl ponuky"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:226
-msgid "Choose the appearance of Community Menu."
-msgstr "Vyberte vzhľad menu komunity."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:258
-msgid "Super key"
-msgstr "Kláves Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:259
-msgid "Choose what happens when pressing Super"
-msgstr "Vyberte, čo sa stane po stlačení klávesu Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open menu"
-msgstr "Otvoriť ponuku"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open overview"
-msgstr "Otvoriť prehľad"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:273
-#, python-brace-format
-msgid "Use the {name} menu style"
-msgstr "Použiť štýl ponuky {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:471
-msgid "Community Menu is not installed"
-msgstr "Menu komunity nie je nainštalované"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:516
-#, python-brace-format
-msgid "{position} notification position applied"
-msgstr "Pozícia upozornení {position} bola použitá"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:523
-#, python-brace-format
-msgid "Could not change the notification position: {message}"
-msgstr "Nepodarilo sa zmeniť pozíciu upozornení: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:534
-msgid "Notification preview"
-msgstr "Náhľad upozornenia"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:535
-msgid "Notifications will appear here."
-msgstr "Upozornenia sa tu budú zobrazovať."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu enabled"
-msgstr "Ponuka aplikácií zapnutá"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu disabled"
-msgstr "Ponuka aplikácií vypnutá"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:559
-#, python-brace-format
-msgid "Could not change the application menu: {message}"
-msgstr "Ponuku aplikácií sa nepodarilo zmeniť: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:597
-#, python-brace-format
-msgid "{name} menu style applied"
-msgstr "Použitý štýl ponuky {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:600
-#, python-brace-format
-msgid "Could not change the menu style: {message}"
-msgstr "Štýl ponuky sa nepodarilo zmeniť: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:631
-msgid "Super opens the application menu"
-msgstr "Super otvára ponuku aplikácií"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:633
-msgid "Super opens the overview"
-msgstr "Super otvára prehľad"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:637
-#, python-brace-format
-msgid "Could not change the Super key: {message}"
-msgstr "Kláves Super sa nepodarilo zmeniť: {message}"
-
-#: usr/share/layout-switcher/ui/page_effects.py:60
-msgid "Other visual effects"
-msgstr "Ďalšie vizuálne efekty"
-
-#: usr/share/layout-switcher/ui/page_effects.py:150
-#, python-brace-format
-msgid "{name} effect preview"
-msgstr "Ukážka efektu {name}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:20
-msgid "Always visible"
-msgstr "Vždy viditeľné"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:21
-msgid "Always hidden (show at edge)"
-msgstr "Vždy skryté (zobraziť pri okraji)"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:22
-msgid "Intelligent hiding"
-msgstr "Inteligentné skrývanie"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:25
-msgid "Dot"
-msgstr "Bodka"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:26
-msgid "Hybrid line"
-msgstr "Hybridná čiara"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:27
-msgid "Desk UX line"
-msgstr "Desk UX čiara"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:56
-#: usr/share/layout-switcher/ui/page_panel_dock.py:259
-msgid "Configure the Community Dock appearance and visibility."
-msgstr "Konfigurácia vzhľadu a viditeľnosti dokovacej lišty Community Dock."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:62
-msgid "Dock transparency"
-msgstr "Priehľadnosť doku"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:65
-msgid "Dock visibility"
-msgstr "Viditeľnosť doku"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:75
-#: usr/share/layout-switcher/ui/page_panel_dock.py:271
-msgid "Configure the system panel appearance and visibility."
-msgstr "Nakonfigurujte vzhľad a viditeľnosť systémového panela."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Panel transparency"
-msgstr "Priehľadnosť panela"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:84
-msgid "Panel visibility"
-msgstr "Viditeľnosť panela"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:101
-msgid "Running app indicator"
-msgstr "Indikátor spustených aplikácií"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:105
-msgid "Choose the mark shown below running applications."
-msgstr "Vyberte označenie zobrazené pri spustených aplikáciách."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:142
-#, python-brace-format
-msgid "Use the {style} indicator"
-msgstr "Použiť indikátor {style}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:222
-msgid "Choose how this component behaves on the desktop."
-msgstr "Vyberte, ako sa tento komponent správa na pracovnej ploche."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:251
-msgid "Taskbar"
-msgstr "Panel úloh"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:252
-msgid "Configure running application indicators."
-msgstr "Nakonfigurujte indikátory spustených aplikácií."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:255
-msgid "Available when Community Dock is active."
-msgstr "Dostupné, keď je aktívny komunitný dok."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:263
-msgid "Available when Community Dock or Community Panel is active."
-msgstr "Dostupné, keď je aktívny komunitný dok alebo komunitný panel."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:267
-msgid "Configure the Community Panel appearance and visibility."
-msgstr "Nakonfigurujte vzhľad a viditeľnosť komunitného panela."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:321
-msgid "Dock visibility updated"
-msgstr "Viditeľnosť doku sa aktualizovala"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:328
-msgid "Panel visibility updated"
-msgstr "Viditeľnosť panela je aktualizovaná"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:338
-msgid "Indicator style updated"
-msgstr "Štýl indikátora je aktualizovaný"
-
-#: usr/share/layout-switcher/ui/page_themes.py:20
-msgid "Blue"
-msgstr "Modrá"
-
-#: usr/share/layout-switcher/ui/page_themes.py:21
-msgid "Teal"
-msgstr "Tyrkysová"
-
-#: usr/share/layout-switcher/ui/page_themes.py:22
-msgid "Green"
-msgstr "Zelená"
-
-#: usr/share/layout-switcher/ui/page_themes.py:23
-msgid "Yellow"
-msgstr "Žltá"
-
-#: usr/share/layout-switcher/ui/page_themes.py:24
-msgid "Orange"
-msgstr "Oranžová"
-
-#: usr/share/layout-switcher/ui/page_themes.py:25
-msgid "Red"
-msgstr "Červená"
-
-#: usr/share/layout-switcher/ui/page_themes.py:26
-msgid "Pink"
-msgstr "Ružová"
-
-#: usr/share/layout-switcher/ui/page_themes.py:27
-msgid "Purple"
-msgstr "Fialová"
-
-#: usr/share/layout-switcher/ui/page_themes.py:28
-msgid "Slate"
-msgstr "Bridlicová"
-
-#: usr/share/layout-switcher/ui/page_themes.py:29
-msgid "Maia"
-msgstr "Maia"
-
-#: usr/share/layout-switcher/ui/page_themes.py:108
-msgid "Colors"
-msgstr "Farby"
-
-#: usr/share/layout-switcher/ui/page_themes.py:165
-msgid "Accent color"
-msgstr "Akcentová farba"
-
-#: usr/share/layout-switcher/ui/page_themes.py:174
-msgid "Choose the color used for buttons, selections, and highlights."
-msgstr "Vyberte farbu použitú pre tlačidlá, výbery a zvýraznenia."
-
-#: usr/share/layout-switcher/ui/page_themes.py:207
-#, python-brace-format
-msgid "{color} accent color"
-msgstr "{color} akcentová farba"
-
-#: usr/share/layout-switcher/ui/window.py:405
-#: usr/share/layout-switcher/ui/window.py:488
+#: usr/share/big-gnome-center/ui/page_layouts.py:34
+msgid "Disabling extensions…"
+msgstr "Zakazujú sa rozšírenia…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:35
+msgid "Loading layout…"
+msgstr "Načítava sa rozloženie…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:36
+msgid "Reloading components…"
+msgstr "Znova sa načítavajú súčasti…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:66
+msgid "Layout status"
+msgstr "Stav rozloženia"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:154
+msgid "Contains your saved customizations"
+msgstr "Obsahuje vaše uložené prispôsobenia"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:158
+#: usr/share/big-gnome-center/ui/page_layouts.py:272
+msgid "Modified"
+msgstr "Zmenené"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:192
+#: usr/share/big-gnome-center/ui/page_layouts.py:219
+msgid "Coming soon"
+msgstr "Čoskoro"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:283
+msgid ""
+"You have previously modified this layout. Apply the original system default "
+"or resume your changes?"
+msgstr ""
+"Toto rozloženie ste už upravili. Použiť pôvodné systémové predvolené "
+"nastavenie alebo obnoviť vaše zmeny?"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:288
+msgid "Resume my changes"
+msgstr "Obnoviť moje zmeny"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:289
+msgid "Apply original"
+msgstr "Použiť originál"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:293
+msgid ""
+"Apply this layout? A backup of your current configuration will be created "
+"automatically."
+msgstr ""
+"Použiť toto rozloženie? Záloha vašej aktuálnej konfigurácie bude automaticky "
+"vytvorená."
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:298
+msgid "Apply"
+msgstr "Použiť"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:353
+msgid "Applying"
+msgstr "Aplikovanie"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:383
+msgid "Snapshot not found"
+msgstr "Snímka nenájdená"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:411
+msgid "Layout file not found"
+msgstr "Súbor rozloženia nenájdený"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:452
+#: usr/share/big-gnome-center/ui/page_layouts.py:460
+#: usr/share/big-gnome-center/ui/page_layouts.py:469
+msgid "applied"
+msgstr "aplikované"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:462
+msgid "Undo"
+msgstr "Späť"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:480
+msgid "Restart the session for the 100% clean state"
+msgstr "Reštartujte reláciu pre 100 % čistý stav"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:485
+msgid "Restart now"
+msgstr "Reštartovať teraz"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:509
+msgid "Cannot restart session"
+msgstr "Reláciu nemožno reštartovať"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:516
+#: usr/share/big-gnome-center/ui/page_layouts.py:518
+msgid "Restoring previous layout…"
+msgstr "Obnovuje sa predchádzajúce rozloženie…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:550
+msgid "Layout restored"
+msgstr "Rozloženie obnovené"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:552
+msgid "Previous layout restored"
+msgstr "Predchádzajúce rozloženie obnovené"
+
+#: usr/share/big-gnome-center/ui/window.py:72
+#: usr/share/big-gnome-center/ui/window.py:383
+#: usr/share/big-gnome-center/ui/window.py:550
+msgid "Big Gnome Center"
+msgstr "Big Gnome Center"
+
+#: usr/share/big-gnome-center/ui/window.py:233
+#: usr/share/big-gnome-center/ui/window.py:234
+msgid "Show Sidebar"
+msgstr "Zobraziť bočný panel"
+
+#: usr/share/big-gnome-center/ui/window.py:240
+#: usr/share/big-gnome-center/ui/window.py:407
+#: usr/share/big-gnome-center/ui/window.py:504
+msgid "Layouts"
+msgstr "Rozloženia"
+
+#: usr/share/big-gnome-center/ui/window.py:246
+msgid "Menu"
+msgstr "Ponuka"
+
+#: usr/share/big-gnome-center/ui/window.py:247
+msgid "Main menu"
+msgstr "Hlavná ponuka"
+
+#: usr/share/big-gnome-center/ui/window.py:251
+msgid "Check for updates"
+msgstr "Skontrolovať aktualizácie"
+
+#: usr/share/big-gnome-center/ui/window.py:252
+msgid "Auto-update extensions"
+msgstr "Automaticky aktualizovať rozšírenia"
+
+#: usr/share/big-gnome-center/ui/window.py:254
+msgid "Backups…"
+msgstr "Zálohy…"
+
+#: usr/share/big-gnome-center/ui/window.py:255
+msgid "About"
+msgstr "O aplikácii"
+
+#: usr/share/big-gnome-center/ui/window.py:264
+msgid "Welcome! Choose a desktop layout below to get started."
+msgstr ""
+"Vitajte! Vyberte si nižšie rozloženie pracovnej plochy, aby ste mohli začať."
+
+#: usr/share/big-gnome-center/ui/window.py:265
+msgid "Got it"
+msgstr "Rozumiem"
+
+#: usr/share/big-gnome-center/ui/window.py:408
+#: usr/share/big-gnome-center/ui/window.py:505
+msgid "Fonts"
+msgstr "Písma"
+
+#: usr/share/big-gnome-center/ui/window.py:409
+#: usr/share/big-gnome-center/ui/window.py:506
+msgid "Themes"
+msgstr "Témy"
+
+#: usr/share/big-gnome-center/ui/window.py:411
+#: usr/share/big-gnome-center/ui/window.py:508
 msgid "Panel and Dock"
 msgstr "Panel a Dock"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Dock size"
-msgstr "Veľkosť doku"
+#: usr/share/big-gnome-center/ui/window.py:412
+#: usr/share/big-gnome-center/ui/window.py:509
+msgid "Effects"
+msgstr "Efekty"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:114
-msgid "Panel height"
-msgstr "Výška panela"
+#: usr/share/big-gnome-center/ui/window.py:555
+msgid "Layouts, effects and themes for your GNOME desktop."
+msgstr "Rozloženia, efekty a témy pre vašu GNOME plochu."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:450
-msgid "Smaller"
-msgstr "Menšie"
+#: usr/share/big-gnome-center/ui/window.py:621
+msgid "Applying…"
+msgstr "Aplikuje sa…"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:466
-msgid "Larger"
-msgstr "Väčšie"
+#: usr/share/big-gnome-center/ui/window.py:728
+msgid "All extensions up to date"
+msgstr "Všetky rozšírenia sú aktuálne"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:143
-msgid "Restore layout defaults"
-msgstr "Obnoviť predvolené nastavenia rozloženia"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:33
-msgid "Standard"
-msgstr "Štandardné"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:34
-msgid "Gentle lift"
-msgstr "Jemné zdvihnutie"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:245
-msgid "Icon hover effect"
-msgstr "Efekt pri prechode myšou nad ikonami"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:249
-msgid "Choose how dock icons react to the pointer."
-msgstr "Vyberte, ako reagujú ikony doku na ukazovateľ."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#: usr/share/big-gnome-center/ui/window.py:743
 #, python-brace-format
-msgid "Use the {effect} hover effect"
-msgstr "Použiť efekt {effect} pri prechode"
+msgid "Auto-updated {n} extensions"
+msgstr "Automaticky aktualizované {n} rozšírenia"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:658
-msgid "Icon hover effect updated"
-msgstr "Efekt pri prechode myšou nad ikonami bol aktualizovaný"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:32
-msgid "Captures, annotates and records the screen."
-msgstr "Zachytáva, anotuje a nahráva obrazovku."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:35
-msgid "Shows application tray icons in the system panel."
-msgstr "Zobrazuje ikony aplikácií v systémovom paneli."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:40
-msgid "Provides application launchers and running windows in a dock."
-msgstr "Poskytuje spúšťače aplikácií a spustené okná v doku."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:43
-msgid "Provides the applications menu used by desktop layouts."
-msgstr "Poskytuje ponuku aplikácií používanú rozloženiami pracovnej plochy."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:46
-msgid "Provides the taskbar and system panel used by desktop layouts."
-msgstr "Poskytuje panel úloh a systémový panel používaný rozloženiami."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:49
-msgid "Keeps a searchable history of copied content."
-msgstr "Uchováva prehľadateľnú históriu skopírovaného obsahu."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:52
-msgid "Shows removable devices and lets you safely eject them."
-msgstr "Zobrazuje vymeniteľné zariadenia a umožňuje ich bezpečné vysunutie."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:55
-msgid "Adds controlled blur and transparency to the desktop."
-msgstr "Pridáva riadené rozmazanie a priehľadnosť pracovnej ploche."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:58
-msgid "Connects phones to share files, notifications and other features."
-msgstr "Prepája telefóny na zdieľanie súborov, upozornení a ďalších funkcií."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:61
-msgid "Shows files and folders on the desktop."
-msgstr "Zobrazuje súbory a priečinky na pracovnej ploche."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-msgid "Applies layout changes safely inside GNOME Shell."
-msgstr "Bezpečne aplikuje zmeny rozloženia v GNOME Shell."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:67
-msgid "Provides the dock and taskbar runtime used by desktop layouts."
-msgstr "Poskytuje runtime doku a panela úloh používaný rozloženiami."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:70
-msgid "Keeps GTK 3 applications aligned with light and dark mode."
-msgstr "Udržiava aplikácie GTK 3 zosúladené so svetlým a tmavým režimom."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:73
-msgid "Uses the light GNOME Shell appearance."
-msgstr "Používa svetlý vzhľad GNOME Shell."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:76
-msgid "Loads the Shell theme selected by the active layout."
-msgstr "Načítava tému Shellu vybranú aktívnym rozložením."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:91
-msgid "Description not provided by the developer."
-msgstr "Vývojár neposkytol popis."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:770
+#: usr/share/big-gnome-center/ui/window.py:748
 #, python-brace-format
-msgid "Technical identifier: {uuid}"
-msgstr "Technický identifikátor: {uuid}"
+msgid "{n} update(s) available"
+msgstr "{n} dostupná aktualizácia/aktualizácie"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:772
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update enabled"
+msgstr "Automatická aktualizácia zapnutá"
+
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update disabled"
+msgstr "Automatická aktualizácia vypnutá"
+
+#: usr/share/big-gnome-center/constants.py:166
+msgid "Desktop Cube"
+msgstr "Desktop Cube"
+
+#: usr/share/big-gnome-center/constants.py:167
+msgid "Rotate workspaces on a 3D cube"
+msgstr "Otáčať pracovné plochy v 3D kocke"
+
+#: usr/share/big-gnome-center/constants.py:177
+msgid "Magic Lamp"
+msgstr "Magic Lamp"
+
+#: usr/share/big-gnome-center/constants.py:178
+msgid "Genie effect when minimizing windows"
+msgstr "Efekt džina pri minimalizovaní okien"
+
+#: usr/share/big-gnome-center/constants.py:188
+msgid "Compiz Windows"
+msgstr "Compiz Windows"
+
+#: usr/share/big-gnome-center/constants.py:189
+msgid "Wobbly windows and extra animations"
+msgstr "Vlnité okná a ďalšie animácie"
+
+#: usr/share/big-gnome-center/constants.py:216
+msgid "Default Big Gnome layout"
+msgstr "Predvolené veľké rozloženie Gnome"
+
+#: usr/share/big-gnome-center/constants.py:223
+msgid "Clean and contemporary desktop"
+msgstr "Čistá a moderná pracovná plocha"
+
+#: usr/share/big-gnome-center/constants.py:230
+msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
+msgstr "Centrovaný dock-panel úloh, štýl Windows 11 / Deepin / Pop!_OS"
+
+#: usr/share/big-gnome-center/constants.py:237
+msgid "Unity-style layout with left dock and top bar"
+msgstr "Rozloženie v štýle Unity s ľavým dockom a horným panelom"
+
+#: usr/share/big-gnome-center/constants.py:244
+msgid "Traditional desktop with taskbar and system tray"
+msgstr "Tradičná pracovná plocha s panelom úloh a systémovou lištou"
+
+#: usr/share/big-gnome-center/constants.py:251
+msgid "Near-vanilla GNOME with minimal distro tweaks"
+msgstr "Takmer čistý GNOME s minimálnymi úpravami distribúcie"
+
+#: usr/share/big-gnome-center/helper_guard.py:86
+msgid "Layout helper restored"
+msgstr "Layout helper bol obnovený"
+
+#: usr/share/big-gnome-center/helper_guard.py:87
+msgid "The required layout helper was re-enabled automatically."
+msgstr "Požadovaný layout helper bol automaticky znovu povolený."
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:231
+msgid "Extension updates available"
+msgstr "Sú dostupné aktualizácie rozšírení"
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:232
 #, python-brace-format
-msgid "Version: {version}"
-msgstr "Verzia: {version}"
+msgid "Available updates: {names}"
+msgstr "Dostupné aktualizácie: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:127
-msgid "Session"
-msgstr "Relácia"
+#: usr/share/big-gnome-center/extension_update_monitor.py:234
+#: usr/share/big-gnome-center/extension_update_monitor.py:235
+#: usr/share/big-gnome-center/extension_update_monitor.py:315
+#: usr/share/big-gnome-center/extension_update_monitor.py:316
+msgid "View updates"
+msgstr "Zobraziť aktualizácie"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:128
-msgid "Choose how this layout starts after login."
-msgstr "Vyberte, ako sa toto rozloženie spustí po prihlásení."
+#: usr/share/big-gnome-center/extension_update_monitor.py:295
+msgid "Extension updates installed"
+msgstr "Aktualizácie rozšírení sú nainštalované"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:131
-msgid "Open desktop after login"
-msgstr "Otvoriť pracovnú plochu po prihlásení"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:132
-msgid "Skip the initial Activities overview for this layout."
-msgstr "Preskočiť úvodný prehľad aktivít pre toto rozloženie."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:144
-msgid "Reset appearance and session options for the active layout."
-msgstr "Obnoviť vzhľad a možnosti relácie aktívneho rozloženia."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:165
-msgid "Application menu position"
-msgstr "Umiestnenie ponuky aplikácií"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:169
-msgid "Place the BigGnome menu at either end of the Dock."
-msgstr "Umiestnite ponuku BigGnome na ktorýkoľvek koniec doku."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Left"
-msgstr "Vľavo"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Right"
-msgstr "Vpravo"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#: usr/share/big-gnome-center/extension_update_monitor.py:296
+#: usr/share/big-gnome-center/extension_update_monitor.py:308
 #, python-brace-format
-msgid "Place the application menu on the {side}"
-msgstr "Umiestniť ponuku aplikácií na stranu {side}"
+msgid "Updated: {names}"
+msgstr "Aktualizované: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:668
-msgid "Application menu position updated"
-msgstr "Umiestnenie ponuky aplikácií aktualizované"
+#: usr/share/big-gnome-center/extension_update_monitor.py:298
+#: usr/share/big-gnome-center/extension_update_monitor.py:299
+msgid "View extensions"
+msgstr "Zobraziť rozšírenia"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:678
-msgid "Login start updated"
-msgstr "Spúšťanie po prihlásení aktualizované"
+#: usr/share/big-gnome-center/extension_update_monitor.py:310
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Zlyhalo: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:685
-msgid "Layout appearance and session defaults restored"
-msgstr "Vzhľad a predvolené nastavenia relácie rozloženia obnovené"
+#: usr/share/big-gnome-center/extension_update_monitor.py:312
+msgid "Some extension updates failed"
+msgstr "Niektoré aktualizácie rozšírení zlyhali"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:36
-msgid "Magnification"
-msgstr "Zväčšenie"
+#: usr/share/big-gnome-center/extension_update_monitor.py:317
+msgid "Try again"
+msgstr "Skúsiť znova"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:97
-msgid "Magnification intensity"
-msgstr "Intenzita zväčšenia"
+#: usr/share/big-gnome-center/layout_applier.py:2256
+msgid "Big Gnome Center Helper is required to apply layouts."
+msgstr "Big Gnome Center Helper je potrebný na aplikovanie rozložení."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:102
-msgid "Choose how much nearby Dock icons grow."
-msgstr "Vyberte, ako veľmi sa zväčšia blízke ikony v docku."
+#: usr/share/big-gnome-center/helper_client.py:261
+msgid "The required layout helper is not installed."
+msgstr "Požadovaný layout helper nie je nainštalovaný."
+
+#: usr/share/big-gnome-center/helper_client.py:300
+msgid "The required layout helper did not start."
+msgstr "Požadovaný layout helper sa nespustil."
+
+#~ msgid "System extension — cannot remove"
+#~ msgstr "Systémové rozšírenie — nemožno odstrániť"
+
+#~ msgid ""
+#~ "This extension cannot be removed here because it was installed by the "
+#~ "system."
+#~ msgstr ""
+#~ "Toto rozšírenie tu nemožno odstrániť, pretože bolo nainštalované systémom."
+
+#~ msgid "Uses the light GNOME Shell appearance."
+#~ msgstr "Používa svetlý vzhľad GNOME Shell."
+
+#~ msgid "Loads the Shell theme selected by the active layout."
+#~ msgstr "Načítava tému Shellu vybranú aktívnym rozložením."

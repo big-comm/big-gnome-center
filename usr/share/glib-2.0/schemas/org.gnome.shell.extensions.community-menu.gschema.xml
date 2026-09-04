@@ -23,7 +23,7 @@
     <key name="desktop-layout" type="s">
       <default>''</default>
       <summary>Active desktop layout</summary>
-      <description>The active Layout Switcher desktop layout, independent of the menu appearance.</description>
+      <description>The active Big Gnome Center desktop layout, independent of the menu appearance.</description>
     </key>
     <key name="super-key-opens-menu" type="b">
       <default>true</default>

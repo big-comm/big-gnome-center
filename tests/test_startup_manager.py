@@ -149,7 +149,7 @@ def test_rejects_unsafe_desktop_ids(tmp_path):
 
 def test_window_exposes_startup_navigation():
     root = Path(__file__).resolve().parents[1]
-    source = (root / "usr/share/layout-switcher/ui/window.py").read_text(encoding="utf-8")
+    source = (root / "usr/share/big-gnome-center/ui/window.py").read_text(encoding="utf-8")
 
     assert "from ui.page_startup import StartupPage" in source
     assert '"startup": lambda: StartupPage' in source

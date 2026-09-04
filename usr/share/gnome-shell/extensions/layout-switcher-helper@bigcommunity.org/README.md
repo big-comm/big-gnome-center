@@ -1,6 +1,6 @@
-# Layout Switcher Helper (GNOME Shell extension)
+# Big Gnome Center Helper (GNOME Shell extension)
 
-In-shell companion for the **Community Layout Switcher**. It performs the
+In-shell companion for the **Big Gnome Center**. It performs the
 *live* layout switch from **inside** GNOME Shell, driven over D-Bus by the
 `layout-switcher` app.
 

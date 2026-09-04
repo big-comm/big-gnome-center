@@ -2,11 +2,11 @@
 
 ## Scope
 
-`frosted-glass@communitybig.org` is the Layout Switcher blur implementation.
+`frosted-glass@communitybig.org` is the Big Gnome Center blur implementation.
 GNOME Shell 50 loads only the project-owned Overview background blur. GNOME
 Shell 51 loads the complete surface backend. It has no Blur My Shell runtime
 or package dependency. One migration entry remains in `layout_applier.py` only
-to clear stale dconf left by older Layout Switcher releases.
+to clear stale dconf left by older Big Gnome Center releases.
 
 Settings contract targets:
 
@@ -19,7 +19,7 @@ Settings contract targets:
 - GNOME Shell system dialogs
 - Workspace and application overview
 
-The GTK Layout Switcher UI is only the GSettings editor. Rendering belongs to
+The GTK Big Gnome Center UI is only the GSettings editor. Rendering belongs to
 the GNOME Shell extension.
 
 ## Version boundary
@@ -73,7 +73,7 @@ Primary references:
 | `connectionManager.js` | Deterministic signal cleanup |
 | `stylesheet.css` | Removes opaque Shell backgrounds only on managed actors |
 | `schemas/*.xml` | Stable settings contract shared with the GTK UI |
-| `ui/frosted_glass.py` | Layout Switcher GTK4/libadwaita controls |
+| `ui/frosted_glass.py` | Big Gnome Center GTK4/libadwaita controls |
 
 `BlurSurface` inserts a non-reactive actor behind application windows.
 `ShellBlurSurface` creates an allocated overlay directly in `Main.uiGroup`,
@@ -89,7 +89,7 @@ the one shared blur. Do not add per-control shadows or nested blur effects:
 testing shadows on the calendar grid caused severe frame and pointer latency
 because dozens of actors required separate offscreen composition.
 Checked controls derive their translucent fill from the Shell
-`-st-accent-color`; never hard-code GNOME blue because Layout Switcher changes
+`-st-accent-color`; never hard-code GNOME blue because Big Gnome Center changes
 the system accent independently of the glass material.
 Managed glass surfaces draw a one-pixel translucent highlight inside the
 material overlay. Their controls use the same one-pixel treatment. Borders do
@@ -278,7 +278,7 @@ The beta GDM switchable-authentication path produced empty PAM conversations
 and could crash the greeter. This was isolated from Frosted Glass. The VM-only
 workaround is a dconf profile under `/etc/dconf/db/gdm.d/` that disables
 switchable, fingerprint, and smart-card authentication while leaving password
-authentication enabled. Do not ship that workaround in Layout Switcher.
+authentication enabled. Do not ship that workaround in Big Gnome Center.
 
 Before system package experiments, the VM had a Timeshift snapshot and a
 separate system-file backup. Keep equivalent rollback coverage for later beta

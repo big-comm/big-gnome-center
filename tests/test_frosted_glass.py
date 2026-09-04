@@ -97,7 +97,7 @@ def test_extension_does_not_depend_on_blur_my_shell_runtime():
 
 def test_package_and_layouts_do_not_depend_on_blur_my_shell():
     assert "gnome-shell-extension-blur-my-shell" not in (ROOT / "pkgbuild/PKGBUILD").read_text()
-    for layout in (ROOT / "usr/share/layout-switcher/layouts").glob("*.txt"):
+    for layout in (ROOT / "usr/share/big-gnome-center/layouts").glob("*.txt"):
         assert "blur-my-shell@aunetx" not in layout.read_text()
 
 
@@ -111,7 +111,7 @@ def test_corner_shader_and_overview_are_project_owned():
 
 def test_unsafe_window_fallback_is_gated_in_shell_and_ui():
     extension = (EXTENSION / "extension.js").read_text()
-    controls = (ROOT / "usr/share/layout-switcher/ui/frosted_glass.py").read_text()
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
 
     assert "const WINDOW_FALLBACK_AVAILABLE = false" in extension
     assert "WINDOW_BLUR_AVAILABLE = False" in controls
@@ -119,8 +119,8 @@ def test_unsafe_window_fallback_is_gated_in_shell_and_ui():
 
 
 def test_layout_switcher_exposes_frosted_glass_controls():
-    effects = (ROOT / "usr/share/layout-switcher/ui/page_effects.py").read_text()
-    controls = (ROOT / "usr/share/layout-switcher/ui/frosted_glass.py").read_text()
+    effects = (ROOT / "usr/share/big-gnome-center/ui/page_effects.py").read_text()
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
 
     assert "FrostedGlassControls(self._pool, self._toast)" in effects
     assert "if is_frosted_glass_supported():" in effects

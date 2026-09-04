@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 //
-// Layout Switcher Helper — in-shell orchestration for live layout switches.
+// Big Gnome Center Helper — in-shell orchestration for live layout switches.
 //
 // WHY THIS EXISTS
 // ---------------
@@ -445,7 +445,7 @@ export default class LayoutSwitcherHelper extends Extension {
 
     Ping() {
         return JSON.stringify({
-            helper: 'layout-switcher',
+            helper: 'big-gnome-center',
             uuid: this._selfUuid(),
             version: HELPER_VERSION,
             build: HELPER_BUILD,

@@ -77,13 +77,13 @@ The local tree and both test VMs matched before capture:
 |---|---|
 | Community Dock engine | `15c556efe553d3a83e99b9957c38a4829d7a1aa1d3f51c78fb865cbffaf1d827` |
 | Community Panel engine | `5dc54d2cf64fc0a441305566adefc39344b4852d53192a85cfebbee4f7f7c6d7` |
-| Layout Switcher Helper | `da9b44721d28e905444a286edee9a0fb87b6fb95e793b1774911d00e5c185b66` |
-| Layout Switcher Runtime | `c8c716a6bc0adef0f019977c557e1d178dad06f402fbcd2ece1db9fdb8d3b522` |
+| Big Gnome Center Helper | `da9b44721d28e905444a286edee9a0fb87b6fb95e793b1774911d00e5c185b66` |
+| Big Gnome Center Runtime | `c8c716a6bc0adef0f019977c557e1d178dad06f402fbcd2ece1db9fdb8d3b522` |
 | Runtime audit | `70bdfe1b9d37528ee26c1241b4a341e50a974897315ffda27ed9a32116011591` |
 | Baseline runner | `fed2f3f958cda6ec29ffe0307fa1e3ee30aab4881be62794886feb928aba895a` |
 
 Recompute source hashes with:
 
 ```bash
-layout-switcher-runtime-audit --hashes-only
+big-gnome-center-runtime-audit --hashes-only
 ```

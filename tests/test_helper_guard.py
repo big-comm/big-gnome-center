@@ -4,8 +4,10 @@
 import sys
 from pathlib import Path
 
+from constants import DESKTOP_ID, LEGACY_DESKTOP_ID, _replace_legacy_desktop_id
+
 ROOT = Path(__file__).resolve().parents[1]
-AUTOSTART = ROOT / "etc/xdg/autostart/org.communitybig.layout-switcher-helper-guard.desktop"
+AUTOSTART = ROOT / "etc/xdg/autostart/br.com.biglinux.BigGnomeCenter-helper-guard.desktop"
 
 
 def test_package_check_does_not_create_python_bytecode():
@@ -15,31 +17,47 @@ def test_package_check_does_not_create_python_bytecode():
 def test_guard_autostart_uses_modern_gnome_session_path():
     desktop = AUTOSTART.read_text()
 
-    assert "Exec=/usr/bin/layout-switcher-helper-guard" in desktop
+    assert "Exec=/usr/bin/big-gnome-center-helper-guard" in desktop
     assert "OnlyShowIn=GNOME;" in desktop
     assert "X-GNOME-Autostart-enabled=true" in desktop
     assert "X-GNOME-Autostart-Phase" not in desktop
 
 
 def test_guard_launcher_is_executable():
-    launcher = ROOT / "usr/bin/layout-switcher-helper-guard"
+    launcher = ROOT / "usr/bin/big-gnome-center-helper-guard"
 
     assert launcher.stat().st_mode & 0o111
     assert "helper_guard.py" in launcher.read_text()
 
 
+def test_legacy_guard_command_points_to_rebranded_launcher():
+    launcher = ROOT / "usr/bin/layout-switcher-helper-guard"
+
+    assert launcher.is_symlink()
+    assert launcher.resolve().name == "big-gnome-center-helper-guard"
+
+
 def test_guard_starts_background_extension_update_monitor():
-    source = (ROOT / "usr/share/layout-switcher/helper_guard.py").read_text()
-    desktop = (ROOT / "usr/share/applications/org.communitybig.layout-switcher.desktop").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/helper_guard.py").read_text()
+    desktop = (ROOT / "usr/share/applications/br.com.biglinux.BigGnomeCenter.desktop").read_text()
 
     assert "ExtensionUpdateMonitor" in source
     assert "self._update_monitor.start()" in source
     assert "X-GNOME-UsesNotifications=true" in desktop
 
 
+def test_rebrand_migrates_settings_folder_launcher_id():
+    apps = ["org.gnome.Settings.desktop", LEGACY_DESKTOP_ID, DESKTOP_ID]
+
+    assert _replace_legacy_desktop_id(apps) == [
+        "org.gnome.Settings.desktop",
+        DESKTOP_ID,
+    ]
+
+
 def test_guard_preserves_layout_components_at_session_start():
-    client = (ROOT / "usr/share/layout-switcher/helper_client.py").read_text()
-    guard = (ROOT / "usr/share/layout-switcher/helper_guard.py").read_text()
+    client = (ROOT / "usr/share/big-gnome-center/helper_client.py").read_text()
+    guard = (ROOT / "usr/share/big-gnome-center/helper_guard.py").read_text()
 
     assert "LEGACY_HELPER_UUID in enabled and HELPER_UUID not in enabled" in guard
     assert "if not self._legacy_session:" in guard

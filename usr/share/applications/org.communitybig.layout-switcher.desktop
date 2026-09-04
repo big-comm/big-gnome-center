@@ -1,18 +1,13 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Community Layout Switcher
-Name[pt_BR]=Seletor de Layouts
-Name[es]=Selector de Diseños
-Comment=Manage GNOME layouts, extensions and themes
-Comment[pt_BR]=Gerencie layouts, extensões e temas do GNOME
-Comment[es]=Administra diseños, extensiones y temas de GNOME
-Exec=layout-switcher
-Icon=layout-switcher
+Name=Big Gnome Center
+Comment=Compatibility launcher for Big Gnome Center
+Exec=big-gnome-center
+Icon=big-gnome-center
 Terminal=false
 Categories=Settings;DesktopSettings;GTK;GNOME;
-Keywords=layout;theme;extension;gnome;desktop;appearance;switcher;
-Keywords[pt_BR]=layout;tema;extensão;gnome;desktop;aparência;
 StartupNotify=true
-StartupWMClass=org.communitybig.layout-switcher
+StartupWMClass=br.com.biglinux.BigGnomeCenter
+NoDisplay=true
 X-GNOME-UsesNotifications=true

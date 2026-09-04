@@ -11,7 +11,7 @@ from helper_client import HELPER_UUID, LEGACY_HELPER_UUID
 
 @pytest.fixture
 def layouts_dir() -> Path:
-    return Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/layouts"
+    return Path(__file__).resolve().parents[1] / "usr/share/big-gnome-center/layouts"
 
 
 def test_catalog_comes_from_packaged_layouts(layouts_dir: Path) -> None:
