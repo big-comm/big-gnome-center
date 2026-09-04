@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""Manage native accent, color-scheme, GTK, and icon themes."""
+"""Manage native accent, color-scheme, GTK, icon, and cursor themes."""
 
 import ast
 from pathlib import Path
@@ -49,6 +49,8 @@ class ThemeMgr:
             # que so trazem ``cursors/``. Exige que o tema tenha pelo menos
             # uma categoria de icone para nao poluir a aba Icones.
             return (d / "index.theme").exists() and is_icon_theme(d.name)
+        if kind == "cursors":
+            return (d / "index.theme").exists() and (d / "cursors").is_dir()
         return False
 
     @staticmethod
@@ -62,6 +64,7 @@ class ThemeMgr:
             ]
         return [
             Path.home() / ".icons",
+            Path.home() / ".local" / "share" / "icons",
             Path("/usr/local/share/icons"),
             Path("/usr/share/icons"),
         ]
@@ -70,7 +73,7 @@ class ThemeMgr:
     def list_themes(kind: str) -> List[str]:
         """
         Lista temas instalados do tipo especificado.
-        kind: "gtk" | "icons"
+        kind: "gtk" | "icons" | "cursors"
         """
         seen: dict = {}
         for root in ThemeMgr._theme_roots(kind):
@@ -107,6 +110,12 @@ class ThemeMgr:
 
         if kind == "icons":
             ok, msg = gsettings_set("org.gnome.desktop.interface", "icon-theme", name)
+            if ok:
+                ThemeMgr._invalidate_layout_snapshot()
+            return ok, msg
+
+        if kind == "cursors":
+            ok, msg = gsettings_set("org.gnome.desktop.interface", "cursor-theme", name)
             if ok:
                 ThemeMgr._invalidate_layout_snapshot()
             return ok, msg
@@ -203,6 +212,7 @@ class ThemeMgr:
         key_map = {
             "gtk": ("org.gnome.desktop.interface", "gtk-theme"),
             "icons": ("org.gnome.desktop.interface", "icon-theme"),
+            "cursors": ("org.gnome.desktop.interface", "cursor-theme"),
         }
         schema, key = key_map.get(kind, ("", ""))
         if not schema:

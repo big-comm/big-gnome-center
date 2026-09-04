@@ -916,6 +916,9 @@ msgstr "筛选主题…"
 msgid "Icons"
 msgstr "图标"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "未找到主题"

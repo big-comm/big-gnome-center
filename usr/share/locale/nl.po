@@ -930,6 +930,9 @@ msgstr "Thema's filteren…"
 msgid "Icons"
 msgstr "Pictogrammen"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Geen thema's gevonden"

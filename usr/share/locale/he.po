@@ -920,6 +920,9 @@ msgstr "סנן ערכות נושא…"
 msgid "Icons"
 msgstr "אייקונים"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "לא נמצאו ערכות נושא"

@@ -928,6 +928,9 @@ msgstr "Sía þemu…"
 msgid "Icons"
 msgstr "Tákn"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Engin þemu fundust"

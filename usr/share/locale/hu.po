@@ -929,6 +929,9 @@ msgstr "Témák szűrése…"
 msgid "Icons"
 msgstr "Ikonok"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Nincs találat téma"

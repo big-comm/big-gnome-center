@@ -1577,6 +1577,9 @@ msgstr "Cores"
 msgid "Icons"
 msgstr "Ícones"
 
+msgid "Cursors"
+msgstr "Cursores"
+
 #: usr/share/layout-switcher/ui/page_themes.py:165
 msgid "Accent color"
 msgstr "Cor de realce"

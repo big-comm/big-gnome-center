@@ -926,6 +926,9 @@ msgstr "Temaları filtrele…"
 msgid "Icons"
 msgstr "Simgeler"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Tema bulunamadı"

@@ -928,6 +928,9 @@ msgstr "Filtrar temas…"
 msgid "Icons"
 msgstr "Ícones"
 
+msgid "Cursors"
+msgstr "Cursores"
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Nenhum tema encontrado"

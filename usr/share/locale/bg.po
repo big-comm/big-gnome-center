@@ -930,6 +930,9 @@ msgstr "Филтриране на теми…"
 msgid "Icons"
 msgstr "Икони"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Не са намерени теми"

@@ -87,6 +87,11 @@ def test_effect_assets_and_gallery_geometry():
     assert themes_source.index('("accent", tr("Colors"))') < themes_source.index(
         '("icons", tr("Icons"))'
     )
+    assert themes_source.index('("icons", tr("Icons"))') < themes_source.index(
+        '("cursors", tr("Cursors"))'
+    )
+    assert "CursorStrip(find_theme_cursors(name), slot_size=22)" in themes_source
+    assert 'ThemeMgr.apply(kind, name)' in themes_source
     assert 'tr("Applications")' not in themes_source
     assert 'tr("Shell")' not in themes_source
     assert "ThemeMgr.set_accent_color(color)" in themes_source

@@ -51,6 +51,17 @@ class TestListThemes:
                 seen[d.name] = True
         assert "Papirus" in seen
 
+    def test_list_cursor_themes_excludes_icon_only_themes(self, tmp_path):
+        cursor_theme = tmp_path / "Bibata"
+        (cursor_theme / "cursors").mkdir(parents=True)
+        (cursor_theme / "index.theme").write_text("[Icon Theme]\nName=Bibata")
+        icon_theme = tmp_path / "Papirus"
+        (icon_theme / "scalable").mkdir(parents=True)
+        (icon_theme / "index.theme").write_text("[Icon Theme]\nName=Papirus")
+
+        with patch.object(ThemeMgr, "_theme_roots", return_value=[tmp_path]):
+            assert ThemeMgr.list_themes("cursors") == ["Bibata"]
+
 class TestApply:
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
     def test_apply_removes_layout_snapshot_marker(self, mock_gs, _isolate_layout_snapshot_marker):
@@ -75,6 +86,17 @@ class TestApply:
         assert ok is True
         mock_gs.assert_called_with("org.gnome.desktop.interface", "icon-theme", "Papirus")
 
+    @patch("theme_manager.gsettings_set", return_value=(True, ""))
+    def test_apply_cursors(self, mock_gs):
+        ok, msg = ThemeMgr.apply("cursors", "Bibata-Modern-Ice")
+        assert ok is True
+        assert msg == ""
+        mock_gs.assert_called_with(
+            "org.gnome.desktop.interface",
+            "cursor-theme",
+            "Bibata-Modern-Ice",
+        )
+
     def test_apply_unknown_kind(self):
         ok, msg = ThemeMgr.apply("invalid", "Theme")
         assert ok is False
@@ -88,6 +110,11 @@ class TestCurrent:
     @patch("theme_manager.gsettings_get", return_value=None)
     def test_current_empty(self, mock_gs):
         assert ThemeMgr.current("gtk") == ""
+
+    @patch("theme_manager.gsettings_get", return_value="Bibata-Modern-Ice")
+    def test_current_cursors(self, mock_gs):
+        assert ThemeMgr.current("cursors") == "Bibata-Modern-Ice"
+        mock_gs.assert_called_once_with("org.gnome.desktop.interface", "cursor-theme")
 
     def test_current_unknown_kind(self):
         assert ThemeMgr.current("invalid") == ""

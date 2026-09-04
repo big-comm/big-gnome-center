@@ -930,6 +930,9 @@ msgstr "Filtrează teme…"
 msgid "Icons"
 msgstr "Pictograme"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Nu s-au găsit teme"

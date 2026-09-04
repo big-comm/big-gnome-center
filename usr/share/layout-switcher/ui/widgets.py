@@ -17,7 +17,8 @@ from typing import List, Optional, Tuple
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk
+gi.require_version("Gdk", "4.0")
+from gi.repository import Gdk, GLib, Gtk
 
 # ── Helpers de cor ───────────────────────────────────────────────────────────
 
@@ -136,6 +137,48 @@ class IconStrip(Gtk.Box):
             pic.set_can_shrink(True)
             return pic
         return _EmptySlot(size)
+
+
+class CursorStrip(Gtk.Box):
+    """Five representative Xcursor images using the icon gallery geometry."""
+
+    _SLOT_COUNT = 5
+
+    def __init__(
+        self,
+        cursor_images: List[Optional[Tuple[int, int, bytes]]],
+        slot_size: int = 22,
+    ) -> None:
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
+        self.add_css_class("theme-icon-strip")
+        self.set_accessible_role(Gtk.AccessibleRole.IMG)
+
+        for index in range(self._SLOT_COUNT):
+            cursor_image = cursor_images[index] if index < len(cursor_images) else None
+            child = self._build_slot(cursor_image, slot_size)
+            child.set_valign(Gtk.Align.CENTER)
+            self.append(child)
+
+    @staticmethod
+    def _build_slot(
+        cursor_image: Optional[Tuple[int, int, bytes]],
+        size: int,
+    ) -> Gtk.Widget:
+        if cursor_image is None:
+            return _EmptySlot(size)
+        width, height, pixels = cursor_image
+        texture = Gdk.MemoryTexture.new(
+            width,
+            height,
+            Gdk.MemoryFormat.R8G8B8A8_PREMULTIPLIED,
+            GLib.Bytes.new(pixels),
+            width * 4,
+        )
+        picture = Gtk.Picture.new_for_paintable(texture)
+        picture.set_content_fit(Gtk.ContentFit.CONTAIN)
+        picture.set_size_request(size, size)
+        picture.set_can_shrink(True)
+        return picture
 
 
 # ── MiniWindowPreview (GTK theme) ────────────────────────────────────────────

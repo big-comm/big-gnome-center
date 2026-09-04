@@ -937,6 +937,9 @@ msgstr "Φιλτράρισμα θεμάτων…"
 msgid "Icons"
 msgstr "Εικονίδια"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Δεν βρέθηκαν θέματα"

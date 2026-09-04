@@ -931,6 +931,9 @@ msgstr "Suodata teemoja…"
 msgid "Icons"
 msgstr "Kuvakkeet"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Teemoja ei löytynyt"

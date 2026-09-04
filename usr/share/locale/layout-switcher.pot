@@ -1638,6 +1638,10 @@ msgstr ""
 msgid "Icons"
 msgstr ""
 
+#: usr/share/layout-switcher/ui/page_themes.py:110
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:174
 msgid "Choose the color used for buttons, selections, and highlights."
 msgstr ""

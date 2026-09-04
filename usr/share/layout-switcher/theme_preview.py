@@ -21,6 +21,7 @@ DEVELOPER NOTE - DO NOT name any variable `_` in this file.
 
 import logging
 import re
+import struct
 from pathlib import Path
 from typing import List, Optional, Set, Tuple
 
@@ -204,6 +205,102 @@ def is_icon_theme(theme_name: str) -> bool:
             if (theme_dir / sub).is_dir():
                 return True
     return False
+
+
+# ── Cursor theme preview ────────────────────────────────────────────────────
+
+
+_XCURSOR_IMAGE_TYPE = 0xFFFD0002
+_CURSOR_SLOTS: List[Tuple[str, ...]] = [
+    ("default", "left_ptr", "arrow"),
+    ("pointer", "hand2", "hand"),
+    ("text", "xterm"),
+    ("wait", "watch"),
+    ("move", "fleur", "all-scroll"),
+]
+
+
+def is_cursor_theme(theme_name: str) -> bool:
+    """Return whether a theme provides native Xcursor files."""
+    if not theme_name:
+        return False
+    return any((root / theme_name / "cursors").is_dir() for root in _ICON_ROOTS)
+
+
+def _cursor_file(theme_name: str, names: Tuple[str, ...]) -> Optional[Path]:
+    for root in _ICON_ROOTS:
+        cursor_dir = root / theme_name / "cursors"
+        if not cursor_dir.is_dir():
+            continue
+        for name in names:
+            candidate = cursor_dir / name
+            if candidate.is_file():
+                return candidate
+    return None
+
+
+def _decode_xcursor(path: Path, target_size: int = 24) -> Optional[Tuple[int, int, bytes]]:
+    """Decode the closest static frame from an Xcursor file as RGBA bytes."""
+    try:
+        data = path.read_bytes()
+        if len(data) < 16 or data[:4] != b"Xcur":
+            return None
+        header_size, version, toc_count = struct.unpack_from("<III", data, 4)
+        if header_size < 16 or version > 0x00010000:
+            return None
+        toc_end = header_size + toc_count * 12
+        if toc_end > len(data):
+            return None
+
+        images: List[Tuple[int, int]] = []
+        for index in range(toc_count):
+            chunk_type, nominal_size, position = struct.unpack_from(
+                "<III", data, header_size + index * 12
+            )
+            if chunk_type == _XCURSOR_IMAGE_TYPE:
+                images.append((nominal_size, position))
+        images.sort(key=lambda item: (abs(item[0] - target_size), item[0] < target_size))
+
+        for nominal_size, position in images:
+            if position + 36 > len(data):
+                continue
+            fields = struct.unpack_from("<9I", data, position)
+            chunk_header, chunk_type, subtype, chunk_version = fields[:4]
+            width, height = fields[4:6]
+            if (
+                chunk_type != _XCURSOR_IMAGE_TYPE
+                or subtype != nominal_size
+                or chunk_version > 1
+                or chunk_header < 36
+                or not 0 < width <= 512
+                or not 0 < height <= 512
+            ):
+                continue
+            pixel_start = position + chunk_header
+            pixel_end = pixel_start + width * height * 4
+            if pixel_end > len(data):
+                continue
+
+            bgra = data[pixel_start:pixel_end]
+            rgba = bytearray(len(bgra))
+            for offset in range(0, len(bgra), 4):
+                blue, green, red, alpha = bgra[offset : offset + 4]
+                rgba[offset : offset + 4] = bytes((red, green, blue, alpha))
+            return width, height, bytes(rgba)
+    except (OSError, struct.error, ValueError) as exc:
+        log.debug("cursor preview failed for %s: %s", path, exc)
+    return None
+
+
+def find_theme_cursors(theme_name: str) -> List[Optional[Tuple[int, int, bytes]]]:
+    """Return five representative decoded cursors for a theme."""
+    if not theme_name:
+        return [None] * len(_CURSOR_SLOTS)
+    previews: List[Optional[Tuple[int, int, bytes]]] = []
+    for names in _CURSOR_SLOTS:
+        cursor_file = _cursor_file(theme_name, names)
+        previews.append(_decode_xcursor(cursor_file) if cursor_file else None)
+    return previews
 
 
 def _theme_inherits(theme_dir: Path) -> List[str]:

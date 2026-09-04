@@ -933,6 +933,9 @@ msgstr "Filtruj motywy…"
 msgid "Icons"
 msgstr "Ikony"
 
+msgid "Cursors"
+msgstr ""
+
 #: usr/share/layout-switcher/ui/page_themes.py:240
 msgid "No themes found"
 msgstr "Nie znaleziono motywów"

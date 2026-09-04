@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""Accent color and icon theme settings."""
+"""Accent color, icon theme, and cursor theme settings."""
 
 from typing import Dict, List
 
@@ -12,8 +12,8 @@ from gi.repository import Adw, GLib, Gtk, Pango
 
 from constants import ACCENT_COLORS, tr
 from theme_manager import ThemeMgr
-from theme_preview import find_theme_icons
-from ui.widgets import ColorDot, IconStrip
+from theme_preview import find_theme_cursors, find_theme_icons
+from ui.widgets import ColorDot, CursorStrip, IconStrip
 
 _LIST_MAX_WIDTH = 940
 _ACCENT_LABELS = {
@@ -31,7 +31,7 @@ _ACCENT_LABELS = {
 
 
 class ThemeTile(Gtk.FlowBoxChild):
-    """Icon theme tile with a typed theme name."""
+    """Theme tile with a typed theme name."""
 
     def __init__(self, theme_name: str) -> None:
         super().__init__()
@@ -43,7 +43,7 @@ class ThemeTile(Gtk.FlowBoxChild):
 
 
 class ThemesPage(Gtk.Box):
-    """Unified accent color and icon theme page."""
+    """Unified accent color, icon theme, and cursor theme page."""
 
     def __init__(self, pool, toast_cb) -> None:
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -107,6 +107,7 @@ class ThemesPage(Gtk.Box):
         for section, label in [
             ("accent", tr("Colors")),
             ("icons", tr("Icons")),
+            ("cursors", tr("Cursors")),
         ]:
             button = Gtk.Button(label=label)
             button.add_css_class("kind-tab")
@@ -123,7 +124,7 @@ class ThemesPage(Gtk.Box):
 
     def _switch_section(self, section: str) -> None:
         self._section = section
-        self._search_entry.set_visible(section == "icons")
+        self._search_entry.set_visible(section in {"icons", "cursors"})
         for key, button in self._section_buttons.items():
             if key == section:
                 button.add_css_class("kind-on")
@@ -152,10 +153,12 @@ class ThemesPage(Gtk.Box):
         spinner.set_size_request(32, 32)
         self._list_container.append(spinner)
 
+        section = self._section
+
         def scan() -> None:
-            active = ThemeMgr.current("icons")
-            names = ThemeMgr.list_themes("icons")
-            GLib.idle_add(self._populate_icons, active, names)
+            active = ThemeMgr.current(section)
+            names = ThemeMgr.list_themes(section)
+            GLib.idle_add(self._populate_theme_section, section, active, names)
 
         self._pool.submit(scan)
 
@@ -219,10 +222,25 @@ class ThemesPage(Gtk.Box):
     def _populate_icons(self, active: str, names: List[str]) -> None:
         self._cached_names = names
         self._cached_active = active
-        self._filter_and_display_icons(active, names)
+        self._filter_and_display_themes(active, names, "icons")
+
+    def _populate_theme_section(
+        self,
+        section: str,
+        active: str,
+        names: List[str],
+    ) -> None:
+        if section != self._section:
+            return
+        if section == "icons":
+            self._populate_icons(active, names)
+            return
+        self._cached_names = names
+        self._cached_active = active
+        self._filter_and_display_themes(active, names, "cursors")
 
     def _on_search_changed(self, entry: Gtk.SearchEntry) -> None:
-        if self._section != "icons":
+        if self._section not in {"icons", "cursors"}:
             return
         query = entry.get_text().strip().lower()
         names = (
@@ -230,9 +248,14 @@ class ThemesPage(Gtk.Box):
             if query
             else self._cached_names
         )
-        self._filter_and_display_icons(self._cached_active, names)
+        self._filter_and_display_themes(self._cached_active, names, self._section)
 
-    def _filter_and_display_icons(self, active: str, names: List[str]) -> None:
+    def _filter_and_display_themes(
+        self,
+        active: str,
+        names: List[str],
+        kind: str,
+    ) -> None:
         self._clear_content()
         if not names:
             self._list_container.append(
@@ -250,9 +273,14 @@ class ThemesPage(Gtk.Box):
         count_label.set_halign(Gtk.Align.START)
         count_label.set_margin_bottom(8)
         self._list_container.append(count_label)
-        self._list_container.append(self._build_icon_grid(active, names))
+        self._list_container.append(self._build_theme_grid(active, names, kind))
 
-    def _build_icon_grid(self, active: str, names: List[str]) -> Gtk.Widget:
+    def _build_theme_grid(
+        self,
+        active: str,
+        names: List[str],
+        kind: str,
+    ) -> Gtk.Widget:
         grid = Gtk.FlowBox()
         grid.set_selection_mode(Gtk.SelectionMode.NONE)
         grid.set_max_children_per_line(5)
@@ -262,13 +290,13 @@ class ThemesPage(Gtk.Box):
         grid.set_homogeneous(True)
         grid.connect(
             "child-activated",
-            lambda _grid, tile: self._apply_icon_theme(tile.theme_name),
+            lambda _grid, tile: self._apply_theme(kind, tile.theme_name),
         )
         for name in names:
-            grid.append(self._make_icon_tile(name, active))
+            grid.append(self._make_theme_tile(name, active, kind))
         return grid
 
-    def _make_icon_tile(self, name: str, active: str) -> ThemeTile:
+    def _make_theme_tile(self, name: str, active: str, kind: str) -> ThemeTile:
         is_active = name == active
         tile = ThemeTile(theme_name=name)
         tile.add_css_class("theme-tile")
@@ -285,7 +313,10 @@ class ThemesPage(Gtk.Box):
         preview = Gtk.Box()
         preview.add_css_class("theme-icon-preview")
         preview.set_size_request(128, 68)
-        strip = IconStrip(find_theme_icons(name), slot_size=22)
+        if kind == "cursors":
+            strip = CursorStrip(find_theme_cursors(name), slot_size=22)
+        else:
+            strip = IconStrip(find_theme_icons(name), slot_size=22)
         strip.set_halign(Gtk.Align.CENTER)
         strip.set_valign(Gtk.Align.CENTER)
         preview.append(strip)
@@ -333,9 +364,9 @@ class ThemesPage(Gtk.Box):
 
         self._pool.submit(task)
 
-    def _apply_icon_theme(self, name: str) -> None:
+    def _apply_theme(self, kind: str, name: str) -> None:
         def task() -> None:
-            ok, error = ThemeMgr.apply("icons", name)
+            ok, error = ThemeMgr.apply(kind, name)
             if ok:
                 GLib.idle_add(self._toast, name)
                 GLib.idle_add(self.refresh_themes)
