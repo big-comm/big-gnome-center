@@ -27,6 +27,7 @@ from ui.page_extensions import ExtensionsPage
 from ui.page_fonts import FontsPage
 from ui.page_layouts import LayoutsPage
 from ui.page_panel_dock import PanelDockPage
+from ui.page_startup import StartupPage
 from ui.page_themes import ThemesPage
 from ui.styles import APP_CSS
 
@@ -287,6 +288,7 @@ class MainWindow(Adw.ApplicationWindow):
             "panel-dock": lambda: PanelDockPage(self._pool, self._toast),
             "effects": lambda: EffectsPage(self._pool, self._toast),
             "extensions": lambda: ExtensionsPage(self._pool, self._toast),
+            "startup": lambda: StartupPage(self._pool, self._toast),
         }
         self._ensure_page("layouts")
 
@@ -409,6 +411,7 @@ class MainWindow(Adw.ApplicationWindow):
             ("panel-dock", tr("Panel and Dock"), "view-more-horizontal-symbolic"),
             ("effects", tr("Effects"), "layout-effect-lamp-symbolic"),
             ("extensions", tr("Extensions"), "application-x-addon-symbolic"),
+            ("startup", tr("Startup Applications"), "folder-symbolic"),
         ]
         for key, label, icon in nav_items:
             row = self._make_nav_row(key, label, icon)
@@ -489,6 +492,9 @@ class MainWindow(Adw.ApplicationWindow):
         elif key == "panel-dock":
             page = self._ensure_page("panel-dock")
             GLib.idle_add(page.refresh)
+        elif key == "startup":
+            page = self._ensure_page("startup")
+            GLib.idle_add(page.refresh)
         else:
             self._ensure_page(key)
         self._stack.set_visible_child_name(key)
@@ -502,6 +508,7 @@ class MainWindow(Adw.ApplicationWindow):
             "panel-dock": tr("Panel and Dock"),
             "effects": tr("Effects"),
             "extensions": tr("Extensions"),
+            "startup": tr("Startup Applications"),
         }
         self._title_widget.set_title(titles.get(key, ""))
 

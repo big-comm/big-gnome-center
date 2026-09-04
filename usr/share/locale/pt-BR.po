@@ -1580,6 +1580,31 @@ msgstr "Ícones"
 msgid "Cursors"
 msgstr "Cursores"
 
+#: usr/share/layout-switcher/ui/window.py:414
+#: usr/share/layout-switcher/ui/window.py:511
+#: usr/share/layout-switcher/ui/page_startup.py:45
+msgid "Startup Applications"
+msgstr "Aplicativos de inicialização"
+
+#: usr/share/layout-switcher/ui/dialog_startup_apps.py:68
+#: usr/share/layout-switcher/ui/page_startup.py:51
+#: usr/share/layout-switcher/ui/page_startup.py:54
+msgid "Add a startup application"
+msgstr "Adicionar aplicativo de inicialização"
+
+#: usr/share/layout-switcher/ui/dialog_startup_apps.py:84
+msgid "Search applications"
+msgstr "Pesquisar aplicativos"
+
+#: usr/share/layout-switcher/ui/page_startup.py:46
+msgid "Startup applications are automatically started when you log in."
+msgstr "Aplicativos de inicialização são iniciados automaticamente quando você inicia a sessão."
+
+#: usr/share/layout-switcher/ui/page_startup.py:87
+msgid "No Startup Applications"
+msgstr "Sem aplicativos de inicialização"
+
+
 #: usr/share/layout-switcher/ui/page_themes.py:165
 msgid "Accent color"
 msgstr "Cor de realce"
