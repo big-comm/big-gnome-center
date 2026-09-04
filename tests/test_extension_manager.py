@@ -328,6 +328,84 @@ class TestRemove:
             assert not ext_dir.exists()
 
     def test_remove_nonexistent(self, tmp_path):
-        with patch("extension_manager.EXT_USER_DIR", tmp_path):
+        with (
+            patch("extension_manager.EXT_USER_DIR", tmp_path),
+            patch("extension_manager.EXT_SYS_DIR", tmp_path / "system"),
+        ):
             ok, msg = ExtMgr.remove("nonexistent@foo.com")
             assert ok is False
+
+    def test_remove_system_extension_with_pkexec(self, tmp_path):
+        user_dir = tmp_path / "user"
+        system_dir = tmp_path / "system"
+        pkexec = tmp_path / "pkexec"
+        remover = tmp_path / "layout-switcher-remove-extension"
+        user_dir.mkdir()
+        (system_dir / "test-ext@foo.com").mkdir(parents=True)
+        pkexec.touch()
+        remover.touch()
+
+        with (
+            patch("extension_manager.EXT_USER_DIR", user_dir),
+            patch("extension_manager.EXT_SYS_DIR", system_dir),
+            patch("extension_manager._PKEXEC", pkexec),
+            patch("extension_manager._SYSTEM_EXTENSION_REMOVER", remover),
+            patch("extension_manager.run_cmd", return_value=(True, "")) as mock_run,
+            patch(
+                "shell_reloader.ShellReloader.apply_extension_state",
+                return_value=(True, ""),
+            ) as mock_apply,
+            patch("shell_reloader.ShellReloader.reload_all") as mock_reload,
+        ):
+            ok, msg = ExtMgr.remove("test-ext@foo.com")
+
+        assert ok is True
+        assert msg == ""
+        mock_run.assert_called_once_with(
+            [
+                str(pkexec),
+                str(remover),
+                "test-ext@foo.com",
+            ],
+            timeout=180,
+        )
+        mock_apply.assert_called_once_with("test-ext@foo.com", False)
+        mock_reload.assert_called_once_with()
+
+    def test_rejects_unsafe_uuid(self, tmp_path):
+        with (
+            patch("extension_manager.EXT_USER_DIR", tmp_path),
+            patch("extension_manager.EXT_SYS_DIR", tmp_path),
+            patch("extension_manager.run_cmd") as mock_run,
+        ):
+            ok, msg = ExtMgr.remove("../../etc")
+
+        assert ok is False
+        assert msg == "invalid extension UUID"
+        mock_run.assert_not_called()
+
+    def test_system_remove_reports_cancelled_authentication(self, tmp_path):
+        user_dir = tmp_path / "user"
+        system_dir = tmp_path / "system"
+        pkexec = tmp_path / "pkexec"
+        remover = tmp_path / "layout-switcher-remove-extension"
+        user_dir.mkdir()
+        (system_dir / "test-ext@foo.com").mkdir(parents=True)
+        pkexec.touch()
+        remover.touch()
+
+        with (
+            patch("extension_manager.EXT_USER_DIR", user_dir),
+            patch("extension_manager.EXT_SYS_DIR", system_dir),
+            patch("extension_manager._PKEXEC", pkexec),
+            patch("extension_manager._SYSTEM_EXTENSION_REMOVER", remover),
+            patch("extension_manager.run_cmd", return_value=(False, "")),
+            patch(
+                "shell_reloader.ShellReloader.apply_extension_state"
+            ) as mock_apply,
+        ):
+            ok, msg = ExtMgr.remove("test-ext@foo.com")
+
+        assert ok is False
+        assert msg == "administrator authentication was cancelled"
+        mock_apply.assert_not_called()

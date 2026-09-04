@@ -326,9 +326,6 @@ class EffectsPage(Gtk.Box):
         d.present(parent)
 
     def _confirm_remove(self, uuid: str, name: str) -> None:
-        if not ExtMgr.is_user_dir(uuid):
-            self._toast(tr("System extension — cannot remove"))
-            return
         parent = self.get_root()
         d = Adw.AlertDialog(
             heading=tr("Remove effect?"),

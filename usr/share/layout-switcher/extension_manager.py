@@ -5,7 +5,7 @@ extension_manager.py — Gerenciamento de extensões do GNOME Shell.
 Responsabilidades:
   - Consultar extensões instaladas e habilitadas
   - Instalar (CLI / download EGO / gerenciador de pacotes)
-  - Remover extensões do usuário
+  - Remove user and system extensions
   - Ativar/desativar em tempo real via D-Bus (sem logout)
   - Abrir preferências de extensão
 
@@ -13,6 +13,7 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
 import json
+import re
 import shutil
 import tempfile
 import urllib.error
@@ -24,6 +25,9 @@ from typing import Dict, List, Tuple
 # Cap defensivo para o download da .zip de extensão. Extensões reais raramente
 # passam de 5 MiB; valor folgado para não rejeitar pacotes legítimos.
 _MAX_EXT_ZIP_BYTES = 50 * 1024 * 1024  # 50 MiB
+_EXTENSION_UUID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+@-]*$")
+_PKEXEC = Path("/usr/bin/pkexec")
+_SYSTEM_EXTENSION_REMOVER = Path("/usr/bin/layout-switcher-remove-extension")
 
 from constants import EXT_SYS_DIR, EXT_USER_DIR
 from utils import dconf_read, dconf_write, gnome_shell_version, gsettings_get, run_cmd
@@ -431,24 +435,47 @@ class ExtMgr:
     @staticmethod
     def remove(uuid: str) -> Tuple[bool, str]:
         """
-        Remove extensão instalada pelo usuário.
-        Desativa via D-Bus antes de remover (sem logout).
-        """
-        path = EXT_USER_DIR / uuid
-        if not path.exists():
-            return False, "not found in user extensions directory"
+        Remove a user or system extension.
 
-        # Desativa em tempo real antes de remover
+        System extensions are removed by the narrowly scoped privileged helper,
+        which lets PolicyKit request administrator authentication without giving
+        this process unrestricted filesystem access.
+        """
+        if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
+            return False, "invalid extension UUID"
+
+        user_path = EXT_USER_DIR / uuid
+        system_path = EXT_SYS_DIR / uuid
+        if not user_path.exists() and not system_path.exists():
+            return False, "extension not found"
+
         from shell_reloader import ShellReloader
 
-        ShellReloader.apply_extension_state(uuid, False)
+        if user_path.exists():
+            # Stop user code before deleting it from disk.
+            ShellReloader.apply_extension_state(uuid, False)
+            try:
+                shutil.rmtree(str(user_path))
+            except Exception as exc:
+                return False, str(exc)
+        else:
+            if not _PKEXEC.is_file():
+                return False, "pkexec not found"
+            if not _SYSTEM_EXTENSION_REMOVER.is_file():
+                return False, "system extension remover not found"
 
-        try:
-            shutil.rmtree(str(path))
-            ShellReloader.reload_all()
-            return True, ""
-        except Exception as exc:
-            return False, str(exc)
+            ok, msg = run_cmd(
+                [str(_PKEXEC), str(_SYSTEM_EXTENSION_REMOVER), uuid],
+                timeout=180,
+            )
+            if not ok:
+                return False, msg or "administrator authentication was cancelled"
+
+            # The Shell still knows the loaded UUID after its files are gone.
+            ShellReloader.apply_extension_state(uuid, False)
+
+        ShellReloader.reload_all()
+        return True, ""
 
     # ── Preferências ──────────────────────────────────────────────────────────
 

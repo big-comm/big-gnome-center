@@ -494,9 +494,6 @@ class ExtensionsPage(Gtk.Box):
         d.present(parent)
 
     def _confirm_remove(self, uuid: str, name: str) -> None:
-        if not ExtMgr.is_user_dir(uuid):
-            self._toast(tr("System extension — cannot remove"))
-            return
         parent = self.get_root()
         d = Adw.AlertDialog(
             heading=tr("Remove extension?"),
@@ -720,7 +717,6 @@ class ExtensionsPage(Gtk.Box):
         Compact layout: icon | name+description | controls.
         """
         enabled = ext["enabled"]
-        is_user = ext["user"]
         is_required = ext["uuid"] == HELPER_UUID
 
         row = Gtk.ListBoxRow()
@@ -860,10 +856,7 @@ class ExtensionsPage(Gtk.Box):
         remove_slot.set_size_request(34, 1)
         remove_slot.set_halign(Gtk.Align.CENTER)
         remove_slot.set_valign(Gtk.Align.CENTER)
-        system_remove_msg = tr(
-            "This extension cannot be removed here because it was installed by the system."
-        )
-        if is_user:
+        if not is_required:
             rm = Gtk.Button(icon_name="user-trash-symbolic")
             rm.add_css_class("flat")
             rm.add_css_class("extension-action-button")
@@ -876,17 +869,18 @@ class ExtensionsPage(Gtk.Box):
             )
             remove_slot.append(rm)
         else:
+            required_msg = tr("Required for layout switching")
             rm = Gtk.Button(icon_name="user-trash-symbolic")
             rm.add_css_class("flat")
             rm.add_css_class("extension-action-button")
             rm.add_css_class("extension-action-button-disabled")
-            rm.set_tooltip_text(system_remove_msg)
+            rm.set_tooltip_text(required_msg)
             rm.update_property(
                 [Gtk.AccessibleProperty.LABEL],
-                [system_remove_msg],
+                [required_msg],
             )
             rm.set_valign(Gtk.Align.CENTER)
-            rm.connect("clicked", lambda b, msg=system_remove_msg: self._toast(msg))
+            rm.connect("clicked", lambda b, msg=required_msg: self._toast(msg))
             remove_slot.append(rm)
         ctrl.append(remove_slot)
 

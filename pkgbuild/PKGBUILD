@@ -9,6 +9,7 @@ depends=(
     'gtk4'
     'libadwaita'
     'gnome-shell'
+    'polkit'
     # GNOME Shell extensions used by the bundled layouts
     'gnome-shell-big-shot'
     'gnome-shell-extension-appindicator'
