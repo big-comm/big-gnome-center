@@ -554,7 +554,7 @@ class MainWindow(Adw.ApplicationWindow):
             license_type=Gtk.License.MIT_X11,
             comments=tr("Layouts, effects and themes for your GNOME desktop."),
             website="https://communitybig.org/",
-            issue_url="https://github.com/big-comm/layout-switcher/issues",
+            issue_url="https://github.com/big-comm/big-gnome-center/issues",
             copyright="© 2022–2026 Big Community & Contributors",
             developers=["Big Community", "Ari Novais"],
         )

@@ -27,7 +27,7 @@ pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')
 license=('MIT' 'GPL-2.0-or-later' 'GPL-3.0-or-later' 'CC-BY-4.0')
-url="https://github.com/big-comm/layout-switcher"
+url="https://github.com/big-comm/big-gnome-center"
 source=("${pkgname}::git+${url}.git")
 md5sums=('SKIP')
 

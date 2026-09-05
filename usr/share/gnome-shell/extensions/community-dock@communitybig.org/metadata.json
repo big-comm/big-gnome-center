@@ -3,6 +3,6 @@
   "name": "Community Dock Runtime Resources",
   "description": "Private resources for the Big Gnome Center Shell runtime.",
   "shell-version": ["50", "51"],
-  "url": "https://github.com/big-comm/layout-switcher",
+  "url": "https://github.com/big-comm/big-gnome-center",
   "version": 1
 }

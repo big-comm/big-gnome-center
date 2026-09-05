@@ -4,7 +4,7 @@
   "name": "Community Panel",
   "description": "BigCommunity's integrated taskbar and system panel for Classic, Hybrid and Desk UX.",
   "shell-version": ["50", "51"],
-  "url": "https://github.com/big-comm/layout-switcher",
+  "url": "https://github.com/big-comm/big-gnome-center",
   "gettext-domain": "dash-to-panel",
   "version": 73,
   "fork-version": 1,

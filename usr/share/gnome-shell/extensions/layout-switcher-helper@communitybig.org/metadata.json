@@ -3,6 +3,6 @@
   "name": "Big Gnome Center Helper",
   "description": "In-shell helper for Big Gnome Center. Performs safe live desktop layout changes over D-Bus.",
   "shell-version": ["45", "46", "47", "48", "49", "50", "51"],
-  "url": "https://github.com/big-comm/layout-switcher",
+  "url": "https://github.com/big-comm/big-gnome-center",
   "version": 27
 }

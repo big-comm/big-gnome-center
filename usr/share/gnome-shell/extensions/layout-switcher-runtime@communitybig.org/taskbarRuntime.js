@@ -15,7 +15,7 @@ export class TaskbarRuntime {
         this._host = new ComponentHost(extension, PANEL_UUID, {
             name: 'Community Panel',
             version: 75,
-            url: 'https://github.com/big-comm/layout-switcher',
+            url: 'https://github.com/big-comm/big-gnome-center',
         });
         this._surface = new TaskbarSurfaceManager(this._host);
         this._visibilityModes = new TaskbarVisibilityModes(

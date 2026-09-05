@@ -132,8 +132,8 @@ sudo pacman -S big-gnome-center
 Install `base-devel` and Git first, then run:
 
 ```sh
-git clone https://github.com/big-comm/layout-switcher.git
-cd layout-switcher/pkgbuild
+git clone https://github.com/big-comm/big-gnome-center.git
+cd big-gnome-center/pkgbuild
 makepkg -si
 ```
 
@@ -143,8 +143,8 @@ This method copies the application files but does not install distro packages.
 Install the requirements and layout extension dependencies first.
 
 ```sh
-git clone https://github.com/big-comm/layout-switcher.git
-cd layout-switcher
+git clone https://github.com/big-comm/big-gnome-center.git
+cd big-gnome-center
 sudo cp -a usr/. /usr/
 sudo cp -a etc/. /etc/
 sudo glib-compile-schemas /usr/share/glib-2.0/schemas
