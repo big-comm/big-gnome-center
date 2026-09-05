@@ -118,7 +118,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 78;
+const HELPER_BUILD = 79;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -1258,13 +1258,22 @@ export default class LayoutSwitcherHelper extends Extension {
         try {
             const path = GLib.build_filenamev([
                 GLib.get_user_config_dir(),
-                'big-appearance',
+                'big-gnome-center',
                 'settings.json',
             ]);
-            const [ok, contents] = Gio.File.new_for_path(path).load_contents(null);
+            let file = Gio.File.new_for_path(path);
+            // Legacy settings are only authoritative before migration.
+            if (!file.query_exists(null)) {
+                file = Gio.File.new_for_path(GLib.build_filenamev([
+                    GLib.get_user_config_dir(), 'big-appearance', 'settings.json',
+                ]));
+            }
+            const [ok, contents] = file.load_contents(null);
             if (!ok)
                 return {};
-            return JSON.parse(new TextDecoder().decode(contents));
+            const settings = JSON.parse(new TextDecoder().decode(contents));
+            return settings && typeof settings === 'object' && !Array.isArray(settings)
+                ? settings : {};
         } catch (e) {
             logHelper(`application settings read failed: ${e}`);
             return {};

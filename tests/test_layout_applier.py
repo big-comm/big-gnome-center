@@ -2183,7 +2183,7 @@ class TestHelperIntegration:
         root = Path(__file__).resolve().parents[1]
         for uuid, build in (
             ("layout-switcher-helper@bigcommunity.org", 43),
-            ("layout-switcher-helper@communitybig.org", 78),
+            ("layout-switcher-helper@communitybig.org", 79),
         ):
             source = (
                 root / "usr/share/gnome-shell/extensions" / uuid / "extension.js"
