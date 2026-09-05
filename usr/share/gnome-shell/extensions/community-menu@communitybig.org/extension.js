@@ -115,9 +115,11 @@ export default class CommunityMenuExtension extends Extension {
     _getActivePanelExtension() {
         this._panelExtension = null;
 
-        let dtp = Main.extensionManager.lookup(Constants.COMMUNITY_PANEL_UUID);
+        const dtp = Main.extensionManager.lookup(Constants.COMMUNITY_PANEL_UUID);
+        const runtime = Main.extensionManager.lookup(Constants.RUNTIME_UUID);
 
-        if (Utils.isExtensionEnabled(dtp) && global.dashToPanel) {
+        if (global.dashToPanel &&
+            (Utils.isExtensionEnabled(dtp) || Utils.isExtensionEnabled(runtime))) {
             this._panelExtension = "dashToPanel";
         }
     }

@@ -77,8 +77,19 @@ export class PanelAutohide {
         this._barrier = null;
     }
 
+    pointerInside() {
+        const [x, y] = global.get_pointer();
+        const monitor = Main.layoutManager.primaryMonitor;
+        if (!monitor || !this._actor.visible)
+            return false;
+        // Include the reveal strip and panel margins, which do not report panel hover.
+        return x >= monitor.x && x < monitor.x + monitor.width &&
+            y >= monitor.y && y < monitor.y + Math.max(2, this._actor.height);
+    }
+
     setVisible(visible, immediate = false) {
         const actor = this._actor;
+        this._zone.reactive = this._enabled && !visible && !this._pressure;
         const destination = visible
             ? this._originalTranslation
             : this._originalTranslation - Math.max(1, actor.height);

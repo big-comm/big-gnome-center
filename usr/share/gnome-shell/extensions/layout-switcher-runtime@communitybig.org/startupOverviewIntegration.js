@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {ControlsState} from 'resource:///org/gnome/shell/ui/overviewControls.js';
 
 const SESSION_MARKER = 'layoutSwitcherStartupOverviewHandled';
 
@@ -22,13 +23,8 @@ export class StartupOverviewIntegration {
     apply(skip) {
         this._skipRequested = Boolean(skip);
         if (!Main.layoutManager._startingUp) {
-            if (this._firstSessionActivation && this._skipRequested &&
-                Main.overview.visible) {
-                Main.overview.hide();
-                this._postStartupHide = true;
-                this._applied = true;
-                this._restored = true;
-            }
+            if (this._firstSessionActivation && this._skipRequested)
+                this._finishStartup();
             this._firstSessionActivation = false;
             return;
         }
@@ -78,6 +74,24 @@ export class StartupOverviewIntegration {
         if (id)
             Main.layoutManager.disconnect(id);
         this._restore('startup-complete');
+        if (this._skipRequested)
+            this._finishStartup();
+    }
+
+    _finishStartup() {
+        if (Main.overview.visible || Main.overview.visibleTarget) {
+            Main.overview.hide();
+            this._postStartupHide = true;
+        } else {
+            // Skipping Shell's startup overview leaves its adjustment at WINDOW_PICKER.
+            const adjustment = Main.overview._overview?.controls?._stateAdjustment;
+            if (adjustment) {
+                adjustment.remove_transition('value');
+                adjustment.value = ControlsState.HIDDEN;
+            }
+        }
+        this._applied = true;
+        this._restored = true;
     }
 
     _restore(reason) {

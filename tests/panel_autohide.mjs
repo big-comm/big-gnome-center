@@ -40,7 +40,7 @@ const context = {
     Main: {layoutManager: {
         primaryMonitor: {x: 0, y: 0, width: 1280}, _queueUpdateRegions() {},
     }},
-    global: {backend: {capabilities: 1}},
+    global: {backend: {capabilities: 1}, get_pointer: () => [100, 0]},
 };
 const Autohide = vm.runInNewContext(source + '\nPanelAutohide;', context);
 const actor = {
@@ -85,6 +85,49 @@ assert.equal(actor.visible, false, 'reversing motion must retain the newest targ
 panel.setVisible(true, true);
 assert.equal(actor.visible, true);
 assert.equal(actor.translation_y, 0);
+assert.equal(zone.reactive, false, 'the reveal strip must not intercept panel clicks');
+assert.equal(panel.pointerInside(), true, 'the top edge counts even without actor hover');
+context.global.get_pointer = () => [100, 31];
+assert.equal(panel.pointerInside(), true, 'panel margins count as interaction');
+context.global.get_pointer = () => [100, 32];
+assert.equal(panel.pointerInside(), false);
+context.global.get_pointer = () => [1280, 0];
+assert.equal(panel.pointerInside(), false, 'other monitors must not hold this panel');
+
+for (const file of ['dockPanelController.js', 'nativePanelOpacityIntegration.js']) {
+    const controllerSource = fs.readFileSync(new URL(file, path), 'utf8');
+    const queueMethod = controllerSource.slice(controllerSource.indexOf('    _queueHide() {'),
+        controllerSource.indexOf('    _cancelHide() {'));
+    const Controller = vm.runInNewContext(`class Controller {${queueMethod}}; Controller`, {...context});
+    const controller = new Controller();
+    let inside = true;
+    let menuOpen = false;
+    let updates = 0;
+    controller._panel = {hover: false};
+    controller._pointerReveal = true;
+    controller._autohide = {pointerInside: () => inside};
+    controller._panelInteractionActive = () => menuOpen;
+    controller._cancelHide = () => {};
+    controller._applyVisibility = () => updates++;
+    const tick = () => {
+        const [id, timer] = [...timers.entries()][0];
+        timers.delete(id);
+        timer.callback();
+    };
+    controller._queueHide();
+    tick();
+    tick();
+    assert.equal(updates, 0, `${file}: edge dwell must survive multiple hide timers`);
+    inside = false;
+    menuOpen = true;
+    tick();
+    assert.equal(updates, 0, `${file}: open popovers hold the panel`);
+    menuOpen = false;
+    tick();
+    assert.equal(updates, 1);
+    assert.equal(controller._pointerReveal, false);
+    assert.equal(timers.size, 0);
+}
 
 const barrier = panel._barrier;
 panel.setEnabled(false);

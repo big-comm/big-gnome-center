@@ -35,7 +35,6 @@ import * as Constants from './constants.js';
 import * as Layouts from './layouts/layouts.js';
 import * as MenuButton from './widgets/menuButton.js';
 import * as SecondaryMenu from './widgets/secondaryMenu.js';
-import * as Utils from './utils.js';
 import { SETTINGS } from './extension.js'
 
 const ApplicationsMenu = class extends PopupMenu.PopupMenu {
@@ -263,6 +262,7 @@ export const ApplicationsButton = GObject.registerClass({
         this.panel.connectObject('notify::height', () => {
             this._syncMenuIconSize();
         }, this);
+        this.panel.connectObject('notify::allocation', () => this._syncArrowSide(), this);
         this._syncMenuIconSize();
         this._syncArrowSide();
     }
@@ -285,26 +285,9 @@ export const ApplicationsButton = GObject.registerClass({
     }
 
     _syncArrowSide() {
-        let dtp = Main.extensionManager.lookup(Constants.COMMUNITY_PANEL_UUID);
-
-        this._panelSettings?.disconnectObject(this);
-        this._panelSettings = null;
-
-        if (Utils.isExtensionEnabled(dtp) && global.dashToPanel) {
-            this._panelSettings = dtp.stateObj?.getSettings('org.gnome.shell.extensions.dash-to-panel');
-        }
-
-        if (this._panelSettings && this._panelParent && this._panelParent.getPosition) {
-            const side = this._panelParent.getPosition();
+        const side = this._panelParent?.getPosition?.() ?? St.Side.TOP;
+        if (this._menu && this._menu._arrowSide !== side)
             this._setMenuArrowSides(side);
-
-            this._panelSettings.connectObject('changed::panel-positions', () => {
-                const newSide = this._panelParent.getPosition ? this._panelParent.getPosition() : St.Side.TOP;
-                this._setMenuArrowSides(newSide);
-            }, this);
-        } else {
-            this._setMenuArrowSides(St.Side.TOP);
-        }
     }
 
     setLightStyle(enabled) {
@@ -321,8 +304,7 @@ export const ApplicationsButton = GObject.registerClass({
 
     // Destroy the menu button
     _onDestroy() {
-        this._panelSettings?.disconnectObject(this);
-        this._panelSettings = null;
+        this.panel?.disconnectObject(this);
 
         this._menu?.destroy();
         this._menu = null;

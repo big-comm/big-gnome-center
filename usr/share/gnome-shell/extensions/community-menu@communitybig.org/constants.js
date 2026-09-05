@@ -16,6 +16,7 @@ export const TooltipLocation = {
 export const MENU_BUTTON_ICON_SIZE = 36;
 
 export const COMMUNITY_PANEL_UUID = 'community-panel@communitybig.org';
+export const RUNTIME_UUID = 'layout-switcher-runtime@communitybig.org';
 
 export const SEARCH_PROVIDERS_SCHEMA = 'org.gnome.desktop.search-providers';
 export const MAX_LIST_SEARCH_RESULTS_ROWS = 5;

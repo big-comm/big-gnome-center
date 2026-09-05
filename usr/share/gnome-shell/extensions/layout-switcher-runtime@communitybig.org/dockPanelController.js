@@ -516,7 +516,7 @@ export class PanelController {
     }
 
     _applyPanelTracking(mode) {
-        const overlayMode = mode !== 'always-visible';
+        const overlayMode = mode !== 'always-visible' && !this._inOverview;
         this._autohide.setEnabled(overlayMode && !this._inOverview);
         if (!this._panelActorData || this._overlayMode === overlayMode)
             return;
@@ -559,10 +559,10 @@ export class PanelController {
         this._cancelHide();
         this._hideTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
             this._hideTimeout = 0;
-            if (!this._panel.hover && !this._panelInteractionActive()) {
+            if (!this._autohide.pointerInside() && !this._panelInteractionActive()) {
                 this._pointerReveal = false;
                 this._applyVisibility();
-            } else if (!this._panel.hover) {
+            } else {
                 this._queueHide();
             }
             return GLib.SOURCE_REMOVE;

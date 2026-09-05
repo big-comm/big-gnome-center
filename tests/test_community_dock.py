@@ -237,7 +237,7 @@ def test_community_dock_owns_native_panel_runtime():
     assert "manager?.activeMenu ?? manager?._activeMenu" in controller
     assert "global.stage.get_grab_actor()" in controller
     assert "this._panel.statusArea.quickSettings?.menu.actor.contains" in controller
-    assert "!this._panel.hover && !this._panelInteractionActive()" in controller
+    assert "!this._autohide.pointerInside() && !this._panelInteractionActive()" in controller
     assert "Main.layoutManager.getWorkAreaForMonitor" in controller
     assert "window.maximized_vertically || window.fullscreen" in controller
     assert "this._applyDockFullscreen(" not in controller

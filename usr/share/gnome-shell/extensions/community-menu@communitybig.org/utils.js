@@ -190,7 +190,7 @@ export function isPanelExtension(uuid) {
     if (!uuid)
         return false;
 
-    return uuid === Constants.COMMUNITY_PANEL_UUID;
+    return uuid === Constants.COMMUNITY_PANEL_UUID || uuid === Constants.RUNTIME_UUID;
 }
 
 /**

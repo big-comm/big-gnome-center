@@ -287,10 +287,10 @@ export class NativePanelOpacityIntegration {
         this._cancelHide();
         this._hideTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
             this._hideTimeout = 0;
-            if (!this._panel.hover && !this._panelInteractionActive()) {
+            if (!this._autohide.pointerInside() && !this._panelInteractionActive()) {
                 this._pointerReveal = false;
                 this._applyVisibility();
-            } else if (!this._panel.hover) {
+            } else {
                 this._queueHide();
             }
             return GLib.SOURCE_REMOVE;
