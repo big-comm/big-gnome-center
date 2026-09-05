@@ -76,6 +76,12 @@ package() {
         fi
     done
 
+    # Pacman cannot replace an installed directory with a symlink.
+    # Keep legacy directories and link individual files after packaging.
+    local legacy="${pkgdir}/usr/share/layout-switcher"
+    unlink "${legacy}"
+    install -dm755 "${legacy}"
+
     # Keep one schema source in the extension; expose it to the GTK app.
     install -Dm644 \
         "${pkgsrc}/usr/share/gnome-shell/extensions/frosted-glass@communitybig.org/schemas/org.communitybig.frosted-glass.gschema.xml" \
@@ -118,4 +124,12 @@ package() {
     install -Dm644 \
         "${pkgsrc}/usr/share/gnome-shell/extensions/community-menu@communitybig.org/UPSTREAM.md" \
         "${pkgdir}/usr/share/doc/${pkgname}/community-menu-upstream.md"
+
+    local file relative target
+    while IFS= read -r -d '' file; do
+        relative="${file#"${pkgdir}/usr/share/${pkgname}/"}"
+        target="${legacy}/${relative}"
+        install -dm755 "$(dirname "${target}")"
+        ln -s "$(realpath --relative-to="$(dirname "${target}")" "${file}")" "${target}"
+    done < <(find "${pkgdir}/usr/share/${pkgname}" -type f -print0)
 }

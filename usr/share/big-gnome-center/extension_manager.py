@@ -12,7 +12,9 @@ Responsabilidades:
 DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
+import io
 import json
+import logging
 import re
 import shutil
 import tempfile
@@ -21,10 +23,12 @@ import urllib.request
 import zipfile
 from pathlib import Path
 from typing import Dict, List, Tuple
+from uuid import uuid4
 
 # Cap defensivo para o download da .zip de extensão. Extensões reais raramente
 # passam de 5 MiB; valor folgado para não rejeitar pacotes legítimos.
 _MAX_EXT_ZIP_BYTES = 50 * 1024 * 1024  # 50 MiB
+_MAX_EXT_UNPACKED_BYTES = 200 * 1024 * 1024
 _EXTENSION_UUID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+@-]*$")
 _PKEXEC = Path("/usr/bin/pkexec")
 _SYSTEM_EXTENSION_REMOVER = Path("/usr/bin/big-gnome-center-remove-extension")
@@ -247,6 +251,9 @@ class ExtMgr:
 
         Retorna (True, método_usado) ou (False, mensagem_erro).
         """
+        if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
+            return False, "invalid extension UUID"
+
         # 1. gnome-extensions CLI (mais confiável, Wayland-safe)
         if shutil.which("gnome-extensions"):
             ok, out = run_cmd(
@@ -296,6 +303,9 @@ class ExtMgr:
         """
         import time
 
+        if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
+            return False, "invalid extension UUID"
+
         try:
             major, minor = gnome_shell_version()
             url = f"https://extensions.gnome.org/download-extension/{uuid}.shell-extension.zip"
@@ -314,7 +324,8 @@ class ExtMgr:
             )
 
             dest = EXT_USER_DIR / uuid
-            dest.mkdir(parents=True, exist_ok=True)
+            if dest.is_symlink():
+                return False, "extension directory is a symlink"
 
             # retry with exponential backoff (1s, 2s, 4s)
             data = None
@@ -336,43 +347,49 @@ class ExtMgr:
                         time.sleep(1 << attempt)
 
             if not data or len(data) < 100:
-                # rmtree (não rmdir) porque uma extração parcial anterior pode
-                # ter deixado arquivos dentro de dest.
-                shutil.rmtree(str(dest), ignore_errors=True)
                 if last_err:
                     return False, f"download failed after retries: {last_err}"
                 return False, "empty or too-small download"
 
-            with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as tmp_f:
-                tmp_path = Path(tmp_f.name)
+            EXT_USER_DIR.mkdir(parents=True, exist_ok=True)
+            with tempfile.TemporaryDirectory(prefix=f".{uuid}.", dir=EXT_USER_DIR) as tmp_dir:
+                staged = Path(tmp_dir) / "extension"
+                staged.mkdir()
+                with zipfile.ZipFile(io.BytesIO(data)) as zf:
+                    if sum(member.file_size for member in zf.infolist()) > _MAX_EXT_UNPACKED_BYTES:
+                        return False, "unpacked extension exceeds size limit"
+                    for member in zf.infolist():
+                        target = (staged / member.filename).resolve()
+                        if not target.is_relative_to(staged.resolve()):
+                            return False, "extension archive contains an unsafe path"
+                        zf.extract(member, staged)
 
-            try:
-                tmp_path.write_bytes(data)
+                metadata = json.loads((staged / "metadata.json").read_text(encoding="utf-8"))
+                if not isinstance(metadata, dict) or metadata.get("uuid") != uuid:
+                    return False, "extension UUID does not match metadata"
+                if not (staged / "extension.js").is_file():
+                    return False, "extension.js is missing"
+                schema_ok, schema_msg = ExtMgr._compile_schemas(staged)
+                if not schema_ok:
+                    return False, f"schema compile failed: {schema_msg}"
 
-                with zipfile.ZipFile(str(tmp_path)) as zf:
-                    # security: prevent path traversal (zip-slip).
-                    # Resolve cada caminho final e exige que permaneça dentro de `dest`.
-                    dest_resolved = dest.resolve()
-                    for member in zf.namelist():
-                        target = (dest_resolved / member).resolve()
-                        try:
-                            target.relative_to(dest_resolved)
-                        except ValueError:
-                            # caminho escapa do destino — ignora
-                            continue
-                        zf.extract(member, str(dest))
-            except Exception:
-                # Zip corrompido/extração falha: não deixa um diretório de
-                # extensão pela metade que is_installed() reportaria como ok.
-                shutil.rmtree(str(dest), ignore_errors=True)
-                raise
-            finally:
-                # Sempre remove o .zip temporário, inclusive nos caminhos de erro.
-                tmp_path.unlink(missing_ok=True)
-
-            schema_ok, schema_msg = ExtMgr._compile_schemas(dest)
-            if not schema_ok:
-                return False, f"schema compile failed: {schema_msg}"
+                # Preserve the installed version until validation succeeds.
+                previous = EXT_USER_DIR / f".{uuid}.backup-{uuid4().hex}"
+                if dest.exists():
+                    dest.rename(previous)
+                try:
+                    staged.rename(dest)
+                except OSError:
+                    if previous.exists():
+                        previous.rename(dest)
+                    raise
+                if previous.exists():
+                    try:
+                        shutil.rmtree(previous)
+                    except OSError as exc:
+                        logging.getLogger("big-gnome-center").warning(
+                            "Cannot remove extension backup %s: %s", previous, exc,
+                        )
             return True, url
 
         except Exception as exc:

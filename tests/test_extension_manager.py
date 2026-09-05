@@ -1,9 +1,94 @@
 # SPDX-License-Identifier: MIT
 """Tests for extension_manager.py — enabled_list, is_installed, install, remove."""
 
+import io
+import json
+import zipfile
+from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from extension_manager import ExtMgr
+
+
+class TestDownloadInstallation:
+    UUID = "test@example.org"
+
+    @staticmethod
+    def archive(uuid=UUID, extra=None):
+        stream = io.BytesIO()
+        with zipfile.ZipFile(stream, "w") as archive:
+            archive.writestr("metadata.json", json.dumps({"uuid": uuid}))
+            archive.writestr("extension.js", "export default class Extension {}")
+            if extra:
+                archive.writestr(*extra)
+        return stream.getvalue()
+
+    @pytest.fixture(autouse=True)
+    def setup(self, tmp_path):
+        self.root = tmp_path
+        self.dest = tmp_path / self.UUID
+        self.dest.mkdir()
+        (self.dest / "extension.js").write_text("original code")
+        (self.dest / "obsolete.js").write_text("old version")
+
+    def install(self, data, schema_result=(True, "")):
+        response = io.BytesIO(data)
+        response.headers = {"Content-Type": "application/zip"}
+        with (
+            patch("extension_manager.EXT_USER_DIR", self.root),
+            patch("extension_manager.gnome_shell_version", return_value=(50, 0)),
+            patch("extension_manager.urllib.request.urlopen", return_value=response),
+            patch.object(ExtMgr, "_compile_schemas", return_value=schema_result),
+        ):
+            return ExtMgr._install_from_ego(self.UUID, 1)
+
+    @pytest.mark.parametrize("failure", ["small", "corrupt", "uuid", "path", "schema"])
+    def test_failed_update_preserves_installed_extension(self, failure):
+        data = self.archive()
+        if failure == "small":
+            data = b"invalid"
+        elif failure == "corrupt":
+            data = b"invalid" * 100
+        elif failure == "uuid":
+            data = self.archive("other@example.org")
+        elif failure == "path":
+            data = self.archive(extra=("../../escaped", "unsafe"))
+        schema_result = (False, "invalid schema") if failure == "schema" else (True, "")
+        ok, message = self.install(data, schema_result)
+        assert not ok
+        assert message
+        assert (self.dest / "extension.js").read_text() == "original code"
+        assert sorted(path.name for path in self.root.iterdir()) == [self.UUID]
+
+    def test_successful_update_replaces_obsolete_files(self):
+        ok, message = self.install(self.archive())
+        assert ok, message
+        assert (self.dest / "extension.js").read_text() == "export default class Extension {}"
+        assert not (self.dest / "obsolete.js").exists()
+        assert sorted(path.name for path in self.root.iterdir()) == [self.UUID]
+
+    def test_publish_failure_restores_previous_version(self):
+        original_rename = Path.rename
+
+        def fail_publish(path, target):
+            if path.name == "extension":
+                raise OSError("publish failed")
+            return original_rename(path, target)
+
+        with patch.object(Path, "rename", fail_publish):
+            ok, message = self.install(self.archive())
+        assert not ok
+        assert "publish failed" in message
+        assert (self.dest / "extension.js").read_text() == "original code"
+
+    @pytest.mark.parametrize("uuid", ["../outside", "/tmp/outside", "", None])
+    def test_invalid_uuid_never_starts_installation(self, uuid):
+        with patch("extension_manager.run_cmd") as command:
+            assert not ExtMgr.install(uuid, 1, "")[0]
+            assert not ExtMgr._install_from_ego(uuid, 1)[0]
+        command.assert_not_called()
 
 
 class TestEnabledList:

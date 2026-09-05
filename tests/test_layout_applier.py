@@ -174,6 +174,29 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "community-menu@communitybig.org" in enabled
         assert "community-menu@communitybig.org" not in disabled
 
+    @pytest.mark.parametrize(
+        ("label", "menu_expected"),
+        [("BigGnome", False), ("Minimal", False), ("G-Unity", False),
+         ("Classic", True), ("Desk UX", True), ("Hybrid", True)],
+    )
+    def test_snapshot_menu_override_uses_saved_layout_identity(self, label, menu_expected):
+        data = (
+            "[org/gnome/shell]\n"
+            "enabled-extensions=['stay@ext']\n"
+            "disabled-extensions=[]\n\n"
+            "[org/communitybig/layout-switcher/runtime]\n"
+            f"active-layout='{label}'\n"
+        )
+        with patch("layout_applier.Settings") as settings:
+            settings.return_value.get.side_effect = (
+                lambda key: True if key == "community_menu_enabled" else None
+            )
+            restored = LayoutApplier._apply_user_component_overrides(data)
+        shell = LayoutApplier._section_key_values(restored, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+        assert ("community-menu@communitybig.org" in enabled) == menu_expected
+        assert "stay@ext" in enabled
+
     @patch("layout_applier.time.sleep")
     @patch(
         "layout_applier.LayoutApplier._preserve_user_color_scheme",

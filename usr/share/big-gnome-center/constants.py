@@ -9,6 +9,7 @@ variables: ok, err, out, val, raw, data, info, etc.
 
 import gettext
 import shutil
+import tempfile
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -49,7 +50,7 @@ tr = gettext.translation(_DOMAIN, _LOCALE_DIR, fallback=True).gettext  # purpose
 
 # ── Aplicação ─────────────────────────────────────────────────────────────────
 APP_ID = "br.com.biglinux.BigGnomeCenter"
-APP_VERSION = "3.0.0"
+APP_VERSION = "3.0.1"
 APP_LICENSE = "MIT"
 APP_NAME = "Big Gnome Center"
 ICON_NAME = "big-gnome-center"
@@ -59,10 +60,15 @@ LEGACY_DESKTOP_ID = "org.communitybig.layout-switcher.desktop"
 # ── Diretórios de dados ───────────────────────────────────────────────────────
 def _migrate_legacy_dir(old: Path, new: Path) -> None:
     """Copy pre-rebrand user data once, without deleting or replacing it."""
-    if new.exists() or not old.exists():
+    if new.exists() or new.is_symlink() or not old.is_dir():
         return
     try:
-        shutil.copytree(old, new, dirs_exist_ok=True)
+        new.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix=f".{new.name}.", dir=new.parent) as temporary:
+            staged = Path(temporary) / "data"
+            shutil.copytree(old, staged, symlinks=True)
+            if not new.exists() and not new.is_symlink():
+                staged.rename(new)
     except OSError:
         pass
 

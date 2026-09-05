@@ -1211,6 +1211,13 @@ class LayoutApplier:
     @classmethod
     def _apply_user_component_overrides(cls, data: str, layout_id: str = "") -> str:
         """Apply explicit global menu choices over a layout snapshot."""
+        if not layout_id:
+            runtime = cls._section_key_values(data, _RUNTIME_SETTINGS_SECTION)
+            label = runtime.get("active-layout", "").strip("'\"")
+            layout_id = next(
+                (stem for stem, name in _LAYOUT_DISPLAY_NAMES.items() if name == label),
+                "",
+            )
         prefs = Settings()
         menu_state = prefs.get("community_menu_enabled")
         if layout_id and layout_id not in _COMMUNITY_MENU_LAYOUTS:

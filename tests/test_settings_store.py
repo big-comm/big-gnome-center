@@ -21,6 +21,44 @@ def test_rebrand_migration_copies_user_data_without_removing_source(tmp_path):
     assert (old / "settings.json").is_file()
 
 
+def test_rebrand_migration_preserves_broken_backup_links(tmp_path):
+    old, new = tmp_path / "old", tmp_path / "new"
+    old.mkdir()
+    (old / "latest.dconf").symlink_to("missing.dconf")
+    (old / "settings.json").write_text('{"intro_shown": true}')
+    _migrate_legacy_dir(old, new)
+    assert (new / "settings.json").read_text() == '{"intro_shown": true}'
+    assert (new / "latest.dconf").readlink() == (old / "latest.dconf").readlink()
+
+
+def test_rebrand_migration_retries_after_copy_failure(tmp_path):
+    old, new = tmp_path / "old", tmp_path / "new"
+    old.mkdir()
+    (old / "settings.json").write_text("{}")
+
+    def partial_copy(source, target, **kwargs):
+        target.mkdir()
+        (target / "incomplete").touch()
+        raise OSError("disk full")
+
+    with patch("constants.shutil.copytree", side_effect=partial_copy):
+        _migrate_legacy_dir(old, new)
+    assert not new.exists()
+    _migrate_legacy_dir(old, new)
+    assert (new / "settings.json").read_text() == "{}"
+    assert not (new / "incomplete").exists()
+
+
+def test_rebrand_migration_does_not_replace_existing_settings(tmp_path):
+    old, new = tmp_path / "old", tmp_path / "new"
+    old.mkdir()
+    new.mkdir()
+    (old / "settings.json").write_text('{"layout": "classic"}')
+    (new / "settings.json").write_text('{"layout": "hybrid"}')
+    _migrate_legacy_dir(old, new)
+    assert (new / "settings.json").read_text() == '{"layout": "hybrid"}'
+
+
 class TestSettings:
     @pytest.fixture(autouse=True)
     def setup_dirs(self, tmp_path):
@@ -74,6 +112,24 @@ class TestSettings:
         self.settings_file.write_text("not json")
         s = self.Settings()
         assert s.get("anything") is None
+
+    @pytest.mark.parametrize("value", [[], None, True, 42, "text"])
+    def test_non_object_json(self, value):
+        self.settings_file.write_text(json.dumps(value))
+        s = self.Settings()
+        assert s.get("missing", "default") == "default"
+        s.set("layout", "biggnome")
+        self.settings_file.write_text(json.dumps(value))
+        s.set("intro_shown", True)
+        assert json.loads(self.settings_file.read_text()) == {
+            "layout": "biggnome", "intro_shown": True,
+        }
+
+    def test_unwritable_config_directory(self):
+        with patch("pathlib.Path.mkdir", side_effect=PermissionError):
+            s = self.Settings()
+            s.set("layout", "classic")
+        assert s.get("layout") == "classic"
 
     def test_delete(self):
         s = self.Settings()

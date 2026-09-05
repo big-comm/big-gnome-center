@@ -22,6 +22,7 @@ htmlcov/
 # ── Audit output (local analysis reports) ───────────────────────────────────
 .audit/
 .codex-menu-diag.svg
+/docs/REVIEW_*.md
 
 # ── Local-only context dump for Claude / dev notes ──────────────────────────
 CONTEXT.md

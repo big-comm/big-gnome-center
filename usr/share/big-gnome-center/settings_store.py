@@ -26,14 +26,12 @@ class Settings:
     """
 
     def __init__(self) -> None:
-        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
         self._data: Dict = {}
         try:
-            if SETTINGS_FILE.exists():
-                text = SETTINGS_FILE.read_text(encoding="utf-8")
-                self._data = json.loads(text)
-        except Exception:
+            CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError:
             pass
+        self._reload_from_disk()
 
     def get(self, key: str, default=None):
         return self._data.get(key, default)
@@ -49,7 +47,9 @@ class Settings:
         """
         try:
             if SETTINGS_FILE.exists():
-                self._data = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
+                data = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
+                if isinstance(data, dict):
+                    self._data = data
         except Exception:
             pass
 
