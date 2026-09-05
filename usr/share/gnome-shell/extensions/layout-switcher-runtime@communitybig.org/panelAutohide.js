@@ -20,6 +20,8 @@ export class PanelAutohide {
         zone.reactive = false;
         this._pressure = null;
         this._barrier = null;
+        this._barrierRelease = 0;
+        this._targetVisible = false;
         this._dwell = 0;
         this._enterId = zone.connect('enter-event', () => this._enter());
         this._leaveId = zone.connect('leave-event', () => this._cancelDwell());
@@ -37,7 +39,8 @@ export class PanelAutohide {
         this._cancelDwell();
         this._clearBarrier();
         const monitor = Main.layoutManager.primaryMonitor;
-        if (!this._enabled || !monitor ||
+        this._zone.reactive = this._enabled && !this._targetVisible;
+        if (!this._enabled || this._targetVisible || !monitor ||
             !(global.backend.capabilities & Meta.BackendCapabilities.BARRIERS))
             return;
         this._pressure = new Layout.PressureBarrier(100, 1000, Shell.ActionMode.NORMAL);
@@ -51,6 +54,7 @@ export class PanelAutohide {
         });
         this._pressure.addBarrier(this._barrier);
         this._pressure.connect('trigger', () => this._reveal());
+        this._zone.reactive = false;
     }
 
     _enter() {
@@ -72,10 +76,26 @@ export class PanelAutohide {
     }
 
     _clearBarrier() {
+        if (this._barrierRelease)
+            GLib.Source.remove(this._barrierRelease);
+        this._barrierRelease = 0;
         this._pressure?.destroy();
         this._barrier?.destroy();
         this._pressure = null;
         this._barrier = null;
+    }
+
+    _syncBarrier() {
+        if (!this._targetVisible) {
+            this.reposition();
+        } else if (this._barrier && !this._barrierRelease) {
+            // Release cross-monitor movement after the reveal settles.
+            this._barrierRelease = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                this._barrierRelease = 0;
+                this._clearBarrier();
+                return GLib.SOURCE_REMOVE;
+            });
+        }
     }
 
     pointerInside() {
@@ -100,6 +120,11 @@ export class PanelAutohide {
 
     setVisible(visible, immediate = false) {
         const actor = this._actor;
+        this._targetVisible = visible;
+        if (!visible && this._barrierRelease) {
+            GLib.Source.remove(this._barrierRelease);
+            this._barrierRelease = 0;
+        }
         // Keep overlays composited until their hide animation completes.
         if (visible || actor.visible)
             this._setComposited(true);
@@ -122,6 +147,7 @@ export class PanelAutohide {
             actor.visible = visible;
             if (!visible)
                 this._setComposited(false);
+            this._syncBarrier();
             Main.layoutManager._queueUpdateRegions();
             return;
         }
@@ -134,6 +160,7 @@ export class PanelAutohide {
                 actor.visible = visible;
                 if (!visible)
                     this._setComposited(false);
+                this._syncBarrier();
                 Main.layoutManager._queueUpdateRegions();
             },
         });

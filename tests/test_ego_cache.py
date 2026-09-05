@@ -4,7 +4,42 @@
 import time
 from unittest.mock import patch
 
+import pytest
+
 import ego_cache
+import ego_client
+
+
+@pytest.mark.parametrize("error", [PermissionError, NotADirectoryError, OSError])
+def test_cache_directory_failures_are_optional(error):
+    with patch("pathlib.Path.mkdir", side_effect=error("cache unavailable")):
+        assert ego_cache.json_get("search", "q", 60) is None
+        assert ego_cache.json_put("search", "q", {}) is None
+        assert ego_cache.json_invalidate("search", "q") is None
+        assert ego_cache.thumb_get("https://example.org/icon.png") is None
+        assert ego_cache.thumb_put("https://example.org/icon.png", b"image") is None
+        ego_cache._evict_thumbs_if_needed()
+
+
+@pytest.mark.parametrize("use_cache", [True, False])
+def test_search_survives_unavailable_cache(use_cache):
+    with (
+        patch("pathlib.Path.mkdir", side_effect=PermissionError("cache unavailable")),
+        patch("ego_client._http_json", return_value={"extensions": [], "page": 1}) as fetch,
+    ):
+        result = ego_client.search("dock", use_cache=use_cache)
+    assert result is not None
+    assert result.extensions == []
+    fetch.assert_called_once()
+
+
+def test_thumbnail_disappearing_during_lookup_is_a_cache_miss(tmp_path):
+    with (
+        patch("ego_cache.thumb_path", return_value=tmp_path / "icon.png"),
+        patch("pathlib.Path.exists", return_value=True),
+        patch("pathlib.Path.stat", side_effect=FileNotFoundError),
+    ):
+        assert ego_cache.thumb_get("icon.png") is None
 
 
 class TestJsonCache:

@@ -45,8 +45,8 @@ def json_get(namespace: str, key: str, ttl_seconds: int) -> Optional[dict]:
     Lê JSON do cache se existir e estiver dentro do TTL. Retorna None caso contrário.
     Falhas de I/O / JSON malformado são silenciadas → None.
     """
-    path = _json_dir(namespace) / f"{_hash_key(key)}.json"
     try:
+        path = _json_dir(namespace) / f"{_hash_key(key)}.json"
         if not path.exists():
             return None
         age = time.time() - path.stat().st_mtime
@@ -61,8 +61,8 @@ def json_get(namespace: str, key: str, ttl_seconds: int) -> Optional[dict]:
 
 def json_put(namespace: str, key: str, payload: dict) -> None:
     """Grava JSON atomicamente (tmp + rename). Silencia falhas."""
-    path = _json_dir(namespace) / f"{_hash_key(key)}.json"
     try:
+        path = _json_dir(namespace) / f"{_hash_key(key)}.json"
         tmp = path.with_suffix(".tmp")
         with tmp.open("w", encoding="utf-8") as fh:
             json.dump(payload, fh, ensure_ascii=False)
@@ -73,8 +73,8 @@ def json_put(namespace: str, key: str, payload: dict) -> None:
 
 def json_invalidate(namespace: str, key: str) -> None:
     """Remove uma entrada específica do cache JSON."""
-    path = _json_dir(namespace) / f"{_hash_key(key)}.json"
     try:
+        path = _json_dir(namespace) / f"{_hash_key(key)}.json"
         path.unlink(missing_ok=True)
     except Exception:
         pass
@@ -99,14 +99,16 @@ def thumb_path(url: str) -> Path:
 
 def thumb_get(url: str) -> Optional[Path]:
     """Retorna o Path da thumb se já estiver em cache; None caso contrário."""
-    path = thumb_path(url)
-    if path.exists() and path.stat().st_size > 0:
-        # touch atime para LRU
-        try:
-            path.touch()
-        except Exception:
-            pass
-        return path
+    try:
+        path = thumb_path(url)
+        if path.exists() and path.stat().st_size > 0:
+            try:
+                path.touch()
+            except OSError:
+                pass
+            return path
+    except OSError as exc:
+        log.debug("ego_cache.thumb_get %s failed: %s", url, exc)
     return None
 
 
@@ -116,8 +118,8 @@ def thumb_put(url: str, data: bytes) -> Optional[Path]:
     """
     if not data:
         return None
-    path = thumb_path(url)
     try:
+        path = thumb_path(url)
         tmp = path.with_suffix(path.suffix + ".tmp")
         tmp.write_bytes(data)
         tmp.replace(path)
@@ -133,8 +135,8 @@ def _evict_thumbs_if_needed() -> None:
     Mantém o diretório de thumbs abaixo de EGO_THUMBS_MAX_BYTES.
     Remove os menos recentemente acessados (mtime crescente) até voltar ao limite.
     """
-    base = thumbs_dir()
     try:
+        base = thumbs_dir()
         files = [(p, p.stat()) for p in base.iterdir() if p.is_file()]
     except Exception:
         return

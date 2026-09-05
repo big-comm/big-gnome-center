@@ -499,7 +499,7 @@ export class PanelController {
         this._applying = true;
         try {
             const monitorFullscreen = Boolean(
-                this._focusMonitor()?.inFullscreen) && !this._inOverview;
+                Main.layoutManager.primaryMonitor?.inFullscreen) && !this._inOverview;
             if (monitorFullscreen) {
                 this._autohide.setEnabled(false);
                 this._autohide.setVisible(false, true);

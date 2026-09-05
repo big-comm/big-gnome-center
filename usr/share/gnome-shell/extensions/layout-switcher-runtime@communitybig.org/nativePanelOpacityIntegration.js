@@ -238,7 +238,7 @@ export class NativePanelOpacityIntegration {
         try {
             const inOverview = this._overviewActive();
             const monitorFullscreen = Boolean(
-                this._focusMonitor()?.inFullscreen) && !inOverview;
+                Main.layoutManager.primaryMonitor?.inFullscreen) && !inOverview;
             if (monitorFullscreen) {
                 this._autohide.setEnabled(false);
                 this._autohide.setVisible(false, true);

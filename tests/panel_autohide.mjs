@@ -108,6 +108,23 @@ assert.equal(panel.pointerInside(), false);
 context.global.get_pointer = () => [1280, 0];
 assert.equal(panel.pointerInside(), false, 'other monitors must not hold this panel');
 
+const releasedBarrier = panel._barrier;
+const releaseId = panel._barrierRelease;
+assert.equal(timers.get(releaseId).delay, 100);
+timers.get(releaseId).callback();
+timers.delete(releaseId);
+assert.equal(releasedBarrier.destroyed, true, 'revealed panels must release monitor crossings');
+assert.equal(panel._barrier, null);
+panel.reposition();
+assert.equal(panel._barrier, null, 'monitor updates must not trap a visible panel');
+panel.setVisible(false, true);
+assert.ok(panel._barrier, 'hidden panels must restore edge resistance');
+panel.setVisible(true, true);
+const reversedRelease = panel._barrierRelease;
+panel.setVisible(false, true);
+assert.equal(timers.has(reversedRelease), false, 'hiding cancels the pending release');
+assert.ok(panel._barrier);
+
 for (const file of ['dockPanelController.js', 'nativePanelOpacityIntegration.js']) {
     const controllerSource = fs.readFileSync(new URL(file, path), 'utf8');
     const queueMethod = controllerSource.slice(controllerSource.indexOf('    _queueHide() {'),

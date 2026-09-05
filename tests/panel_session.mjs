@@ -192,3 +192,43 @@ for (const layout of ['Classic', 'Hybrid', 'Desk UX']) {
     assert.equal(indicator.menu.opened, true, `${layout}: existing hidden-panel shortcut works`);
 }
 console.log('Startup, menu ownership, overview struts and all-layout shortcuts passed');
+
+for (const [file, name] of [
+    ['dockPanelController.js', 'PanelController'],
+    ['nativePanelOpacityIntegration.js', 'NativePanelOpacityIntegration'],
+]) {
+    const primary = {index: 0, inFullscreen: true};
+    const Main = {
+        layoutManager: {primaryIndex: 0, primaryMonitor: primary, _queueUpdateRegions() {}},
+        overview: {visible: false, visibleTarget: false},
+    };
+    const Controller = load(read(runtime, file), name, {Main});
+    const controller = Object.create(Controller.prototype);
+    let visible, enabled;
+    Object.assign(controller, {
+        _panelBox: {}, _visibility: 'intelligent', _inOverview: false,
+        _settings: {get_string: () => controller._visibility},
+        _focusWindow: {get_monitor: () => 1}, _pointerReveal: false,
+        _focusWindowTouchesPanel: () => false,
+        _autohide: {
+            setEnabled(value) { enabled = value; },
+            setVisible(value) { visible = value; },
+        },
+    });
+    for (const mode of ['intelligent', 'always-hidden', 'always-visible']) {
+        controller._visibility = mode;
+        controller._pointerReveal = true;
+        controller._applyVisibility();
+        assert.equal(visible, false, `${file}: primary fullscreen wins over secondary focus`);
+        assert.equal(enabled, false, `${file}: fullscreen disables the pointer barrier`);
+        controller._inOverview = true;
+        controller._applyVisibility();
+        assert.equal(visible, true, `${file}: overview remains accessible`);
+        controller._inOverview = false;
+    }
+    primary.inFullscreen = false;
+    controller._visibility = 'intelligent';
+    controller._pointerReveal = false;
+    controller._applyVisibility();
+    assert.equal(visible, true, `${file}: exiting fullscreen restores normal visibility`);
+}
