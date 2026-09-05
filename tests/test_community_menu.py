@@ -255,7 +255,7 @@ def test_classic_sidebar_uses_native_apps_and_session_actions():
     assert "new Sections.ClassicSidebarSection()" in layout
     assert "cascadeExitActor: this._sidebar" in layout
     assert "'org.bigcommunity.CommRelease.desktop'" in sections
-    assert "'org.communitybig.layout-switcher.desktop'" in sections
+    assert "'br.com.biglinux.BigGnomeCenter.desktop'" in sections
     assert "'br.com.biglinux-settings.desktop'" in sections
     assert "'org.gnome.Calculator.desktop'" in sections
     assert "'org.gnome.TextEditor.desktop'" in sections

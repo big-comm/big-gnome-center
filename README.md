@@ -1,4 +1,4 @@
-<h1 align="center">Layout Switcher</h1>
+<h1 align="center">Big Gnome Center</h1>
 
 <p align="center">
   A GTK4 and libadwaita appearance manager for GNOME.
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Application version" src="https://img.shields.io/badge/version-2.18.0-3584e4.svg">
+  <img alt="Application version" src="https://img.shields.io/badge/version-3.0.0-3584e4.svg">
   <img alt="License" src="https://img.shields.io/badge/license-MIT%20%2B%20GPL--2.0%2B%20%2B%20GPL--3.0%2B-green.svg">
   <img alt="Python 3.10 or newer" src="https://img.shields.io/badge/Python-3.10%2B-3776ab.svg?logo=python&logoColor=white">
   <img alt="GTK 4" src="https://img.shields.io/badge/GTK-4-4a86cf.svg?logo=gnome&logoColor=white">
@@ -19,7 +19,7 @@
   <img alt="29 translations" src="https://img.shields.io/badge/i18n-29_languages-9141ac.svg">
 </p>
 
-Community Layout Switcher is the appearance-management application developed
+Big Gnome Center is the appearance-management application developed
 for [BigCommunity Linux](https://communitybig.org). It applies curated GNOME
 desktop profiles and brings the related appearance and extension controls into
 a single responsive interface.
@@ -99,7 +99,7 @@ a single responsive interface.
 
 - Linux with GNOME Shell 50–51. Overview blur requires GNOME Shell 50; the
   complete Frosted Glass surface backend requires GNOME Shell 51. The remaining
-  Layout Switcher features continue to support earlier listed versions.
+  Big Gnome Center features continue to support earlier listed versions.
 - Python 3.10 or newer.
 - PyGObject with GTK 4, libadwaita 1, and Pango bindings.
 - `dconf`, `gsettings`, `gnome-extensions`, and
@@ -124,7 +124,7 @@ and Big Shot UUIDs while preserving unrelated enabled and disabled extensions.
 ### BigCommunity or supported Arch repository
 
 ```sh
-sudo pacman -S layout-switcher
+sudo pacman -S big-gnome-center
 ```
 
 ### Build the Arch package
@@ -155,13 +155,13 @@ GNOME Shell extensions are discovered for the new session.
 
 ## Usage
 
-Open **Community Layout Switcher** from the application grid or run:
+Open **Big Gnome Center** from the application grid or run:
 
 ```sh
-layout-switcher
+big-gnome-center
 ```
 
-The sidebar contains seven pages:
+The sidebar contains eight pages:
 
 - **Layouts** — Apply or resume a desktop profile.
 - **Fonts** — Change font families, rendering, scale, and Google Fonts.
@@ -172,6 +172,7 @@ The sidebar contains seven pages:
 - **Effects** — Configure Frosted Glass and manage the three featured
   visual-effect extensions.
 - **Extensions** — Use the Featured, Browse, and Installed views.
+- **Startup Applications** — Manage applications launched with the session.
 
 The main menu provides **Check for updates**, **Auto-update extensions**,
 **Backups…**, and **About**. Press <kbd>Ctrl</kbd>+<kbd>Q</kbd> to quit.
@@ -186,22 +187,23 @@ The main menu provides **Check for updates**, **Auto-update extensions**,
 
 | Path | Purpose |
 | --- | --- |
-| `~/.config/big-appearance/settings.json` | Application preferences and active-layout state |
-| `~/.config/big-appearance/backups/` | Full dconf backups |
-| `~/.config/big-appearance/layout-snapshots/` | Customized state saved for each layout |
+| `~/.config/big-gnome-center/settings.json` | Application preferences and active-layout state |
+| `~/.config/big-gnome-center/backups/` | Full dconf backups |
+| `~/.config/big-gnome-center/layout-snapshots/` | Customized state saved for each layout |
 | `~/.config/dconf/settings.gnome` | Profile persisted for the next GNOME login |
-| `~/.cache/layout-switcher/` | Extension metadata, screenshots, and Google Fonts catalog cache |
-| `~/.local/share/fonts/layout-switcher/google-fonts/` | Google Fonts installed for the current user |
+| `~/.cache/big-gnome-center/` | Extension metadata, screenshots, and Google Fonts catalog cache |
+| `~/.local/share/fonts/big-gnome-center/google-fonts/` | Google Fonts installed for the current user |
 
-Set `LAYOUT_SWITCHER_N_KEEP` before starting the app to change the default
-backup retention count of 10.
+Set `BIG_GNOME_CENTER_N_KEEP` before starting the app to change the default
+backup retention count of 10. The former `LAYOUT_SWITCHER_N_KEEP` name remains
+accepted during migration.
 
 ## Development
 
 Run directly from a checkout:
 
 ```sh
-python3 usr/share/layout-switcher/main.py
+python3 usr/share/big-gnome-center/main.py
 ```
 
 Install the development tools in your environment, then run the focused
@@ -224,7 +226,7 @@ tests/                             Service, layout, helper, extension, and asset
 usr/bin/                           Application and helper-guard launchers
 usr/share/applications/            Desktop entry
 usr/share/gnome-shell/extensions/  Layout helper and bundled Community Shell components
-usr/share/layout-switcher/
+usr/share/big-gnome-center/
 ├── main.py                        Adw.Application entry point
 ├── constants.py                   Application metadata and curated resources
 ├── layout_applier.py              Live layout-switch orchestration
@@ -254,7 +256,7 @@ Layout files are absolute dconf dumps. Generate them in a configured GNOME
 session with:
 
 ```sh
-dconf dump / > usr/share/layout-switcher/layouts/<layout-name>.txt
+dconf dump / > usr/share/big-gnome-center/layouts/<layout-name>.txt
 ```
 
 Do not generate them from `/org/gnome/shell/`: a layout can contain settings
@@ -262,29 +264,29 @@ outside that subtree and the loader expects absolute section paths.
 
 ## Translations
 
-The application ships compiled `layout-switcher` catalogs for:
+The application ships compiled `big-gnome-center` catalogs for:
 
 > bg · cs · da · de · el · en · es · et · fi · fr · he · hr · hu · is · it
 > · ja · ko · nl · no · pl · pt · pt_BR · ro · ru · sk · sv · tr · uk · zh
 
 User-facing Python strings use `tr()`. The source template is
-`usr/share/locale/layout-switcher.pot`; locale sources are stored as
+`usr/share/locale/big-gnome-center.pot`; locale sources are stored as
 `usr/share/locale/<locale>.po` and compiled into the corresponding
 `LC_MESSAGES` directory.
 
 Example update workflow:
 
 ```sh
-find usr/share/layout-switcher -name '*.py' -print0 \
+find usr/share/big-gnome-center -name '*.py' -print0 \
   | xargs -0 xgettext --keyword=tr --language=Python --from-code=UTF-8 \
-      --output=usr/share/locale/layout-switcher.pot \
-      --package-name=layout-switcher
+      --output=usr/share/locale/big-gnome-center.pot \
+      --package-name=big-gnome-center
 
 msgmerge --update usr/share/locale/<locale>.po \
-  usr/share/locale/layout-switcher.pot
+  usr/share/locale/big-gnome-center.pot
 
 mkdir -p usr/share/locale/<locale>/LC_MESSAGES
-msgfmt --check --output-file=usr/share/locale/<locale>/LC_MESSAGES/layout-switcher.mo \
+msgfmt --check --output-file=usr/share/locale/<locale>/LC_MESSAGES/big-gnome-center.mo \
   usr/share/locale/<locale>.po
 ```
 
@@ -294,7 +296,7 @@ catalogs. All three domains cover the same 29 languages.
 
 ## License
 
-Community Layout Switcher is distributed under the [MIT License](LICENSE).
+Big Gnome Center is distributed under the [MIT License](LICENSE).
 The bundled Community Menu is a modified GPL-2.0-or-later derivative; see its
 [`COPYING`](usr/share/gnome-shell/extensions/community-menu@communitybig.org/COPYING)
 and [`UPSTREAM.md`](usr/share/gnome-shell/extensions/community-menu@communitybig.org/UPSTREAM.md)

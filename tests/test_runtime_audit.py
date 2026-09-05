@@ -5,13 +5,13 @@ from pathlib import Path
 
 import runtime_audit
 from runtime_audit import (
-    AuditEnvironmentError,
     COMMUNITY_DOCK_UUID,
     COMMUNITY_MENU_UUID,
     COMMUNITY_PANEL_UUID,
     DESKTOP_ICONS_UUID,
     HELPER_UUID,
     RUNTIME_UUID,
+    AuditEnvironmentError,
     Snapshot,
     _extension_state_from_output,
     audit_snapshot,
@@ -117,7 +117,7 @@ def _snapshot(**changes) -> Snapshot:
                     "visibility": {
                         "BigGnome": "intelligent",
                         "G-Unity": "always-visible",
-                    }.get(layout, "always-visible" if surface == "taskbar" else None),
+                    }.get(layout, "always-visible" if surface != "dock" else None),
                     "labels": layout == "Classic",
                     "actorHeight": actor_height,
                     "opacity": dock_opacity if surface == "dock" else panel_opacity,
@@ -144,6 +144,11 @@ def _snapshot(**changes) -> Snapshot:
                     "effectiveOpacity": panel_opacity if surface == "native" else None,
                     "styleOwned": surface == "native",
                     "styleSignalOwned": surface == "native",
+                    "visibility": "always-visible" if surface == "native" else None,
+                    "visible": True if surface == "native" else None,
+                    "affectsStruts": True if surface == "native" else None,
+                    "pointerReveal": False,
+                    "visibilitySignalsOwned": surface == "native",
                     "externalStyleUpdates": 0,
                     "repairCount": 0,
                     "restorationPending": surface == "native",
@@ -717,13 +722,13 @@ def test_audit_rejects_light_shell_popover_style_in_minimal(tmp_path):
     assert "shell-popover-theme-ownership" in failures
 
 
-def test_audit_owns_minimal_native_panel_opacity(tmp_path):
+def test_audit_owns_minimal_native_panel_opacity_and_visibility(tmp_path):
     _payload(tmp_path)
     snapshot = _snapshot(active_layout="Minimal")
 
     assert not {
         name for name in _failures(audit_snapshot(snapshot, tmp_path))
-        if name.startswith("native-panel-opacity")
+        if name.startswith("native-panel-")
     }
 
     diagnostics = dict(snapshot.runtime_diagnostics)
@@ -734,6 +739,9 @@ def test_audit_owns_minimal_native_panel_opacity(tmp_path):
         effectiveOpacity=70,
         styleOwned=False,
         styleSignalOwned=False,
+        visibility="always-hidden",
+        affectsStruts=True,
+        visibilitySignalsOwned=False,
         restoreConflicts=1,
         lastConflict="changed externally",
     )
@@ -747,6 +755,8 @@ def test_audit_owns_minimal_native_panel_opacity(tmp_path):
     assert "native-panel-opacity-signals" in failures
     assert "native-panel-opacity-state" in failures
     assert "native-panel-opacity-restoration" in failures
+    assert "native-panel-visibility-signals" in failures
+    assert "native-panel-visibility-state" in failures
 
 
 def test_audit_rejects_owned_dock_setting_drift(tmp_path):

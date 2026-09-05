@@ -1,6 +1,6 @@
 # Community Panel upstream
 
-Community Panel is the bundled Layout Switcher fork of Dash to Panel 73.
+Community Panel is the bundled Big Gnome Center fork of Dash to Panel 73.
 
 - Upstream: https://github.com/home-sweet-gnome/dash-to-panel
 - Baseline: Arch/Manjaro package `gnome-shell-extension-dash-to-panel` 73-1

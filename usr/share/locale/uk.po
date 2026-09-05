@@ -1,9 +1,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: layout-switcher\n"
+"Project-Id-Version: big-gnome-center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"POT-Creation-Date: 2026-09-04 20:16-0300\n"
 "PO-Revision-Date: 2026-08-20 22:33-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -11,786 +11,1009 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:149
-msgid "Desktop Cube"
-msgstr "Desktop Cube"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:25
+#: usr/share/big-gnome-center/ui/window.py:410
+#: usr/share/big-gnome-center/ui/window.py:507
+msgid "Desktop"
+msgstr "Робочий стіл"
 
-#: usr/share/layout-switcher/constants.py:150
-msgid "Rotate workspaces on a 3D cube"
-msgstr "Обертання робочих просторів на 3D-кубі"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:27
+#: usr/share/big-gnome-center/ui/desktop_icons.py:46
+msgid "Desktop icons"
+msgstr "Піктограми робочого столу"
 
-#: usr/share/layout-switcher/constants.py:160
-msgid "Magic Lamp"
-msgstr "Magic Lamp"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:28
+#: usr/share/big-gnome-center/ui/desktop_icons.py:67
+msgid "Show files and folders on the desktop"
+msgstr "Показувати файли та папки на робочому столі"
 
-#: usr/share/layout-switcher/constants.py:161
-msgid "Genie effect when minimizing windows"
-msgstr "Ефект джина при згортанні вікон"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:34
+msgid "Desktop icon settings"
+msgstr "Налаштування піктограм робочого столу"
 
-#: usr/share/layout-switcher/constants.py:171
-msgid "Compiz Windows"
-msgstr "Compiz Windows"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:69
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "GTK4 Desktop Icons NG не встановлено"
 
-#: usr/share/layout-switcher/constants.py:172
-msgid "Wobbly windows and extra animations"
-msgstr "Хиткі вікна та додаткові анімації"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons enabled"
+msgstr "Піктограми робочого столу ввімкнено"
 
-#: usr/share/layout-switcher/constants.py:199
-msgid "Default Big Gnome layout"
-msgstr "Стандартний великий макет Gnome"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons disabled"
+msgstr "Піктограми робочого столу вимкнено"
 
-#: usr/share/layout-switcher/constants.py:206
-msgid "Clean and contemporary desktop"
-msgstr "Чистий і сучасний робочий стіл"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:92
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "Не вдалося змінити піктограми робочого столу: {message}"
 
-#: usr/share/layout-switcher/constants.py:213
-msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
-msgstr "Центрована панель-док, стиль Windows 11 / Deepin / Pop!_OS"
-
-#: usr/share/layout-switcher/constants.py:220
-msgid "Unity-style layout with left dock and top bar"
-msgstr "Макет у стилі Unity із лівим доком і верхньою панеллю"
-
-#: usr/share/layout-switcher/constants.py:227
-msgid "Traditional desktop with taskbar and system tray"
-msgstr "Традиційний робочий стіл із панеллю завдань і системним лотком"
-
-#: usr/share/layout-switcher/constants.py:234
-msgid "Near-vanilla GNOME with minimal distro tweaks"
-msgstr "Майже чистий GNOME з мінімальними налаштуваннями дистрибутива"
-
-#: usr/share/layout-switcher/ui/dialog_backups.py:64
+#: usr/share/big-gnome-center/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "Резервні копії"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:79
+#: usr/share/big-gnome-center/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "Створити резервну копію зараз"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:81
+#: usr/share/big-gnome-center/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "Зробити знімок поточних налаштувань dconf"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:94
+#: usr/share/big-gnome-center/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "Резервних копій ще немає"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:96
+#: usr/share/big-gnome-center/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr ""
 "Резервна копія створюється автоматично щоразу, коли ви застосовуєте макет."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:149
+#: usr/share/big-gnome-center/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "Остання"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:154
+#: usr/share/big-gnome-center/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "Відновити цю резервну копію"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:162
+#: usr/share/big-gnome-center/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "Видалити цю резервну копію"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:185
+#: usr/share/big-gnome-center/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "Резервну копію створено"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:188
-#: usr/share/layout-switcher/ui/page_layouts.py:265
+#: usr/share/big-gnome-center/ui/dialog_backups.py:188
+#: usr/share/big-gnome-center/ui/page_layouts.py:241
 msgid "Backup failed"
 msgstr "Не вдалося створити резервну копію"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:193
+#: usr/share/big-gnome-center/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "Відновити цю резервну копію?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:195
+#: usr/share/big-gnome-center/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
 msgstr "Усі поточні налаштування dconf буде перезаписано знімком від {ts}."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
-#: usr/share/layout-switcher/ui/page_effects.py:293
-#: usr/share/layout-switcher/ui/page_effects.py:337
-#: usr/share/layout-switcher/ui/page_extensions.py:402
-#: usr/share/layout-switcher/ui/page_extensions.py:445
-#: usr/share/layout-switcher/ui/page_extensions.py:905
-#: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:241
-#: usr/share/layout-switcher/ui/page_layouts.py:253
+#: usr/share/big-gnome-center/ui/dialog_backups.py:198
+#: usr/share/big-gnome-center/ui/dialog_backups.py:231
+#: usr/share/big-gnome-center/ui/page_effects.py:293
+#: usr/share/big-gnome-center/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_extensions.py:481
+#: usr/share/big-gnome-center/ui/page_extensions.py:521
+#: usr/share/big-gnome-center/ui/page_extensions.py:987
+#: usr/share/big-gnome-center/ui/page_fonts.py:567
+#: usr/share/big-gnome-center/ui/page_layouts.py:287
+#: usr/share/big-gnome-center/ui/page_layouts.py:297
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:161
 msgid "Restore"
 msgstr "Відновити"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:219
+#: usr/share/big-gnome-center/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "Резервну копію відновлено"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:223
+#: usr/share/big-gnome-center/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "Не вдалося відновити"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:228
+#: usr/share/big-gnome-center/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "Видалити цю резервну копію?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:232
+#: usr/share/big-gnome-center/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "Видалити"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:252
+#: usr/share/big-gnome-center/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "Резервну копію видалено"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:255
+#: usr/share/big-gnome-center/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "Не вдалося видалити"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:41
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "Релевантність"
+
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Популярність"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:43
 msgid "Downloads"
 msgstr "Завантаження"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:43
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:44
 msgid "Recent"
 msgstr "Нещодавні"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:44
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:45
 msgid "Name"
 msgstr "Назва"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:93
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:97
 msgid "Search extensions on extensions.gnome.org"
 msgstr "Пошук розширень на extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:101
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:105
 msgid "Sort by"
 msgstr "Сортувати за"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:112
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:116
 #, python-brace-format
 msgid "Only compatible with GNOME {ver}"
 msgstr "Сумісно лише з GNOME {ver}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:139
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:143
 msgid "Browse extensions"
 msgstr "Огляд розширень"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:140
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:144
 msgid "Search above or hit Enter to load popular extensions."
 msgstr ""
 "Шукайте вище або натисніть Enter, щоб завантажити популярні розширення."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:143
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:147
 msgid "Load popular"
 msgstr "Завантажити популярні"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:159
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:163
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:97
 msgid "Loading…"
 msgstr "Завантаження…"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:166
-#: usr/share/layout-switcher/ui/page_extensions.py:621
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:170
+#: usr/share/big-gnome-center/ui/page_extensions.py:697
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:104
 msgid "No results"
 msgstr "Немає результатів"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:167
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:171
 msgid "Try a different search or sort."
 msgstr "Спробуйте інший пошук або сортування."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:173
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:177
 msgid "Could not reach extensions.gnome.org"
 msgstr "Не вдалося зв'язатися з extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:174
-#: usr/share/layout-switcher/ui/ext_detail_view.py:111
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:178
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:111
 msgid "Check your network connection and try again."
 msgstr "Перевірте підключення до мережі та спробуйте знову."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:177
-#: usr/share/layout-switcher/ui/ext_detail_view.py:114
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:181
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:114
 msgid "Retry"
 msgstr "Повторити"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:334
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:220
+#: usr/share/big-gnome-center/ui/page_fonts.py:334
 msgid "Previous page"
 msgstr "Попередня сторінка"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:227
-#: usr/share/layout-switcher/ui/page_fonts.py:346
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:346
 msgid "Next page"
 msgstr "Наступна сторінка"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:238
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:242
 msgid "Shell"
 msgstr "Оболонка"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:284
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:291
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "Сторінка {p} з {t}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:345
-#: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:280
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:354
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:147
+#: usr/share/big-gnome-center/ui/page_effects.py:184
+#: usr/share/big-gnome-center/ui/page_extensions.py:359
 #, python-brace-format
 msgid "by {author}"
 msgstr "від {author}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:358
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:367
 msgid "Details"
 msgstr "Деталі"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:361
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:370
 msgid "View extension details"
 msgstr "Переглянути деталі розширення"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:83
-#: usr/share/layout-switcher/ui/page_extensions.py:574
-#: usr/share/layout-switcher/ui/page_fonts.py:487
-#: usr/share/layout-switcher/ui/page_fonts.py:529
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:378
+#: usr/share/big-gnome-center/ui/page_extensions.py:161
+#: usr/share/big-gnome-center/ui/page_extensions.py:650
+#: usr/share/big-gnome-center/ui/page_fonts.py:487
+#: usr/share/big-gnome-center/ui/page_fonts.py:529
 msgid "Installed"
 msgstr "Встановлені"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:375
-#: usr/share/layout-switcher/ui/ext_detail_view.py:64
-#: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:238
-#: usr/share/layout-switcher/ui/page_effects.py:294
-#: usr/share/layout-switcher/ui/page_extensions.py:341
-#: usr/share/layout-switcher/ui/page_extensions.py:403
-#: usr/share/layout-switcher/ui/page_fonts.py:490
-#: usr/share/layout-switcher/ui/page_fonts.py:493
-#: usr/share/layout-switcher/ui/page_fonts.py:534
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:384
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:64
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:397
+#: usr/share/big-gnome-center/ui/page_effects.py:238
+#: usr/share/big-gnome-center/ui/page_effects.py:294
+#: usr/share/big-gnome-center/ui/page_extensions.py:420
+#: usr/share/big-gnome-center/ui/page_extensions.py:482
+#: usr/share/big-gnome-center/ui/page_fonts.py:490
+#: usr/share/big-gnome-center/ui/page_fonts.py:493
+#: usr/share/big-gnome-center/ui/page_fonts.py:534
 msgid "Install"
 msgstr "Встановити"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:412
-#: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:315
-#: usr/share/layout-switcher/ui/page_extensions.py:423
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:421
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:431
+#: usr/share/big-gnome-center/ui/page_effects.py:315
+#: usr/share/big-gnome-center/ui/page_extensions.py:502
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr ""
 "{name} встановлено та увімкнено. Перезапустіть сеанс, щоб використовувати "
 "його."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:321
-#: usr/share/layout-switcher/ui/page_extensions.py:429
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:429
+#: usr/share/big-gnome-center/ui/page_effects.py:321
+#: usr/share/big-gnome-center/ui/page_extensions.py:508
 msgid "Install failed"
 msgstr "Не вдалося встановити"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:103
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:103
 msgid "Loading extension details…"
 msgstr "Завантаження деталей розширення…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:110
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:110
 msgid "Could not load details"
 msgstr "Не вдалося завантажити деталі"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:206
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:206
 #, python-brace-format
 msgid "{n} ratings"
 msgstr "{n} оцінок"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:209
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:209
 msgid "downloads"
 msgstr "завантажень"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:212
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:212
 msgid "compatibility"
 msgstr "сумісність"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:254
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:254
 msgid "Description"
 msgstr "Опис"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:269
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:269
 msgid "Recent comments"
 msgstr "Останні коментарі"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:282
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:282
 msgid "View all comments on extensions.gnome.org"
 msgstr "Переглянути всі коментарі на extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:343
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:343
 msgid "Links"
 msgstr "Посилання"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:350
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:350
 msgid "Homepage"
 msgstr "Домашня сторінка"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:255
-#: usr/share/layout-switcher/ui/page_extensions.py:358
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:354
+#: usr/share/big-gnome-center/ui/page_effects.py:255
+#: usr/share/big-gnome-center/ui/page_extensions.py:437
 msgid "View on GNOME Extensions"
 msgstr "Переглянути на GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:359
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:359
 #, python-brace-format
 msgid "License: {lic}"
 msgstr "Ліцензія: {lic}"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:579
-#: usr/share/layout-switcher/ui/page_extensions.py:719
-#: usr/share/layout-switcher/ui/page_extensions.py:730
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:387
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/ui/page_extensions.py:803
+#: usr/share/big-gnome-center/ui/page_extensions.py:814
 msgid "Update"
 msgstr "Оновити"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:392
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:392
 msgid "Open prefs"
 msgstr "Відкрити налаштування"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:409
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:409
 msgid "Working…"
 msgstr "Виконується…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:428
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:428
 #, python-brace-format
 msgid "{name} updated"
 msgstr "{name} оновлено"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:437
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:437
 msgid "Operation failed"
 msgstr "Операцію не виконано"
 
-#: usr/share/layout-switcher/ui/page_effects.py:114
-#: usr/share/layout-switcher/ui/page_extensions.py:225
+#: usr/share/big-gnome-center/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "Зверху по центру"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "Знизу по центру"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "Зверху праворуч"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "Зверху ліворуч"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "Знизу ліворуч"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "Знизу праворуч"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "Позиція сповіщень"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "Виберіть, де з'являтимуться банери сповіщень."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "Показувати сповіщення {position}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:143
+#: usr/share/big-gnome-center/ui/page_desktop.py:287
+msgid "Default"
+msgstr "За замовчуванням"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:194
+#: usr/share/big-gnome-center/ui/page_desktop.py:199
+#: usr/share/big-gnome-center/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "Меню застосунків"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "Доступно для макетів Classic, Desk-UX та Hybrid."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:200
+#: usr/share/big-gnome-center/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "Використовувати Community Menu як меню застосунків"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "Стиль меню"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "Виберіть зовнішній вигляд Community Menu."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Клавіша Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "Виберіть, що відбуватиметься під час натискання Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "Відкрити меню"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "Відкрити огляд"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "Використовувати стиль меню {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "Community Menu не встановлено"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "Застосовано позицію сповіщень: {position}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "Не вдалося змінити позицію сповіщень: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "Попередній перегляд сповіщень"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "Сповіщення з'являтимуться тут."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "Меню застосунків увімкнено"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "Меню застосунків вимкнено"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "Не вдалося змінити меню застосунку: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "Застосовано стиль меню {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "Не вдалося змінити стиль меню: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "Super відкриває меню застосунків"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "Super відкриває огляд"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "Не вдалося змінити клавішу Super: {message}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "Інші візуальні ефекти"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:114
+#: usr/share/big-gnome-center/ui/page_extensions.py:304
 msgid "System extension"
 msgstr "Системне розширення"
 
-#: usr/share/layout-switcher/ui/page_effects.py:131
+#: usr/share/big-gnome-center/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name} (увімкнено)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:133
+#: usr/share/big-gnome-center/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name} (вимкнено)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:135
+#: usr/share/big-gnome-center/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (не встановлено)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "Попередній перегляд ефекту {name}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "On"
 msgstr "Увімкнено"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "Off"
 msgstr "Вимкнено"
 
-#: usr/share/layout-switcher/ui/page_effects.py:203
-#: usr/share/layout-switcher/ui/page_extensions.py:303
-#: usr/share/layout-switcher/ui/page_extensions.py:763
+#: usr/share/big-gnome-center/ui/page_effects.py:203
+#: usr/share/big-gnome-center/ui/page_extensions.py:382
+#: usr/share/big-gnome-center/ui/page_extensions.py:847
 msgid "Toggle"
 msgstr "Перемкнути"
 
-#: usr/share/layout-switcher/ui/page_effects.py:211
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_effects.py:338
-#: usr/share/layout-switcher/ui/page_extensions.py:313
-#: usr/share/layout-switcher/ui/page_extensions.py:317
-#: usr/share/layout-switcher/ui/page_extensions.py:446
-#: usr/share/layout-switcher/ui/page_extensions.py:801
-#: usr/share/layout-switcher/ui/page_extensions.py:802
+#: usr/share/big-gnome-center/ui/page_effects.py:211
+#: usr/share/big-gnome-center/ui/page_effects.py:215
+#: usr/share/big-gnome-center/ui/page_effects.py:335
+#: usr/share/big-gnome-center/ui/page_extensions.py:392
+#: usr/share/big-gnome-center/ui/page_extensions.py:396
+#: usr/share/big-gnome-center/ui/page_extensions.py:522
+#: usr/share/big-gnome-center/ui/page_extensions.py:882
+#: usr/share/big-gnome-center/ui/page_extensions.py:883
+#: usr/share/big-gnome-center/ui/page_startup.py:116
+#: usr/share/big-gnome-center/ui/page_startup.py:119
 msgid "Remove"
 msgstr "Видалити"
 
-#: usr/share/layout-switcher/ui/page_effects.py:223
-#: usr/share/layout-switcher/ui/page_extensions.py:325
-#: usr/share/layout-switcher/ui/page_extensions.py:744
-#: usr/share/layout-switcher/ui/page_extensions.py:748
+#: usr/share/big-gnome-center/ui/page_effects.py:223
+#: usr/share/big-gnome-center/ui/page_extensions.py:404
+#: usr/share/big-gnome-center/ui/page_extensions.py:828
+#: usr/share/big-gnome-center/ui/page_extensions.py:832
 msgid "Settings"
 msgstr "Налаштування"
 
-#: usr/share/layout-switcher/ui/page_effects.py:234
-#: usr/share/layout-switcher/ui/page_extensions.py:253
-#: usr/share/layout-switcher/ui/page_extensions.py:337
+#: usr/share/big-gnome-center/ui/page_effects.py:234
+#: usr/share/big-gnome-center/ui/page_extensions.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:416
 msgid "Not installed"
 msgstr "Не встановлено"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:249
-#: usr/share/layout-switcher/ui/page_extensions.py:388
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:328
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "enabled"
 msgstr "увімкнено"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:251
-#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:330
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
 msgid "disabled"
 msgstr "вимкнено"
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:392
-#: usr/share/layout-switcher/ui/page_extensions.py:777
-#: usr/share/layout-switcher/ui/page_extensions.py:929
-#: usr/share/layout-switcher/ui/page_layouts.py:429
-#: usr/share/layout-switcher/ui/page_layouts.py:473
-#: usr/share/layout-switcher/ui/page_themes.py:332
-#: usr/share/layout-switcher/ui/page_themes.py:343
+#: usr/share/big-gnome-center/ui/page_effects.py:283
+#: usr/share/big-gnome-center/ui/page_extensions.py:471
+#: usr/share/big-gnome-center/ui/page_extensions.py:861
+#: usr/share/big-gnome-center/ui/page_extensions.py:1011
+#: usr/share/big-gnome-center/ui/page_themes.py:363
+#: usr/share/big-gnome-center/ui/page_themes.py:374
+#: usr/share/big-gnome-center/ui/page_startup.py:150
+#: usr/share/big-gnome-center/ui/page_startup.py:167
+#: usr/share/big-gnome-center/ui/page_layouts.py:492
+#: usr/share/big-gnome-center/ui/page_layouts.py:536
 msgid "Error"
 msgstr "Помилка"
 
-#: usr/share/layout-switcher/ui/page_effects.py:290
+#: usr/share/big-gnome-center/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "Встановити ефект?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:291
-#: usr/share/layout-switcher/ui/page_extensions.py:400
+#: usr/share/big-gnome-center/ui/page_effects.py:291
+#: usr/share/big-gnome-center/ui/page_extensions.py:479
 msgid "Will try to install automatically."
 msgstr "Спроба автоматичної установки."
 
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:409
-#: usr/share/layout-switcher/ui/page_fonts.py:513
+#: usr/share/big-gnome-center/ui/page_effects.py:302
+#: usr/share/big-gnome-center/ui/page_extensions.py:488
+#: usr/share/big-gnome-center/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "Встановлення…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:330
-#: usr/share/layout-switcher/ui/page_extensions.py:438
-msgid "System extension — cannot remove"
-msgstr "Системне розширення — не можна видалити"
-
-#: usr/share/layout-switcher/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_effects.py:331
 msgid "Remove effect?"
 msgstr "Видалити ефект?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:335
-#: usr/share/layout-switcher/ui/page_extensions.py:443
+#: usr/share/big-gnome-center/ui/page_effects.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:519
 msgid "This cannot be undone."
 msgstr "Це не можна скасувати."
 
-#: usr/share/layout-switcher/ui/page_effects.py:350
-#: usr/share/layout-switcher/ui/page_extensions.py:458
+#: usr/share/big-gnome-center/ui/page_effects.py:347
+#: usr/share/big-gnome-center/ui/page_extensions.py:534
 msgid "removed"
 msgstr "видалено"
 
-#: usr/share/layout-switcher/ui/page_effects.py:352
-#: usr/share/layout-switcher/ui/page_extensions.py:460
+#: usr/share/big-gnome-center/ui/page_effects.py:349
+#: usr/share/big-gnome-center/ui/page_extensions.py:536
 msgid "Remove failed"
 msgstr "Не вдалося видалити"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:81
+#: usr/share/big-gnome-center/ui/page_extensions.py:31
+msgid "Captures, annotates and records the screen."
+msgstr "Захоплює, анотує та записує екран."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:45
+msgid "Shows application tray icons in the system panel."
+msgstr "Показує піктограми програм на системній панелі."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:50
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Надає засоби запуску програм і відкриті вікна на доку."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:53
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Надає меню програм, яке використовують компонування стільниці."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:56
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr "Надає панель задач і системну панель компонувань."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:59
+msgid "Keeps a searchable history of copied content."
+msgstr "Зберігає доступну для пошуку історію скопійованого вмісту."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shows removable devices and lets you safely eject them."
+msgstr "Показує знімні пристрої та дає змогу безпечно їх вийняти."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:65
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Додає кероване розмиття та прозорість до стільниці."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:68
+msgid "Connects phones to share files, notifications and other features."
+msgstr "З’єднує телефони для обміну файлами, сповіщеннями та іншими функціями."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:71
+msgid "Shows files and folders on the desktop."
+msgstr "Показує файли й теки на стільниці."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:74
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Безпечно застосовує зміни компонування в GNOME Shell."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:77
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr "Надає середовище виконання доку й панелі задач для компонувань."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:80
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "Узгоджує програми GTK 3 зі світлим і темним режимами."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:104
+msgid "Description not provided by the developer."
+msgstr "Розробник не надав опису."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:159
 msgid "Featured"
 msgstr "Рекомендовані"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:82
-#: usr/share/layout-switcher/ui/page_extensions.py:131
+#: usr/share/big-gnome-center/ui/page_extensions.py:160
+#: usr/share/big-gnome-center/ui/page_extensions.py:209
 msgid "Browse"
 msgstr "Огляд"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:237
+#: usr/share/big-gnome-center/ui/page_extensions.py:316
 msgid "Update available"
 msgstr "Доступне оновлення"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:399
+#: usr/share/big-gnome-center/ui/page_extensions.py:478
 msgid "Install extension?"
 msgstr "Встановити розширення?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/big-gnome-center/ui/page_extensions.py:518
 msgid "Remove extension?"
 msgstr "Видалити розширення?"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:245
-#: usr/share/layout-switcher/ui/page_extensions.py:522
-#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/big-gnome-center/ui/page_extensions.py:570
+#: usr/share/big-gnome-center/ui/page_extensions.py:578
+#: usr/share/big-gnome-center/ui/window.py:413
+#: usr/share/big-gnome-center/ui/window.py:510
+msgid "Extensions"
+msgstr "Розширення"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/extension_update_monitor.py:236
 msgid "Update all"
 msgstr "Оновити все"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:530
+#: usr/share/big-gnome-center/ui/page_extensions.py:606
 msgid "Open GNOME Extensions"
 msgstr "Відкрити GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:674
 msgid "No extensions installed"
 msgstr "Розширення не встановлені"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "installed"
 msgstr "встановлено"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:616
+#: usr/share/big-gnome-center/ui/page_extensions.py:692
 msgid "update available"
 msgstr "доступне оновлення"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:632
+#: usr/share/big-gnome-center/ui/page_extensions.py:708
 msgid "Enabled"
 msgstr "Увімкнено"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:633
+#: usr/share/big-gnome-center/ui/page_extensions.py:709
 msgid "Disabled"
 msgstr "Вимкнено"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/big-gnome-center/ui/page_extensions.py:779
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Технічний ідентифікатор: {uuid}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:781
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Версія: {version}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:784
+#: usr/share/big-gnome-center/ui/page_extensions.py:844
+#: usr/share/big-gnome-center/ui/page_extensions.py:845
+#: usr/share/big-gnome-center/ui/page_extensions.py:891
+#: usr/share/big-gnome-center/shell_reloader.py:280
+msgid "Required for layout switching"
+msgstr "Необхідний для перемикання макетів"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:808
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "Оновлення з v{old} до v{new}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:795
-msgid ""
-"This extension cannot be removed here because it was installed by the "
-"system."
-msgstr ""
-"Це розширення не можна видалити тут, оскільки воно встановлене системою."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:843
+#: usr/share/big-gnome-center/ui/page_extensions.py:925
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} оновлено до v{ver}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:848
-#: usr/share/layout-switcher/ui/page_fonts.py:147
-#: usr/share/layout-switcher/ui/page_fonts.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:281
+#: usr/share/big-gnome-center/ui/page_extensions.py:930
+#: usr/share/big-gnome-center/ui/page_fonts.py:147
+#: usr/share/big-gnome-center/ui/page_fonts.py:216
+#: usr/share/big-gnome-center/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "Оновлення не вдалося"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:872
+#: usr/share/big-gnome-center/ui/page_extensions.py:954
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "Оновлено розширення {n}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:877
+#: usr/share/big-gnome-center/ui/page_extensions.py:959
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "Оновлено {n}/{t}; не вдалося: {f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
-#: usr/share/layout-switcher/ui/page_extensions.py:906
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
+#: usr/share/big-gnome-center/ui/page_extensions.py:988
 msgid "Disable All"
 msgstr "Вимкнути все"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
 msgid "Enable All"
 msgstr "Увімкнути все"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:902
+#: usr/share/big-gnome-center/ui/page_extensions.py:984
 msgid "Disable all extensions?"
 msgstr "Вимкнути всі розширення?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:903
+#: usr/share/big-gnome-center/ui/page_extensions.py:985
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr "Всі розширення будуть вимкнені. Ви зможете ввімкнути їх пізніше."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions disabled"
 msgstr "Всі розширення вимкнено"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions enabled"
 msgstr "Всі розширення увімкнено"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:76
+#: usr/share/big-gnome-center/ui/page_fonts.py:76
 msgid "Preferred fonts"
 msgstr "Бажані шрифти"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:80
+#: usr/share/big-gnome-center/ui/page_fonts.py:80
 msgid "Interface text"
 msgstr "Текст інтерфейсу"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:86
+#: usr/share/big-gnome-center/ui/page_fonts.py:86
 msgid "Document text"
 msgstr "Текст документа"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:92
+#: usr/share/big-gnome-center/ui/page_fonts.py:92
 msgid "Monospace text"
 msgstr "Моноширинний текст"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:109
-#: usr/share/layout-switcher/ui/page_fonts.py:601
+#: usr/share/big-gnome-center/ui/page_fonts.py:109
+#: usr/share/big-gnome-center/ui/page_fonts.py:601
 msgid "(not set)"
 msgstr "(не встановлено)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:129
+#: usr/share/big-gnome-center/ui/page_fonts.py:129
 msgid "Choose font"
 msgstr "Вибрати шрифт"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:145
+#: usr/share/big-gnome-center/ui/page_fonts.py:145
 msgid "Font updated"
 msgstr "Шрифт оновлено"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:155
+#: usr/share/big-gnome-center/ui/page_fonts.py:155
 msgid "Hinting"
 msgstr "Підказки"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:163
+#: usr/share/big-gnome-center/ui/page_fonts.py:163
 msgid "Full"
 msgstr "Повні"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:164
+#: usr/share/big-gnome-center/ui/page_fonts.py:164
 msgid "Medium"
 msgstr "Середні"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:165
+#: usr/share/big-gnome-center/ui/page_fonts.py:165
 msgid "Slight"
 msgstr "Легкі"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:166
-#: usr/share/layout-switcher/ui/page_fonts.py:185
+#: usr/share/big-gnome-center/ui/page_fonts.py:166
+#: usr/share/big-gnome-center/ui/page_fonts.py:185
 msgid "None"
 msgstr "Відсутні"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:173
+#: usr/share/big-gnome-center/ui/page_fonts.py:173
 msgid "Smoothing"
 msgstr "Згладжування"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:183
+#: usr/share/big-gnome-center/ui/page_fonts.py:183
 msgid "Subpixel (for LCD screens)"
 msgstr "Субпіксельне (для РК-екранів)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:184
+#: usr/share/big-gnome-center/ui/page_fonts.py:184
 msgid "Standard (grayscale)"
 msgstr "Стандартне (відтінки сірого)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:228
+#: usr/share/big-gnome-center/ui/page_fonts.py:228
 msgid "Size"
 msgstr "Розмір"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:231
-#: usr/share/layout-switcher/ui/page_fonts.py:251
+#: usr/share/big-gnome-center/ui/page_fonts.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:251
 msgid "Scale factor"
 msgstr "Коефіцієнт масштабування"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:239
+#: usr/share/big-gnome-center/ui/page_fonts.py:239
 msgid "Decrease"
 msgstr "Зменшити"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:246
+#: usr/share/big-gnome-center/ui/page_fonts.py:246
 msgid "Increase"
 msgstr "Збільшити"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:287
+#: usr/share/big-gnome-center/ui/page_fonts.py:287
 msgid "Google Fonts"
 msgstr "Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:297
+#: usr/share/big-gnome-center/ui/page_fonts.py:297
 msgid "Search Google Fonts…"
 msgstr "Пошук Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:308
-#: usr/share/layout-switcher/ui/page_fonts.py:363
+#: usr/share/big-gnome-center/ui/page_fonts.py:308
+#: usr/share/big-gnome-center/ui/page_fonts.py:363
 msgid "Loading Google Fonts…"
 msgstr "Завантаження Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:312
+#: usr/share/big-gnome-center/ui/page_fonts.py:312
 msgid "Refresh Google Fonts list"
 msgstr "Оновити список Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:424
+#: usr/share/big-gnome-center/ui/page_fonts.py:424
 #, python-brace-format
 msgid "Page {page} of {pages}"
 msgstr "Сторінка {page} з {pages}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:431
+#: usr/share/big-gnome-center/ui/page_fonts.py:431
 msgid "Internet connection is required to load the Google Fonts list."
 msgstr ""
 "Для завантаження списку Google Fonts потрібне підключення до Інтернету."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:435
+#: usr/share/big-gnome-center/ui/page_fonts.py:435
 #, python-brace-format
 msgid "{n} fonts found"
 msgstr "Знайдено шрифтів: {n}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:440
+#: usr/share/big-gnome-center/ui/page_fonts.py:440
 #, python-brace-format
 msgid "Showing top {shown} of {total} Google Fonts"
 msgstr "Показано {shown} з {total} Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:449
+#: usr/share/big-gnome-center/ui/page_fonts.py:449
 msgid "No fonts found"
 msgstr "Шрифтів не знайдено"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:502
+#: usr/share/big-gnome-center/ui/page_fonts.py:502
 msgid "Sans serif"
 msgstr "Без засічок"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:503
+#: usr/share/big-gnome-center/ui/page_fonts.py:503
 msgid "Serif"
 msgstr "Із засічками"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:504
+#: usr/share/big-gnome-center/ui/page_fonts.py:504
 msgid "Monospace"
 msgstr "Моноширинний"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:505
+#: usr/share/big-gnome-center/ui/page_fonts.py:505
 msgid "Display"
 msgstr "Декоративні"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:506
+#: usr/share/big-gnome-center/ui/page_fonts.py:506
 msgid "Handwriting"
 msgstr "Рукописний"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:507
+#: usr/share/big-gnome-center/ui/page_fonts.py:507
 msgid "Exact Google Fonts family name"
 msgstr "Точна назва сімейства Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:531
+#: usr/share/big-gnome-center/ui/page_fonts.py:531
 #, python-brace-format
 msgid "{family} installed"
 msgstr "{family} встановлено"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:537
+#: usr/share/big-gnome-center/ui/page_fonts.py:537
 msgid "Internet connection is required to install Google Fonts."
 msgstr "Для встановлення Google Fonts потрібне підключення до Інтернету."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:538
+#: usr/share/big-gnome-center/ui/page_fonts.py:538
 msgid "Font not found on Google Fonts."
 msgstr "Шрифт не знайдено в Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:539
+#: usr/share/big-gnome-center/ui/page_fonts.py:539
 msgid "Font download failed."
 msgstr "Не вдалося завантажити шрифт."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:540
+#: usr/share/big-gnome-center/ui/page_fonts.py:540
 msgid "The font download is too large."
 msgstr "Завантажуваний файл шрифту завеликий."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:541
+#: usr/share/big-gnome-center/ui/page_fonts.py:541
 msgid "Could not install the font."
 msgstr "Не вдалося встановити шрифт."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:542
+#: usr/share/big-gnome-center/ui/page_fonts.py:542
 msgid "Enter a font family name."
 msgstr "Введіть назву сімейства шрифтів."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:544
+#: usr/share/big-gnome-center/ui/page_fonts.py:544
 msgid "Font installation failed."
 msgstr "Не вдалося встановити шрифт."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:552
+#: usr/share/big-gnome-center/ui/page_fonts.py:552
 msgid "Reset to system defaults"
 msgstr "Скинути до системних налаштувань"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:561
+#: usr/share/big-gnome-center/ui/page_fonts.py:561
 msgid "Reset all font settings?"
 msgstr "Скинути всі налаштування шрифтів?"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:563
+#: usr/share/big-gnome-center/ui/page_fonts.py:563
 msgid ""
 "Interface, document and monospace fonts will return to system defaults. "
 "Rendering and scale settings will reset too."
@@ -799,383 +1022,387 @@ msgstr ""
 "значень за замовчуванням. Налаштування рендерингу та масштабу також буде "
 "скинуто."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:568
+#: usr/share/big-gnome-center/ui/page_fonts.py:568
 msgid "Reset"
 msgstr "Скинути"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:587
+#: usr/share/big-gnome-center/ui/page_fonts.py:587
 msgid "Fonts reset to defaults"
 msgstr "Шрифти скинуті до стандартних"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:34
-msgid "Disabling extensions…"
-msgstr "Вимкнення розширень…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:24
+msgid "Always visible"
+msgstr "Завжди видима"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:35
-msgid "Loading layout…"
-msgstr "Завантаження макета…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:25
+msgid "Always hidden (show at edge)"
+msgstr "Завжди прихована (показувати біля краю)"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:36
-msgid "Reloading components…"
-msgstr "Перезавантаження компонентів…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:26
+msgid "Intelligent hiding"
+msgstr "Розумне приховування"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:64
-msgid "Layout status"
-msgstr "Статус макета"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:29
+msgid "Dot"
+msgstr "Крапка"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:152
-msgid "Contains your saved customizations"
-msgstr "Містить ваші збережені налаштування"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:30
+msgid "Hybrid line"
+msgstr "Гібридна лінія"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:156
-msgid "Modified"
-msgstr "Змінено"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:31
+msgid "Desk UX line"
+msgstr "Лінія Desk UX"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:170
-#: usr/share/layout-switcher/ui/page_layouts.py:219
-#: usr/share/layout-switcher/ui/page_themes.py:318
-msgid "Active"
-msgstr "Активний"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:34
+msgid "Standard"
+msgstr "Стандартний"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:190
-#: usr/share/layout-switcher/ui/page_layouts.py:217
-msgid "Coming soon"
-msgstr "Незабаром"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:35
+msgid "Gentle lift"
+msgstr "Плавне підняття"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:237
-msgid ""
-"You have previously modified this layout. Apply the original system default "
-"or resume your changes?"
-msgstr ""
-"Ви вже змінювали цей макет. Застосувати початкові системні налаштування чи "
-"відновити ваші зміни?"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Збільшення"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:242
-msgid "Resume my changes"
-msgstr "Відновити мої зміни"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:69
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:565
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:568
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
+msgid "Dock"
+msgstr "Док"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:243
-msgid "Apply original"
-msgstr "Застосувати оригінал"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:70
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:570
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "Налаштування зовнішнього вигляду та видимості Community Dock."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:249
-msgid ""
-"Apply this layout? A backup of your current configuration will be created "
-"automatically."
-msgstr ""
-"Застосувати цей макет? Резервна копія вашої поточної конфігурації буде "
-"створена автоматично."
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:76
+msgid "Dock transparency"
+msgstr "Прозорість дока"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:254
-msgid "Apply"
-msgstr "Застосувати"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:83
+msgid "Dock size"
+msgstr "Розмір панелі запуску"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:295
-msgid "Applying"
-msgstr "Застосування"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Інтенсивність збільшення"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:325
-msgid "Snapshot not found"
-msgstr "Знімок не знайдено"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Виберіть, наскільки збільшуватимуться сусідні піктограми доку."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:353
-msgid "Layout file not found"
-msgstr "Файл макета не знайдено"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:106
+msgid "Dock visibility"
+msgstr "Видимість дока"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:392
-#: usr/share/layout-switcher/ui/page_layouts.py:400
-#: usr/share/layout-switcher/ui/page_layouts.py:409
-msgid "applied"
-msgstr "застосовано"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:115
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
+msgid "Panel"
+msgstr "Панель"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:402
-msgid "Undo"
-msgstr "Скасувати"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:116
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:582
+msgid "Configure the system panel appearance and visibility."
+msgstr "Налаштуйте вигляд і видимість системної панелі."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
-msgid "Restart the session for the 100% clean state"
-msgstr "Перезапустіть сеанс для 100% чистого стану"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:122
+msgid "Panel transparency"
+msgstr "Прозорість панелі"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:422
-msgid "Restart now"
-msgstr "Перезапустити зараз"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:129
+msgid "Panel height"
+msgstr "Висота панелі"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:446
-msgid "Cannot restart session"
-msgstr "Не вдалося перезапустити сеанс"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:135
+msgid "Panel visibility"
+msgstr "Видимість панелі"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:453
-#: usr/share/layout-switcher/ui/page_layouts.py:455
-msgid "Restoring previous layout…"
-msgstr "Відновлення попереднього макета…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:142
+msgid "Session"
+msgstr "Сеанс"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:485
-msgid "Layout restored"
-msgstr "Макет відновлено"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:143
+msgid "Choose how this layout starts after login."
+msgstr "Виберіть, як це компонування запускатиметься після входу."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:487
-msgid "Previous layout restored"
-msgstr "Попередній макет відновлено"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:146
+msgid "Open desktop after login"
+msgstr "Відкривати стільницю після входу"
 
-#: usr/share/layout-switcher/ui/page_themes.py:68
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:147
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Пропускати початковий огляд діяльності для цього компонування."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:158
+msgid "Restore layout defaults"
+msgstr "Відновити типові параметри макета"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:159
+msgid "Reset appearance and session options for the active layout."
+msgstr "Скинути вигляд і параметри сеансу активного компонування."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:180
+msgid "Application menu position"
+msgstr "Положення меню програм"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:184
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Розмістіть меню BigGnome з будь-якого краю доку."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Left"
+msgstr "Ліворуч"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Right"
+msgstr "Праворуч"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:217
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Розмістити меню програм на боці {side}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:261
+msgid "Icon hover effect"
+msgstr "Ефект наведення на значок"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:265
+msgid "Choose how dock icons react to the pointer."
+msgstr "Виберіть, як значки панелі запуску реагують на вказівник."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:295
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Використати ефект наведення {effect}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:338
+msgid "Running app indicator"
+msgstr "Індикатор запущених програм"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:342
+msgid "Choose the mark shown below running applications."
+msgstr "Виберіть позначку, що відображається під запущеними програмами."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:379
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "Використовувати індикатор {style}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:436
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Transparent"
+msgstr "Прозорий"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:449
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Opaque"
+msgstr "Непрозорий"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:459
+msgid "Choose how this component behaves on the desktop."
+msgstr "Виберіть, як цей компонент поводиться на робочому столі."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:473
+msgid "Smaller"
+msgstr "Менше"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:489
+msgid "Larger"
+msgstr "Більше"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:562
+msgid "Taskbar"
+msgstr "Панель завдань"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:563
+msgid "Configure running application indicators."
+msgstr "Налаштуйте індикатори запущених програм."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:566
+msgid "Available when Community Dock is active."
+msgstr "Доступно, коли активний Community Dock."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:574
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "Доступно, коли активні Community Dock або Community Panel."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:578
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "Налаштуйте вигляд і видимість Community Panel."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:684
+msgid "Dock visibility updated"
+msgstr "Видимість дока оновлено"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:691
+msgid "Panel visibility updated"
+msgstr "Видимість панелі оновлено"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:701
+msgid "Indicator style updated"
+msgstr "Стиль індикатора оновлено"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:712
+msgid "Icon hover effect updated"
+msgstr "Ефект наведення на значок оновлено"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:722
+msgid "Application menu position updated"
+msgstr "Положення меню програм оновлено"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:732
+msgid "Login start updated"
+msgstr "Запуск після входу оновлено"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:739
+msgid "Layout appearance and session defaults restored"
+msgstr "Вигляд і типові параметри сеансу компонування відновлено"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Синій"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Бірюзовий"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:22
+msgid "Green"
+msgstr "Зелений"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Жовтий"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Помаранчевий"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:25
+msgid "Red"
+msgstr "Червоний"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Рожевий"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Фіолетовий"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Сіро-синій"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:68
 msgid "Filter themes…"
 msgstr "Фільтрувати теми…"
 
-#: usr/share/layout-switcher/ui/page_themes.py:109
+#: usr/share/big-gnome-center/ui/page_themes.py:108
+msgid "Colors"
+msgstr "Кольори"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:109
 msgid "Icons"
 msgstr "Іконки"
 
-#: usr/share/layout-switcher/ui/page_themes.py:240
+#: usr/share/big-gnome-center/ui/page_themes.py:110
+msgid "Cursors"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_themes.py:168
+#: usr/share/big-gnome-center/ui/frosted_glass.py:145
+#: usr/share/big-gnome-center/ui/frosted_glass.py:239
+msgid "Accent color"
+msgstr "Акцентний колір"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:177
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "Виберіть колір, який використовується для кнопок, вибору та виділень."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:210
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color} акцентний колір"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:263
 msgid "No themes found"
 msgstr "Теми не знайдено"
 
-#: usr/share/layout-switcher/ui/page_themes.py:241
+#: usr/share/big-gnome-center/ui/page_themes.py:264
 msgid "Install themes to ~/.themes or /usr/share/themes"
 msgstr "Встановіть теми в ~/.themes або /usr/share/themes"
 
-#: usr/share/layout-switcher/ui/page_themes.py:247
+#: usr/share/big-gnome-center/ui/page_themes.py:270
 #, python-brace-format
 msgid "{n} themes available"
 msgstr "Доступно тем: {n}"
 
-#: usr/share/layout-switcher/ui/page_themes.py:316
+#: usr/share/big-gnome-center/ui/page_themes.py:347
 #, python-brace-format
 msgid "{name} theme"
 msgstr "{name} тема"
 
-#: usr/share/layout-switcher/ui/window.py:71
-#: usr/share/layout-switcher/ui/window.py:377
-msgid "Layout Switcher"
-msgstr "Layout Switcher"
+#: usr/share/big-gnome-center/ui/page_themes.py:349
+#: usr/share/big-gnome-center/ui/page_layouts.py:172
+#: usr/share/big-gnome-center/ui/page_layouts.py:221
+msgid "Active"
+msgstr "Активний"
 
-#: usr/share/layout-switcher/ui/window.py:229
-#: usr/share/layout-switcher/ui/window.py:230
-msgid "Show Sidebar"
-msgstr "Показати бічну панель"
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:68
+#: usr/share/big-gnome-center/ui/page_startup.py:51
+#: usr/share/big-gnome-center/ui/page_startup.py:54
+msgid "Add a startup application"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:236
-#: usr/share/layout-switcher/ui/window.py:401
-#: usr/share/layout-switcher/ui/window.py:484
-msgid "Layouts"
-msgstr "Макети"
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
+msgid "Search applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:242
-msgid "Menu"
-msgstr "Меню"
+#: usr/share/big-gnome-center/ui/page_startup.py:45
+#: usr/share/big-gnome-center/ui/window.py:414
+#: usr/share/big-gnome-center/ui/window.py:511
+msgid "Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:243
-msgid "Main menu"
-msgstr "Головне меню"
+#: usr/share/big-gnome-center/ui/page_startup.py:46
+msgid "Startup applications are automatically started when you log in."
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:247
-msgid "Check for updates"
-msgstr "Перевірити наявність оновлень"
+#: usr/share/big-gnome-center/ui/page_startup.py:87
+msgid "No Startup Applications"
+msgstr ""
 
-#: usr/share/layout-switcher/ui/window.py:248
-msgid "Auto-update extensions"
-msgstr "Автоматично оновлювати розширення"
-
-#: usr/share/layout-switcher/ui/window.py:250
-msgid "Backups…"
-msgstr "Резервні копії…"
-
-#: usr/share/layout-switcher/ui/window.py:251
-msgid "About"
-msgstr "Про програму"
-
-#: usr/share/layout-switcher/ui/window.py:260
-msgid "Welcome! Choose a desktop layout below to get started."
-msgstr "Ласкаво просимо! Виберіть нижче макет робочого столу, щоб почати."
-
-#: usr/share/layout-switcher/ui/window.py:261
-msgid "Got it"
-msgstr "Зрозуміло"
-
-#: usr/share/layout-switcher/ui/window.py:402
-#: usr/share/layout-switcher/ui/window.py:485
-msgid "Fonts"
-msgstr "Шрифти"
-
-#: usr/share/layout-switcher/ui/window.py:403
-#: usr/share/layout-switcher/ui/window.py:486
-msgid "Themes"
-msgstr "Теми"
-
-#: usr/share/layout-switcher/ui/window.py:406
-#: usr/share/layout-switcher/ui/window.py:489
-msgid "Effects"
-msgstr "Ефекти"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:494
-#: usr/share/layout-switcher/ui/page_extensions.py:502
-#: usr/share/layout-switcher/ui/window.py:407
-#: usr/share/layout-switcher/ui/window.py:490
-msgid "Extensions"
-msgstr "Розширення"
-
-#: usr/share/layout-switcher/ui/window.py:528
-msgid "Community Layout Switcher"
-msgstr "Спільнота Layout Switcher"
-
-#: usr/share/layout-switcher/ui/window.py:533
-msgid "Layouts, effects and themes for your GNOME desktop."
-msgstr "Макети, ефекти та теми для вашого робочого столу GNOME."
-
-#: usr/share/layout-switcher/ui/window.py:599
-msgid "Applying…"
-msgstr "Застосування…"
-
-#: usr/share/layout-switcher/ui/window.py:706
-msgid "All extensions up to date"
-msgstr "Усі розширення оновлено"
-
-#: usr/share/layout-switcher/ui/window.py:721
-#, python-brace-format
-msgid "Auto-updated {n} extensions"
-msgstr "Автоматично оновлено {n} розширень"
-
-#: usr/share/layout-switcher/ui/window.py:726
-#, python-brace-format
-msgid "{n} update(s) available"
-msgstr "Доступно оновлень: {n}"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update enabled"
-msgstr "Автооновлення увімкнено"
-
-#: usr/share/layout-switcher/ui/window.py:733
-msgid "Auto-update disabled"
-msgstr "Автооновлення вимкнено"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:238
-msgid "Extension updates available"
-msgstr "Доступні оновлення розширень"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:239
-#, python-brace-format
-msgid "Available updates: {names}"
-msgstr "Доступні оновлення: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:243
-#: usr/share/layout-switcher/extension_update_monitor.py:244
-#: usr/share/layout-switcher/extension_update_monitor.py:336
-#: usr/share/layout-switcher/extension_update_monitor.py:337
-msgid "View updates"
-msgstr "Переглянути оновлення"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:306
-msgid "Extension updates installed"
-msgstr "Оновлення розширень встановлено"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:307
-#: usr/share/layout-switcher/extension_update_monitor.py:322
-#, python-brace-format
-msgid "Updated: {names}"
-msgstr "Оновлено: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:311
-#: usr/share/layout-switcher/extension_update_monitor.py:312
-msgid "View extensions"
-msgstr "Переглянути розширення"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:328
-#, python-brace-format
-msgid "Failed: {names}"
-msgstr "Помилка: {names}"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:333
-msgid "Some extension updates failed"
-msgstr "Деякі оновлення розширень не вдалося встановити"
-
-#: usr/share/layout-switcher/extension_update_monitor.py:338
-msgid "Try again"
-msgstr "Спробувати ще раз"
-
-#: usr/share/layout-switcher/helper_client.py:113
-msgid "The required layout helper is not installed."
-msgstr "Необхідний помічник макетів не встановлено."
-
-#: usr/share/layout-switcher/helper_client.py:152
-msgid "The required layout helper did not start."
-msgstr "Необхідний помічник макетів не запустився."
-
-#: usr/share/layout-switcher/helper_guard.py:78
-msgid "Layout helper restored"
-msgstr "Помічник макетів відновлено"
-
-#: usr/share/layout-switcher/helper_guard.py:79
-msgid "The required layout helper was re-enabled automatically."
-msgstr "Необхідний помічник макетів було автоматично повторно ввімкнено."
-
-#: usr/share/layout-switcher/layout_applier.py:2254
-msgid "Layout Switcher Helper is required to apply layouts."
-msgstr "Для застосування макетів потрібен Layout Switcher Helper."
-
-#: usr/share/layout-switcher/shell_reloader.py:280
-#: usr/share/layout-switcher/ui/page_extensions.py:704
-#: usr/share/layout-switcher/ui/page_extensions.py:760
-#: usr/share/layout-switcher/ui/page_extensions.py:761
-msgid "Required for layout switching"
-msgstr "Необхідний для перемикання макетів"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:28
-#: usr/share/layout-switcher/ui/window.py:404
-#: usr/share/layout-switcher/ui/window.py:487
-msgid "Desktop"
-msgstr "Робочий стіл"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:32
-#: usr/share/layout-switcher/ui/desktop_icons.py:51
-msgid "Desktop icons"
-msgstr "Піктограми робочого столу"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:33
-#: usr/share/layout-switcher/ui/desktop_icons.py:72
-msgid "Show files and folders on the desktop"
-msgstr "Показувати файли та папки на робочому столі"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:39
-msgid "Desktop icon settings"
-msgstr "Налаштування піктограм робочого столу"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:74
-msgid "GTK4 Desktop Icons NG is not installed"
-msgstr "GTK4 Desktop Icons NG не встановлено"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:95
-msgid "Desktop icons enabled"
-msgstr "Піктограми робочого столу ввімкнено"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:97
-msgid "Desktop icons disabled"
-msgstr "Піктограми робочого столу вимкнено"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:102
-#, python-brace-format
-msgid "Could not change desktop icons: {message}"
-msgstr "Не вдалося змінити піктограми робочого столу: {message}"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
 msgstr "Розмиття огляду"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Frosted glass"
 msgstr "Матова скло"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:67
+#: usr/share/big-gnome-center/ui/frosted_glass.py:76
 msgid "Blur for the workspace and application overview"
 msgstr "Розмиття для огляду робочих просторів і застосунків"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:69
+#: usr/share/big-gnome-center/ui/frosted_glass.py:78
 msgid "Unified blur for windows and GNOME Shell surfaces"
 msgstr "Єдине розмиття для вікон і поверхонь GNOME Shell"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:79
+#: usr/share/big-gnome-center/ui/frosted_glass.py:88
 msgid "unknown"
 msgstr "невідомо"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:82
+#: usr/share/big-gnome-center/ui/frosted_glass.py:92
 #, python-brace-format
 msgid ""
 "Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
@@ -1183,718 +1410,526 @@ msgstr ""
 "Розмиття огляду потребує GNOME 50 або новішої версії. Цей робочий стіл — "
 "GNOME {version}."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:89
+#: usr/share/big-gnome-center/ui/frosted_glass.py:101
 msgid ""
-"Install or update Layout Switcher to make Frosted Glass settings available."
+"Install or update Big Gnome Center to make Frosted Glass settings available."
 msgstr ""
-"Установіть або оновіть Layout Switcher, щоб зробити доступними налаштування "
+"Установіть або оновіть Big Gnome Center, щоб зробити доступними налаштування "
 "матового скла."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:110
+#: usr/share/big-gnome-center/ui/frosted_glass.py:127
 msgid "Enable overview blur"
 msgstr "Увімкнути розмиття огляду"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:111
-#: usr/share/layout-switcher/ui/frosted_glass.py:190
+#: usr/share/big-gnome-center/ui/frosted_glass.py:128
+#: usr/share/big-gnome-center/ui/frosted_glass.py:207
 msgid "Workspace and application overview"
 msgstr "Огляд робочих просторів і програм"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:122
-#: usr/share/layout-switcher/ui/frosted_glass.py:206
+#: usr/share/big-gnome-center/ui/frosted_glass.py:137
+#: usr/share/big-gnome-center/ui/frosted_glass.py:223
 msgid "Material"
 msgstr "Матеріал"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Blur strength"
 msgstr "Сила розмиття"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "Less"
 msgstr "Менше"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
 msgid "More"
 msgstr "Більше"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
 msgid "Material opacity"
 msgstr "Непрозорість матеріалу"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:199
-msgid "Transparent"
-msgstr "Прозорий"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:212
-msgid "Opaque"
-msgstr "Непрозорий"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:137
-#: usr/share/layout-switcher/ui/frosted_glass.py:196
-#: usr/share/layout-switcher/ui/frosted_glass.py:198
+#: usr/share/big-gnome-center/ui/frosted_glass.py:156
+#: usr/share/big-gnome-center/ui/frosted_glass.py:213
+#: usr/share/big-gnome-center/ui/frosted_glass.py:215
 msgid "Not available in this session"
 msgstr "Недоступно в цій сесії"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:147
+#: usr/share/big-gnome-center/ui/frosted_glass.py:166
 msgid "Enable frosted glass"
 msgstr "Увімкнути матове скло"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:148
+#: usr/share/big-gnome-center/ui/frosted_glass.py:167
 msgid "Apply the material without changing the active desktop layout"
 msgstr "Застосувати матеріал без зміни активного макета робочого столу"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:160
+#: usr/share/big-gnome-center/ui/frosted_glass.py:177
 msgid "Surfaces"
 msgstr "Поверхні"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:161
+#: usr/share/big-gnome-center/ui/frosted_glass.py:178
 msgid "Choose independently where the material is applied."
 msgstr "Виберіть незалежно, де застосовується матеріал."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "Windows"
 msgstr "Вікна"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
 msgid "GTK, Qt and other application windows"
 msgstr "Вікна застосунків GTK, Qt та інших"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
-#: usr/share/layout-switcher/ui/page_panel_dock.py:74
-msgid "Panel"
-msgstr "Панель"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
 msgid "GNOME panel and Community Panel"
 msgstr "Панель GNOME та панель спільноти"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
-#: usr/share/layout-switcher/ui/page_panel_dock.py:55
-#: usr/share/layout-switcher/ui/page_panel_dock.py:254
-#: usr/share/layout-switcher/ui/page_panel_dock.py:257
-msgid "Dock"
-msgstr "Док"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
 msgid "Community Dock surfaces"
 msgstr "Поверхні доків спільноти"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:169
+#: usr/share/big-gnome-center/ui/frosted_glass.py:186
 msgid "Layout menus"
 msgstr "Меню макетів"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:170
+#: usr/share/big-gnome-center/ui/frosted_glass.py:187
 msgid "Application menus used by Classic, Hybrid and Desk-UX"
 msgstr "Меню застосунків, які використовуються у Classic, Hybrid та Desk-UX"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:174
+#: usr/share/big-gnome-center/ui/frosted_glass.py:191
 msgid "Quick Settings"
 msgstr "Швидкі налаштування"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:175
+#: usr/share/big-gnome-center/ui/frosted_glass.py:192
 msgid "System settings menu in the panel"
 msgstr "Меню системних налаштувань на панелі"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:179
+#: usr/share/big-gnome-center/ui/frosted_glass.py:196
 msgid "Calendar and notifications"
 msgstr "Календар і сповіщення"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:180
+#: usr/share/big-gnome-center/ui/frosted_glass.py:197
 msgid "Date, calendar and notification menu in the panel"
 msgstr "Меню дати, календаря та сповіщень на панелі"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:184
+#: usr/share/big-gnome-center/ui/frosted_glass.py:201
 msgid "System dialogs"
 msgstr "Системні діалоги"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:185
+#: usr/share/big-gnome-center/ui/frosted_glass.py:202
 msgid "Power, restart and other GNOME Shell dialogs"
 msgstr "Діалоги завершення роботи, перезапуску та інші діалоги GNOME Shell"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:189
+#: usr/share/big-gnome-center/ui/frosted_glass.py:206
 msgid "Overview"
 msgstr "Огляд"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:209
+#: usr/share/big-gnome-center/ui/frosted_glass.py:226
 msgid "Rendering mode"
 msgstr "Режим рендерингу"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:210
+#: usr/share/big-gnome-center/ui/frosted_glass.py:227
 msgid "Automatic balances visual quality and power usage"
 msgstr "Автоматичний режим балансує візуальну якість та енергоспоживання"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Automatic"
 msgstr "Автоматично"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Dynamic"
 msgstr "Динамічний"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
 msgid "Static"
 msgstr "Статичний"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:228
+#: usr/share/big-gnome-center/ui/frosted_glass.py:249
 msgid "Behavior"
 msgstr "Поведінка"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:229
+#: usr/share/big-gnome-center/ui/frosted_glass.py:250
 msgid "Application identifiers can be separated by commas."
 msgstr "Ідентифікатори застосунків можна розділяти комами."
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:231
+#: usr/share/big-gnome-center/ui/frosted_glass.py:252
 msgid "Application exceptions"
 msgstr "Винятки для застосунків"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Keep blur"
 msgstr "Зберегти розмиття"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
 msgid "Make opaque"
 msgstr "Зробити непрозорим"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Disable blur"
 msgstr "Вимкнути розмиття"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:239
+#: usr/share/big-gnome-center/ui/frosted_glass.py:260
 msgid "Maximized windows"
 msgstr "Розгорнуті вікна"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:242
+#: usr/share/big-gnome-center/ui/frosted_glass.py:263
 msgid "Fullscreen windows"
 msgstr "Повноекранні вікна"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:246
+#: usr/share/big-gnome-center/ui/frosted_glass.py:267
 msgid "Power saving"
 msgstr "Енергозбереження"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:247
+#: usr/share/big-gnome-center/ui/frosted_glass.py:268
 msgid "Used on battery and with the power-saver profile"
 msgstr "Використовується від акумулятора та з профілем енергозбереження"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Keep selected mode"
 msgstr "Зберегти вибраний режим"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
 msgid "Use static blur"
 msgstr "Використовувати статичне розмиття"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:334
+#: usr/share/big-gnome-center/ui/frosted_glass.py:399
 msgid "Frosted glass enabled"
 msgstr "Матова скло увімкнено"
 
-#: usr/share/layout-switcher/ui/frosted_glass.py:339
+#: usr/share/big-gnome-center/ui/frosted_glass.py:403
 #, python-brace-format
 msgid "Could not enable Frosted Glass: {message}"
 msgstr "Не вдалося ввімкнути матове скло: {message}"
 
-#: usr/share/layout-switcher/ui/page_desktop.py:39
-msgid "Top center"
-msgstr "Зверху по центру"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:40
-msgid "Bottom center"
-msgstr "Знизу по центру"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:41
-msgid "Top right"
-msgstr "Зверху праворуч"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:42
-msgid "Top left"
-msgstr "Зверху ліворуч"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:43
-msgid "Bottom left"
-msgstr "Знизу ліворуч"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:44
-msgid "Bottom right"
-msgstr "Знизу праворуч"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:88
-msgid "Notification position"
-msgstr "Позиція сповіщень"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:89
-msgid "Choose where notification banners appear."
-msgstr "Виберіть, де з'являтимуться банери сповіщень."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:129
-#, python-brace-format
-msgid "Show notifications at {position}"
-msgstr "Показувати сповіщення {position}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:143
-#: usr/share/layout-switcher/ui/page_desktop.py:287
-msgid "Default"
-msgstr "За замовчуванням"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:194
-#: usr/share/layout-switcher/ui/page_desktop.py:199
-#: usr/share/layout-switcher/ui/page_desktop.py:206
-msgid "Application menu"
-msgstr "Меню застосунків"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Доступно для макетів Classic, Desk-UX та Hybrid."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:200
-#: usr/share/layout-switcher/ui/page_desktop.py:469
-msgid "Use Community Menu as the application menu"
-msgstr "Використовувати Community Menu як меню застосунків"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:220
-msgid "Menu style"
-msgstr "Стиль меню"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:226
-msgid "Choose the appearance of Community Menu."
-msgstr "Виберіть зовнішній вигляд Community Menu."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:258
-msgid "Super key"
-msgstr "Клавіша Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:259
-msgid "Choose what happens when pressing Super"
-msgstr "Виберіть, що відбуватиметься під час натискання Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open menu"
-msgstr "Відкрити меню"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open overview"
-msgstr "Відкрити огляд"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:273
-#, python-brace-format
-msgid "Use the {name} menu style"
-msgstr "Використовувати стиль меню {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:471
-msgid "Community Menu is not installed"
-msgstr "Community Menu не встановлено"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:516
-#, python-brace-format
-msgid "{position} notification position applied"
-msgstr "Застосовано позицію сповіщень: {position}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:523
-#, python-brace-format
-msgid "Could not change the notification position: {message}"
-msgstr "Не вдалося змінити позицію сповіщень: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:534
-msgid "Notification preview"
-msgstr "Попередній перегляд сповіщень"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:535
-msgid "Notifications will appear here."
-msgstr "Сповіщення з'являтимуться тут."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu enabled"
-msgstr "Меню застосунків увімкнено"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu disabled"
-msgstr "Меню застосунків вимкнено"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:559
-#, python-brace-format
-msgid "Could not change the application menu: {message}"
-msgstr "Не вдалося змінити меню застосунку: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:597
-#, python-brace-format
-msgid "{name} menu style applied"
-msgstr "Застосовано стиль меню {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:600
-#, python-brace-format
-msgid "Could not change the menu style: {message}"
-msgstr "Не вдалося змінити стиль меню: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:631
-msgid "Super opens the application menu"
-msgstr "Super відкриває меню застосунків"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:633
-msgid "Super opens the overview"
-msgstr "Super відкриває огляд"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:637
-#, python-brace-format
-msgid "Could not change the Super key: {message}"
-msgstr "Не вдалося змінити клавішу Super: {message}"
-
-#: usr/share/layout-switcher/ui/page_effects.py:60
-msgid "Other visual effects"
-msgstr "Інші візуальні ефекти"
-
-#: usr/share/layout-switcher/ui/page_effects.py:150
-#, python-brace-format
-msgid "{name} effect preview"
-msgstr "Попередній перегляд ефекту {name}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:20
-msgid "Always visible"
-msgstr "Завжди видима"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:21
-msgid "Always hidden (show at edge)"
-msgstr "Завжди прихована (показувати біля краю)"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:22
-msgid "Intelligent hiding"
-msgstr "Розумне приховування"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:25
-msgid "Dot"
-msgstr "Крапка"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:26
-msgid "Hybrid line"
-msgstr "Гібридна лінія"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:27
-msgid "Desk UX line"
-msgstr "Лінія Desk UX"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:56
-#: usr/share/layout-switcher/ui/page_panel_dock.py:259
-msgid "Configure the Community Dock appearance and visibility."
-msgstr "Налаштування зовнішнього вигляду та видимості Community Dock."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:62
-msgid "Dock transparency"
-msgstr "Прозорість дока"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:65
-msgid "Dock visibility"
-msgstr "Видимість дока"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:75
-#: usr/share/layout-switcher/ui/page_panel_dock.py:271
-msgid "Configure the system panel appearance and visibility."
-msgstr "Налаштуйте вигляд і видимість системної панелі."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Panel transparency"
-msgstr "Прозорість панелі"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:84
-msgid "Panel visibility"
-msgstr "Видимість панелі"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:101
-msgid "Running app indicator"
-msgstr "Індикатор запущених програм"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:105
-msgid "Choose the mark shown below running applications."
-msgstr "Виберіть позначку, що відображається під запущеними програмами."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:142
-#, python-brace-format
-msgid "Use the {style} indicator"
-msgstr "Використовувати індикатор {style}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:222
-msgid "Choose how this component behaves on the desktop."
-msgstr "Виберіть, як цей компонент поводиться на робочому столі."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:251
-msgid "Taskbar"
-msgstr "Панель завдань"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:252
-msgid "Configure running application indicators."
-msgstr "Налаштуйте індикатори запущених програм."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:255
-msgid "Available when Community Dock is active."
-msgstr "Доступно, коли активний Community Dock."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:263
-msgid "Available when Community Dock or Community Panel is active."
-msgstr "Доступно, коли активні Community Dock або Community Panel."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:267
-msgid "Configure the Community Panel appearance and visibility."
-msgstr "Налаштуйте вигляд і видимість Community Panel."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:321
-msgid "Dock visibility updated"
-msgstr "Видимість дока оновлено"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:328
-msgid "Panel visibility updated"
-msgstr "Видимість панелі оновлено"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:338
-msgid "Indicator style updated"
-msgstr "Стиль індикатора оновлено"
-
-#: usr/share/layout-switcher/ui/page_themes.py:20
-msgid "Blue"
-msgstr "Синій"
-
-#: usr/share/layout-switcher/ui/page_themes.py:21
-msgid "Teal"
-msgstr "Бірюзовий"
-
-#: usr/share/layout-switcher/ui/page_themes.py:22
-msgid "Green"
-msgstr "Зелений"
-
-#: usr/share/layout-switcher/ui/page_themes.py:23
-msgid "Yellow"
-msgstr "Жовтий"
-
-#: usr/share/layout-switcher/ui/page_themes.py:24
-msgid "Orange"
-msgstr "Помаранчевий"
-
-#: usr/share/layout-switcher/ui/page_themes.py:25
-msgid "Red"
-msgstr "Червоний"
-
-#: usr/share/layout-switcher/ui/page_themes.py:26
-msgid "Pink"
-msgstr "Рожевий"
-
-#: usr/share/layout-switcher/ui/page_themes.py:27
-msgid "Purple"
-msgstr "Фіолетовий"
-
-#: usr/share/layout-switcher/ui/page_themes.py:28
-msgid "Slate"
-msgstr "Сіро-синій"
-
-#: usr/share/layout-switcher/ui/page_themes.py:29
-msgid "Maia"
-msgstr "Maia"
-
-#: usr/share/layout-switcher/ui/page_themes.py:108
-msgid "Colors"
-msgstr "Кольори"
-
-#: usr/share/layout-switcher/ui/page_themes.py:165
-msgid "Accent color"
-msgstr "Акцентний колір"
-
-#: usr/share/layout-switcher/ui/page_themes.py:174
-msgid "Choose the color used for buttons, selections, and highlights."
-msgstr "Виберіть колір, який використовується для кнопок, вибору та виділень."
-
-#: usr/share/layout-switcher/ui/page_themes.py:207
-#, python-brace-format
-msgid "{color} accent color"
-msgstr "{color} акцентний колір"
-
-#: usr/share/layout-switcher/ui/window.py:405
-#: usr/share/layout-switcher/ui/window.py:488
+#: usr/share/big-gnome-center/ui/page_layouts.py:34
+msgid "Disabling extensions…"
+msgstr "Вимкнення розширень…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:35
+msgid "Loading layout…"
+msgstr "Завантаження макета…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:36
+msgid "Reloading components…"
+msgstr "Перезавантаження компонентів…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:66
+msgid "Layout status"
+msgstr "Статус макета"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:154
+msgid "Contains your saved customizations"
+msgstr "Містить ваші збережені налаштування"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:158
+#: usr/share/big-gnome-center/ui/page_layouts.py:272
+msgid "Modified"
+msgstr "Змінено"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:192
+#: usr/share/big-gnome-center/ui/page_layouts.py:219
+msgid "Coming soon"
+msgstr "Незабаром"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:283
+msgid ""
+"You have previously modified this layout. Apply the original system default "
+"or resume your changes?"
+msgstr ""
+"Ви вже змінювали цей макет. Застосувати початкові системні налаштування чи "
+"відновити ваші зміни?"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:288
+msgid "Resume my changes"
+msgstr "Відновити мої зміни"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:289
+msgid "Apply original"
+msgstr "Застосувати оригінал"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:293
+msgid ""
+"Apply this layout? A backup of your current configuration will be created "
+"automatically."
+msgstr ""
+"Застосувати цей макет? Резервна копія вашої поточної конфігурації буде "
+"створена автоматично."
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:298
+msgid "Apply"
+msgstr "Застосувати"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:353
+msgid "Applying"
+msgstr "Застосування"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:383
+msgid "Snapshot not found"
+msgstr "Знімок не знайдено"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:411
+msgid "Layout file not found"
+msgstr "Файл макета не знайдено"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:452
+#: usr/share/big-gnome-center/ui/page_layouts.py:460
+#: usr/share/big-gnome-center/ui/page_layouts.py:469
+msgid "applied"
+msgstr "застосовано"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:462
+msgid "Undo"
+msgstr "Скасувати"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:480
+msgid "Restart the session for the 100% clean state"
+msgstr "Перезапустіть сеанс для 100% чистого стану"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:485
+msgid "Restart now"
+msgstr "Перезапустити зараз"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:509
+msgid "Cannot restart session"
+msgstr "Не вдалося перезапустити сеанс"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:516
+#: usr/share/big-gnome-center/ui/page_layouts.py:518
+msgid "Restoring previous layout…"
+msgstr "Відновлення попереднього макета…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:550
+msgid "Layout restored"
+msgstr "Макет відновлено"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:552
+msgid "Previous layout restored"
+msgstr "Попередній макет відновлено"
+
+#: usr/share/big-gnome-center/ui/window.py:72
+#: usr/share/big-gnome-center/ui/window.py:383
+#: usr/share/big-gnome-center/ui/window.py:550
+msgid "Big Gnome Center"
+msgstr "Big Gnome Center"
+
+#: usr/share/big-gnome-center/ui/window.py:233
+#: usr/share/big-gnome-center/ui/window.py:234
+msgid "Show Sidebar"
+msgstr "Показати бічну панель"
+
+#: usr/share/big-gnome-center/ui/window.py:240
+#: usr/share/big-gnome-center/ui/window.py:407
+#: usr/share/big-gnome-center/ui/window.py:504
+msgid "Layouts"
+msgstr "Макети"
+
+#: usr/share/big-gnome-center/ui/window.py:246
+msgid "Menu"
+msgstr "Меню"
+
+#: usr/share/big-gnome-center/ui/window.py:247
+msgid "Main menu"
+msgstr "Головне меню"
+
+#: usr/share/big-gnome-center/ui/window.py:251
+msgid "Check for updates"
+msgstr "Перевірити наявність оновлень"
+
+#: usr/share/big-gnome-center/ui/window.py:252
+msgid "Auto-update extensions"
+msgstr "Автоматично оновлювати розширення"
+
+#: usr/share/big-gnome-center/ui/window.py:254
+msgid "Backups…"
+msgstr "Резервні копії…"
+
+#: usr/share/big-gnome-center/ui/window.py:255
+msgid "About"
+msgstr "Про програму"
+
+#: usr/share/big-gnome-center/ui/window.py:264
+msgid "Welcome! Choose a desktop layout below to get started."
+msgstr "Ласкаво просимо! Виберіть нижче макет робочого столу, щоб почати."
+
+#: usr/share/big-gnome-center/ui/window.py:265
+msgid "Got it"
+msgstr "Зрозуміло"
+
+#: usr/share/big-gnome-center/ui/window.py:408
+#: usr/share/big-gnome-center/ui/window.py:505
+msgid "Fonts"
+msgstr "Шрифти"
+
+#: usr/share/big-gnome-center/ui/window.py:409
+#: usr/share/big-gnome-center/ui/window.py:506
+msgid "Themes"
+msgstr "Теми"
+
+#: usr/share/big-gnome-center/ui/window.py:411
+#: usr/share/big-gnome-center/ui/window.py:508
 msgid "Panel and Dock"
 msgstr "Панель і док"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Dock size"
-msgstr "Розмір панелі запуску"
+#: usr/share/big-gnome-center/ui/window.py:412
+#: usr/share/big-gnome-center/ui/window.py:509
+msgid "Effects"
+msgstr "Ефекти"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:114
-msgid "Panel height"
-msgstr "Висота панелі"
+#: usr/share/big-gnome-center/ui/window.py:555
+msgid "Layouts, effects and themes for your GNOME desktop."
+msgstr "Макети, ефекти та теми для вашого робочого столу GNOME."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:450
-msgid "Smaller"
-msgstr "Менше"
+#: usr/share/big-gnome-center/ui/window.py:621
+msgid "Applying…"
+msgstr "Застосування…"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:466
-msgid "Larger"
-msgstr "Більше"
+#: usr/share/big-gnome-center/ui/window.py:728
+msgid "All extensions up to date"
+msgstr "Усі розширення оновлено"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:143
-msgid "Restore layout defaults"
-msgstr "Відновити типові параметри макета"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:33
-msgid "Standard"
-msgstr "Стандартний"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:34
-msgid "Gentle lift"
-msgstr "Плавне підняття"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:245
-msgid "Icon hover effect"
-msgstr "Ефект наведення на значок"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:249
-msgid "Choose how dock icons react to the pointer."
-msgstr "Виберіть, як значки панелі запуску реагують на вказівник."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:279
+#: usr/share/big-gnome-center/ui/window.py:743
 #, python-brace-format
-msgid "Use the {effect} hover effect"
-msgstr "Використати ефект наведення {effect}"
+msgid "Auto-updated {n} extensions"
+msgstr "Автоматично оновлено {n} розширень"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:658
-msgid "Icon hover effect updated"
-msgstr "Ефект наведення на значок оновлено"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:32
-msgid "Captures, annotates and records the screen."
-msgstr "Захоплює, анотує та записує екран."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:35
-msgid "Shows application tray icons in the system panel."
-msgstr "Показує піктограми програм на системній панелі."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:40
-msgid "Provides application launchers and running windows in a dock."
-msgstr "Надає засоби запуску програм і відкриті вікна на доку."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:43
-msgid "Provides the applications menu used by desktop layouts."
-msgstr "Надає меню програм, яке використовують компонування стільниці."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:46
-msgid "Provides the taskbar and system panel used by desktop layouts."
-msgstr "Надає панель задач і системну панель компонувань."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:49
-msgid "Keeps a searchable history of copied content."
-msgstr "Зберігає доступну для пошуку історію скопійованого вмісту."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:52
-msgid "Shows removable devices and lets you safely eject them."
-msgstr "Показує знімні пристрої та дає змогу безпечно їх вийняти."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:55
-msgid "Adds controlled blur and transparency to the desktop."
-msgstr "Додає кероване розмиття та прозорість до стільниці."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:58
-msgid "Connects phones to share files, notifications and other features."
-msgstr ""
-"З’єднує телефони для обміну файлами, сповіщеннями та іншими функціями."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:61
-msgid "Shows files and folders on the desktop."
-msgstr "Показує файли й теки на стільниці."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-msgid "Applies layout changes safely inside GNOME Shell."
-msgstr "Безпечно застосовує зміни компонування в GNOME Shell."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:67
-msgid "Provides the dock and taskbar runtime used by desktop layouts."
-msgstr "Надає середовище виконання доку й панелі задач для компонувань."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:70
-msgid "Keeps GTK 3 applications aligned with light and dark mode."
-msgstr "Узгоджує програми GTK 3 зі світлим і темним режимами."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:73
-msgid "Uses the light GNOME Shell appearance."
-msgstr "Використовує світлий вигляд GNOME Shell."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:76
-msgid "Loads the Shell theme selected by the active layout."
-msgstr "Завантажує тему Shell, вибрану активним компонуванням."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:91
-msgid "Description not provided by the developer."
-msgstr "Розробник не надав опису."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:770
+#: usr/share/big-gnome-center/ui/window.py:748
 #, python-brace-format
-msgid "Technical identifier: {uuid}"
-msgstr "Технічний ідентифікатор: {uuid}"
+msgid "{n} update(s) available"
+msgstr "Доступно оновлень: {n}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:772
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update enabled"
+msgstr "Автооновлення увімкнено"
+
+#: usr/share/big-gnome-center/ui/window.py:755
+msgid "Auto-update disabled"
+msgstr "Автооновлення вимкнено"
+
+#: usr/share/big-gnome-center/constants.py:166
+msgid "Desktop Cube"
+msgstr "Desktop Cube"
+
+#: usr/share/big-gnome-center/constants.py:167
+msgid "Rotate workspaces on a 3D cube"
+msgstr "Обертання робочих просторів на 3D-кубі"
+
+#: usr/share/big-gnome-center/constants.py:177
+msgid "Magic Lamp"
+msgstr "Magic Lamp"
+
+#: usr/share/big-gnome-center/constants.py:178
+msgid "Genie effect when minimizing windows"
+msgstr "Ефект джина при згортанні вікон"
+
+#: usr/share/big-gnome-center/constants.py:188
+msgid "Compiz Windows"
+msgstr "Compiz Windows"
+
+#: usr/share/big-gnome-center/constants.py:189
+msgid "Wobbly windows and extra animations"
+msgstr "Хиткі вікна та додаткові анімації"
+
+#: usr/share/big-gnome-center/constants.py:216
+msgid "Default Big Gnome layout"
+msgstr "Стандартний великий макет Gnome"
+
+#: usr/share/big-gnome-center/constants.py:223
+msgid "Clean and contemporary desktop"
+msgstr "Чистий і сучасний робочий стіл"
+
+#: usr/share/big-gnome-center/constants.py:230
+msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
+msgstr "Центрована панель-док, стиль Windows 11 / Deepin / Pop!_OS"
+
+#: usr/share/big-gnome-center/constants.py:237
+msgid "Unity-style layout with left dock and top bar"
+msgstr "Макет у стилі Unity із лівим доком і верхньою панеллю"
+
+#: usr/share/big-gnome-center/constants.py:244
+msgid "Traditional desktop with taskbar and system tray"
+msgstr "Традиційний робочий стіл із панеллю завдань і системним лотком"
+
+#: usr/share/big-gnome-center/constants.py:251
+msgid "Near-vanilla GNOME with minimal distro tweaks"
+msgstr "Майже чистий GNOME з мінімальними налаштуваннями дистрибутива"
+
+#: usr/share/big-gnome-center/helper_guard.py:86
+msgid "Layout helper restored"
+msgstr "Помічник макетів відновлено"
+
+#: usr/share/big-gnome-center/helper_guard.py:87
+msgid "The required layout helper was re-enabled automatically."
+msgstr "Необхідний помічник макетів було автоматично повторно ввімкнено."
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:231
+msgid "Extension updates available"
+msgstr "Доступні оновлення розширень"
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:232
 #, python-brace-format
-msgid "Version: {version}"
-msgstr "Версія: {version}"
+msgid "Available updates: {names}"
+msgstr "Доступні оновлення: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:127
-msgid "Session"
-msgstr "Сеанс"
+#: usr/share/big-gnome-center/extension_update_monitor.py:234
+#: usr/share/big-gnome-center/extension_update_monitor.py:235
+#: usr/share/big-gnome-center/extension_update_monitor.py:315
+#: usr/share/big-gnome-center/extension_update_monitor.py:316
+msgid "View updates"
+msgstr "Переглянути оновлення"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:128
-msgid "Choose how this layout starts after login."
-msgstr "Виберіть, як це компонування запускатиметься після входу."
+#: usr/share/big-gnome-center/extension_update_monitor.py:295
+msgid "Extension updates installed"
+msgstr "Оновлення розширень встановлено"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:131
-msgid "Open desktop after login"
-msgstr "Відкривати стільницю після входу"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:132
-msgid "Skip the initial Activities overview for this layout."
-msgstr "Пропускати початковий огляд діяльності для цього компонування."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:144
-msgid "Reset appearance and session options for the active layout."
-msgstr "Скинути вигляд і параметри сеансу активного компонування."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:165
-msgid "Application menu position"
-msgstr "Положення меню програм"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:169
-msgid "Place the BigGnome menu at either end of the Dock."
-msgstr "Розмістіть меню BigGnome з будь-якого краю доку."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Left"
-msgstr "Ліворуч"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Right"
-msgstr "Праворуч"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:201
+#: usr/share/big-gnome-center/extension_update_monitor.py:296
+#: usr/share/big-gnome-center/extension_update_monitor.py:308
 #, python-brace-format
-msgid "Place the application menu on the {side}"
-msgstr "Розмістити меню програм на боці {side}"
+msgid "Updated: {names}"
+msgstr "Оновлено: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:668
-msgid "Application menu position updated"
-msgstr "Положення меню програм оновлено"
+#: usr/share/big-gnome-center/extension_update_monitor.py:298
+#: usr/share/big-gnome-center/extension_update_monitor.py:299
+msgid "View extensions"
+msgstr "Переглянути розширення"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:678
-msgid "Login start updated"
-msgstr "Запуск після входу оновлено"
+#: usr/share/big-gnome-center/extension_update_monitor.py:310
+#, python-brace-format
+msgid "Failed: {names}"
+msgstr "Помилка: {names}"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:685
-msgid "Layout appearance and session defaults restored"
-msgstr "Вигляд і типові параметри сеансу компонування відновлено"
+#: usr/share/big-gnome-center/extension_update_monitor.py:312
+msgid "Some extension updates failed"
+msgstr "Деякі оновлення розширень не вдалося встановити"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:36
-msgid "Magnification"
-msgstr "Збільшення"
+#: usr/share/big-gnome-center/extension_update_monitor.py:317
+msgid "Try again"
+msgstr "Спробувати ще раз"
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:97
-msgid "Magnification intensity"
-msgstr "Інтенсивність збільшення"
+#: usr/share/big-gnome-center/layout_applier.py:2256
+msgid "Big Gnome Center Helper is required to apply layouts."
+msgstr "Для застосування макетів потрібен Big Gnome Center Helper."
 
-#: usr/share/layout-switcher/ui/page_panel_dock.py:102
-msgid "Choose how much nearby Dock icons grow."
-msgstr "Виберіть, наскільки збільшуватимуться сусідні піктограми доку."
+#: usr/share/big-gnome-center/helper_client.py:261
+msgid "The required layout helper is not installed."
+msgstr "Необхідний помічник макетів не встановлено."
+
+#: usr/share/big-gnome-center/helper_client.py:300
+msgid "The required layout helper did not start."
+msgstr "Необхідний помічник макетів не запустився."
+
+#~ msgid "System extension — cannot remove"
+#~ msgstr "Системне розширення — не можна видалити"
+
+#~ msgid ""
+#~ "This extension cannot be removed here because it was installed by the "
+#~ "system."
+#~ msgstr ""
+#~ "Це розширення не можна видалити тут, оскільки воно встановлене системою."
+
+#~ msgid "Uses the light GNOME Shell appearance."
+#~ msgstr "Використовує світлий вигляд GNOME Shell."
+
+#~ msgid "Loads the Shell theme selected by the active layout."
+#~ msgstr "Завантажує тему Shell, вибрану активним компонуванням."

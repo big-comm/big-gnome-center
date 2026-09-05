@@ -1,4 +1,4 @@
-// Layout Switcher private Dock module.
+// Big Gnome Center private Dock module.
 export * as AnimationUtils from 'resource:///org/gnome/shell/misc/animationUtils.js';
 export * as Config from 'resource:///org/gnome/shell/misc/config.js';
 export * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils.js';

@@ -23,7 +23,7 @@ export class DockRuntime {
     constructor(extension) {
         this._managerGeneration = 0;
         this._host = new ComponentHost(extension, DOCK_UUID, {
-            name: 'Layout Switcher Dock',
+            name: 'Big Gnome Center Dock',
             version: 1,
         }, 'dock');
         this._actorFactory = new DockActorFactory();

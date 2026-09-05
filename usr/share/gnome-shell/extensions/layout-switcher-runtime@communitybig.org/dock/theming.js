@@ -1,5 +1,5 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
-// Layout Switcher private Dock module.
+// Big Gnome Center private Dock module.
 
 import {
     Clutter,

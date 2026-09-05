@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 RUNTIME = ROOT / f"usr/share/gnome-shell/extensions/{RUNTIME_UUID}"
-LAYOUTS = ROOT / "usr/share/layout-switcher/layouts"
+LAYOUTS = ROOT / "usr/share/big-gnome-center/layouts"
 SUPPORTED_LOCALES = (
     "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
     "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt", "ro", "ru",
@@ -28,7 +28,7 @@ def test_unified_runtime_has_distinct_identity_and_supported_shells():
     metadata = json.loads((RUNTIME / "metadata.json").read_text())
 
     assert metadata["uuid"] == RUNTIME_UUID
-    assert metadata["name"] == "Layout Switcher Shell Runtime"
+    assert metadata["name"] == "Big Gnome Center Shell Runtime"
     assert {"50", "51"}.issubset(metadata["shell-version"])
     assert metadata["version"] == 2
 
@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 85" in controller
+    assert "RUNTIME_BUILD = 89" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -361,16 +361,17 @@ def test_runtime_owns_taskbar_opacity_and_reports_effective_alpha():
     assert "Math.round(panel.dynamicTransparency.alpha * 100)" in runtime
 
 
-def test_runtime_owns_minimal_native_panel_opacity():
+def test_runtime_owns_minimal_native_panel_opacity_and_visibility():
     controller = (RUNTIME / "runtimeController.js").read_text()
     profiles = (RUNTIME / "layoutProfiles.js").read_text()
     integration = (RUNTIME / "nativePanelOpacityIntegration.js").read_text()
 
     assert "new NativePanelOpacityIntegration()" in controller
-    assert "this._nativePanelOpacity.activate(panelOpacity)" in controller
+    assert "this._nativePanelOpacity.activate(panelOpacity, panelVisibility)" in controller
     assert "this._nativePanelOpacity.deactivate()" in controller
     assert "nativePanelOpacity:" in controller
     assert "panelOpacity: 65" in profiles
+    assert "panelVisibility: 'always-visible'" in profiles
     assert "Main.panel" in integration
     assert "get_background_color()" in integration
     assert "background-color: rgba(" in integration
@@ -380,6 +381,17 @@ def test_runtime_owns_minimal_native_panel_opacity():
     assert "this._panel.set_style(this._originalStyle)" in integration
     assert "styleOwned:" in integration
     assert "styleSignalOwned:" in integration
+    assert "visibilitySignalsOwned:" in integration
+    assert "_focusWindowTouchesPanel()" in integration
+    assert "Main.layoutManager.addTopChrome" in integration
+    assert "'leave-event'" in integration
+    assert "'shown'" in integration
+    assert "'notify::visible'" in integration
+    assert "Main.overview.visibleTarget" in integration
+    assert "inOverview:" in integration
+    assert "this._applyPanelTracking(this._visibility, inOverview)" in integration
+    assert "mode !== 'always-visible' && !inOverview" in integration
+    assert "this._panelActorData.affectsStruts" in integration
     assert "restoreConflicts:" in integration
 
 
@@ -859,7 +871,7 @@ def test_runtime_owns_dock_actor_construction():
     assert "export const DockedDash" in engine
     assert "this._extension.createDockActor(params)" in engine
     assert "const dock = new DockedDash(params)" not in engine
-    assert "Layout Switcher Dock actor factory is required" in engine
+    assert "Big Gnome Center Dock actor factory is required" in engine
 
 
 def test_private_dock_modules_resolve_code_from_the_unified_runtime():

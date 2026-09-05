@@ -7,27 +7,27 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_desktop_page_exposes_global_desktop_icons_control():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert "DesktopIconsControls" in source
     assert "self._desktop_icons.refresh()" in source
 
 
 def test_desktop_navigation_uses_a_monochrome_display_icon():
-    source = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
 
     assert '("desktop", tr("Desktop"), "video-display-symbolic")' in source
     assert "preferences-desktop-symbolic" not in source
 
 
 def test_effects_page_does_not_duplicate_desktop_icons_control():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_effects.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_effects.py").read_text()
 
     assert "DesktopIconsControls" not in source
 
 
 def test_desktop_page_exposes_global_menu_and_super_controls():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert '"community_menu_enabled"' in source
     assert '"super_key_opens_menu"' in source
@@ -36,7 +36,7 @@ def test_desktop_page_exposes_global_menu_and_super_controls():
 
 
 def test_community_menu_controls_are_limited_to_supported_layouts():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert '"Classic": "APPS_ONLY"' in source
     assert '"Desk UX": "APP_GRID"' in source
@@ -45,7 +45,7 @@ def test_community_menu_controls_are_limited_to_supported_layouts():
 
 
 def test_community_menu_exposes_three_visual_style_choices():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert '("Classic", "APPS_ONLY"' in source
     assert '("Desk-UX", "APP_GRID"' in source
@@ -56,7 +56,7 @@ def test_community_menu_exposes_three_visual_style_choices():
 
 
 def test_community_menu_previews_match_each_layout_geometry():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert "_append_classic_preview" in source
     assert "_append_desk_ux_preview" in source
@@ -68,7 +68,7 @@ def test_community_menu_previews_match_each_layout_geometry():
 
 
 def test_community_menu_default_badge_does_not_resize_the_preview_card():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert "overlay = Gtk.Overlay()" in source
     assert "overlay.set_child(box)" in source
@@ -81,7 +81,7 @@ def test_community_menu_default_badge_does_not_resize_the_preview_card():
 
 
 def test_hybrid_preview_uses_aligned_compact_rail_and_left_actions():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert "rail_width = 27" in source
     assert 'self._preview_block("menu-style-user", rail_width, 7)' in source
@@ -92,13 +92,13 @@ def test_hybrid_preview_uses_aligned_compact_rail_and_left_actions():
 
 
 def test_community_menu_default_badge_is_translucent():
-    source = (ROOT / "usr/share/layout-switcher/ui/styles.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/styles.py").read_text()
 
     assert "background-color: alpha(@accent_bg_color, 0.50);" in source
 
 
 def test_desktop_page_exposes_six_visual_notification_positions():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     for value in (
         "top-center",
@@ -118,7 +118,7 @@ def test_desktop_page_exposes_six_visual_notification_positions():
 
 
 def test_notification_position_defaults_are_layout_specific():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert '"Classic": "bottom-right"' in source
     assert '"Hybrid": "bottom-right"' in source
@@ -130,7 +130,7 @@ def test_notification_position_defaults_are_layout_specific():
 
 
 def test_notification_selection_applies_then_sends_a_real_preview():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     apply_index = source.index("HelperClient.set_notification_position(value)")
     persist_index = source.index('self._prefs.set("notification_positions", saved)')
@@ -142,7 +142,7 @@ def test_notification_selection_applies_then_sends_a_real_preview():
 
 
 def test_notification_choices_are_reenabled_after_each_request():
-    source = (ROOT / "usr/share/layout-switcher/ui/page_desktop.py").read_text()
+    source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert "self._notification_flow.set_sensitive(False)" in source
     assert "self._notification_flow.set_sensitive(True)" in source
@@ -158,6 +158,6 @@ def test_gtk4_ding_dependency_is_retained():
 
 
 def test_obsolete_desktop_icons_ng_card_is_not_featured():
-    constants = (ROOT / "usr/share/layout-switcher/constants.py").read_text()
+    constants = (ROOT / "usr/share/big-gnome-center/constants.py").read_text()
 
     assert "ding@rastersoft.com" not in constants

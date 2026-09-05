@@ -34,7 +34,7 @@ Excluded behavior:
 - GTK hot-reload workarounds.
 - Full replacement GNOME Shell themes.
 
-ChromaLeon is GPL-3.0-or-later; Layout Switcher is MIT. Do not copy its source
+ChromaLeon is GPL-3.0-or-later; Big Gnome Center is MIT. Do not copy its source
 or templates into this project. Implement the documented behavior independently
 and retain the upstream commit only as design provenance.
 
@@ -64,7 +64,7 @@ wallpaper, but must not silently change the user's feature preference.
 
 ## Proposed ownership
 
-Use the existing Layout Switcher settings and helper lifecycle. The feature
+Use the existing Big Gnome Center settings and helper lifecycle. The feature
 must remain active after the GTK application closes.
 
 - Persist enabled state, strength, and derived color in the project schema.
@@ -74,7 +74,7 @@ must remain active after the GTK application closes.
 - Write GTK 3/4 overrides atomically with unique ownership markers.
 - Remove only owned blocks/files when disabled.
 - Detect modified or conflicting owned files before restoration.
-- Preserve User Themes, layout classes, Frosted Glass, and runtime styles.
+- Preserve layout classes, Frosted Glass, and runtime styles.
 
 ## Qt design boundary
 
@@ -121,7 +121,7 @@ coverage until it passes.
 - Atomic ownership and exact restoration tests for every generated file.
 - Light/dark wallpaper and color-scheme changes.
 - Every layout, including transitions while the feature is enabled.
-- User Themes and Frosted Glass coexistence.
+- Native Shell styling and Frosted Glass coexistence.
 - GTK 3 and GTK 4 native and Flatpak applications.
 - Qt 5 and Qt 6 applications using the supported Kvantum path.
 - Ten slow and twenty rapid update cycles.

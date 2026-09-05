@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""
+main.py — Entry point for Big Gnome Center.
+
+Usage:
+    python3 main.py
+    big-gnome-center             # via /usr/bin/big-gnome-center
+
+DEVELOPER NOTE — DO NOT name any variable `_` in this file.
+`tr = gettext.gettext` is the translation function.
+"""
+
+import logging
+import sys
+
+# Ensure the package directory is on sys.path when run directly
+from pathlib import Path
+
+_ROOT = Path(__file__).parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+logging.basicConfig(
+    level=logging.WARNING,
+    format="%(levelname)s [%(name)s] %(message)s",
+)
+
+import gi
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+gi.require_version("Pango", "1.0")
+
+from gi.repository import Adw, Gio
+
+from constants import APP_ID, migrate_user_data
+from ui.window import MainWindow
+
+
+class App(Adw.Application):
+    """
+    Classe de aplicativo GTK/Adwaita.
+
+    Registra a ação de saída (Ctrl+Q) e instancia a janela principal.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            application_id=APP_ID,
+            flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
+        )
+        self._open_extension_updates = False
+        self.connect("activate", self._on_activate)
+        self.connect("command-line", self._on_command_line)
+
+        quit_action = Gio.SimpleAction.new("quit", None)
+        quit_action.connect("activate", lambda a, p: self.quit())
+        self.add_action(quit_action)
+        self.set_accels_for_action("app.quit", ["<primary>q"])
+
+    def _on_activate(self, app: "App") -> None:
+        win = self.get_active_window()
+        if win is None:
+            win = MainWindow(self)
+        win.present()
+        if self._open_extension_updates:
+            self._open_extension_updates = False
+            win.show_extension_updates()
+
+    def _on_command_line(self, app: "App", command_line) -> int:
+        args = command_line.get_arguments()[1:]
+        self._open_extension_updates = "--extensions-updates" in args
+        self.activate()
+        return 0
+
+
+def main() -> int:
+    """Inicializa e executa o aplicativo. Retorna o código de saída."""
+    migrate_user_data()
+    app = App()
+    return app.run(sys.argv)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

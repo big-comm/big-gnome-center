@@ -1,9 +1,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: layout-switcher\n"
+"Project-Id-Version: big-gnome-center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 15:41-0300\n"
+"POT-Creation-Date: 2026-09-04 20:16-0300\n"
 "PO-Revision-Date: 2026-08-20 22:29-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -11,787 +11,1013 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2);\n"
 "X-Generator: LangForge\n"
 
-#: usr/share/layout-switcher/constants.py:149
-msgid "Desktop Cube"
-msgstr "Desktop Cube"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:25
+#: usr/share/big-gnome-center/ui/window.py:410
+#: usr/share/big-gnome-center/ui/window.py:507
+msgid "Desktop"
+msgstr "Desktop"
 
-#: usr/share/layout-switcher/constants.py:150
-msgid "Rotate workspaces on a 3D cube"
-msgstr "Rotează spațiile de lucru pe un cub 3D"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:27
+#: usr/share/big-gnome-center/ui/desktop_icons.py:46
+msgid "Desktop icons"
+msgstr "Pictograme desktop"
 
-#: usr/share/layout-switcher/constants.py:160
-msgid "Magic Lamp"
-msgstr "Magic Lamp"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:28
+#: usr/share/big-gnome-center/ui/desktop_icons.py:67
+msgid "Show files and folders on the desktop"
+msgstr "Afișează fișierele și folderele pe desktop"
 
-#: usr/share/layout-switcher/constants.py:161
-msgid "Genie effect when minimizing windows"
-msgstr "Efectul de geniu la minimizarea ferestrelor"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:34
+msgid "Desktop icon settings"
+msgstr "Setări pictograme desktop"
 
-#: usr/share/layout-switcher/constants.py:171
-msgid "Compiz Windows"
-msgstr "Compiz Windows"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:69
+msgid "GTK4 Desktop Icons NG is not installed"
+msgstr "GTK4 Desktop Icons NG nu este instalat"
 
-#: usr/share/layout-switcher/constants.py:172
-msgid "Wobbly windows and extra animations"
-msgstr "Ferestre elastice și animații suplimentare"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons enabled"
+msgstr "Pictograme desktop activate"
 
-#: usr/share/layout-switcher/constants.py:199
-msgid "Default Big Gnome layout"
-msgstr "Layout-ul implicit Big Gnome"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:88
+msgid "Desktop icons disabled"
+msgstr "Pictograme desktop dezactivate"
 
-#: usr/share/layout-switcher/constants.py:206
-msgid "Clean and contemporary desktop"
-msgstr "Desktop curat și contemporan"
+#: usr/share/big-gnome-center/ui/desktop_icons.py:92
+#, python-brace-format
+msgid "Could not change desktop icons: {message}"
+msgstr "Nu s-au putut modifica pictogramele desktop: {message}"
 
-#: usr/share/layout-switcher/constants.py:213
-msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
-msgstr "Dock-bara centrată, stil Windows 11 / Deepin / Pop!_OS"
-
-#: usr/share/layout-switcher/constants.py:220
-msgid "Unity-style layout with left dock and top bar"
-msgstr "Layout în stil Unity cu dock în stânga și bara de sus"
-
-#: usr/share/layout-switcher/constants.py:227
-msgid "Traditional desktop with taskbar and system tray"
-msgstr "Desktop tradițional cu bara de activități și tava de sistem"
-
-#: usr/share/layout-switcher/constants.py:234
-msgid "Near-vanilla GNOME with minimal distro tweaks"
-msgstr "GNOME aproape vanilla cu ajustări minime de distribuție"
-
-#: usr/share/layout-switcher/ui/dialog_backups.py:64
+#: usr/share/big-gnome-center/ui/dialog_backups.py:64
 msgid "Backups"
 msgstr "Copii de rezervă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:79
+#: usr/share/big-gnome-center/ui/dialog_backups.py:79
 msgid "Create backup now"
 msgstr "Creează copie de rezervă acum"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:81
+#: usr/share/big-gnome-center/ui/dialog_backups.py:81
 msgid "Snapshot current dconf settings"
 msgstr "Instantaneu al setărilor dconf curente"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:94
+#: usr/share/big-gnome-center/ui/dialog_backups.py:94
 msgid "No backups yet"
 msgstr "Nu există copii de rezervă încă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:96
+#: usr/share/big-gnome-center/ui/dialog_backups.py:96
 msgid "A backup is created automatically every time you apply a layout."
 msgstr ""
-"O copie de rezervă este creată automat de fiecare dată când aplici un "
-"layout."
+"O copie de rezervă este creată automat de fiecare dată când aplici un layout."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:149
+#: usr/share/big-gnome-center/ui/dialog_backups.py:149
 msgid "Latest"
 msgstr "Cele mai recente"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:154
+#: usr/share/big-gnome-center/ui/dialog_backups.py:154
 msgid "Restore this backup"
 msgstr "Restaurează această copie de rezervă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:162
+#: usr/share/big-gnome-center/ui/dialog_backups.py:162
 msgid "Delete this backup"
 msgstr "Șterge această copie de rezervă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:185
+#: usr/share/big-gnome-center/ui/dialog_backups.py:185
 msgid "Backup created"
 msgstr "Copia de rezervă a fost creată"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:188
-#: usr/share/layout-switcher/ui/page_layouts.py:265
+#: usr/share/big-gnome-center/ui/dialog_backups.py:188
+#: usr/share/big-gnome-center/ui/page_layouts.py:241
 msgid "Backup failed"
 msgstr "Crearea copiei de rezervă a eșuat"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:193
+#: usr/share/big-gnome-center/ui/dialog_backups.py:193
 msgid "Restore this backup?"
 msgstr "Restaurezi această copie de rezervă?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:195
+#: usr/share/big-gnome-center/ui/dialog_backups.py:195
 #, python-brace-format
 msgid ""
 "All current dconf settings will be overwritten with the snapshot from {ts}."
-msgstr "Toate setările dconf curente vor fi suprascrise cu instantaneul din {ts}."
+msgstr ""
+"Toate setările dconf curente vor fi suprascrise cu instantaneul din {ts}."
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:198
-#: usr/share/layout-switcher/ui/dialog_backups.py:231
-#: usr/share/layout-switcher/ui/page_effects.py:293
-#: usr/share/layout-switcher/ui/page_effects.py:337
-#: usr/share/layout-switcher/ui/page_extensions.py:402
-#: usr/share/layout-switcher/ui/page_extensions.py:445
-#: usr/share/layout-switcher/ui/page_extensions.py:905
-#: usr/share/layout-switcher/ui/page_fonts.py:567
-#: usr/share/layout-switcher/ui/page_layouts.py:241
-#: usr/share/layout-switcher/ui/page_layouts.py:253
+#: usr/share/big-gnome-center/ui/dialog_backups.py:198
+#: usr/share/big-gnome-center/ui/dialog_backups.py:231
+#: usr/share/big-gnome-center/ui/page_effects.py:293
+#: usr/share/big-gnome-center/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_extensions.py:481
+#: usr/share/big-gnome-center/ui/page_extensions.py:521
+#: usr/share/big-gnome-center/ui/page_extensions.py:987
+#: usr/share/big-gnome-center/ui/page_fonts.py:567
+#: usr/share/big-gnome-center/ui/page_layouts.py:287
+#: usr/share/big-gnome-center/ui/page_layouts.py:297
 msgid "Cancel"
 msgstr "Anulează"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/dialog_backups.py:199
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:161
 msgid "Restore"
 msgstr "Restaurează"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:219
+#: usr/share/big-gnome-center/ui/dialog_backups.py:219
 msgid "Backup restored"
 msgstr "Copia de rezervă a fost restaurată"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:223
+#: usr/share/big-gnome-center/ui/dialog_backups.py:223
 msgid "Restore failed"
 msgstr "Restaurare eșuată"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:228
+#: usr/share/big-gnome-center/ui/dialog_backups.py:228
 msgid "Delete this backup?"
 msgstr "Șterge această copie de rezervă?"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:232
+#: usr/share/big-gnome-center/ui/dialog_backups.py:232
 msgid "Delete"
 msgstr "Șterge"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:252
+#: usr/share/big-gnome-center/ui/dialog_backups.py:252
 msgid "Backup deleted"
 msgstr "Copia de rezervă a fost ștearsă"
 
-#: usr/share/layout-switcher/ui/dialog_backups.py:255
+#: usr/share/big-gnome-center/ui/dialog_backups.py:255
 msgid "Delete failed"
 msgstr "Ștergerea a eșuat"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:41
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:41
+msgid "Relevance"
+msgstr "Relevanță"
+
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:42
 msgid "Popularity"
 msgstr "Popularitate"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:42
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:43
 msgid "Downloads"
 msgstr "Descărcări"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:43
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:44
 msgid "Recent"
 msgstr "Recente"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:44
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:45
 msgid "Name"
 msgstr "Nume"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:93
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:97
 msgid "Search extensions on extensions.gnome.org"
 msgstr "Caută extensii pe extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:101
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:105
 msgid "Sort by"
 msgstr "Sortează după"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:112
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:116
 #, python-brace-format
 msgid "Only compatible with GNOME {ver}"
 msgstr "Compatibil doar cu GNOME {ver}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:139
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:143
 msgid "Browse extensions"
 msgstr "Răsfoiește extensiile"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:140
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:144
 msgid "Search above or hit Enter to load popular extensions."
 msgstr "Caută mai sus sau apasă Enter pentru a încărca extensiile populare."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:143
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:147
 msgid "Load popular"
 msgstr "Încarcă populare"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:159
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:163
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:97
 msgid "Loading…"
 msgstr "Se încarcă…"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:166
-#: usr/share/layout-switcher/ui/page_extensions.py:621
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:170
+#: usr/share/big-gnome-center/ui/page_extensions.py:697
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:104
 msgid "No results"
 msgstr "Niciun rezultat"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:167
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:171
 msgid "Try a different search or sort."
 msgstr "Încearcă o altă căutare sau sortare."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:173
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:177
 msgid "Could not reach extensions.gnome.org"
 msgstr "Nu s-a putut ajunge la extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:174
-#: usr/share/layout-switcher/ui/ext_detail_view.py:111
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:178
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:111
 msgid "Check your network connection and try again."
 msgstr "Verifică conexiunea la rețea și încearcă din nou."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:177
-#: usr/share/layout-switcher/ui/ext_detail_view.py:114
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:181
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:114
 msgid "Retry"
 msgstr "Reîncearcă"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:334
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:220
+#: usr/share/big-gnome-center/ui/page_fonts.py:334
 msgid "Previous page"
 msgstr "Pagina anterioară"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:227
-#: usr/share/layout-switcher/ui/page_fonts.py:346
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:346
 msgid "Next page"
 msgstr "Pagina următoare"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:238
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:242
 msgid "Shell"
 msgstr "Shell"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:284
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:291
 #, python-brace-format
 msgid "Page {p} of {t}"
 msgstr "Pagina {p} din {t}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:345
-#: usr/share/layout-switcher/ui/ext_detail_view.py:147
-#: usr/share/layout-switcher/ui/page_effects.py:184
-#: usr/share/layout-switcher/ui/page_extensions.py:280
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:354
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:147
+#: usr/share/big-gnome-center/ui/page_effects.py:184
+#: usr/share/big-gnome-center/ui/page_extensions.py:359
 #, python-brace-format
 msgid "by {author}"
 msgstr "de {author}"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:358
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:367
 msgid "Details"
 msgstr "Detalii"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:361
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:370
 msgid "View extension details"
 msgstr "Vezi detaliile extensiei"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:369
-#: usr/share/layout-switcher/ui/page_extensions.py:83
-#: usr/share/layout-switcher/ui/page_extensions.py:574
-#: usr/share/layout-switcher/ui/page_fonts.py:487
-#: usr/share/layout-switcher/ui/page_fonts.py:529
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:378
+#: usr/share/big-gnome-center/ui/page_extensions.py:161
+#: usr/share/big-gnome-center/ui/page_extensions.py:650
+#: usr/share/big-gnome-center/ui/page_fonts.py:487
+#: usr/share/big-gnome-center/ui/page_fonts.py:529
 msgid "Installed"
 msgstr "Instalate"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:375
-#: usr/share/layout-switcher/ui/ext_detail_view.py:64
-#: usr/share/layout-switcher/ui/ext_detail_view.py:397
-#: usr/share/layout-switcher/ui/page_effects.py:238
-#: usr/share/layout-switcher/ui/page_effects.py:294
-#: usr/share/layout-switcher/ui/page_extensions.py:341
-#: usr/share/layout-switcher/ui/page_extensions.py:403
-#: usr/share/layout-switcher/ui/page_fonts.py:490
-#: usr/share/layout-switcher/ui/page_fonts.py:493
-#: usr/share/layout-switcher/ui/page_fonts.py:534
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:384
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:64
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:397
+#: usr/share/big-gnome-center/ui/page_effects.py:238
+#: usr/share/big-gnome-center/ui/page_effects.py:294
+#: usr/share/big-gnome-center/ui/page_extensions.py:420
+#: usr/share/big-gnome-center/ui/page_extensions.py:482
+#: usr/share/big-gnome-center/ui/page_fonts.py:490
+#: usr/share/big-gnome-center/ui/page_fonts.py:493
+#: usr/share/big-gnome-center/ui/page_fonts.py:534
 msgid "Install"
 msgstr "Instalează"
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:412
-#: usr/share/layout-switcher/ui/ext_detail_view.py:431
-#: usr/share/layout-switcher/ui/page_effects.py:315
-#: usr/share/layout-switcher/ui/page_extensions.py:423
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:421
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:431
+#: usr/share/big-gnome-center/ui/page_effects.py:315
+#: usr/share/big-gnome-center/ui/page_extensions.py:502
 #, python-brace-format
 msgid "{name} installed and enabled. Restart the session to use it."
 msgstr "{name} instalată și activată. Repornește sesiunea pentru a o folosi."
 
-#: usr/share/layout-switcher/ui/ext_browse_view.py:420
-#: usr/share/layout-switcher/ui/page_effects.py:321
-#: usr/share/layout-switcher/ui/page_extensions.py:429
+#: usr/share/big-gnome-center/ui/ext_browse_view.py:429
+#: usr/share/big-gnome-center/ui/page_effects.py:321
+#: usr/share/big-gnome-center/ui/page_extensions.py:508
 msgid "Install failed"
 msgstr "Instalarea a eșuat"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:103
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:103
 msgid "Loading extension details…"
 msgstr "Se încarcă detaliile extensiei…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:110
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:110
 msgid "Could not load details"
 msgstr "Nu s-au putut încărca detaliile"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:206
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:206
 #, python-brace-format
 msgid "{n} ratings"
 msgstr "{n} evaluări"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:209
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:209
 msgid "downloads"
 msgstr "descărcări"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:212
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:212
 msgid "compatibility"
 msgstr "compatibilitate"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:254
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:254
 msgid "Description"
 msgstr "Descriere"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:269
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:269
 msgid "Recent comments"
 msgstr "Comentarii recente"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:282
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:282
 msgid "View all comments on extensions.gnome.org"
 msgstr "Vezi toate comentariile pe extensions.gnome.org"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:343
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:343
 msgid "Links"
 msgstr "Linkuri"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:350
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:350
 msgid "Homepage"
 msgstr "Pagina de pornire"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:354
-#: usr/share/layout-switcher/ui/page_effects.py:255
-#: usr/share/layout-switcher/ui/page_extensions.py:358
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:354
+#: usr/share/big-gnome-center/ui/page_effects.py:255
+#: usr/share/big-gnome-center/ui/page_extensions.py:437
 msgid "View on GNOME Extensions"
 msgstr "Vezi pe GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:359
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:359
 #, python-brace-format
 msgid "License: {lic}"
 msgstr "Licență: {lic}"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:387
-#: usr/share/layout-switcher/ui/page_extensions.py:579
-#: usr/share/layout-switcher/ui/page_extensions.py:719
-#: usr/share/layout-switcher/ui/page_extensions.py:730
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:387
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/ui/page_extensions.py:803
+#: usr/share/big-gnome-center/ui/page_extensions.py:814
 msgid "Update"
 msgstr "Actualizează"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:392
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:392
 msgid "Open prefs"
 msgstr "Deschide preferințe"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:409
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:409
 msgid "Working…"
 msgstr "Se procesează…"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:428
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:428
 #, python-brace-format
 msgid "{name} updated"
 msgstr "{name} actualizată"
 
-#: usr/share/layout-switcher/ui/ext_detail_view.py:437
+#: usr/share/big-gnome-center/ui/ext_detail_view.py:437
 msgid "Operation failed"
 msgstr "Operația a eșuat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:114
-#: usr/share/layout-switcher/ui/page_extensions.py:225
+#: usr/share/big-gnome-center/ui/page_desktop.py:39
+msgid "Top center"
+msgstr "Centru sus"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:40
+msgid "Bottom center"
+msgstr "Centru jos"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:41
+msgid "Top right"
+msgstr "Dreapta sus"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:42
+msgid "Top left"
+msgstr "Stânga sus"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:43
+msgid "Bottom left"
+msgstr "Stânga jos"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:44
+msgid "Bottom right"
+msgstr "Dreapta jos"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:88
+msgid "Notification position"
+msgstr "Poziția notificărilor"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:89
+msgid "Choose where notification banners appear."
+msgstr "Alege unde să apară banner-ele de notificare."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:129
+#, python-brace-format
+msgid "Show notifications at {position}"
+msgstr "Afișează notificările la {position}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:143
+#: usr/share/big-gnome-center/ui/page_desktop.py:287
+msgid "Default"
+msgstr "Implicit"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:194
+#: usr/share/big-gnome-center/ui/page_desktop.py:199
+#: usr/share/big-gnome-center/ui/page_desktop.py:206
+msgid "Application menu"
+msgstr "Meniul aplicației"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:195
+msgid "Available for Classic, Desk-UX and Hybrid layouts."
+msgstr "Disponibil pentru aspectele Classic, Desk-UX și Hybrid."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:200
+#: usr/share/big-gnome-center/ui/page_desktop.py:469
+msgid "Use Community Menu as the application menu"
+msgstr "Folosește Meniul Comunității ca meniu de aplicații"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:220
+msgid "Menu style"
+msgstr "Stilul meniului"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:226
+msgid "Choose the appearance of Community Menu."
+msgstr "Alege aspectul Meniului Comunității."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:258
+msgid "Super key"
+msgstr "Tasta Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:259
+msgid "Choose what happens when pressing Super"
+msgstr "Alege ce se întâmplă la apăsarea tastei Super"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open menu"
+msgstr "Deschide meniul"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:260
+msgid "Open overview"
+msgstr "Deschide prezentarea generală"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:273
+#, python-brace-format
+msgid "Use the {name} menu style"
+msgstr "Folosește stilul de meniu {name}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:471
+msgid "Community Menu is not installed"
+msgstr "Meniul Comunității nu este instalat"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:516
+#, python-brace-format
+msgid "{position} notification position applied"
+msgstr "Poziția notificărilor {position} a fost aplicată"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:523
+#, python-brace-format
+msgid "Could not change the notification position: {message}"
+msgstr "Nu s-a putut schimba poziția notificărilor: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:534
+msgid "Notification preview"
+msgstr "Previzualizare notificare"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:535
+msgid "Notifications will appear here."
+msgstr "Notificările vor apărea aici."
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu enabled"
+msgstr "Meniul de aplicații activat"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:555
+msgid "Application menu disabled"
+msgstr "Meniul de aplicații dezactivat"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:559
+#, python-brace-format
+msgid "Could not change the application menu: {message}"
+msgstr "Nu s-a putut modifica meniul aplicațiilor: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:597
+#, python-brace-format
+msgid "{name} menu style applied"
+msgstr "Stilul de meniu {name} a fost aplicat"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:600
+#, python-brace-format
+msgid "Could not change the menu style: {message}"
+msgstr "Nu s-a putut modifica stilul de meniu: {message}"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:631
+msgid "Super opens the application menu"
+msgstr "Super deschide meniul aplicațiilor"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:633
+msgid "Super opens the overview"
+msgstr "Super deschide prezentarea generală"
+
+#: usr/share/big-gnome-center/ui/page_desktop.py:637
+#, python-brace-format
+msgid "Could not change the Super key: {message}"
+msgstr "Nu s-a putut modifica tasta Super: {message}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:60
+msgid "Other visual effects"
+msgstr "Alte efecte vizuale"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:114
+#: usr/share/big-gnome-center/ui/page_extensions.py:304
 msgid "System extension"
 msgstr "Extensie de sistem"
 
-#: usr/share/layout-switcher/ui/page_effects.py:131
+#: usr/share/big-gnome-center/ui/page_effects.py:131
 #, python-brace-format
 msgid "{name} (enabled)"
 msgstr "{name} (activată)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:133
+#: usr/share/big-gnome-center/ui/page_effects.py:133
 #, python-brace-format
 msgid "{name} (disabled)"
 msgstr "{name} (dezactivată)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:135
+#: usr/share/big-gnome-center/ui/page_effects.py:135
 #, python-brace-format
 msgid "{name} (not installed)"
 msgstr "{name} (neinstalată)"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:150
+#, python-brace-format
+msgid "{name} effect preview"
+msgstr "Previzualizarea efectului {name}"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "On"
 msgstr "Pornit"
 
-#: usr/share/layout-switcher/ui/page_effects.py:195
-#: usr/share/layout-switcher/ui/page_extensions.py:295
+#: usr/share/big-gnome-center/ui/page_effects.py:195
+#: usr/share/big-gnome-center/ui/page_extensions.py:374
 msgid "Off"
 msgstr "Oprit"
 
-#: usr/share/layout-switcher/ui/page_effects.py:203
-#: usr/share/layout-switcher/ui/page_extensions.py:303
-#: usr/share/layout-switcher/ui/page_extensions.py:763
+#: usr/share/big-gnome-center/ui/page_effects.py:203
+#: usr/share/big-gnome-center/ui/page_extensions.py:382
+#: usr/share/big-gnome-center/ui/page_extensions.py:847
 msgid "Toggle"
 msgstr "Comută"
 
-#: usr/share/layout-switcher/ui/page_effects.py:211
-#: usr/share/layout-switcher/ui/page_effects.py:215
-#: usr/share/layout-switcher/ui/page_effects.py:338
-#: usr/share/layout-switcher/ui/page_extensions.py:313
-#: usr/share/layout-switcher/ui/page_extensions.py:317
-#: usr/share/layout-switcher/ui/page_extensions.py:446
-#: usr/share/layout-switcher/ui/page_extensions.py:801
-#: usr/share/layout-switcher/ui/page_extensions.py:802
+#: usr/share/big-gnome-center/ui/page_effects.py:211
+#: usr/share/big-gnome-center/ui/page_effects.py:215
+#: usr/share/big-gnome-center/ui/page_effects.py:335
+#: usr/share/big-gnome-center/ui/page_extensions.py:392
+#: usr/share/big-gnome-center/ui/page_extensions.py:396
+#: usr/share/big-gnome-center/ui/page_extensions.py:522
+#: usr/share/big-gnome-center/ui/page_extensions.py:882
+#: usr/share/big-gnome-center/ui/page_extensions.py:883
+#: usr/share/big-gnome-center/ui/page_startup.py:116
+#: usr/share/big-gnome-center/ui/page_startup.py:119
 msgid "Remove"
 msgstr "Elimină"
 
-#: usr/share/layout-switcher/ui/page_effects.py:223
-#: usr/share/layout-switcher/ui/page_extensions.py:325
-#: usr/share/layout-switcher/ui/page_extensions.py:744
-#: usr/share/layout-switcher/ui/page_extensions.py:748
+#: usr/share/big-gnome-center/ui/page_effects.py:223
+#: usr/share/big-gnome-center/ui/page_extensions.py:404
+#: usr/share/big-gnome-center/ui/page_extensions.py:828
+#: usr/share/big-gnome-center/ui/page_extensions.py:832
 msgid "Settings"
 msgstr "Setări"
 
-#: usr/share/layout-switcher/ui/page_effects.py:234
-#: usr/share/layout-switcher/ui/page_extensions.py:253
-#: usr/share/layout-switcher/ui/page_extensions.py:337
+#: usr/share/big-gnome-center/ui/page_effects.py:234
+#: usr/share/big-gnome-center/ui/page_extensions.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:416
 msgid "Not installed"
 msgstr "Neinstalat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:249
-#: usr/share/layout-switcher/ui/page_extensions.py:388
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:328
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "enabled"
 msgstr "activat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:279
-#: usr/share/layout-switcher/ui/page_extensions.py:251
-#: usr/share/layout-switcher/ui/page_extensions.py:388
+#: usr/share/big-gnome-center/ui/page_effects.py:279
+#: usr/share/big-gnome-center/ui/page_extensions.py:330
+#: usr/share/big-gnome-center/ui/page_extensions.py:467
 msgid "disabled"
 msgstr "dezactivat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:283
-#: usr/share/layout-switcher/ui/page_extensions.py:392
-#: usr/share/layout-switcher/ui/page_extensions.py:777
-#: usr/share/layout-switcher/ui/page_extensions.py:929
-#: usr/share/layout-switcher/ui/page_layouts.py:429
-#: usr/share/layout-switcher/ui/page_layouts.py:473
-#: usr/share/layout-switcher/ui/page_themes.py:332
-#: usr/share/layout-switcher/ui/page_themes.py:343
+#: usr/share/big-gnome-center/ui/page_effects.py:283
+#: usr/share/big-gnome-center/ui/page_extensions.py:471
+#: usr/share/big-gnome-center/ui/page_extensions.py:861
+#: usr/share/big-gnome-center/ui/page_extensions.py:1011
+#: usr/share/big-gnome-center/ui/page_themes.py:363
+#: usr/share/big-gnome-center/ui/page_themes.py:374
+#: usr/share/big-gnome-center/ui/page_startup.py:150
+#: usr/share/big-gnome-center/ui/page_startup.py:167
+#: usr/share/big-gnome-center/ui/page_layouts.py:492
+#: usr/share/big-gnome-center/ui/page_layouts.py:536
 msgid "Error"
 msgstr "Eroare"
 
-#: usr/share/layout-switcher/ui/page_effects.py:290
+#: usr/share/big-gnome-center/ui/page_effects.py:290
 msgid "Install effect?"
 msgstr "Să instalez efectul?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:291
-#: usr/share/layout-switcher/ui/page_extensions.py:400
+#: usr/share/big-gnome-center/ui/page_effects.py:291
+#: usr/share/big-gnome-center/ui/page_extensions.py:479
 msgid "Will try to install automatically."
 msgstr "Se va încerca instalarea automată."
 
-#: usr/share/layout-switcher/ui/page_effects.py:302
-#: usr/share/layout-switcher/ui/page_extensions.py:409
-#: usr/share/layout-switcher/ui/page_fonts.py:513
+#: usr/share/big-gnome-center/ui/page_effects.py:302
+#: usr/share/big-gnome-center/ui/page_extensions.py:488
+#: usr/share/big-gnome-center/ui/page_fonts.py:513
 msgid "Installing…"
 msgstr "Se instalează…"
 
-#: usr/share/layout-switcher/ui/page_effects.py:330
-#: usr/share/layout-switcher/ui/page_extensions.py:438
-msgid "System extension — cannot remove"
-msgstr "Extensie de sistem — nu poate fi eliminată"
-
-#: usr/share/layout-switcher/ui/page_effects.py:334
+#: usr/share/big-gnome-center/ui/page_effects.py:331
 msgid "Remove effect?"
 msgstr "Să elimin efectul?"
 
-#: usr/share/layout-switcher/ui/page_effects.py:335
-#: usr/share/layout-switcher/ui/page_extensions.py:443
+#: usr/share/big-gnome-center/ui/page_effects.py:332
+#: usr/share/big-gnome-center/ui/page_extensions.py:519
 msgid "This cannot be undone."
 msgstr "Aceasta nu poate fi anulată."
 
-#: usr/share/layout-switcher/ui/page_effects.py:350
-#: usr/share/layout-switcher/ui/page_extensions.py:458
+#: usr/share/big-gnome-center/ui/page_effects.py:347
+#: usr/share/big-gnome-center/ui/page_extensions.py:534
 msgid "removed"
 msgstr "eliminat"
 
-#: usr/share/layout-switcher/ui/page_effects.py:352
-#: usr/share/layout-switcher/ui/page_extensions.py:460
+#: usr/share/big-gnome-center/ui/page_effects.py:349
+#: usr/share/big-gnome-center/ui/page_extensions.py:536
 msgid "Remove failed"
 msgstr "Eliminarea a eșuat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:81
+#: usr/share/big-gnome-center/ui/page_extensions.py:31
+msgid "Captures, annotates and records the screen."
+msgstr "Capturează, adnotează și înregistrează ecranul."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:45
+msgid "Shows application tray icons in the system panel."
+msgstr "Afișează pictogramele aplicațiilor în panoul sistemului."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:50
+msgid "Provides application launchers and running windows in a dock."
+msgstr "Oferă lansatoare de aplicații și ferestre active într-un dock."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:53
+msgid "Provides the applications menu used by desktop layouts."
+msgstr "Oferă meniul de aplicații folosit de aspectele desktopului."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:56
+msgid "Provides the taskbar and system panel used by desktop layouts."
+msgstr "Oferă bara de activități și panoul de sistem folosite de aspecte."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:59
+msgid "Keeps a searchable history of copied content."
+msgstr "Păstrează un istoric care poate fi căutat al conținutului copiat."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shows removable devices and lets you safely eject them."
+msgstr ""
+"Afișează dispozitivele detașabile și permite ejectarea lor în siguranță."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:65
+msgid "Adds controlled blur and transparency to the desktop."
+msgstr "Adaugă estompare și transparență controlate desktopului."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:68
+msgid "Connects phones to share files, notifications and other features."
+msgstr ""
+"Conectează telefoane pentru partajarea fișierelor, notificărilor și altor "
+"funcții."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:71
+msgid "Shows files and folders on the desktop."
+msgstr "Afișează fișierele și folderele de pe desktop."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:74
+msgid "Applies layout changes safely inside GNOME Shell."
+msgstr "Aplică în siguranță modificările de aspect în GNOME Shell."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:77
+msgid "Provides the dock and taskbar runtime used by desktop layouts."
+msgstr ""
+"Oferă runtime-ul dockului și al barei de activități folosit de aspecte."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:80
+msgid "Keeps GTK 3 applications aligned with light and dark mode."
+msgstr "Menține aplicațiile GTK 3 aliniate cu modul luminos și întunecat."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:104
+msgid "Description not provided by the developer."
+msgstr "Dezvoltatorul nu a furnizat o descriere."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:159
 msgid "Featured"
 msgstr "Recomandate"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:82
-#: usr/share/layout-switcher/ui/page_extensions.py:131
+#: usr/share/big-gnome-center/ui/page_extensions.py:160
+#: usr/share/big-gnome-center/ui/page_extensions.py:209
 msgid "Browse"
 msgstr "Răsfoiește"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:237
+#: usr/share/big-gnome-center/ui/page_extensions.py:316
 msgid "Update available"
 msgstr "Actualizare disponibilă"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:399
+#: usr/share/big-gnome-center/ui/page_extensions.py:478
 msgid "Install extension?"
 msgstr "Instalezi extensia?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:442
+#: usr/share/big-gnome-center/ui/page_extensions.py:518
 msgid "Remove extension?"
 msgstr "Ștergi extensia?"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:245
-#: usr/share/layout-switcher/ui/page_extensions.py:522
-#: usr/share/layout-switcher/ui/page_extensions.py:579
+#: usr/share/big-gnome-center/ui/page_extensions.py:570
+#: usr/share/big-gnome-center/ui/page_extensions.py:578
+#: usr/share/big-gnome-center/ui/window.py:413
+#: usr/share/big-gnome-center/ui/window.py:510
+msgid "Extensions"
+msgstr "Extensii"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:655
+#: usr/share/big-gnome-center/extension_update_monitor.py:236
 msgid "Update all"
 msgstr "Actualizează tot"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:530
+#: usr/share/big-gnome-center/ui/page_extensions.py:606
 msgid "Open GNOME Extensions"
 msgstr "Deschide GNOME Extensions"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:598
+#: usr/share/big-gnome-center/ui/page_extensions.py:674
 msgid "No extensions installed"
 msgstr "Nicio extensie instalată"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:614
+#: usr/share/big-gnome-center/ui/page_extensions.py:690
 msgid "installed"
 msgstr "instalat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:616
+#: usr/share/big-gnome-center/ui/page_extensions.py:692
 msgid "update available"
 msgstr "actualizare disponibilă"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:632
+#: usr/share/big-gnome-center/ui/page_extensions.py:708
 msgid "Enabled"
 msgstr "Activat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:633
+#: usr/share/big-gnome-center/ui/page_extensions.py:709
 msgid "Disabled"
 msgstr "Dezactivat"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:724
+#: usr/share/big-gnome-center/ui/page_extensions.py:779
+#, python-brace-format
+msgid "Technical identifier: {uuid}"
+msgstr "Identificator tehnic: {uuid}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:781
+#, python-brace-format
+msgid "Version: {version}"
+msgstr "Versiune: {version}"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:784
+#: usr/share/big-gnome-center/ui/page_extensions.py:844
+#: usr/share/big-gnome-center/ui/page_extensions.py:845
+#: usr/share/big-gnome-center/ui/page_extensions.py:891
+#: usr/share/big-gnome-center/shell_reloader.py:280
+msgid "Required for layout switching"
+msgstr "Necesar pentru comutarea layout-urilor"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:808
 #, python-brace-format
 msgid "Update from v{old} to v{new}"
 msgstr "Actualizare de la v{old} la v{new}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:795
-msgid ""
-"This extension cannot be removed here because it was installed by the "
-"system."
-msgstr ""
-"Această extensie nu poate fi eliminată de aici deoarece a fost instalată de "
-"sistem."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:843
+#: usr/share/big-gnome-center/ui/page_extensions.py:925
 #, python-brace-format
 msgid "{name} updated to v{ver}"
 msgstr "{name} actualizat la v{ver}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:848
-#: usr/share/layout-switcher/ui/page_fonts.py:147
-#: usr/share/layout-switcher/ui/page_fonts.py:216
-#: usr/share/layout-switcher/ui/page_fonts.py:281
+#: usr/share/big-gnome-center/ui/page_extensions.py:930
+#: usr/share/big-gnome-center/ui/page_fonts.py:147
+#: usr/share/big-gnome-center/ui/page_fonts.py:216
+#: usr/share/big-gnome-center/ui/page_fonts.py:281
 msgid "Update failed"
 msgstr "Actualizare eșuată"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:872
+#: usr/share/big-gnome-center/ui/page_extensions.py:954
 #, python-brace-format
 msgid "Updated {n} extensions"
 msgstr "{n} extensii actualizate"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:877
+#: usr/share/big-gnome-center/ui/page_extensions.py:959
 #, python-brace-format
 msgid "Updated {n}/{t}; failed: {f}"
 msgstr "Actualizat {n}/{t}; eșuat: {f}"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
-#: usr/share/layout-switcher/ui/page_extensions.py:906
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
+#: usr/share/big-gnome-center/ui/page_extensions.py:988
 msgid "Disable All"
 msgstr "Dezactivează tot"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:888
+#: usr/share/big-gnome-center/ui/page_extensions.py:970
 msgid "Enable All"
 msgstr "Activează tot"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:902
+#: usr/share/big-gnome-center/ui/page_extensions.py:984
 msgid "Disable all extensions?"
 msgstr "Dezactivezi toate extensiile?"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:903
+#: usr/share/big-gnome-center/ui/page_extensions.py:985
 msgid "All extensions will be disabled. You can re-enable them later."
 msgstr "Toate extensiile vor fi dezactivate. Le poți reactiva mai târziu."
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions disabled"
 msgstr "Toate extensiile au fost dezactivate"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:923
+#: usr/share/big-gnome-center/ui/page_extensions.py:1005
 msgid "All extensions enabled"
 msgstr "Toate extensiile au fost activate"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:76
+#: usr/share/big-gnome-center/ui/page_fonts.py:76
 msgid "Preferred fonts"
 msgstr "Fonturi preferate"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:80
+#: usr/share/big-gnome-center/ui/page_fonts.py:80
 msgid "Interface text"
 msgstr "Text interfață"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:86
+#: usr/share/big-gnome-center/ui/page_fonts.py:86
 msgid "Document text"
 msgstr "Text document"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:92
+#: usr/share/big-gnome-center/ui/page_fonts.py:92
 msgid "Monospace text"
 msgstr "Text monospațiat"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:109
-#: usr/share/layout-switcher/ui/page_fonts.py:601
+#: usr/share/big-gnome-center/ui/page_fonts.py:109
+#: usr/share/big-gnome-center/ui/page_fonts.py:601
 msgid "(not set)"
 msgstr "(nesetat)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:129
+#: usr/share/big-gnome-center/ui/page_fonts.py:129
 msgid "Choose font"
 msgstr "Alege font"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:145
+#: usr/share/big-gnome-center/ui/page_fonts.py:145
 msgid "Font updated"
 msgstr "Font actualizat"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:155
+#: usr/share/big-gnome-center/ui/page_fonts.py:155
 msgid "Hinting"
 msgstr "Hinting"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:163
+#: usr/share/big-gnome-center/ui/page_fonts.py:163
 msgid "Full"
 msgstr "Complet"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:164
+#: usr/share/big-gnome-center/ui/page_fonts.py:164
 msgid "Medium"
 msgstr "Mediu"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:165
+#: usr/share/big-gnome-center/ui/page_fonts.py:165
 msgid "Slight"
 msgstr "Ușor"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:166
-#: usr/share/layout-switcher/ui/page_fonts.py:185
+#: usr/share/big-gnome-center/ui/page_fonts.py:166
+#: usr/share/big-gnome-center/ui/page_fonts.py:185
 msgid "None"
 msgstr "Niciunul"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:173
+#: usr/share/big-gnome-center/ui/page_fonts.py:173
 msgid "Smoothing"
 msgstr "Netezire"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:183
+#: usr/share/big-gnome-center/ui/page_fonts.py:183
 msgid "Subpixel (for LCD screens)"
 msgstr "Subpixel (pentru ecrane LCD)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:184
+#: usr/share/big-gnome-center/ui/page_fonts.py:184
 msgid "Standard (grayscale)"
 msgstr "Standard (tonuri de gri)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:228
+#: usr/share/big-gnome-center/ui/page_fonts.py:228
 msgid "Size"
 msgstr "Dimensiune"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:231
-#: usr/share/layout-switcher/ui/page_fonts.py:251
+#: usr/share/big-gnome-center/ui/page_fonts.py:231
+#: usr/share/big-gnome-center/ui/page_fonts.py:251
 msgid "Scale factor"
 msgstr "Factor de scalare"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:239
+#: usr/share/big-gnome-center/ui/page_fonts.py:239
 msgid "Decrease"
 msgstr "Micșorează"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:246
+#: usr/share/big-gnome-center/ui/page_fonts.py:246
 msgid "Increase"
 msgstr "Mărește"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:287
+#: usr/share/big-gnome-center/ui/page_fonts.py:287
 msgid "Google Fonts"
 msgstr "Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:297
+#: usr/share/big-gnome-center/ui/page_fonts.py:297
 msgid "Search Google Fonts…"
 msgstr "Căutați în Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:308
-#: usr/share/layout-switcher/ui/page_fonts.py:363
+#: usr/share/big-gnome-center/ui/page_fonts.py:308
+#: usr/share/big-gnome-center/ui/page_fonts.py:363
 msgid "Loading Google Fonts…"
 msgstr "Se încarcă Google Fonts…"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:312
+#: usr/share/big-gnome-center/ui/page_fonts.py:312
 msgid "Refresh Google Fonts list"
 msgstr "Reîmprospătați lista Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:424
+#: usr/share/big-gnome-center/ui/page_fonts.py:424
 #, python-brace-format
 msgid "Page {page} of {pages}"
 msgstr "Pagina {page} din {pages}"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:431
+#: usr/share/big-gnome-center/ui/page_fonts.py:431
 msgid "Internet connection is required to load the Google Fonts list."
 msgstr ""
 "Este necesară o conexiune la internet pentru a încărca lista de fonturi "
 "Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:435
+#: usr/share/big-gnome-center/ui/page_fonts.py:435
 #, python-brace-format
 msgid "{n} fonts found"
 msgstr "{n} fonturi găsite"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:440
+#: usr/share/big-gnome-center/ui/page_fonts.py:440
 #, python-brace-format
 msgid "Showing top {shown} of {total} Google Fonts"
 msgstr "Se afișează primele {shown} din {total} fonturi Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:449
+#: usr/share/big-gnome-center/ui/page_fonts.py:449
 msgid "No fonts found"
 msgstr "Nu s-au găsit fonturi"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:502
+#: usr/share/big-gnome-center/ui/page_fonts.py:502
 msgid "Sans serif"
 msgstr "Fără serife"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:503
+#: usr/share/big-gnome-center/ui/page_fonts.py:503
 msgid "Serif"
 msgstr "Cu serife"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:504
+#: usr/share/big-gnome-center/ui/page_fonts.py:504
 msgid "Monospace"
 msgstr "Monospace"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:505
+#: usr/share/big-gnome-center/ui/page_fonts.py:505
 msgid "Display"
 msgstr "Display"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:506
+#: usr/share/big-gnome-center/ui/page_fonts.py:506
 msgid "Handwriting"
 msgstr "Scris de mână"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:507
+#: usr/share/big-gnome-center/ui/page_fonts.py:507
 msgid "Exact Google Fonts family name"
 msgstr "Numele exact al familiei de fonturi Google Fonts"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:531
+#: usr/share/big-gnome-center/ui/page_fonts.py:531
 #, python-brace-format
 msgid "{family} installed"
 msgstr "{family} instalat(e)"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:537
+#: usr/share/big-gnome-center/ui/page_fonts.py:537
 msgid "Internet connection is required to install Google Fonts."
 msgstr ""
 "Este necesară o conexiune la internet pentru a instala fonturi Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:538
+#: usr/share/big-gnome-center/ui/page_fonts.py:538
 msgid "Font not found on Google Fonts."
 msgstr "Fontul nu a fost găsit în Google Fonts."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:539
+#: usr/share/big-gnome-center/ui/page_fonts.py:539
 msgid "Font download failed."
 msgstr "Descărcarea fontului a eșuat."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:540
+#: usr/share/big-gnome-center/ui/page_fonts.py:540
 msgid "The font download is too large."
 msgstr "Descărcarea fontului este prea mare."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:541
+#: usr/share/big-gnome-center/ui/page_fonts.py:541
 msgid "Could not install the font."
 msgstr "Nu s-a putut instala fontul."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:542
+#: usr/share/big-gnome-center/ui/page_fonts.py:542
 msgid "Enter a font family name."
 msgstr "Introduceți un nume de familie de fonturi."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:544
+#: usr/share/big-gnome-center/ui/page_fonts.py:544
 msgid "Font installation failed."
 msgstr "Instalarea fontului a eșuat."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:552
+#: usr/share/big-gnome-center/ui/page_fonts.py:552
 msgid "Reset to system defaults"
 msgstr "Resetează la valorile implicite ale sistemului"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:561
+#: usr/share/big-gnome-center/ui/page_fonts.py:561
 msgid "Reset all font settings?"
 msgstr "Resetezi toate setările de font?"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:563
+#: usr/share/big-gnome-center/ui/page_fonts.py:563
 msgid ""
 "Interface, document and monospace fonts will return to system defaults. "
 "Rendering and scale settings will reset too."
@@ -800,50 +1026,619 @@ msgstr ""
 "implicite ale sistemului. Setările de randare și scalare se vor reseta de "
 "asemenea."
 
-#: usr/share/layout-switcher/ui/page_fonts.py:568
+#: usr/share/big-gnome-center/ui/page_fonts.py:568
 msgid "Reset"
 msgstr "Resetează"
 
-#: usr/share/layout-switcher/ui/page_fonts.py:587
+#: usr/share/big-gnome-center/ui/page_fonts.py:587
 msgid "Fonts reset to defaults"
 msgstr "Fonturile au fost resetate la valorile implicite"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:34
-msgid "Disabling extensions…"
-msgstr "Se dezactivează extensiile…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:24
+msgid "Always visible"
+msgstr "Mereu vizibil"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:35
-msgid "Loading layout…"
-msgstr "Se încarcă aspectul…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:25
+msgid "Always hidden (show at edge)"
+msgstr "Mereu ascuns (afișat la margine)"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:36
-msgid "Reloading components…"
-msgstr "Se reîncarcă componentele…"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:26
+msgid "Intelligent hiding"
+msgstr "Ascundere inteligentă"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:64
-msgid "Layout status"
-msgstr "Stare layout"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:29
+msgid "Dot"
+msgstr "Punct"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:152
-msgid "Contains your saved customizations"
-msgstr "Conține personalizările tale salvate"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:30
+msgid "Hybrid line"
+msgstr "Linie hibridă"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:156
-msgid "Modified"
-msgstr "Modificat"
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:31
+msgid "Desk UX line"
+msgstr "Linie Desk UX"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:170
-#: usr/share/layout-switcher/ui/page_layouts.py:219
-#: usr/share/layout-switcher/ui/page_themes.py:318
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:34
+msgid "Standard"
+msgstr "Standard"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:35
+msgid "Gentle lift"
+msgstr "Ușoară ridicare"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:36
+msgid "Magnification"
+msgstr "Mărire"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:69
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:565
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:568
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
+msgid "Dock"
+msgstr "Doc"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:70
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:570
+msgid "Configure the Community Dock appearance and visibility."
+msgstr "Configurează aspectul și vizibilitatea Docului comunității."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:76
+msgid "Dock transparency"
+msgstr "Transparență Dock"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:83
+msgid "Dock size"
+msgstr "Dimensiune dock"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:97
+msgid "Magnification intensity"
+msgstr "Intensitatea măririi"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:102
+msgid "Choose how much nearby Dock icons grow."
+msgstr "Alegeți cât de mult cresc pictogramele Dock din apropiere."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:106
+msgid "Dock visibility"
+msgstr "Vizibilitate Dock"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:115
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
+msgid "Panel"
+msgstr "Panou"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:116
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:582
+msgid "Configure the system panel appearance and visibility."
+msgstr "Configurează aspectul și vizibilitatea panoului de sistem."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:122
+msgid "Panel transparency"
+msgstr "Transparență panou"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:129
+msgid "Panel height"
+msgstr "Înălțime panou"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:135
+msgid "Panel visibility"
+msgstr "Vizibilitate panou"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:142
+msgid "Session"
+msgstr "Sesiune"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:143
+msgid "Choose how this layout starts after login."
+msgstr "Alegeți cum pornește acest aspect după autentificare."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:146
+msgid "Open desktop after login"
+msgstr "Deschide desktopul după autentificare"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:147
+msgid "Skip the initial Activities overview for this layout."
+msgstr "Omite prezentarea inițială a activităților pentru acest aspect."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:158
+msgid "Restore layout defaults"
+msgstr "Restabilește valorile implicite ale aspectului"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:159
+msgid "Reset appearance and session options for the active layout."
+msgstr "Resetează aspectul și opțiunile sesiunii pentru aspectul activ."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:180
+msgid "Application menu position"
+msgstr "Poziția meniului aplicațiilor"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:184
+msgid "Place the BigGnome menu at either end of the Dock."
+msgstr "Plasează meniul BigGnome la oricare capăt al dockului."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Left"
+msgstr "Stânga"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:201
+msgid "Right"
+msgstr "Dreapta"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:217
+#, python-brace-format
+msgid "Place the application menu on the {side}"
+msgstr "Plasează meniul aplicațiilor în partea {side}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:261
+msgid "Icon hover effect"
+msgstr "Efect de hover pentru pictograme"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:265
+msgid "Choose how dock icons react to the pointer."
+msgstr "Alege cum reacționează pictogramele dock-ului la indicator."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:295
+#, python-brace-format
+msgid "Use the {effect} hover effect"
+msgstr "Folosește efectul de hover {effect}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:338
+msgid "Running app indicator"
+msgstr "Indicator aplicații în execuție"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:342
+msgid "Choose the mark shown below running applications."
+msgstr "Alege marcajul afișat sub aplicațiile în execuție."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:379
+#, python-brace-format
+msgid "Use the {style} indicator"
+msgstr "Folosește indicatorul {style}"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:436
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Transparent"
+msgstr "Transparent"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:449
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Opaque"
+msgstr "Opac"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:459
+msgid "Choose how this component behaves on the desktop."
+msgstr "Alege cum se comportă această componentă pe desktop."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:473
+msgid "Smaller"
+msgstr "Mai mic"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:489
+msgid "Larger"
+msgstr "Mai mare"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:562
+msgid "Taskbar"
+msgstr "Bară de activități"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:563
+msgid "Configure running application indicators."
+msgstr "Configurează indicatorii aplicațiilor în execuție."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:566
+msgid "Available when Community Dock is active."
+msgstr "Disponibil când Community Dock este activ."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:574
+msgid "Available when Community Dock or Community Panel is active."
+msgstr "Disponibil când Community Dock sau Community Panel este activ."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:578
+msgid "Configure the Community Panel appearance and visibility."
+msgstr "Configurează aspectul și vizibilitatea Community Panel."
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:684
+msgid "Dock visibility updated"
+msgstr "Vizibilitatea Dock a fost actualizată"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:691
+msgid "Panel visibility updated"
+msgstr "Vizibilitatea panoului a fost actualizată"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:701
+msgid "Indicator style updated"
+msgstr "Stilul indicatorului a fost actualizat"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:712
+msgid "Icon hover effect updated"
+msgstr "Efectul de hover pentru pictograme a fost actualizat"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:722
+msgid "Application menu position updated"
+msgstr "Poziția meniului aplicațiilor a fost actualizată"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:732
+msgid "Login start updated"
+msgstr "Pornirea la autentificare a fost actualizată"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py:739
+msgid "Layout appearance and session defaults restored"
+msgstr "Aspectul și valorile implicite ale sesiunii au fost restaurate"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:20
+msgid "Blue"
+msgstr "Albastru"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:21
+msgid "Teal"
+msgstr "Turcoaz"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:22
+msgid "Green"
+msgstr "Verde"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:23
+msgid "Yellow"
+msgstr "Galben"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:24
+msgid "Orange"
+msgstr "Portocaliu"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:25
+msgid "Red"
+msgstr "Roșu"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:26
+msgid "Pink"
+msgstr "Roz"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:27
+msgid "Purple"
+msgstr "Mov"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:28
+msgid "Slate"
+msgstr "Ardezie"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:29
+msgid "Maia"
+msgstr "Maia"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:68
+msgid "Filter themes…"
+msgstr "Filtrează teme…"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:108
+msgid "Colors"
+msgstr "Culori"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:109
+msgid "Icons"
+msgstr "Pictograme"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:110
+msgid "Cursors"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_themes.py:168
+#: usr/share/big-gnome-center/ui/frosted_glass.py:145
+#: usr/share/big-gnome-center/ui/frosted_glass.py:239
+msgid "Accent color"
+msgstr "Culoare de accent"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:177
+msgid "Choose the color used for buttons, selections, and highlights."
+msgstr "Alege culoarea folosită pentru butoane, selecții și evidențieri."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:210
+#, python-brace-format
+msgid "{color} accent color"
+msgstr "{color} culoare de accent"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:263
+msgid "No themes found"
+msgstr "Nu s-au găsit teme"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:264
+msgid "Install themes to ~/.themes or /usr/share/themes"
+msgstr "Instalează temele în ~/.themes sau /usr/share/themes"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:270
+#, python-brace-format
+msgid "{n} themes available"
+msgstr "{n} teme disponibile"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:347
+#, python-brace-format
+msgid "{name} theme"
+msgstr "{name} temă"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:349
+#: usr/share/big-gnome-center/ui/page_layouts.py:172
+#: usr/share/big-gnome-center/ui/page_layouts.py:221
 msgid "Active"
 msgstr "Activ"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:190
-#: usr/share/layout-switcher/ui/page_layouts.py:217
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:68
+#: usr/share/big-gnome-center/ui/page_startup.py:51
+#: usr/share/big-gnome-center/ui/page_startup.py:54
+msgid "Add a startup application"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
+msgid "Search applications"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_startup.py:45
+#: usr/share/big-gnome-center/ui/window.py:414
+#: usr/share/big-gnome-center/ui/window.py:511
+msgid "Startup Applications"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_startup.py:46
+msgid "Startup applications are automatically started when you log in."
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_startup.py:87
+msgid "No Startup Applications"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
+msgid "Overview blur"
+msgstr "Estompare prezentare generală"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:70
+msgid "Frosted glass"
+msgstr "Sticlă mată"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:76
+msgid "Blur for the workspace and application overview"
+msgstr ""
+"Estompare pentru prezentarea generală a spațiilor de lucru și aplicațiilor"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:78
+msgid "Unified blur for windows and GNOME Shell surfaces"
+msgstr "Estompare unificată pentru ferestre și suprafețele GNOME Shell"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:88
+msgid "unknown"
+msgstr "necunoscut"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:92
+#, python-brace-format
+msgid ""
+"Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
+msgstr ""
+"Estomparea prezentării generale necesită GNOME 50 sau mai nou. Acest desktop "
+"este GNOME {version}."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:101
+msgid ""
+"Install or update Big Gnome Center to make Frosted Glass settings available."
+msgstr ""
+"Instalați sau actualizați Big Gnome Center pentru a face disponibile "
+"setările Sticlă mată."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:127
+msgid "Enable overview blur"
+msgstr "Activează estomparea în vizualizarea generală"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:128
+#: usr/share/big-gnome-center/ui/frosted_glass.py:207
+msgid "Workspace and application overview"
+msgstr "Vizualizarea lucrărilor și aplicațiilor"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:137
+#: usr/share/big-gnome-center/ui/frosted_glass.py:223
+msgid "Material"
+msgstr "Material"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
+msgid "Blur strength"
+msgstr "Intensitatea estompării"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
+msgid "Less"
+msgstr "Mai puțin"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:138
+#: usr/share/big-gnome-center/ui/frosted_glass.py:232
+msgid "More"
+msgstr "Mai mult"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:140
+#: usr/share/big-gnome-center/ui/frosted_glass.py:234
+msgid "Material opacity"
+msgstr "Opacitatea materialului"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:156
+#: usr/share/big-gnome-center/ui/frosted_glass.py:213
+#: usr/share/big-gnome-center/ui/frosted_glass.py:215
+msgid "Not available in this session"
+msgstr "Indisponibil în această sesiune"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:166
+msgid "Enable frosted glass"
+msgstr "Activează efectul de sticlă mată"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:167
+msgid "Apply the material without changing the active desktop layout"
+msgstr "Aplică materialul fără a modifica aspectul desktopului activ"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:177
+msgid "Surfaces"
+msgstr "Suprafețe"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:178
+msgid "Choose independently where the material is applied."
+msgstr "Alege independent unde este aplicat materialul."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
+msgid "Windows"
+msgstr "Ferestre"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:181
+msgid "GTK, Qt and other application windows"
+msgstr "Ferestre GTK, Qt și alte ferestre de aplicații"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:182
+msgid "GNOME panel and Community Panel"
+msgstr "Panoul GNOME și panoul comunității"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:183
+msgid "Community Dock surfaces"
+msgstr "Suprafețe de doc ale comunității"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:186
+msgid "Layout menus"
+msgstr "Meniuri de aspect"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:187
+msgid "Application menus used by Classic, Hybrid and Desk-UX"
+msgstr "Meniuri de aplicații folosite de Classic, Hybrid și Desk-UX"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:191
+msgid "Quick Settings"
+msgstr "Setări rapide"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:192
+msgid "System settings menu in the panel"
+msgstr "Meniul de setări de sistem din panou"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:196
+msgid "Calendar and notifications"
+msgstr "Calendar și notificări"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:197
+msgid "Date, calendar and notification menu in the panel"
+msgstr "Meniul de dată, calendar și notificări din panou"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:201
+msgid "System dialogs"
+msgstr "Dialoguri de sistem"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:202
+msgid "Power, restart and other GNOME Shell dialogs"
+msgstr "Dialoguri de alimentare, repornire și alte dialoguri GNOME Shell"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:206
+msgid "Overview"
+msgstr "Prezentare generală"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:226
+msgid "Rendering mode"
+msgstr "Mod de redare"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:227
+msgid "Automatic balances visual quality and power usage"
+msgstr "Automat echilibrează calitatea vizuală și consumul de energie"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
+msgid "Automatic"
+msgstr "Automat"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
+msgid "Dynamic"
+msgstr "Dinamic"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:229
+msgid "Static"
+msgstr "Static"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:249
+msgid "Behavior"
+msgstr "Comportament"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:250
+msgid "Application identifiers can be separated by commas."
+msgstr "Identificatorii de aplicații pot fi separați prin virgule."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:252
+msgid "Application exceptions"
+msgstr "Excepții pentru aplicații"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
+msgid "Keep blur"
+msgstr "Păstrează estomparea"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
+msgid "Make opaque"
+msgstr "Fă opac"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:258
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
+msgid "Disable blur"
+msgstr "Dezactivează estomparea"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:260
+msgid "Maximized windows"
+msgstr "Ferestre maximizate"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:263
+msgid "Fullscreen windows"
+msgstr "Ferestre pe tot ecranul"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:267
+msgid "Power saving"
+msgstr "Economisire energie"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:268
+msgid "Used on battery and with the power-saver profile"
+msgstr "Folosit pe baterie și cu profilul de economisire a energiei"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
+msgid "Keep selected mode"
+msgstr "Păstrează modul selectat"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:270
+msgid "Use static blur"
+msgstr "Utilizează estomparea statică"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:399
+msgid "Frosted glass enabled"
+msgstr "Sticlă mată activată"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py:403
+#, python-brace-format
+msgid "Could not enable Frosted Glass: {message}"
+msgstr "Nu s-a putut activa Sticla Mată: {message}"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:34
+msgid "Disabling extensions…"
+msgstr "Se dezactivează extensiile…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:35
+msgid "Loading layout…"
+msgstr "Se încarcă aspectul…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:36
+msgid "Reloading components…"
+msgstr "Se reîncarcă componentele…"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:66
+msgid "Layout status"
+msgstr "Stare layout"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:154
+msgid "Contains your saved customizations"
+msgstr "Conține personalizările tale salvate"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:158
+#: usr/share/big-gnome-center/ui/page_layouts.py:272
+msgid "Modified"
+msgstr "Modificat"
+
+#: usr/share/big-gnome-center/ui/page_layouts.py:192
+#: usr/share/big-gnome-center/ui/page_layouts.py:219
 msgid "Coming soon"
 msgstr "În curând"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:237
+#: usr/share/big-gnome-center/ui/page_layouts.py:283
 msgid ""
 "You have previously modified this layout. Apply the original system default "
 "or resume your changes?"
@@ -851,1056 +1646,297 @@ msgstr ""
 "Ați modificat anterior acest aspect. Aplicați setările implicite originale "
 "ale sistemului sau reluați modificările dvs.?"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:242
+#: usr/share/big-gnome-center/ui/page_layouts.py:288
 msgid "Resume my changes"
 msgstr "Reia modificările mele"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:243
+#: usr/share/big-gnome-center/ui/page_layouts.py:289
 msgid "Apply original"
 msgstr "Aplică originalul"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:249
+#: usr/share/big-gnome-center/ui/page_layouts.py:293
 msgid ""
 "Apply this layout? A backup of your current configuration will be created "
 "automatically."
 msgstr ""
-"Aplici acest layout? Se va crea automat o copie de siguranță a configurației"
-" tale curente."
+"Aplici acest layout? Se va crea automat o copie de siguranță a configurației "
+"tale curente."
 
-#: usr/share/layout-switcher/ui/page_layouts.py:254
+#: usr/share/big-gnome-center/ui/page_layouts.py:298
 msgid "Apply"
 msgstr "Aplică"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:295
+#: usr/share/big-gnome-center/ui/page_layouts.py:353
 msgid "Applying"
 msgstr "Se aplică"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:325
+#: usr/share/big-gnome-center/ui/page_layouts.py:383
 msgid "Snapshot not found"
 msgstr "Instantaneu nu a fost găsit"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:353
+#: usr/share/big-gnome-center/ui/page_layouts.py:411
 msgid "Layout file not found"
 msgstr "Fișierul de aspect nu a fost găsit"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:392
-#: usr/share/layout-switcher/ui/page_layouts.py:400
-#: usr/share/layout-switcher/ui/page_layouts.py:409
+#: usr/share/big-gnome-center/ui/page_layouts.py:452
+#: usr/share/big-gnome-center/ui/page_layouts.py:460
+#: usr/share/big-gnome-center/ui/page_layouts.py:469
 msgid "applied"
 msgstr "aplicat"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:402
+#: usr/share/big-gnome-center/ui/page_layouts.py:462
 msgid "Undo"
 msgstr "Anulează"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:419
+#: usr/share/big-gnome-center/ui/page_layouts.py:480
 msgid "Restart the session for the 100% clean state"
 msgstr "Reporniți sesiunea pentru o stare 100% curată"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:422
+#: usr/share/big-gnome-center/ui/page_layouts.py:485
 msgid "Restart now"
 msgstr "Repornește acum"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:446
+#: usr/share/big-gnome-center/ui/page_layouts.py:509
 msgid "Cannot restart session"
 msgstr "Nu se poate reporni sesiunea"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:453
-#: usr/share/layout-switcher/ui/page_layouts.py:455
+#: usr/share/big-gnome-center/ui/page_layouts.py:516
+#: usr/share/big-gnome-center/ui/page_layouts.py:518
 msgid "Restoring previous layout…"
 msgstr "Se restaurează aspectul anterior…"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:485
+#: usr/share/big-gnome-center/ui/page_layouts.py:550
 msgid "Layout restored"
 msgstr "Aspect restaurat"
 
-#: usr/share/layout-switcher/ui/page_layouts.py:487
+#: usr/share/big-gnome-center/ui/page_layouts.py:552
 msgid "Previous layout restored"
 msgstr "Aspectul anterior a fost restaurat"
 
-#: usr/share/layout-switcher/ui/page_themes.py:68
-msgid "Filter themes…"
-msgstr "Filtrează teme…"
+#: usr/share/big-gnome-center/ui/window.py:72
+#: usr/share/big-gnome-center/ui/window.py:383
+#: usr/share/big-gnome-center/ui/window.py:550
+msgid "Big Gnome Center"
+msgstr "Big Gnome Center"
 
-#: usr/share/layout-switcher/ui/page_themes.py:109
-msgid "Icons"
-msgstr "Pictograme"
-
-#: usr/share/layout-switcher/ui/page_themes.py:240
-msgid "No themes found"
-msgstr "Nu s-au găsit teme"
-
-#: usr/share/layout-switcher/ui/page_themes.py:241
-msgid "Install themes to ~/.themes or /usr/share/themes"
-msgstr "Instalează temele în ~/.themes sau /usr/share/themes"
-
-#: usr/share/layout-switcher/ui/page_themes.py:247
-#, python-brace-format
-msgid "{n} themes available"
-msgstr "{n} teme disponibile"
-
-#: usr/share/layout-switcher/ui/page_themes.py:316
-#, python-brace-format
-msgid "{name} theme"
-msgstr "{name} temă"
-
-#: usr/share/layout-switcher/ui/window.py:71
-#: usr/share/layout-switcher/ui/window.py:377
-msgid "Layout Switcher"
-msgstr "Layout Switcher"
-
-#: usr/share/layout-switcher/ui/window.py:229
-#: usr/share/layout-switcher/ui/window.py:230
+#: usr/share/big-gnome-center/ui/window.py:233
+#: usr/share/big-gnome-center/ui/window.py:234
 msgid "Show Sidebar"
 msgstr "Afișează bara laterală"
 
-#: usr/share/layout-switcher/ui/window.py:236
-#: usr/share/layout-switcher/ui/window.py:401
-#: usr/share/layout-switcher/ui/window.py:484
+#: usr/share/big-gnome-center/ui/window.py:240
+#: usr/share/big-gnome-center/ui/window.py:407
+#: usr/share/big-gnome-center/ui/window.py:504
 msgid "Layouts"
 msgstr "Layout-uri"
 
-#: usr/share/layout-switcher/ui/window.py:242
+#: usr/share/big-gnome-center/ui/window.py:246
 msgid "Menu"
 msgstr "Meniu"
 
-#: usr/share/layout-switcher/ui/window.py:243
+#: usr/share/big-gnome-center/ui/window.py:247
 msgid "Main menu"
 msgstr "Meniul principal"
 
-#: usr/share/layout-switcher/ui/window.py:247
+#: usr/share/big-gnome-center/ui/window.py:251
 msgid "Check for updates"
 msgstr "Verificați actualizări"
 
-#: usr/share/layout-switcher/ui/window.py:248
+#: usr/share/big-gnome-center/ui/window.py:252
 msgid "Auto-update extensions"
 msgstr "Actualizare automată a extensiilor"
 
-#: usr/share/layout-switcher/ui/window.py:250
+#: usr/share/big-gnome-center/ui/window.py:254
 msgid "Backups…"
 msgstr "Copii de rezervă…"
 
-#: usr/share/layout-switcher/ui/window.py:251
+#: usr/share/big-gnome-center/ui/window.py:255
 msgid "About"
 msgstr "Despre"
 
-#: usr/share/layout-switcher/ui/window.py:260
+#: usr/share/big-gnome-center/ui/window.py:264
 msgid "Welcome! Choose a desktop layout below to get started."
 msgstr "Bine ai venit! Alege un layout de desktop de mai jos pentru a începe."
 
-#: usr/share/layout-switcher/ui/window.py:261
+#: usr/share/big-gnome-center/ui/window.py:265
 msgid "Got it"
 msgstr "Am înțeles"
 
-#: usr/share/layout-switcher/ui/window.py:402
-#: usr/share/layout-switcher/ui/window.py:485
+#: usr/share/big-gnome-center/ui/window.py:408
+#: usr/share/big-gnome-center/ui/window.py:505
 msgid "Fonts"
 msgstr "Fonturi"
 
-#: usr/share/layout-switcher/ui/window.py:403
-#: usr/share/layout-switcher/ui/window.py:486
+#: usr/share/big-gnome-center/ui/window.py:409
+#: usr/share/big-gnome-center/ui/window.py:506
 msgid "Themes"
 msgstr "Teme"
 
-#: usr/share/layout-switcher/ui/window.py:406
-#: usr/share/layout-switcher/ui/window.py:489
+#: usr/share/big-gnome-center/ui/window.py:411
+#: usr/share/big-gnome-center/ui/window.py:508
+msgid "Panel and Dock"
+msgstr "Panou și Dock"
+
+#: usr/share/big-gnome-center/ui/window.py:412
+#: usr/share/big-gnome-center/ui/window.py:509
 msgid "Effects"
 msgstr "Efecte"
 
-#: usr/share/layout-switcher/ui/page_extensions.py:494
-#: usr/share/layout-switcher/ui/page_extensions.py:502
-#: usr/share/layout-switcher/ui/window.py:407
-#: usr/share/layout-switcher/ui/window.py:490
-msgid "Extensions"
-msgstr "Extensii"
-
-#: usr/share/layout-switcher/ui/window.py:528
-msgid "Community Layout Switcher"
-msgstr "Comunitatea Layout Switcher"
-
-#: usr/share/layout-switcher/ui/window.py:533
+#: usr/share/big-gnome-center/ui/window.py:555
 msgid "Layouts, effects and themes for your GNOME desktop."
 msgstr "Layout-uri, efecte și teme pentru desktopul tău GNOME."
 
-#: usr/share/layout-switcher/ui/window.py:599
+#: usr/share/big-gnome-center/ui/window.py:621
 msgid "Applying…"
 msgstr "Se aplică…"
 
-#: usr/share/layout-switcher/ui/window.py:706
+#: usr/share/big-gnome-center/ui/window.py:728
 msgid "All extensions up to date"
 msgstr "Toate extensiile sunt actualizate"
 
-#: usr/share/layout-switcher/ui/window.py:721
+#: usr/share/big-gnome-center/ui/window.py:743
 #, python-brace-format
 msgid "Auto-updated {n} extensions"
 msgstr "{n} extensii actualizate automat"
 
-#: usr/share/layout-switcher/ui/window.py:726
+#: usr/share/big-gnome-center/ui/window.py:748
 #, python-brace-format
 msgid "{n} update(s) available"
 msgstr "{n} actualizare(i) disponibilă(e)"
 
-#: usr/share/layout-switcher/ui/window.py:733
+#: usr/share/big-gnome-center/ui/window.py:755
 msgid "Auto-update enabled"
 msgstr "Actualizare automată activată"
 
-#: usr/share/layout-switcher/ui/window.py:733
+#: usr/share/big-gnome-center/ui/window.py:755
 msgid "Auto-update disabled"
 msgstr "Actualizare automată dezactivată"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:238
+#: usr/share/big-gnome-center/constants.py:166
+msgid "Desktop Cube"
+msgstr "Desktop Cube"
+
+#: usr/share/big-gnome-center/constants.py:167
+msgid "Rotate workspaces on a 3D cube"
+msgstr "Rotează spațiile de lucru pe un cub 3D"
+
+#: usr/share/big-gnome-center/constants.py:177
+msgid "Magic Lamp"
+msgstr "Magic Lamp"
+
+#: usr/share/big-gnome-center/constants.py:178
+msgid "Genie effect when minimizing windows"
+msgstr "Efectul de geniu la minimizarea ferestrelor"
+
+#: usr/share/big-gnome-center/constants.py:188
+msgid "Compiz Windows"
+msgstr "Compiz Windows"
+
+#: usr/share/big-gnome-center/constants.py:189
+msgid "Wobbly windows and extra animations"
+msgstr "Ferestre elastice și animații suplimentare"
+
+#: usr/share/big-gnome-center/constants.py:216
+msgid "Default Big Gnome layout"
+msgstr "Layout-ul implicit Big Gnome"
+
+#: usr/share/big-gnome-center/constants.py:223
+msgid "Clean and contemporary desktop"
+msgstr "Desktop curat și contemporan"
+
+#: usr/share/big-gnome-center/constants.py:230
+msgid "Centered dock-taskbar, Windows 11 / Deepin / Pop!_OS style"
+msgstr "Dock-bara centrată, stil Windows 11 / Deepin / Pop!_OS"
+
+#: usr/share/big-gnome-center/constants.py:237
+msgid "Unity-style layout with left dock and top bar"
+msgstr "Layout în stil Unity cu dock în stânga și bara de sus"
+
+#: usr/share/big-gnome-center/constants.py:244
+msgid "Traditional desktop with taskbar and system tray"
+msgstr "Desktop tradițional cu bara de activități și tava de sistem"
+
+#: usr/share/big-gnome-center/constants.py:251
+msgid "Near-vanilla GNOME with minimal distro tweaks"
+msgstr "GNOME aproape vanilla cu ajustări minime de distribuție"
+
+#: usr/share/big-gnome-center/helper_guard.py:86
+msgid "Layout helper restored"
+msgstr "Asistentul de layout a fost restaurat"
+
+#: usr/share/big-gnome-center/helper_guard.py:87
+msgid "The required layout helper was re-enabled automatically."
+msgstr "Asistentul de layout necesar a fost reactivat automat."
+
+#: usr/share/big-gnome-center/extension_update_monitor.py:231
 msgid "Extension updates available"
 msgstr "Actualizări de extensii disponibile"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:239
+#: usr/share/big-gnome-center/extension_update_monitor.py:232
 #, python-brace-format
 msgid "Available updates: {names}"
 msgstr "Actualizări disponibile: {names}"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:243
-#: usr/share/layout-switcher/extension_update_monitor.py:244
-#: usr/share/layout-switcher/extension_update_monitor.py:336
-#: usr/share/layout-switcher/extension_update_monitor.py:337
+#: usr/share/big-gnome-center/extension_update_monitor.py:234
+#: usr/share/big-gnome-center/extension_update_monitor.py:235
+#: usr/share/big-gnome-center/extension_update_monitor.py:315
+#: usr/share/big-gnome-center/extension_update_monitor.py:316
 msgid "View updates"
 msgstr "Vezi actualizările"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:306
+#: usr/share/big-gnome-center/extension_update_monitor.py:295
 msgid "Extension updates installed"
 msgstr "Actualizări de extensii instalate"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:307
-#: usr/share/layout-switcher/extension_update_monitor.py:322
+#: usr/share/big-gnome-center/extension_update_monitor.py:296
+#: usr/share/big-gnome-center/extension_update_monitor.py:308
 #, python-brace-format
 msgid "Updated: {names}"
 msgstr "Actualizate: {names}"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:311
-#: usr/share/layout-switcher/extension_update_monitor.py:312
+#: usr/share/big-gnome-center/extension_update_monitor.py:298
+#: usr/share/big-gnome-center/extension_update_monitor.py:299
 msgid "View extensions"
 msgstr "Vezi extensiile"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:328
+#: usr/share/big-gnome-center/extension_update_monitor.py:310
 #, python-brace-format
 msgid "Failed: {names}"
 msgstr "Eșuate: {names}"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:333
+#: usr/share/big-gnome-center/extension_update_monitor.py:312
 msgid "Some extension updates failed"
 msgstr "Unele actualizări de extensii au eșuat"
 
-#: usr/share/layout-switcher/extension_update_monitor.py:338
+#: usr/share/big-gnome-center/extension_update_monitor.py:317
 msgid "Try again"
 msgstr "Încearcă din nou"
 
-#: usr/share/layout-switcher/helper_client.py:113
+#: usr/share/big-gnome-center/layout_applier.py:2256
+msgid "Big Gnome Center Helper is required to apply layouts."
+msgstr ""
+"Asistentul Big Gnome Center este necesar pentru aplicarea layout-urilor."
+
+#: usr/share/big-gnome-center/helper_client.py:261
 msgid "The required layout helper is not installed."
 msgstr "Asistentul de layout necesar nu este instalat."
 
-#: usr/share/layout-switcher/helper_client.py:152
+#: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Asistentul de layout necesar nu a pornit."
 
-#: usr/share/layout-switcher/helper_guard.py:78
-msgid "Layout helper restored"
-msgstr "Asistentul de layout a fost restaurat"
-
-#: usr/share/layout-switcher/helper_guard.py:79
-msgid "The required layout helper was re-enabled automatically."
-msgstr "Asistentul de layout necesar a fost reactivat automat."
-
-#: usr/share/layout-switcher/layout_applier.py:2254
-msgid "Layout Switcher Helper is required to apply layouts."
-msgstr ""
-"Asistentul Layout Switcher este necesar pentru aplicarea layout-urilor."
-
-#: usr/share/layout-switcher/shell_reloader.py:280
-#: usr/share/layout-switcher/ui/page_extensions.py:704
-#: usr/share/layout-switcher/ui/page_extensions.py:760
-#: usr/share/layout-switcher/ui/page_extensions.py:761
-msgid "Required for layout switching"
-msgstr "Necesar pentru comutarea layout-urilor"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:28
-#: usr/share/layout-switcher/ui/window.py:404
-#: usr/share/layout-switcher/ui/window.py:487
-msgid "Desktop"
-msgstr "Desktop"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:32
-#: usr/share/layout-switcher/ui/desktop_icons.py:51
-msgid "Desktop icons"
-msgstr "Pictograme desktop"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:33
-#: usr/share/layout-switcher/ui/desktop_icons.py:72
-msgid "Show files and folders on the desktop"
-msgstr "Afișează fișierele și folderele pe desktop"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:39
-msgid "Desktop icon settings"
-msgstr "Setări pictograme desktop"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:74
-msgid "GTK4 Desktop Icons NG is not installed"
-msgstr "GTK4 Desktop Icons NG nu este instalat"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:95
-msgid "Desktop icons enabled"
-msgstr "Pictograme desktop activate"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:97
-msgid "Desktop icons disabled"
-msgstr "Pictograme desktop dezactivate"
-
-#: usr/share/layout-switcher/ui/desktop_icons.py:102
-#, python-brace-format
-msgid "Could not change desktop icons: {message}"
-msgstr "Nu s-au putut modifica pictogramele desktop: {message}"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
-msgid "Overview blur"
-msgstr "Estompare prezentare generală"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:60
-msgid "Frosted glass"
-msgstr "Sticlă mată"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:67
-msgid "Blur for the workspace and application overview"
-msgstr ""
-"Estompare pentru prezentarea generală a spațiilor de lucru și aplicațiilor"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:69
-msgid "Unified blur for windows and GNOME Shell surfaces"
-msgstr "Estompare unificată pentru ferestre și suprafețele GNOME Shell"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:79
-msgid "unknown"
-msgstr "necunoscut"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:82
-#, python-brace-format
-msgid ""
-"Overview blur requires GNOME 50 or newer. This desktop is GNOME {version}."
-msgstr ""
-"Estomparea prezentării generale necesită GNOME 50 sau mai nou. Acest desktop"
-" este GNOME {version}."
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:89
-msgid ""
-"Install or update Layout Switcher to make Frosted Glass settings available."
-msgstr ""
-"Instalați sau actualizați Layout Switcher pentru a face disponibile setările"
-" Sticlă mată."
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:110
-msgid "Enable overview blur"
-msgstr "Activează estomparea în vizualizarea generală"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:111
-#: usr/share/layout-switcher/ui/frosted_glass.py:190
-msgid "Workspace and application overview"
-msgstr "Vizualizarea lucrărilor și aplicațiilor"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:122
-#: usr/share/layout-switcher/ui/frosted_glass.py:206
-msgid "Material"
-msgstr "Material"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
-msgid "Blur strength"
-msgstr "Intensitatea estompării"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
-msgid "Less"
-msgstr "Mai puțin"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:124
-#: usr/share/layout-switcher/ui/frosted_glass.py:216
-msgid "More"
-msgstr "Mai mult"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-msgid "Material opacity"
-msgstr "Opacitatea materialului"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:199
-msgid "Transparent"
-msgstr "Transparent"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:127
-#: usr/share/layout-switcher/ui/frosted_glass.py:219
-#: usr/share/layout-switcher/ui/page_panel_dock.py:212
-msgid "Opaque"
-msgstr "Opac"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:137
-#: usr/share/layout-switcher/ui/frosted_glass.py:196
-#: usr/share/layout-switcher/ui/frosted_glass.py:198
-msgid "Not available in this session"
-msgstr "Indisponibil în această sesiune"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:147
-msgid "Enable frosted glass"
-msgstr "Activează efectul de sticlă mată"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:148
-msgid "Apply the material without changing the active desktop layout"
-msgstr "Aplică materialul fără a modifica aspectul desktopului activ"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:160
-msgid "Surfaces"
-msgstr "Suprafețe"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:161
-msgid "Choose independently where the material is applied."
-msgstr "Alege independent unde este aplicat materialul."
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
-msgid "Windows"
-msgstr "Ferestre"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:164
-msgid "GTK, Qt and other application windows"
-msgstr "Ferestre GTK, Qt și alte ferestre de aplicații"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
-#: usr/share/layout-switcher/ui/page_panel_dock.py:74
-msgid "Panel"
-msgstr "Panou"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:165
-msgid "GNOME panel and Community Panel"
-msgstr "Panoul GNOME și panoul comunității"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
-#: usr/share/layout-switcher/ui/page_panel_dock.py:55
-#: usr/share/layout-switcher/ui/page_panel_dock.py:254
-#: usr/share/layout-switcher/ui/page_panel_dock.py:257
-msgid "Dock"
-msgstr "Doc"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:166
-msgid "Community Dock surfaces"
-msgstr "Suprafețe de doc ale comunității"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:169
-msgid "Layout menus"
-msgstr "Meniuri de aspect"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:170
-msgid "Application menus used by Classic, Hybrid and Desk-UX"
-msgstr "Meniuri de aplicații folosite de Classic, Hybrid și Desk-UX"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:174
-msgid "Quick Settings"
-msgstr "Setări rapide"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:175
-msgid "System settings menu in the panel"
-msgstr "Meniul de setări de sistem din panou"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:179
-msgid "Calendar and notifications"
-msgstr "Calendar și notificări"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:180
-msgid "Date, calendar and notification menu in the panel"
-msgstr "Meniul de dată, calendar și notificări din panou"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:184
-msgid "System dialogs"
-msgstr "Dialoguri de sistem"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:185
-msgid "Power, restart and other GNOME Shell dialogs"
-msgstr "Dialoguri de alimentare, repornire și alte dialoguri GNOME Shell"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:189
-msgid "Overview"
-msgstr "Prezentare generală"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:209
-msgid "Rendering mode"
-msgstr "Mod de redare"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:210
-msgid "Automatic balances visual quality and power usage"
-msgstr "Automat echilibrează calitatea vizuală și consumul de energie"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
-msgid "Automatic"
-msgstr "Automat"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
-msgid "Dynamic"
-msgstr "Dinamic"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:212
-msgid "Static"
-msgstr "Static"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:228
-msgid "Behavior"
-msgstr "Comportament"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:229
-msgid "Application identifiers can be separated by commas."
-msgstr "Identificatorii de aplicații pot fi separați prin virgule."
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:231
-msgid "Application exceptions"
-msgstr "Excepții pentru aplicații"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
-msgid "Keep blur"
-msgstr "Păstrează estomparea"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
-msgid "Make opaque"
-msgstr "Fă opac"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:237
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
-msgid "Disable blur"
-msgstr "Dezactivează estomparea"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:239
-msgid "Maximized windows"
-msgstr "Ferestre maximizate"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:242
-msgid "Fullscreen windows"
-msgstr "Ferestre pe tot ecranul"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:246
-msgid "Power saving"
-msgstr "Economisire energie"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:247
-msgid "Used on battery and with the power-saver profile"
-msgstr "Folosit pe baterie și cu profilul de economisire a energiei"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
-msgid "Keep selected mode"
-msgstr "Păstrează modul selectat"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:249
-msgid "Use static blur"
-msgstr "Utilizează estomparea statică"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:334
-msgid "Frosted glass enabled"
-msgstr "Sticlă mată activată"
-
-#: usr/share/layout-switcher/ui/frosted_glass.py:339
-#, python-brace-format
-msgid "Could not enable Frosted Glass: {message}"
-msgstr "Nu s-a putut activa Sticla Mată: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:39
-msgid "Top center"
-msgstr "Centru sus"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:40
-msgid "Bottom center"
-msgstr "Centru jos"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:41
-msgid "Top right"
-msgstr "Dreapta sus"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:42
-msgid "Top left"
-msgstr "Stânga sus"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:43
-msgid "Bottom left"
-msgstr "Stânga jos"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:44
-msgid "Bottom right"
-msgstr "Dreapta jos"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:88
-msgid "Notification position"
-msgstr "Poziția notificărilor"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:89
-msgid "Choose where notification banners appear."
-msgstr "Alege unde să apară banner-ele de notificare."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:129
-#, python-brace-format
-msgid "Show notifications at {position}"
-msgstr "Afișează notificările la {position}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:143
-#: usr/share/layout-switcher/ui/page_desktop.py:287
-msgid "Default"
-msgstr "Implicit"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:194
-#: usr/share/layout-switcher/ui/page_desktop.py:199
-#: usr/share/layout-switcher/ui/page_desktop.py:206
-msgid "Application menu"
-msgstr "Meniul aplicației"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Disponibil pentru aspectele Classic, Desk-UX și Hybrid."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:200
-#: usr/share/layout-switcher/ui/page_desktop.py:469
-msgid "Use Community Menu as the application menu"
-msgstr "Folosește Meniul Comunității ca meniu de aplicații"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:220
-msgid "Menu style"
-msgstr "Stilul meniului"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:226
-msgid "Choose the appearance of Community Menu."
-msgstr "Alege aspectul Meniului Comunității."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:258
-msgid "Super key"
-msgstr "Tasta Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:259
-msgid "Choose what happens when pressing Super"
-msgstr "Alege ce se întâmplă la apăsarea tastei Super"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open menu"
-msgstr "Deschide meniul"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:260
-msgid "Open overview"
-msgstr "Deschide prezentarea generală"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:273
-#, python-brace-format
-msgid "Use the {name} menu style"
-msgstr "Folosește stilul de meniu {name}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:471
-msgid "Community Menu is not installed"
-msgstr "Meniul Comunității nu este instalat"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:516
-#, python-brace-format
-msgid "{position} notification position applied"
-msgstr "Poziția notificărilor {position} a fost aplicată"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:523
-#, python-brace-format
-msgid "Could not change the notification position: {message}"
-msgstr "Nu s-a putut schimba poziția notificărilor: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:534
-msgid "Notification preview"
-msgstr "Previzualizare notificare"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:535
-msgid "Notifications will appear here."
-msgstr "Notificările vor apărea aici."
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu enabled"
-msgstr "Meniul de aplicații activat"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:555
-msgid "Application menu disabled"
-msgstr "Meniul de aplicații dezactivat"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:559
-#, python-brace-format
-msgid "Could not change the application menu: {message}"
-msgstr "Nu s-a putut modifica meniul aplicațiilor: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:597
-#, python-brace-format
-msgid "{name} menu style applied"
-msgstr "Stilul de meniu {name} a fost aplicat"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:600
-#, python-brace-format
-msgid "Could not change the menu style: {message}"
-msgstr "Nu s-a putut modifica stilul de meniu: {message}"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:631
-msgid "Super opens the application menu"
-msgstr "Super deschide meniul aplicațiilor"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:633
-msgid "Super opens the overview"
-msgstr "Super deschide prezentarea generală"
-
-#: usr/share/layout-switcher/ui/page_desktop.py:637
-#, python-brace-format
-msgid "Could not change the Super key: {message}"
-msgstr "Nu s-a putut modifica tasta Super: {message}"
-
-#: usr/share/layout-switcher/ui/page_effects.py:60
-msgid "Other visual effects"
-msgstr "Alte efecte vizuale"
-
-#: usr/share/layout-switcher/ui/page_effects.py:150
-#, python-brace-format
-msgid "{name} effect preview"
-msgstr "Previzualizarea efectului {name}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:20
-msgid "Always visible"
-msgstr "Mereu vizibil"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:21
-msgid "Always hidden (show at edge)"
-msgstr "Mereu ascuns (afișat la margine)"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:22
-msgid "Intelligent hiding"
-msgstr "Ascundere inteligentă"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:25
-msgid "Dot"
-msgstr "Punct"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:26
-msgid "Hybrid line"
-msgstr "Linie hibridă"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:27
-msgid "Desk UX line"
-msgstr "Linie Desk UX"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:56
-#: usr/share/layout-switcher/ui/page_panel_dock.py:259
-msgid "Configure the Community Dock appearance and visibility."
-msgstr "Configurează aspectul și vizibilitatea Docului comunității."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:62
-msgid "Dock transparency"
-msgstr "Transparență Dock"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:65
-msgid "Dock visibility"
-msgstr "Vizibilitate Dock"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:75
-#: usr/share/layout-switcher/ui/page_panel_dock.py:271
-msgid "Configure the system panel appearance and visibility."
-msgstr "Configurează aspectul și vizibilitatea panoului de sistem."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Panel transparency"
-msgstr "Transparență panou"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:84
-msgid "Panel visibility"
-msgstr "Vizibilitate panou"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:101
-msgid "Running app indicator"
-msgstr "Indicator aplicații în execuție"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:105
-msgid "Choose the mark shown below running applications."
-msgstr "Alege marcajul afișat sub aplicațiile în execuție."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:142
-#, python-brace-format
-msgid "Use the {style} indicator"
-msgstr "Folosește indicatorul {style}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:222
-msgid "Choose how this component behaves on the desktop."
-msgstr "Alege cum se comportă această componentă pe desktop."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:251
-msgid "Taskbar"
-msgstr "Bară de activități"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:252
-msgid "Configure running application indicators."
-msgstr "Configurează indicatorii aplicațiilor în execuție."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:255
-msgid "Available when Community Dock is active."
-msgstr "Disponibil când Community Dock este activ."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:263
-msgid "Available when Community Dock or Community Panel is active."
-msgstr "Disponibil când Community Dock sau Community Panel este activ."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:267
-msgid "Configure the Community Panel appearance and visibility."
-msgstr "Configurează aspectul și vizibilitatea Community Panel."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:321
-msgid "Dock visibility updated"
-msgstr "Vizibilitatea Dock a fost actualizată"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:328
-msgid "Panel visibility updated"
-msgstr "Vizibilitatea panoului a fost actualizată"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:338
-msgid "Indicator style updated"
-msgstr "Stilul indicatorului a fost actualizat"
-
-#: usr/share/layout-switcher/ui/page_themes.py:20
-msgid "Blue"
-msgstr "Albastru"
-
-#: usr/share/layout-switcher/ui/page_themes.py:21
-msgid "Teal"
-msgstr "Turcoaz"
-
-#: usr/share/layout-switcher/ui/page_themes.py:22
-msgid "Green"
-msgstr "Verde"
-
-#: usr/share/layout-switcher/ui/page_themes.py:23
-msgid "Yellow"
-msgstr "Galben"
-
-#: usr/share/layout-switcher/ui/page_themes.py:24
-msgid "Orange"
-msgstr "Portocaliu"
-
-#: usr/share/layout-switcher/ui/page_themes.py:25
-msgid "Red"
-msgstr "Roșu"
-
-#: usr/share/layout-switcher/ui/page_themes.py:26
-msgid "Pink"
-msgstr "Roz"
-
-#: usr/share/layout-switcher/ui/page_themes.py:27
-msgid "Purple"
-msgstr "Mov"
-
-#: usr/share/layout-switcher/ui/page_themes.py:28
-msgid "Slate"
-msgstr "Ardezie"
-
-#: usr/share/layout-switcher/ui/page_themes.py:29
-msgid "Maia"
-msgstr "Maia"
-
-#: usr/share/layout-switcher/ui/page_themes.py:108
-msgid "Colors"
-msgstr "Culori"
-
-#: usr/share/layout-switcher/ui/page_themes.py:165
-msgid "Accent color"
-msgstr "Culoare de accent"
-
-#: usr/share/layout-switcher/ui/page_themes.py:174
-msgid "Choose the color used for buttons, selections, and highlights."
-msgstr "Alege culoarea folosită pentru butoane, selecții și evidențieri."
-
-#: usr/share/layout-switcher/ui/page_themes.py:207
-#, python-brace-format
-msgid "{color} accent color"
-msgstr "{color} culoare de accent"
-
-#: usr/share/layout-switcher/ui/window.py:405
-#: usr/share/layout-switcher/ui/window.py:488
-msgid "Panel and Dock"
-msgstr "Panou și Dock"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:81
-msgid "Dock size"
-msgstr "Dimensiune dock"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:114
-msgid "Panel height"
-msgstr "Înălțime panou"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:450
-msgid "Smaller"
-msgstr "Mai mic"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:466
-msgid "Larger"
-msgstr "Mai mare"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:143
-msgid "Restore layout defaults"
-msgstr "Restabilește valorile implicite ale aspectului"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:33
-msgid "Standard"
-msgstr "Standard"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:34
-msgid "Gentle lift"
-msgstr "Ușoară ridicare"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:245
-msgid "Icon hover effect"
-msgstr "Efect de hover pentru pictograme"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:249
-msgid "Choose how dock icons react to the pointer."
-msgstr "Alege cum reacționează pictogramele dock-ului la indicator."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:279
-#, python-brace-format
-msgid "Use the {effect} hover effect"
-msgstr "Folosește efectul de hover {effect}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:658
-msgid "Icon hover effect updated"
-msgstr "Efectul de hover pentru pictograme a fost actualizat"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:32
-msgid "Captures, annotates and records the screen."
-msgstr "Capturează, adnotează și înregistrează ecranul."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:35
-msgid "Shows application tray icons in the system panel."
-msgstr "Afișează pictogramele aplicațiilor în panoul sistemului."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:40
-msgid "Provides application launchers and running windows in a dock."
-msgstr "Oferă lansatoare de aplicații și ferestre active într-un dock."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:43
-msgid "Provides the applications menu used by desktop layouts."
-msgstr "Oferă meniul de aplicații folosit de aspectele desktopului."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:46
-msgid "Provides the taskbar and system panel used by desktop layouts."
-msgstr "Oferă bara de activități și panoul de sistem folosite de aspecte."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:49
-msgid "Keeps a searchable history of copied content."
-msgstr "Păstrează un istoric care poate fi căutat al conținutului copiat."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:52
-msgid "Shows removable devices and lets you safely eject them."
-msgstr ""
-"Afișează dispozitivele detașabile și permite ejectarea lor în siguranță."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:55
-msgid "Adds controlled blur and transparency to the desktop."
-msgstr "Adaugă estompare și transparență controlate desktopului."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:58
-msgid "Connects phones to share files, notifications and other features."
-msgstr ""
-"Conectează telefoane pentru partajarea fișierelor, notificărilor și altor "
-"funcții."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:61
-msgid "Shows files and folders on the desktop."
-msgstr "Afișează fișierele și folderele de pe desktop."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:64
-msgid "Applies layout changes safely inside GNOME Shell."
-msgstr "Aplică în siguranță modificările de aspect în GNOME Shell."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:67
-msgid "Provides the dock and taskbar runtime used by desktop layouts."
-msgstr ""
-"Oferă runtime-ul dockului și al barei de activități folosit de aspecte."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:70
-msgid "Keeps GTK 3 applications aligned with light and dark mode."
-msgstr "Menține aplicațiile GTK 3 aliniate cu modul luminos și întunecat."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:73
-msgid "Uses the light GNOME Shell appearance."
-msgstr "Folosește aspectul luminos al GNOME Shell."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:76
-msgid "Loads the Shell theme selected by the active layout."
-msgstr "Încarcă tema Shell selectată de aspectul activ."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:91
-msgid "Description not provided by the developer."
-msgstr "Dezvoltatorul nu a furnizat o descriere."
-
-#: usr/share/layout-switcher/ui/page_extensions.py:770
-#, python-brace-format
-msgid "Technical identifier: {uuid}"
-msgstr "Identificator tehnic: {uuid}"
-
-#: usr/share/layout-switcher/ui/page_extensions.py:772
-#, python-brace-format
-msgid "Version: {version}"
-msgstr "Versiune: {version}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:127
-msgid "Session"
-msgstr "Sesiune"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:128
-msgid "Choose how this layout starts after login."
-msgstr "Alegeți cum pornește acest aspect după autentificare."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:131
-msgid "Open desktop after login"
-msgstr "Deschide desktopul după autentificare"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:132
-msgid "Skip the initial Activities overview for this layout."
-msgstr "Omite prezentarea inițială a activităților pentru acest aspect."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:144
-msgid "Reset appearance and session options for the active layout."
-msgstr "Resetează aspectul și opțiunile sesiunii pentru aspectul activ."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:165
-msgid "Application menu position"
-msgstr "Poziția meniului aplicațiilor"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:169
-msgid "Place the BigGnome menu at either end of the Dock."
-msgstr "Plasează meniul BigGnome la oricare capăt al dockului."
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Left"
-msgstr "Stânga"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:185
-msgid "Right"
-msgstr "Dreapta"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:201
-#, python-brace-format
-msgid "Place the application menu on the {side}"
-msgstr "Plasează meniul aplicațiilor în partea {side}"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:668
-msgid "Application menu position updated"
-msgstr "Poziția meniului aplicațiilor a fost actualizată"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:678
-msgid "Login start updated"
-msgstr "Pornirea la autentificare a fost actualizată"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:685
-msgid "Layout appearance and session defaults restored"
-msgstr "Aspectul și valorile implicite ale sesiunii au fost restaurate"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:36
-msgid "Magnification"
-msgstr "Mărire"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:97
-msgid "Magnification intensity"
-msgstr "Intensitatea măririi"
-
-#: usr/share/layout-switcher/ui/page_panel_dock.py:102
-msgid "Choose how much nearby Dock icons grow."
-msgstr "Alegeți cât de mult cresc pictogramele Dock din apropiere."
+#~ msgid "System extension — cannot remove"
+#~ msgstr "Extensie de sistem — nu poate fi eliminată"
+
+#~ msgid ""
+#~ "This extension cannot be removed here because it was installed by the "
+#~ "system."
+#~ msgstr ""
+#~ "Această extensie nu poate fi eliminată de aici deoarece a fost instalată "
+#~ "de sistem."
+
+#~ msgid "Uses the light GNOME Shell appearance."
+#~ msgstr "Folosește aspectul luminos al GNOME Shell."
+
+#~ msgid "Loads the Shell theme selected by the active layout."
+#~ msgstr "Încarcă tema Shell selectată de aspectul activ."

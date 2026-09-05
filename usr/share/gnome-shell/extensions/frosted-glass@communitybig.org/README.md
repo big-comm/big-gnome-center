@@ -1,6 +1,6 @@
 # Frosted Glass
 
-GNOME Shell 51 extension owned by Layout Switcher. It applies a controlled
+GNOME Shell 51 extension owned by Big Gnome Center. It applies a controlled
 frosted-glass material to application windows and selected Shell surfaces.
 
 The window path operates on Mutter window actors, so GTK and Qt applications

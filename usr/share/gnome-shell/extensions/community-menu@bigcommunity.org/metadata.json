@@ -6,6 +6,6 @@
   "name": "Community Menu",
   "description": "Applications menu for BigCommunity desktop layouts.",
   "shell-version": ["50"],
-  "url": "https://github.com/BigCommunity/layout-switcher",
+  "url": "https://github.com/big-comm/layout-switcher",
   "version": 17
 }

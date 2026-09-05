@@ -1,0 +1,18 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Big Gnome Center
+Name[pt_BR]=Big Gnome Center
+Name[es]=Big Gnome Center
+Comment=Manage your BigLinux GNOME desktop
+Comment[pt_BR]=Gerencie sua área de trabalho GNOME do BigLinux
+Comment[es]=Administra tu escritorio GNOME de BigLinux
+Exec=big-gnome-center
+Icon=big-gnome-center
+Terminal=false
+Categories=Settings;DesktopSettings;GTK;GNOME;
+Keywords=layout;theme;extension;gnome;desktop;appearance;startup;cursor;
+Keywords[pt_BR]=layout;tema;extensão;gnome;desktop;aparência;inicialização;cursor;
+StartupNotify=true
+StartupWMClass=br.com.biglinux.BigGnomeCenter
+X-GNOME-UsesNotifications=true

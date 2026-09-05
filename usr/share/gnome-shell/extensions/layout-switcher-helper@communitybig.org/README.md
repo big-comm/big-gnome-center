@@ -1,14 +1,14 @@
-# Layout Switcher Helper (GNOME Shell extension)
+# Big Gnome Center Helper (GNOME Shell extension)
 
-In-shell companion for the **Community Layout Switcher**. It performs the
+In-shell companion for the **Big Gnome Center**. It performs the
 *live* layout switch from **inside** GNOME Shell, driven over D-Bus by the
 `layout-switcher` app.
 
 ## Why it exists
 
 The `layout-switcher` app is an **external process**. The GNOME Shell
-extensions a layout uses (`community-panel`, `community-menu`, `kiwi`, `light-style`,
-`user-theme`, …) are JavaScript modules running **inside** the gnome-shell
+extensions a layout uses (`community-panel`, `community-menu`, `kiwi`,
+…) are JavaScript modules running **inside** the gnome-shell
 process. From outside, the only way to switch extensions is to write
 `org/gnome/shell/enabled-extensions` to dconf — which fires the Shell's
 gsettings listener **asynchronously and concurrently** with the rest of the
@@ -58,7 +58,6 @@ detect whether the helper is installed/enabled and pick the in-shell path.
 |---|---|---|
 | `enabled` | `[uuid…]` | target `enabled-extensions`, in load order |
 | `reload` | `[uuid…]` | subset that must re-read appearance even if it stays enabled (disable+enable so `enable()` re-runs) |
-| `theme` | `string` | user-theme stylesheet name (`""` = no shell theme) — reserved; theme is currently re-applied via `Main.loadTheme()` |
 | `step_ms` | `int` | settle between steps (default `120`) |
 | `theme_reload` | `bool` | call `Main.loadTheme()` at the end (default `true`) |
 

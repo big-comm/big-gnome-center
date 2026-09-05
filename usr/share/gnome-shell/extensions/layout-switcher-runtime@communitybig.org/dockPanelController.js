@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Layout Switcher panel appearance and visibility controller.
+// Big Gnome Center panel appearance and visibility controller.
 
 import GLib from 'gi://GLib';
 import St from 'gi://St';

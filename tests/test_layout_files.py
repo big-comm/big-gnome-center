@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-LAYOUT_DIR = REPO_ROOT / "usr/share/layout-switcher/layouts"
+LAYOUT_DIR = REPO_ROOT / "usr/share/big-gnome-center/layouts"
 MONITOR_KEYED_DTP_KEYS = {
     "panel-anchors",
     "panel-element-positions",
@@ -34,6 +34,8 @@ LEGACY_LAYOUT_SWITCHER_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
 BIG_SHOT_UUID = "big-shot@communitybig.org"
 LEGACY_BIG_SHOT_UUID = "big-shot@bigcommunity.org"
 PAMAC_UPDATES_UUID = "pamac-updates@manjaro.org"
+GSCONNECT_UUID = "gsconnect@andyholmes.github.io"
+REMOVABLE_DRIVE_MENU_UUID = "drive-menu@gnome-shell-extensions.gcampax.github.com"
 COPYOUS_SECTION = "org/gnome/shell/extensions/copyous"
 COMMUNITY_MENU_LAYOUTS = {
     "classic.txt": "APPS_ONLY",
@@ -131,8 +133,20 @@ def test_no_layout_enables_the_pamac_updates_extension():
         assert PAMAC_UPDATES_UUID not in enabled
 
 
+def test_retired_extensions_are_absent_from_layouts_and_dependencies():
+    retired = {GSCONNECT_UUID, REMOVABLE_DRIVE_MENU_UUID}
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        text = layout_file.read_text()
+        for uuid in retired:
+            assert uuid not in text, f"{layout_file.name} still references {uuid}"
+
+    pkgbuild = (REPO_ROOT / "pkgbuild/PKGBUILD").read_text()
+    assert "gnome-shell-extension-gsconnect" not in pkgbuild
+    assert "'gnome-shell-extensions'" not in pkgbuild
+
+
 def test_package_does_not_patch_external_kiwi_installations():
-    assert not (REPO_ROOT / "usr/share/layout-switcher/patches/patch-kiwi-focus.sh").exists()
+    assert not (REPO_ROOT / "usr/share/big-gnome-center/patches/patch-kiwi-focus.sh").exists()
     assert not (REPO_ROOT / "usr/share/libalpm/hooks/zz-layout-switcher-kiwi.hook").exists()
 
 
@@ -202,18 +216,15 @@ def test_original_layouts_use_traditional_pointer_scrolling():
         assert gdm_touchpad["natural-scrolling"] == "false"
 
 
-def test_fixed_dark_layouts_do_not_require_user_theme():
-    for filename in ("biggnome.txt", "desk-ux.txt"):
-        text = (LAYOUT_DIR / filename).read_text()
+def test_original_layouts_retire_user_theme():
+    for layout_file in LAYOUT_DIR.glob("*.txt"):
+        text = layout_file.read_text()
         enabled, disabled = _shell_extension_lists(text)
-        user_theme_values = _section_key_values(
-            text,
-            "org/gnome/shell/extensions/user-theme",
-        )
-
         assert USER_THEME_UUID not in enabled
         assert USER_THEME_UUID in disabled
-        assert user_theme_values["name"] == "''"
+        assert LIGHT_STYLE_UUID not in enabled
+        assert LIGHT_STYLE_UUID in disabled
+        assert "[org/gnome/shell/extensions/user-theme]" not in text
 
 
 def test_community_menu_layout_mapping_and_panel_order():
@@ -245,15 +256,10 @@ def test_community_menu_layout_mapping_and_panel_order():
             assert dtp_values["dot-color-override"] == "false"
             assert dtp_values["dot-size"] == "0"
             assert interface_values["icon-theme"] == "'bigicons-papient-light'"
-            user_theme_values = _section_key_values(
-                text,
-                "org/gnome/shell/extensions/user-theme",
-            )
-            assert user_theme_values["name"] == "''"
             assert USER_THEME_UUID not in enabled
             assert USER_THEME_UUID in disabled
-            assert LIGHT_STYLE_UUID in enabled
-            assert LIGHT_STYLE_UUID not in disabled
+            assert LIGHT_STYLE_UUID not in enabled
+            assert LIGHT_STYLE_UUID in disabled
         elif filename == "desk-ux.txt":
             assert interface_values["icon-theme"] == "'bigicons-papient-dark'"
             assert dtp_values["appicon-margin"] == "0"
@@ -292,8 +298,8 @@ def test_hybrid_uses_community_menu_and_compact_panel():
     assert interface_values["icon-theme"] == "'bigicons-papient-light'"
     assert USER_THEME_UUID not in enabled
     assert USER_THEME_UUID in disabled
-    assert LIGHT_STYLE_UUID in enabled
-    assert LIGHT_STYLE_UUID not in disabled
+    assert LIGHT_STYLE_UUID not in enabled
+    assert LIGHT_STYLE_UUID in disabled
     assert dtp_values["appicon-margin"] == "0"
     assert dtp_values["appicon-padding"] == "1"
     assert dtp_values["panel-sizes"] == "'{\"0\":38}'"
@@ -310,7 +316,7 @@ def test_hybrid_uses_community_menu_and_compact_panel():
 
 def test_normal_layout_switch_uses_only_shell_curtain():
     source = (
-        Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/ui/page_layouts.py"
+        Path(__file__).resolve().parents[1] / "usr/share/big-gnome-center/ui/page_layouts.py"
     ).read_text()
     apply_source = source.split("    def _apply(", 1)[1].split("    def _done(", 1)[0]
 
@@ -323,7 +329,7 @@ def test_normal_layout_switch_uses_only_shell_curtain():
 
 def test_layout_confirmation_dialog_uses_wide_horizontal_actions():
     source = (
-        Path(__file__).resolve().parents[1] / "usr/share/layout-switcher/ui/page_layouts.py"
+        Path(__file__).resolve().parents[1] / "usr/share/big-gnome-center/ui/page_layouts.py"
     ).read_text()
 
     assert "_LAYOUT_DIALOG_WIDTH = 520" in source

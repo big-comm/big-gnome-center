@@ -6,6 +6,20 @@ from unittest.mock import patch
 
 import pytest
 
+from constants import _migrate_legacy_dir
+
+
+def test_rebrand_migration_copies_user_data_without_removing_source(tmp_path):
+    old = tmp_path / "big-appearance"
+    new = tmp_path / "big-gnome-center"
+    old.mkdir()
+    (old / "settings.json").write_text('{"active_layout": "biggnome"}')
+
+    _migrate_legacy_dir(old, new)
+
+    assert (new / "settings.json").read_text() == '{"active_layout": "biggnome"}'
+    assert (old / "settings.json").is_file()
+
 
 class TestSettings:
     @pytest.fixture(autouse=True)

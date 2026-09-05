@@ -1,4 +1,4 @@
-// Layout Switcher private Dock module.
+// Big Gnome Center private Dock module.
 /*
  * Credits:
  * This file is based on code from the Dash to Panel extension by Jason DeRose

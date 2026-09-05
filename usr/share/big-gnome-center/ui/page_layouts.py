@@ -1,0 +1,564 @@
+# SPDX-License-Identifier: MIT
+"""
+ui/page_layouts.py — Pagina de Layouts.
+
+Comportamento tipo KDE Plasma: ao trocar de layout, o estado atual e salvo
+como snapshot do layout anterior. Ao voltar para um layout com snapshot,
+o usuario escolhe entre retomar sua versao modificada ou aplicar o padrao.
+
+DEVELOPER NOTE - DO NOT name any variable `_` in this file.
+"""
+
+import logging
+from pathlib import Path
+from typing import Optional
+
+import gi
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+from gi.repository import Adw, Gdk, GLib, Gtk
+
+from backup_manager import BackupManager
+from constants import DISABLED_LAYOUTS, ICONS_DIR, LAYOUTS, tr
+from layout_applier import LayoutApplier
+from settings_store import Settings
+from snapshot_manager import SnapshotManager
+from ui.tooltip import Tooltip
+from utils import find_file
+
+log = logging.getLogger("big-gnome-center")
+
+# Progress labels are emitted by layout_applier.py and translated here.
+_PROGRESS_TRANSLATION_KEYS = (
+    tr("Disabling extensions…"),
+    tr("Loading layout…"),
+    tr("Reloading components…"),
+)
+
+_LAYOUT_DIALOG_WIDTH = 520
+
+
+class LayoutsPage(Gtk.Box):
+    """Pagina de Layouts com grid de cards + Resume/Original."""
+
+    def __init__(self, pool, toast_cb) -> None:
+        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        self._pool = pool
+        self._toast = toast_cb
+        self._prefs = Settings()
+        self._active_layout: Optional[str] = self._prefs.get("active_layout")
+
+        self._build()
+
+    def _build(self) -> None:
+        # Label de status (aplicando/aplicado/erro). Comeca vazio e invisivel —
+        # so aparece quando ha status real para mostrar.
+        self._status_lbl = Gtk.Label(label="")
+        self._status_lbl.add_css_class("dim-label")
+        self._status_lbl.set_halign(Gtk.Align.START)
+        self._status_lbl.set_margin_start(26)
+        self._status_lbl.set_margin_top(6)
+        self._status_lbl.set_margin_bottom(10)
+        self._status_lbl.set_visible(False)
+        self._status_lbl.update_property(
+            [Gtk.AccessibleProperty.LABEL],
+            [tr("Layout status")],
+        )
+        self.append(self._status_lbl)
+
+        sc = Gtk.ScrolledWindow()
+        sc.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sc.set_vexpand(True)
+
+        self._flow = Gtk.FlowBox()
+        self._flow.add_css_class("layout-grid")
+        self._flow.set_selection_mode(Gtk.SelectionMode.NONE)
+        self._flow.set_max_children_per_line(4)
+        self._flow.set_min_children_per_line(2)
+        self._flow.set_row_spacing(12)
+        self._flow.set_column_spacing(12)
+        self._flow.set_margin_start(22)
+        self._flow.set_margin_end(22)
+        self._flow.set_margin_bottom(22)
+        self._flow.set_homogeneous(True)
+
+        self.rebuild_grid()
+        sc.set_child(self._flow)
+        self.append(sc)
+
+    # ── Grid ──────────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _layout_id(cfg: str) -> str:
+        """Stem do arquivo de layout (ex.: 'biggnome.txt' -> 'biggnome')."""
+        return Path(cfg).stem
+
+    @staticmethod
+    def _icon_path_for(layout_name: Optional[str]):
+        """Caminho do SVG de preview de um layout pelo nome, ou None."""
+        if not layout_name:
+            return None
+        for lname, _lcfg, icon_file, *_rest in LAYOUTS:
+            if lname == layout_name:
+                return find_file(icon_file, [ICONS_DIR])
+        return None
+
+    def rebuild_grid(self) -> None:
+        child = self._flow.get_first_child()
+        while child:
+            nxt = child.get_next_sibling()
+            self._flow.remove(child)
+            child = nxt
+        for name, cfg, icon_file, fallback, desc in LAYOUTS:
+            card = self._make_card(name, cfg, icon_file, fallback, desc)
+            self._flow.append(card)
+
+    def _make_card(self, name, cfg, icon_file, fallback, desc) -> Gtk.Box:
+        is_on = name == self._active_layout
+        is_disabled = name in DISABLED_LAYOUTS
+        has_snapshot = SnapshotManager.has(self._layout_id(cfg))
+        card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        card.add_css_class("layout-card")
+        if is_on:
+            card.add_css_class("layout-on")
+        if is_disabled:
+            card.add_css_class("layout-disabled")
+
+        # Preview (SVG) com Overlay para sobrepor o badge "Modified" discreto
+        overlay = Gtk.Overlay()
+        overlay.add_css_class("layout-preview")
+        overlay.set_halign(Gtk.Align.CENTER)
+
+        icon_path = find_file(icon_file, [ICONS_DIR])
+        if icon_path:
+            pic = Gtk.Picture.new_for_filename(str(icon_path))
+            pic.set_content_fit(Gtk.ContentFit.CONTAIN)
+            pic.set_size_request(170, 100)
+            overlay.set_child(pic)
+        else:
+            ico = Gtk.Image.new_from_icon_name(fallback)
+            ico.set_pixel_size(56)
+            ico.set_halign(Gtk.Align.CENTER)
+            ico.set_valign(Gtk.Align.CENTER)
+            overlay.set_child(ico)
+
+        # Badge "Modified" no topo-centro do preview, flutuando um pouco
+        # abaixo da borda superior para nao sobrepor o desenho do layout
+        if has_snapshot:
+            badge = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=3)
+            badge.add_css_class("layout-modified-badge")
+            badge.set_halign(Gtk.Align.CENTER)
+            badge.set_valign(Gtk.Align.START)
+            badge.set_margin_top(16)
+            badge.set_tooltip_text(tr("Contains your saved customizations"))
+            badge_icon = Gtk.Image.new_from_icon_name("document-edit-symbolic")
+            badge_icon.set_pixel_size(10)
+            badge.append(badge_icon)
+            badge_lbl = Gtk.Label(label=tr("Modified"))
+            badge_lbl.add_css_class("caption")
+            badge.append(badge_lbl)
+            overlay.add_overlay(badge)
+
+        # Check de ativo no canto superior-direito (reforca o glow neon)
+        if is_on:
+            check = Gtk.Image.new_from_icon_name("emblem-ok-symbolic")
+            check.set_pixel_size(16)
+            check.add_css_class("layout-active-check")
+            check.set_halign(Gtk.Align.END)
+            check.set_valign(Gtk.Align.START)
+            check.set_margin_end(6)
+            check.set_margin_top(14)
+            check.set_tooltip_text(tr("Active"))
+            overlay.add_overlay(check)
+
+        card.append(overlay)
+
+        # Nome do layout (em cor accent + bold quando ativo)
+        lbl = Gtk.Label(label=name)
+        lbl.add_css_class("heading")
+        lbl.add_css_class("layout-name")
+        if is_on:
+            lbl.add_css_class("layout-name-active")
+        lbl.set_halign(Gtk.Align.CENTER)
+        lbl.set_margin_bottom(1)
+        card.append(lbl)
+
+        # No visible description caption under the name — the full text shows
+        # only on hover (see the tooltip below) to keep the cards clean.
+        # Description appears only on hover as an elegant popover.
+        # Disabled layouts get a "Coming soon" tooltip instead.
+        if is_disabled:
+            Tooltip.attach(card, tr("Coming soon"))
+        elif desc:
+            Tooltip.attach(card, desc)
+
+        # Disabled layouts skip click/key controllers and aren't focusable
+        # so keyboard tab-traversal also bypasses them.
+        if not is_disabled:
+            gest = Gtk.GestureClick()
+            gest.connect(
+                "released",
+                lambda _g, _n, _x, _y, __n=name, __c=cfg: self._on_click(__n, __c),
+            )
+            card.add_controller(gest)
+
+            key_ctl = Gtk.EventControllerKey()
+            key_ctl.connect(
+                "key-pressed",
+                lambda _ctl, kv, _kc, _mod, __n=name, __c=cfg: (
+                    (self._on_click(__n, __c) or True)
+                    if kv in (Gdk.KEY_Return, Gdk.KEY_KP_Enter, Gdk.KEY_space)
+                    else False
+                ),
+            )
+            card.add_controller(key_ctl)
+
+        accessible_name = name
+        if is_disabled:
+            accessible_name = f"{name} ({tr('Coming soon')})"
+        elif is_on:
+            accessible_name = f"{name} ({tr('Active')})"
+        card.update_property([Gtk.AccessibleProperty.LABEL], [accessible_name])
+        card.set_focusable(not is_disabled)
+        return card
+
+    # ── Interacao ─────────────────────────────────────────────────────────────
+
+    def _on_click(self, name: str, cfg: str) -> None:
+        reapplying_active = name == self._active_layout
+        target_id = self._layout_id(cfg)
+        has_snapshot = SnapshotManager.has(target_id)
+
+        parent = self.get_root()
+        d = Adw.Dialog(title=name)
+
+        def on_r(r):
+            if r == "cancel":
+                return
+            ok_bk, info = BackupManager.create()
+            if not ok_bk:
+                self._toast(tr("Backup failed") + f": {info}")
+            # Reapplying the active layout is a recovery action. Saving its
+            # current broken state here would overwrite the last good snapshot
+            # immediately before the original is restored.
+            if not reapplying_active:
+                self._save_current_snapshot()
+            use_snapshot = r == "resume"
+            self._apply(name, cfg, use_snapshot=use_snapshot)
+
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        content.set_margin_top(30)
+        content.set_margin_bottom(26)
+        content.set_margin_start(28)
+        content.set_margin_end(28)
+
+        header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        header.set_halign(Gtk.Align.START)
+        header_icon = Gtk.Image.new_from_icon_name(
+            "document-edit-symbolic" if has_snapshot else "view-grid-symbolic"
+        )
+        header_icon.set_pixel_size(24)
+        header_icon.add_css_class("accent")
+        header.append(header_icon)
+
+        header_text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        heading = Gtk.Label(label=name)
+        heading.add_css_class("title-2")
+        heading.set_halign(Gtk.Align.START)
+        heading.set_xalign(0)
+        header_text.append(heading)
+        if has_snapshot:
+            modified = Gtk.Label(label=tr("Modified"))
+            modified.add_css_class("accent")
+            modified.add_css_class("caption-heading")
+            modified.set_halign(Gtk.Align.START)
+            modified.set_xalign(0)
+            header_text.append(modified)
+        header.append(header_text)
+        content.append(header)
+
+        if has_snapshot:
+            body_text = tr(
+                "You have previously modified this layout. Apply the "
+                "original system default or resume your changes?"
+            )
+            responses = (
+                ("cancel", tr("Cancel"), False),
+                ("resume", tr("Resume my changes"), False),
+                ("original", tr("Apply original"), True),
+            )
+        else:
+            body_text = tr(
+                "Apply this layout? A backup of your current "
+                "configuration will be created automatically."
+            )
+            responses = (
+                ("cancel", tr("Cancel"), False),
+                ("apply", tr("Apply"), True),
+            )
+
+        body = Gtk.Label(label=body_text)
+        body.set_justify(Gtk.Justification.LEFT)
+        body.set_max_width_chars(60)
+        body.set_wrap(True)
+        body.set_xalign(0)
+        content.append(body)
+
+        actions = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        actions.set_halign(Gtk.Align.END)
+        actions.set_margin_top(14)
+        default_button = None
+        for response, label, suggested in responses:
+            button = Gtk.Button(label=label)
+            button.set_size_request(-1, 44)
+            if suggested:
+                button.add_css_class("suggested-action")
+                default_button = button
+
+            def respond(_button, selected=response):
+                d.close()
+                on_r(selected)
+
+            button.connect("clicked", respond)
+            actions.append(button)
+        content.append(actions)
+
+        d.set_follows_content_size(False)
+        d.set_content_width(_LAYOUT_DIALOG_WIDTH)
+        d.set_child(content)
+        if default_button is not None:
+            d.set_default_widget(default_button)
+            d.set_focus(default_button)
+        d.present(parent)
+
+    def _save_current_snapshot(self) -> None:
+        """Dump do dconf atual como snapshot do layout ativo."""
+        if not self._active_layout:
+            return
+        # Poisoned-snapshot guard: if the LAST apply failed, the live session
+        # may be a half-applied mix — snapshotting it would silently capture
+        # the breakage, and a later "Resume my changes" would restore it.
+        # Skip the save; the previous (healthy) snapshot remains.
+        if self._prefs.get("last_apply_ok") is False:
+            log.info("skipping snapshot: last layout apply failed")
+            return
+        for lname, lcfg, *_rest in LAYOUTS:
+            if lname == self._active_layout:
+                SnapshotManager.save(self._layout_id(lcfg))
+                return
+
+    def _apply(self, name: str, cfg: str, use_snapshot: bool = False) -> None:
+        """Aplica layout. use_snapshot=True carrega a versao modificada."""
+        self._set_status(f"{tr('Applying')} {name}…", "dim-label")
+        root = self.get_root()
+        # Preview SVGs are passed to the in-shell curtain. The GTK loading
+        # overlay stays hidden so the switch has one visual owner.
+        to_icon = self._icon_path_for(name)
+        from_icon = self._icon_path_for(self._active_layout) if self._active_layout else None
+        loading_token = None
+        layout_id = self._layout_id(cfg)
+
+        # Called from the worker thread by LayoutApplier between stages.
+        # Marshal to the GTK main loop with idle_add so we never touch
+        # widgets off-thread.
+        def progress(stage: str) -> None:
+            try:
+                translated = tr(stage)
+            except Exception:
+                translated = stage
+            text = f"{name} — {translated}"
+            if loading_token is not None and hasattr(root, "update_loading"):
+                GLib.idle_add(root.update_loading, loading_token, text)
+
+        def task():
+            try:
+                if use_snapshot:
+                    data = SnapshotManager.read(layout_id)
+                    if not data:
+                        GLib.idle_add(
+                            self._done,
+                            name,
+                            False,
+                            tr("Snapshot not found"),
+                            loading_token,
+                        )
+                        return
+                    # Snapshots são dumps locais — DTP monitor IDs já estão corretos.
+                    # load_dconf_safely escreve settings.gnome e faz dconf load;
+                    # o gsettings listener do Shell reabilita as extensões via
+                    # enabled-extensions, então não precisa reload_all manual.
+                    before = LayoutApplier._enabled_extensions()
+                    layout_path = find_file(cfg, ["layouts"])
+                    ok, err = LayoutApplier.load_dconf_safely(
+                        data,
+                        persist=True,
+                        before_uuids=before,
+                        progress_cb=progress,
+                        layout_label=name,
+                        layout_label_from=self._active_layout or "",
+                        layouts_dir=layout_path.parent if layout_path else None,
+                        icon_from=str(from_icon) if from_icon else "",
+                        icon_to=str(to_icon) if to_icon else "",
+                    )
+                else:
+                    path = find_file(cfg, ["layouts"])
+                    if not path:
+                        GLib.idle_add(
+                            self._done,
+                            name,
+                            False,
+                            tr("Layout file not found"),
+                            loading_token,
+                        )
+                        return
+                    ok, err = LayoutApplier.apply(
+                        path,
+                        progress_cb=progress,
+                        label_from=self._active_layout or "",
+                        # Preview SVGs for the in-shell curtain's from→to art.
+                        icon_from=str(from_icon) if from_icon else "",
+                        icon_to=str(to_icon) if to_icon else "",
+                    )
+                GLib.idle_add(self._done, name, ok, err, loading_token)
+            except Exception as exc:
+                log.exception("layout apply failed for %s", name)
+                msg = str(exc).strip() or exc.__class__.__name__
+                GLib.idle_add(self._done, name, False, msg, loading_token)
+
+        self._pool.submit(task)
+
+    def _done(
+        self,
+        name: str,
+        ok: bool,
+        msg: str,
+        loading_token: Optional[int] = None,
+    ) -> None:
+        root = self.get_root()
+        if loading_token is not None and hasattr(root, "end_loading"):
+            if not root.end_loading(loading_token) and hasattr(root, "hide_loading"):
+                root.hide_loading()
+        elif hasattr(root, "hide_loading"):
+            root.hide_loading()
+        # Recorded for the poisoned-snapshot guard in _save_current_snapshot.
+        self._prefs.set("last_apply_ok", bool(ok))
+        if ok:
+            prev = self._active_layout
+            self._active_layout = name
+            self._prefs.set("active_layout", name)
+            if hasattr(root, "refresh_layout_capabilities"):
+                root.refresh_layout_capabilities()
+            self._set_status(f"{name} {tr('applied')}", "ok-col")
+            self.rebuild_grid()
+            overlay = getattr(root, "_toast_overlay", None)
+            latest = BackupManager.latest()
+
+            # Primary toast: undo (high priority — won't be dismissed by the
+            # restart toast below, and shows first).
+            if latest and overlay:
+                undo_toast = Adw.Toast(title=f"{name} {tr('applied')}", timeout=15)
+                undo_toast.set_priority(Adw.ToastPriority.HIGH)
+                undo_toast.set_button_label(tr("Undo"))
+                undo_toast.connect(
+                    "button-clicked",
+                    lambda _t: self._undo_layout(prev, latest),
+                )
+                overlay.add_toast(undo_toast)
+            elif overlay:
+                self._toast(f"{name} {tr('applied')}")
+
+            # Secondary toast: offer a session restart for the 100% clean
+            # state — only when the apply fell back to a pre-v7 path. The
+            # clean-room protocol applies the layout with login semantics
+            # (reset + load with every managed extension down), so its live
+            # result IS the fresh-session state and the toast would only
+            # undermine confidence in the switch.
+            if overlay and not getattr(LayoutApplier, "last_apply_cleanroom", False):
+                staged = getattr(LayoutApplier, "last_apply_staged", False)
+                restart_toast = Adw.Toast(
+                    title=tr("Restart the session for the 100% clean state"),
+                    timeout=0 if staged else 20,
+                )
+                if staged:
+                    restart_toast.set_priority(Adw.ToastPriority.HIGH)
+                restart_toast.set_button_label(tr("Restart now"))
+                restart_toast.connect(
+                    "button-clicked",
+                    lambda _t: self._restart_session(),
+                )
+                overlay.add_toast(restart_toast)
+        else:
+            self._set_status(f"{tr('Error')}: {msg}", "err-col")
+
+    def _restart_session(self) -> None:
+        """
+        Log out via gnome-session-quit. comm-gnome-config's
+        startgnome-community then runs reset+load on the clean
+        settings.gnome we wrote during apply, so the new session
+        starts from a guaranteed clean state.
+        """
+        import subprocess
+
+        try:
+            subprocess.Popen(
+                ["gnome-session-quit", "--logout", "--no-prompt"],
+                start_new_session=True,
+            )
+        except OSError as exc:
+            self._toast(f"{tr('Cannot restart session')}: {exc}")
+
+    def _undo_layout(self, prev_name, backup_path) -> None:
+        """Restaura o layout anterior a partir do backup."""
+        root = self.get_root()
+        loading_token = None
+        if hasattr(root, "begin_loading"):
+            loading_token = root.begin_loading(tr("Restoring previous layout…"))
+        elif hasattr(root, "show_loading"):
+            root.show_loading(tr("Restoring previous layout…"))
+
+        def task():
+            ok, info = BackupManager.restore(backup_path)
+            if ok:
+                GLib.idle_add(self._done_undo, prev_name, loading_token)
+            else:
+                GLib.idle_add(self._undo_failed, info, loading_token)
+
+        self._pool.submit(task)
+
+    def _undo_failed(self, info: str, loading_token: Optional[int] = None) -> None:
+        root = self.get_root()
+        if loading_token is not None and hasattr(root, "end_loading"):
+            if not root.end_loading(loading_token) and hasattr(root, "hide_loading"):
+                root.hide_loading()
+        elif hasattr(root, "hide_loading"):
+            root.hide_loading()
+        self._set_status(f"{tr('Error')}: {info}", "err-col")
+
+    def _done_undo(self, prev_name, loading_token: Optional[int] = None) -> None:
+        root = self.get_root()
+        if loading_token is not None and hasattr(root, "end_loading"):
+            if not root.end_loading(loading_token) and hasattr(root, "hide_loading"):
+                root.hide_loading()
+        elif hasattr(root, "hide_loading"):
+            root.hide_loading()
+        self._active_layout = prev_name
+        if prev_name:
+            self._prefs.set("active_layout", prev_name)
+        if hasattr(root, "refresh_layout_capabilities"):
+            root.refresh_layout_capabilities()
+        self._set_status(tr("Layout restored"), "ok-col")
+        self.rebuild_grid()
+        self._toast(tr("Previous layout restored"))
+
+    def _set_status(self, text: str, css: str) -> None:
+        for c in ("ok-col", "err-col", "dim-label"):
+            self._status_lbl.remove_css_class(c)
+        if css == "ok-col":
+            text = f"✓ {text}"
+        elif css == "err-col":
+            text = f"✗ {text}"
+        self._status_lbl.add_css_class(css)
+        self._status_lbl.set_label(text)
+        # Torna visivel somente quando ha texto — evita espaco vazio na pagina
+        self._status_lbl.set_visible(bool(text))

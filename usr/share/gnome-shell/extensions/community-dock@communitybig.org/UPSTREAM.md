@@ -15,10 +15,10 @@ License: GPL-2.0-or-later. `COPYING` is preserved unmodified.
 
 Local changes:
 
-- JavaScript runtime moved under the unified Layout Switcher runtime.
+- JavaScript runtime moved under the unified Big Gnome Center runtime.
 - Standalone Community Dock entry point and UUID metadata removed.
 - Original resource directory retained for schemas, stylesheet, and media.
-- Layout Switcher owns lifecycle, layout defaults, indicators, and panel policy.
+- Big Gnome Center owns lifecycle, layout defaults, indicators, and panel policy.
 - Active gettext entries and compiled catalogs are owned by the unified runtime.
 
 Do not remove upstream copyright or license notices. Keep functional parity

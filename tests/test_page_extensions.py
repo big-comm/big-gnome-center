@@ -7,10 +7,43 @@ from constants import tr
 from ui.page_extensions import (
     _installed_extension_description,
     _matches_installed_extension,
+    _visible_installed_extensions,
 )
 
+SOURCE = Path(__file__).parents[1] / "usr/share/big-gnome-center/ui/page_extensions.py"
 
-SOURCE = Path(__file__).parents[1] / "usr/share/layout-switcher/ui/page_extensions.py"
+
+def test_installed_list_hides_system_runtime_and_legacy_duplicates():
+    hidden_uuids = {
+        "community-dock@communitybig.org",
+        "community-menu@bigcommunity.org",
+        "community-panel@communitybig.org",
+        "layout-switcher-helper@bigcommunity.org",
+        "pamac-updates@manjaro.org",
+    }
+    extensions = [
+        {"uuid": uuid, "user": False}
+        for uuid in sorted(hidden_uuids)
+    ] + [
+        {"uuid": "community-menu@communitybig.org", "user": False},
+        {"uuid": "gtk4-ding@smedius.gitlab.com", "user": False},
+    ]
+
+    visible = _visible_installed_extensions(extensions)
+
+    assert [ext["uuid"] for ext in visible] == [
+        "community-menu@communitybig.org",
+        "gtk4-ding@smedius.gitlab.com",
+    ]
+
+
+def test_installed_list_keeps_user_copy_of_hidden_system_uuid():
+    extension = {
+        "uuid": "community-menu@bigcommunity.org",
+        "user": True,
+    }
+
+    assert _visible_installed_extensions([extension]) == [extension]
 
 
 def test_installed_extension_filter_matches_visible_metadata():

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Layout Switcher ownership boundary for the inherited Taskbar/Panel surface.
+// Big Gnome Center ownership boundary for the inherited Taskbar/Panel surface.
 
 import GLib from 'gi://GLib';
 

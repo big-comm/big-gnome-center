@@ -1,6 +1,6 @@
 # Community Menu
 
-GNOME Shell 50 and 51 applications menu used by the Community Layout Switcher.
+GNOME Shell 50 and 51 applications menu used by the Big Gnome Center.
 
 The extension is a GPL-2.0-or-later derivative of Zorin Menu 5.3.5. It
 keeps the application-list, application-grid, and Mint-style layouts while

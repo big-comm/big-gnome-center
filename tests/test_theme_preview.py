@@ -1,9 +1,49 @@
 # SPDX-License-Identifier: MIT
 """Tests for theme_preview.py — folder icon discovery and color extraction."""
 
+import struct
 from unittest.mock import patch
 
 import theme_preview
+
+
+def _xcursor_image(size, rgba):
+    red, green, blue, alpha = rgba
+    pixels = bytes((blue, green, red, alpha)) * size * size
+    chunk = struct.pack(
+        "<9I",
+        36,
+        theme_preview._XCURSOR_IMAGE_TYPE,
+        size,
+        1,
+        size,
+        size,
+        1,
+        1,
+        0,
+    )
+    return chunk + pixels
+
+
+def _xcursor_file(*images):
+    header_size = 16
+    toc_size = len(images) * 12
+    position = header_size + toc_size
+    toc = bytearray()
+    chunks = bytearray()
+    for size, rgba in images:
+        chunk = _xcursor_image(size, rgba)
+        toc.extend(
+            struct.pack(
+                "<III",
+                theme_preview._XCURSOR_IMAGE_TYPE,
+                size,
+                position,
+            )
+        )
+        chunks.extend(chunk)
+        position += len(chunk)
+    return b"Xcur" + struct.pack("<III", header_size, 0x00010000, len(images)) + toc + chunks
 
 
 class TestFindFolderIcon:
@@ -48,6 +88,47 @@ class TestFindFolderIcon:
     def test_returns_none_for_missing_theme(self, tmp_path):
         with patch.object(theme_preview, "_ICON_ROOTS", [tmp_path]):
             assert theme_preview.find_folder_icon("Nonexistent") is None
+
+
+class TestCursorPreview:
+    def test_detects_cursor_theme(self, tmp_path):
+        (tmp_path / "Bibata" / "cursors").mkdir(parents=True)
+        with patch.object(theme_preview, "_ICON_ROOTS", [tmp_path]):
+            assert theme_preview.is_cursor_theme("Bibata") is True
+            assert theme_preview.is_cursor_theme("Missing") is False
+
+    def test_decodes_closest_xcursor_frame_as_rgba(self, tmp_path):
+        cursor = tmp_path / "left_ptr"
+        cursor.write_bytes(
+            _xcursor_file(
+                (48, (10, 20, 30, 255)),
+                (24, (40, 50, 60, 200)),
+            )
+        )
+
+        width, height, pixels = theme_preview._decode_xcursor(cursor)
+
+        assert (width, height) == (24, 24)
+        assert pixels[:4] == bytes((40, 50, 60, 200))
+        assert len(pixels) == 24 * 24 * 4
+
+    def test_finds_five_cursor_slots(self, tmp_path):
+        cursor_dir = tmp_path / "Bibata" / "cursors"
+        cursor_dir.mkdir(parents=True)
+        cursor_data = _xcursor_file((24, (10, 20, 30, 255)))
+        for name in ("left_ptr", "hand2", "xterm", "watch", "fleur"):
+            (cursor_dir / name).write_bytes(cursor_data)
+
+        with patch.object(theme_preview, "_ICON_ROOTS", [tmp_path]):
+            previews = theme_preview.find_theme_cursors("Bibata")
+
+        assert len(previews) == 5
+        assert all(preview is not None for preview in previews)
+
+    def test_rejects_invalid_cursor_data(self, tmp_path):
+        cursor = tmp_path / "left_ptr"
+        cursor.write_bytes(b"not an xcursor")
+        assert theme_preview._decode_xcursor(cursor) is None
 
 
 class TestExtractThemeColor:
@@ -102,13 +183,5 @@ class TestExtractThemeColor:
     def test_unknown_kind_returns_none(self):
         assert theme_preview.extract_theme_color("AnyTheme", "weird") is None
 
-    def test_shell_theme_css(self, tmp_path):
-        theme_dir = tmp_path / "ShellT"
-        shell_dir = theme_dir / "gnome-shell"
-        shell_dir.mkdir(parents=True)
-        (shell_dir / "gnome-shell.css").write_text(
-            "@define-color theme_selected_bg_color #1c71d8;\n"
-        )
-
-        with patch.object(theme_preview, "_THEME_ROOTS", [tmp_path]):
-            assert theme_preview.extract_theme_color("ShellT", "shell") == "#1c71d8"
+    def test_shell_kind_is_not_supported(self):
+        assert theme_preview.extract_theme_color("AnyTheme", "shell") is None

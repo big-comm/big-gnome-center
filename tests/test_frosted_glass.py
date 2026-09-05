@@ -97,7 +97,7 @@ def test_extension_does_not_depend_on_blur_my_shell_runtime():
 
 def test_package_and_layouts_do_not_depend_on_blur_my_shell():
     assert "gnome-shell-extension-blur-my-shell" not in (ROOT / "pkgbuild/PKGBUILD").read_text()
-    for layout in (ROOT / "usr/share/layout-switcher/layouts").glob("*.txt"):
+    for layout in (ROOT / "usr/share/big-gnome-center/layouts").glob("*.txt"):
         assert "blur-my-shell@aunetx" not in layout.read_text()
 
 
@@ -111,7 +111,7 @@ def test_corner_shader_and_overview_are_project_owned():
 
 def test_unsafe_window_fallback_is_gated_in_shell_and_ui():
     extension = (EXTENSION / "extension.js").read_text()
-    controls = (ROOT / "usr/share/layout-switcher/ui/frosted_glass.py").read_text()
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
 
     assert "const WINDOW_FALLBACK_AVAILABLE = false" in extension
     assert "WINDOW_BLUR_AVAILABLE = False" in controls
@@ -119,8 +119,8 @@ def test_unsafe_window_fallback_is_gated_in_shell_and_ui():
 
 
 def test_layout_switcher_exposes_frosted_glass_controls():
-    effects = (ROOT / "usr/share/layout-switcher/ui/page_effects.py").read_text()
-    controls = (ROOT / "usr/share/layout-switcher/ui/frosted_glass.py").read_text()
+    effects = (ROOT / "usr/share/big-gnome-center/ui/page_effects.py").read_text()
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
 
     assert "FrostedGlassControls(self._pool, self._toast)" in effects
     assert "if is_frosted_glass_supported():" in effects
@@ -525,6 +525,15 @@ def test_overview_controls_reuse_the_blurred_backdrop():
     assert "background-color: rgba(200, 200, 200, 0.20) !important" in stylesheet
     assert "border-color: transparent !important" in stylesheet
     assert "box-shadow: none !important" in stylesheet
+
+
+def test_overview_material_unloads_from_the_current_shell_theme():
+    material = (EXTENSION / "overviewMaterial.js").read_text()
+    unload = material.split("_unload() {", 1)[1].split("\n    }", 1)[0]
+
+    assert "St.ThemeContext.get_for_stage(global.stage).get_theme()" in unload
+    assert "theme?.unload_stylesheet(this._file)" in unload
+    assert "this._theme?.unload_stylesheet" not in unload
 
 
 def test_overview_does_not_call_private_app_grid_loading_methods():

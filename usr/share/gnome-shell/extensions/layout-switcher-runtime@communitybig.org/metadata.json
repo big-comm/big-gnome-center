@@ -1,8 +1,8 @@
 {
   "uuid": "layout-switcher-runtime@communitybig.org",
-  "name": "Layout Switcher Shell Runtime",
+  "name": "Big Gnome Center Shell Runtime",
   "description": "Focused dock and taskbar runtime for BigCommunity desktop layouts.",
   "shell-version": ["50", "51"],
   "version": 2,
-  "url": "https://github.com/BigCommunity/layout-switcher"
+  "url": "https://github.com/big-comm/layout-switcher"
 }

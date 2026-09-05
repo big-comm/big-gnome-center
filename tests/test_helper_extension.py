@@ -32,19 +32,20 @@ def test_live_color_switch_empties_shell_rebase_slices():
     assert "hybridArcMenu" not in source
     assert "!live.has(COMMUNITY_MENU_UUID)" in source
     assert "this._activeLayoutLabel === 'Desk UX'" in source
-    assert "this._onColorSchemeChanged(false)" in source
-    assert "const managedNativeState = nativeShell" in source
-    assert "const manageShell = reconcileShell && managedNativeState" in source
+    assert "this._onColorSchemeChanged();" in source
+    assert "const manageShell = reconcileShell &&" in source
     assert "manageShell ? 'managed' : 'preserved'" in source
-    assert "? [LIGHT_STYLE_UUID, USER_THEME_UUID]" in source
-    assert "if (!(nativeShell && dark) && !isLive(wantOn))" in source
+    assert "_retireLegacyThemeExtensions(mgr)" in source
+    assert "schema_id: 'org.gnome.shell.extensions.user-theme'" not in source
+    assert "mgr.enableExtension(LEGACY_LIGHT_STYLE_UUID)" not in source
+    assert "mgr.enableExtension(LEGACY_USER_THEME_UUID)" not in source
     assert "Main.setThemeStylesheet(null)" in source
 
 
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 76" in source
+    assert "const HELPER_BUILD = 78" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -108,7 +109,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 76" in source
+    assert "const HELPER_BUILD = 78" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -307,14 +308,29 @@ def test_fixed_dark_layouts_resolve_the_shell_stylesheet_before_enable():
         assert f"'{layout}'" in source.split("const FIXED_DARK_LAYOUTS", 1)[1].split(
             "]);", 1
         )[0]
-    assert "Main.sessionMode.colorScheme = 'force-dark'" in source
-    assert "ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout))" in source
-    color_sync = source.index(
-        "ensureValidColorScheme(FIXED_DARK_LAYOUTS.has(targetLayout))"
-    )
+    assert "desired = 'force-dark'" in source
+    assert "LEGACY_LIGHT_STYLE_UUID" in source
+    assert "target.has(LIGHT_STYLE_UUID)" not in source
+    color_sync = source.index("if (applyShellColorScheme(targetLayout, dark))")
     theme_load = source.index("Main.loadTheme();", color_sync)
     first_enable = source.index("mgr.enableExtension(uuid)", theme_load)
     assert color_sync < theme_load < first_enable
+
+
+def test_theme_reload_drops_deleted_custom_stylesheets():
+    source = HELPER.read_text()
+
+    cleanup = source.split("function sanitizeCustomStylesheets()", 1)[1]
+    cleanup = cleanup.split("function applyShellColorScheme", 1)[0]
+    assert "get_custom_stylesheets()" in cleanup
+    assert "if (!file || !uri || seen.has(uri))" in cleanup
+    assert "replacement.load_stylesheet(file)" in cleanup
+    assert "themeContext.set_theme(replacement)" in cleanup
+    apply_scheme = source.split("function applyShellColorScheme", 1)[1]
+    apply_scheme = apply_scheme.split("export default class", 1)[0]
+    assert apply_scheme.index("sanitizeCustomStylesheets()") < apply_scheme.index(
+        "St.Settings.get().notify('color-scheme')"
+    )
 
 
 def test_g_unity_shell_is_restored_before_extensions_are_disabled():

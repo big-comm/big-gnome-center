@@ -1455,7 +1455,7 @@ export class DockSurfaceManager {
         DockSurfaceManager._singleton = this;
         this._extension = extension;
         if (!this._extension.createDockActor)
-            throw new Error('Layout Switcher Dock actor factory is required');
+            throw new Error('Big Gnome Center Dock actor factory is required');
         this._signalsHandler = new Utils.GlobalSignalsHandler(this);
         this._methodInjections = new Utils.InjectionsHandler(this);
         this._vfuncInjections = new Utils.VFuncInjectionsHandler(this);

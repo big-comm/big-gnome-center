@@ -26,7 +26,7 @@ def test_community_dock_is_a_private_resource_host():
 
 def test_community_dock_tracks_accepted_core_baseline():
     assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
-        "ce2d4a4752fd1e29b2cf056dcc34483b3b9e8fb83a068be3cae37b8d32745188"
+        "b6a3c7ccfa9a4abf3e16022ce666e0688595bb37c6ddc802a02bcd440da22146"
     )
 
 
@@ -42,7 +42,7 @@ def test_community_dock_preserves_license_provenance_and_schema():
 
 
 def test_layouts_do_not_reference_external_dash_to_dock():
-    for path in (ROOT / "usr/share/layout-switcher/layouts").glob("*.txt"):
+    for path in (ROOT / "usr/share/big-gnome-center/layouts").glob("*.txt"):
         layout = path.read_text()
         shell_section = layout.split("[org/gnome/shell]", 1)[1].split("\n\n", 1)[0]
         assert "dash-to-dock@micxgx.gmail.com" not in shell_section
@@ -50,7 +50,7 @@ def test_layouts_do_not_reference_external_dash_to_dock():
 
 def test_dock_layouts_use_only_unified_runtime():
     for filename in ("biggnome.txt", "g-unity.txt"):
-        layout = (ROOT / f"usr/share/layout-switcher/layouts/{filename}").read_text()
+        layout = (ROOT / f"usr/share/big-gnome-center/layouts/{filename}").read_text()
         shell_section = layout.split("[org/gnome/shell]", 1)[1].split("\n\n", 1)[0]
         enabled_line = next(
             line for line in shell_section.splitlines() if line.startswith("enabled-extensions=")
@@ -61,7 +61,7 @@ def test_dock_layouts_use_only_unified_runtime():
 
 
 def test_g_unity_preserves_its_left_fixed_dock_baseline():
-    layout = (ROOT / "usr/share/layout-switcher/layouts/g-unity.txt").read_text()
+    layout = (ROOT / "usr/share/big-gnome-center/layouts/g-unity.txt").read_text()
     dock = layout.split("[org/gnome/shell/extensions/dash-to-dock]", 1)[1].split("\n\n", 1)[0]
 
     for setting in (
@@ -87,7 +87,7 @@ def test_helper_and_applier_own_only_community_dock():
         ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-helper@communitybig.org/extension.js"
     ).read_text()
-    applier = (ROOT / "usr/share/layout-switcher/layout_applier.py").read_text()
+    applier = (ROOT / "usr/share/big-gnome-center/layout_applier.py").read_text()
 
     assert "const COMMUNITY_DOCK_UUID = 'community-dock@communitybig.org'" in helper
     assert "_dockWillRun()" in helper
@@ -174,7 +174,7 @@ def test_community_dock_focus_tracks_newly_focused_windows_immediately():
 def test_community_dock_has_no_independent_settings_menu():
     app_icons = (DOCK_MODULES / "appIcons.js").read_text()
 
-    assert "Community Dock is configured exclusively by Layout Switcher." in app_icons
+    assert "Community Dock is configured exclusively by Big Gnome Center." in app_icons
     assert "DockShowAppsIconMenu" not in app_icons
     assert "Docking.DockSurfaceManager.extension.openPreferences()" not in app_icons
     assert "__('Dash to Dock')" not in app_icons

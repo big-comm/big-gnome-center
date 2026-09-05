@@ -1,4 +1,4 @@
-// Layout Switcher private Dock module.
+// Big Gnome Center private Dock module.
 export {default as Atk} from 'gi://Atk';
 export {default as Clutter} from 'gi://Clutter';
 export {default as Cogl} from 'gi://Cogl';

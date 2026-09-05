@@ -4,6 +4,7 @@
 import json
 from io import BytesIO
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
 
 import ego_client
 
@@ -78,6 +79,38 @@ SAMPLE_INFO = {
 
 
 class TestSearch:
+    def test_default_sort_uses_server_relevance(self, tmp_path):
+        with (
+            patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),
+            patch(
+                "ego_client.urllib.request.urlopen",
+                return_value=_fake_response(SAMPLE_QUERY),
+            ) as mock_urlopen,
+        ):
+            ego_client.search(query="Bluetooth Battery Meter", use_cache=False)
+
+        request = mock_urlopen.call_args.args[0]
+        params = parse_qs(urlparse(request.full_url).query)
+        assert params["sort"] == [ego_client.SORT_RELEVANCE]
+
+    def test_explicit_popularity_sort_is_preserved(self, tmp_path):
+        with (
+            patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),
+            patch(
+                "ego_client.urllib.request.urlopen",
+                return_value=_fake_response(SAMPLE_QUERY),
+            ) as mock_urlopen,
+        ):
+            ego_client.search(
+                query="Bluetooth Battery Meter",
+                sort=ego_client.SORT_POPULARITY,
+                use_cache=False,
+            )
+
+        request = mock_urlopen.call_args.args[0]
+        params = parse_qs(urlparse(request.full_url).query)
+        assert params["sort"] == [ego_client.SORT_POPULARITY]
+
     def test_parses_response(self, tmp_path):
         with (
             patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),
@@ -96,6 +129,68 @@ class TestSearch:
             assert ext.name == "Dash to Dock"
             assert ext.downloads == 1234567
             assert ext.icon_url.startswith("https://extensions.gnome.org/")
+
+    def test_relevance_promotes_exact_name_match(self, tmp_path):
+        payload = {
+            "extensions": [
+                {
+                    "uuid": "area-screenshot@example.com",
+                    "name": "Area Screenshot",
+                    "description": "Move a screenshot to the dock",
+                },
+                {
+                    "uuid": "dash-to-dock@example.com",
+                    "name": "Dash to Dock",
+                    "description": "A dock for the GNOME Shell",
+                },
+            ],
+            "page": 1,
+            "numpages": 1,
+            "total": 2,
+        }
+        with (
+            patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),
+            patch(
+                "ego_client.urllib.request.urlopen",
+                return_value=_fake_response(payload),
+            ),
+        ):
+            result = ego_client.search(query="dash to dock", use_cache=False)
+
+        assert result is not None
+        assert [item.name for item in result.extensions] == [
+            "Dash to Dock",
+            "Area Screenshot",
+        ]
+
+    def test_non_relevance_sort_preserves_server_order(self, tmp_path):
+        payload = {
+            "extensions": [
+                {"uuid": "popular@example.com", "name": "Popular"},
+                {"uuid": "exact@example.com", "name": "Exact Match"},
+            ],
+            "page": 1,
+            "numpages": 1,
+            "total": 2,
+        }
+        with (
+            patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"),
+            patch(
+                "ego_client.urllib.request.urlopen",
+                return_value=_fake_response(payload),
+            ),
+        ):
+            result = ego_client.search(
+                query="Exact Match",
+                sort=ego_client.SORT_DOWNLOADS,
+                use_cache=False,
+            )
+
+        assert result is not None
+        assert [item.name for item in result.extensions] == [
+            "Popular",
+            "Exact Match",
+        ]
 
     def test_cache_hit_skips_http(self, tmp_path):
         with patch("ego_cache.EGO_CACHE_DIR", tmp_path / "ego"):

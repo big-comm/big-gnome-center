@@ -216,6 +216,7 @@ def test_runtime_defaults_match_accepted_layout_contracts():
     assert runtime.get("Desk UX", "dock-hover") == "default"
     assert runtime.get("Classic", "panel-height") == 38
     assert runtime.get("Minimal", "panel-opacity") == 65
+    assert runtime.get("Minimal", "panel-visibility") == "always-visible"
     assert runtime.get("BigGnome", "dock-menu-side") == "right"
     assert runtime.get("BigGnome", "dock-magnification") == 40
     assert runtime.get("G-Unity", "dock-magnification") == 40
@@ -282,7 +283,6 @@ def test_compatibility_adapter_imports_active_layout_once():
 def test_compatibility_adapter_imports_all_legacy_dock_settings_once():
     settings = settings_fixture()
     settings.active_layout = "BigGnome"
-    settings.runtime_active = True
     settings.dock.values["background-opacity"] = 0.44
     settings.dock.values["dash-max-icon-size"] = 52
     settings.dock.values["intellihide"] = False
@@ -305,7 +305,6 @@ def test_compatibility_adapter_does_not_import_classic_indicator():
     settings.active_layout = "Classic"
     settings.dock_active = False
     settings.community_panel_active = True
-    settings.runtime_active = True
 
     settings._import_active_layout_once()
 
@@ -332,7 +331,6 @@ def test_compatibility_adapter_imports_legacy_taskbar_opacity_once():
     settings.active_layout = "Hybrid"
     settings.dock_active = False
     settings.community_panel_active = True
-    settings.runtime_active = True
     settings.community_panel.values["trans-panel-opacity"] = 0.46
 
     settings._import_active_layout_once()
@@ -347,7 +345,6 @@ def test_compatibility_adapter_imports_legacy_taskbar_height_once():
     settings.active_layout = "Hybrid"
     settings.dock_active = False
     settings.community_panel_active = True
-    settings.runtime_active = True
     settings.community_panel.values["panel-sizes"] = '{"0":46}'
 
     settings._import_active_layout_once()
@@ -355,6 +352,37 @@ def test_compatibility_adapter_imports_legacy_taskbar_height_once():
     settings._import_active_layout_once()
 
     assert settings.runtime.values[("Hybrid", "panel-height")] == 46
+
+
+@pytest.mark.parametrize(
+    ("layout", "dock_active", "taskbar_active"),
+    [
+        ("BigGnome", True, False),
+        ("G-Unity", True, False),
+        ("Hybrid", False, True),
+        ("Desk UX", False, True),
+        ("Classic", False, True),
+        ("Minimal", False, False),
+    ],
+)
+def test_active_runtime_profiles_never_import_legacy_component_settings(
+    layout,
+    dock_active,
+    taskbar_active,
+):
+    settings = settings_fixture()
+    settings.active_layout = layout
+    settings.dock_active = dock_active
+    settings.community_panel_active = taskbar_active
+    settings.runtime_active = True
+    settings.panel.values["indicator-style"] = "dot"
+    settings.community_panel.values["dot-style-focused"] = "DOTS"
+
+    settings._import_active_layout_once()
+
+    assert settings.runtime.active_layout == layout
+    assert settings.runtime.imported == {layout}
+    assert settings.runtime.values == {}
 
 
 def test_live_writes_are_mirrored_to_layout_owned_runtime_settings():
@@ -675,6 +703,23 @@ def test_minimal_opacity_writes_only_layout_owned_settings():
     assert settings.panel.calls == []
 
 
+def test_minimal_visibility_writes_only_layout_owned_settings():
+    settings = settings_fixture()
+    settings.active_layout = "Minimal"
+    settings.dock_active = False
+    settings.community_panel_active = False
+    settings.runtime_active = True
+    legacy_values = dict(settings.panel.values)
+
+    for mode in ("always-visible", "always-hidden", "intelligent"):
+        settings.set_panel_visibility(mode)
+        assert settings.panel_visibility() == mode
+
+    assert settings.runtime.values[("Minimal", "panel-visibility")] == "intelligent"
+    assert settings.panel.values == legacy_values
+    assert settings.panel.calls == []
+
+
 def test_minimal_restore_changes_only_runtime_owned_settings():
     settings = settings_fixture()
     settings.active_layout = "Minimal"
@@ -682,11 +727,13 @@ def test_minimal_restore_changes_only_runtime_owned_settings():
     settings.community_panel_active = False
     settings.runtime_active = True
     settings.runtime.values[("Minimal", "panel-opacity")] = 42
+    settings.runtime.values[("Minimal", "panel-visibility")] = "always-hidden"
     legacy_panel_values = dict(settings.panel.values)
 
     settings.restore_layout_defaults()
 
     assert settings.panel_opacity() == 65
+    assert settings.panel_visibility() == "always-visible"
     assert settings.runtime.values == {}
     assert settings.panel.values == legacy_panel_values
     assert settings.panel.calls == []
@@ -784,7 +831,7 @@ def test_community_panel_indicator_styles_map_to_native_taskbar_styles():
 
 
 def test_window_exposes_panel_and_dock_navigation():
-    window = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
+    window = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
 
     assert "from ui.page_panel_dock import PanelDockPage" in window
     assert '"panel-dock": lambda: PanelDockPage' in window
@@ -793,8 +840,8 @@ def test_window_exposes_panel_and_dock_navigation():
 
 
 def test_minimal_keeps_session_controls_reachable():
-    window = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
-    layouts = (ROOT / "usr/share/layout-switcher/ui/page_layouts.py").read_text()
+    window = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
+    layouts = (ROOT / "usr/share/big-gnome-center/ui/page_layouts.py").read_text()
 
     assert "def refresh_layout_capabilities(self)" in window
     assert "panel_dock_row.set_sensitive(True)" in window
@@ -804,14 +851,14 @@ def test_minimal_keeps_session_controls_reachable():
 
 
 def test_panel_controls_refresh_after_extension_state_settles():
-    window = (ROOT / "usr/share/layout-switcher/ui/window.py").read_text()
+    window = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
 
     assert 'panel_dock_page = self._pages.get("panel-dock")' in window
     assert "panel_dock_page.refresh()" in window
 
 
 def test_first_upgrade_keeps_restart_action_visible():
-    layouts = (ROOT / "usr/share/layout-switcher/ui/page_layouts.py").read_text()
+    layouts = (ROOT / "usr/share/big-gnome-center/ui/page_layouts.py").read_text()
 
     assert 'getattr(LayoutApplier, "last_apply_staged", False)' in layouts
     assert "timeout=0 if staged else 20" in layouts
@@ -819,7 +866,7 @@ def test_first_upgrade_keeps_restart_action_visible():
 
 
 def test_page_exposes_opacity_and_visibility_controls():
-    page = (ROOT / "usr/share/layout-switcher/ui/page_panel_dock.py").read_text()
+    page = (ROOT / "usr/share/big-gnome-center/ui/page_panel_dock.py").read_text()
 
     assert 'tr("Dock transparency")' in page
     assert 'tr("Dock size")' in page
@@ -880,8 +927,8 @@ def test_page_exposes_opacity_and_visibility_controls():
     assert 'tr("Skip the initial Activities overview for this layout.")' in page
     assert "set_skip_startup_overview" in page
     assert 'active_layout == "Minimal"' in page
-    assert "native_panel_opacity_available" in page
-    assert "panel_available and not native_panel_opacity_available" in page
+    assert "native_panel_available" in page
+    assert "self._panel_visibility.set_visible(panel_available)" in page
 
 
 def test_magnification_ui_is_translated_for_all_app_locales():
@@ -893,7 +940,7 @@ def test_magnification_ui_is_translated_for_all_app_locales():
     localedir = ROOT / "usr/share/locale"
 
     for locale in APP_LOCALES:
-        catalog = gettext.translation("layout-switcher", localedir, [locale])
+        catalog = gettext.translation("big-gnome-center", localedir, [locale])
         for message in messages:
             translated = catalog.gettext(message)
             assert translated

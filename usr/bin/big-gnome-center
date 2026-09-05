@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# big-gnome-center — Launcher for Big Gnome Center
+
+set -euo pipefail
+
+APP_DIRS=(
+    "/usr/share/big-gnome-center"
+    "/usr/local/share/big-gnome-center"
+)
+
+APP_DIR=""
+for dir in "${APP_DIRS[@]}"; do
+    if [[ -f "${dir}/main.py" ]]; then
+        APP_DIR="${dir}"
+        break
+    fi
+done
+
+# Development fallback: relative to this script
+if [[ -z "${APP_DIR}" ]]; then
+    SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+    APP_DIR="${SCRIPT_DIR}/../share/big-gnome-center"
+fi
+
+if [[ ! -f "${APP_DIR}/main.py" ]]; then
+    echo "Error: big-gnome-center not found." >&2
+    exit 1
+fi
+
+if [[ -z "${GSK_RENDERER:-}" ]]; then
+    if compgen -G /var/lib/pacman/local/mesa-amber-* >/dev/null || systemd-detect-virt -q; then
+        export GSK_RENDERER="cairo"
+    fi
+fi
+
+exec python3 "${APP_DIR}/main.py" "$@"
