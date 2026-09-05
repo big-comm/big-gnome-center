@@ -15,6 +15,7 @@ export class PanelAutohide {
         this._reveal = reveal;
         this._originalTranslation = actor.translation_y;
         this._destination = null;
+        this._unredirectDisabled = false;
         this._enabled = false;
         zone.reactive = false;
         this._pressure = null;
@@ -87,8 +88,21 @@ export class PanelAutohide {
             y >= monitor.y && y < monitor.y + Math.max(2, this._actor.height);
     }
 
+    _setComposited(composited) {
+        if (this._unredirectDisabled === composited)
+            return;
+        if (composited)
+            global.compositor.disable_unredirect();
+        else
+            global.compositor.enable_unredirect();
+        this._unredirectDisabled = composited;
+    }
+
     setVisible(visible, immediate = false) {
         const actor = this._actor;
+        // Keep overlays composited until their hide animation completes.
+        if (visible || actor.visible)
+            this._setComposited(true);
         this._zone.reactive = this._enabled && !visible && !this._pressure;
         const destination = visible
             ? this._originalTranslation
@@ -106,6 +120,8 @@ export class PanelAutohide {
         if (immediate || (!visible && !actor.visible)) {
             actor.translation_y = destination;
             actor.visible = visible;
+            if (!visible)
+                this._setComposited(false);
             Main.layoutManager._queueUpdateRegions();
             return;
         }
@@ -116,6 +132,8 @@ export class PanelAutohide {
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
                 actor.visible = visible;
+                if (!visible)
+                    this._setComposited(false);
                 Main.layoutManager._queueUpdateRegions();
             },
         });
@@ -128,5 +146,6 @@ export class PanelAutohide {
         this._zone.disconnect(this._leaveId);
         this._actor.remove_transition('translation-y');
         this._actor.translation_y = this._originalTranslation;
+        this._setComposited(false);
     }
 }

@@ -10,6 +10,7 @@ const source = fs.readFileSync(path, 'utf8').replace(/^import .*;\n/gm, '')
 const timers = new Map();
 let nextId = 0;
 let revealed = 0;
+let compositingHolds = 0;
 class Signals {
     callbacks = new Map();
     connect(name, callback) { this.callbacks.set(name, callback); return name; }
@@ -40,7 +41,13 @@ const context = {
     Main: {layoutManager: {
         primaryMonitor: {x: 0, y: 0, width: 1280}, _queueUpdateRegions() {},
     }},
-    global: {backend: {capabilities: 1}, get_pointer: () => [100, 0]},
+    global: {
+        backend: {capabilities: 1}, get_pointer: () => [100, 0],
+        compositor: {
+            disable_unredirect() { compositingHolds++; },
+            enable_unredirect() { compositingHolds--; assert.ok(compositingHolds >= 0); },
+        },
+    },
 };
 const Autohide = vm.runInNewContext(source + '\nPanelAutohide;', context);
 const actor = {
@@ -68,21 +75,28 @@ pressure.callbacks.get('trigger')();
 assert.equal(revealed, 1);
 
 panel.setVisible(false);
+assert.equal(compositingHolds, 1, 'hide animation must remain composited');
 assert.equal(actor.visible, true, 'hide only after the slide finishes');
 assert.equal(actor.transition.duration, 200);
 assert.equal(actor.transition.translation_y, -32);
 panel.setVisible(false);
 assert.equal(actor.animations.length, 1, 'repeated updates must not restart motion');
+assert.equal(compositingHolds, 1, 'repeated updates must not acquire duplicate holds');
 actor.finish();
+assert.equal(compositingHolds, 0, 'release only after fully hidden');
 assert.equal(actor.visible, false);
 panel.setVisible(true);
+assert.equal(compositingHolds, 1, 'reveal must inhibit direct scanout before showing');
 assert.equal(actor.visible, true);
 assert.equal(actor.translation_y, -32);
 assert.equal(actor.transition.translation_y, 0);
 panel.setVisible(false);
+assert.equal(compositingHolds, 1, 'reversal must keep the compositing hold');
 actor.finish();
+assert.equal(compositingHolds, 0);
 assert.equal(actor.visible, false, 'reversing motion must retain the newest target');
 panel.setVisible(true, true);
+assert.equal(compositingHolds, 1, 'keyboard reveal must also remain composited');
 assert.equal(actor.visible, true);
 assert.equal(actor.translation_y, 0);
 assert.equal(zone.reactive, false, 'the reveal strip must not intercept panel clicks');
@@ -147,6 +161,7 @@ timer.callback();
 assert.equal(revealed, 2);
 panel.setVisible(false);
 panel.destroy();
+assert.equal(compositingHolds, 0, 'teardown must release interrupted animation holds');
 assert.equal(actor.transition, null);
 assert.equal(actor.translation_y, 0, 'teardown must restore panel geometry');
 assert.equal(zone.callbacks.size, 0);
@@ -196,4 +211,76 @@ assert.equal(requests, 0, 'leaving the edge resets taskbar dwell');
 now += 100000;
 pointer._checkMousePointer(1, 1);
 assert.equal(requests, 1);
-console.log('Panel animation, pressure, dwell, reversal, and teardown passed');
+const secondActor = {...actor, visible: false, animations: []};
+const secondPanel = new Autohide(secondActor, new Signals(), () => {});
+secondPanel.setVisible(true, true);
+assert.equal(compositingHolds, 1);
+secondPanel.setVisible(false, true);
+assert.equal(compositingHolds, 0, 'immediate fullscreen hide releases the hold');
+secondPanel.destroy();
+assert.equal(compositingHolds, 0, 'teardown after immediate hide must not release twice');
+
+const dockSource = fs.readFileSync(new URL('dockSurface.js', path), 'utf8');
+const method = name => {
+    const start = dockSource.indexOf(`    ${name}(`);
+    const body = dockSource.indexOf('{', start);
+    let depth = 1;
+    let end = body + 1;
+    for (; depth; end++) {
+        if (dockSource[end] === '{') depth++;
+        if (dockSource[end] === '}') depth--;
+    }
+    return dockSource.slice(start, end);
+};
+const dockContext = {
+    ...context,
+    Meta: {},
+    State: {HIDDEN: 0, HIDING: 1, SHOWING: 2, SHOWN: 3},
+    DockSurfaceManager: {settings: {}, extension: {visibilityModes: {
+        runtimeState: () => ({autohide: true, intellihide: false}),
+    }}},
+};
+const Dock = vm.runInNewContext(`class Dock {
+    ${['_disableUnredirect', '_restoreUnredirect', '_animateIn', '_animateOut',
+        '_updateVisibilityMode'].map(method).join('\n')}
+}; Dock`, dockContext);
+const sharedPanel = new Autohide({...actor, visible: false}, new Signals(), () => {});
+for (const intelligent of [false, true]) {
+    const dock = new Dock();
+    let transition;
+    dock._slider = {ease_property(_property, _value, options) { transition = options; }};
+    dock._intellihideIsEnabled = intelligent;
+    dock.dash = {iconAnimator: {start() {}, pause() {}}};
+    dock._removeBarrierTimeoutId = 0;
+    dock._updateBarrier = () => {};
+    dock._removeBarrier = () => {};
+    dock.add_style_class_name = () => {};
+    dock.remove_style_class_name = () => {};
+    dock._intellihide = {enable() {}, disable() {}};
+    dock._updateDashVisibility = () => {};
+    dock._animateIn(0.2, 0);
+    assert.equal(compositingHolds, 1, 'both dock autohide modes must inhibit direct scanout');
+    dock._animateIn(0.2, 0);
+    assert.equal(compositingHolds, 1, 'repeated reveals must not duplicate holds');
+    dock._updateVisibilityMode();
+    assert.equal(compositingHolds, 1, 'changing to always-hidden must not release a visible dock');
+    dock._animateOut(0.2, 0);
+    assert.equal(compositingHolds, 1, 'dock hide animation must remain composited');
+    dock._animateIn(0.2, 0);
+    assert.equal(compositingHolds, 1, 'reversing a dock hide keeps the hold');
+    dock._animateOut(0.2, 0);
+    transition.onComplete();
+    assert.equal(compositingHolds, 0, 'fully hidden dock releases the hold in either mode');
+    sharedPanel.setVisible(true, true);
+    dock._animateIn(0.2, 0);
+    assert.equal(compositingHolds, 2, 'panel and dock own independent holds');
+    dock._restoreUnredirect();
+    assert.equal(compositingHolds, 1, 'dock teardown must not release the panel hold');
+    dock._restoreUnredirect();
+    assert.equal(compositingHolds, 1, 'dock cleanup is idempotent');
+    sharedPanel.setVisible(false, true);
+    assert.equal(compositingHolds, 0);
+}
+sharedPanel.destroy();
+assert.ok(method('_onDestroy').includes('this._restoreUnredirect();'));
+console.log('Panel and dock animation, pressure, compositing and teardown passed');

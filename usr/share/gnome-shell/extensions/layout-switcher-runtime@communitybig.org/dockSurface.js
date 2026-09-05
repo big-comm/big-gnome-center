@@ -733,7 +733,6 @@ export const DockedDash = GObject.registerClass({
             this._intellihide.enable();
         } else {
             this._intellihide.disable();
-            this._restoreUnredirect();
         }
 
         this._updateDashVisibility();
@@ -864,8 +863,7 @@ export const DockedDash = GObject.registerClass({
     }
 
     _animateIn(time, delay) {
-        if (this._intellihideIsEnabled)
-            this._disableUnredirect();
+        this._disableUnredirect();
         this._dockState = State.SHOWING;
         this.dash.iconAnimator.start();
         this._delayedHide = false;
@@ -903,8 +901,7 @@ export const DockedDash = GObject.registerClass({
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
                 this._dockState = State.HIDDEN;
-                if (this._intellihideIsEnabled)
-                    this._restoreUnredirect();
+                this._restoreUnredirect();
                 // Remove queued barrier removal timeout if any
                 if (this._removeBarrierTimeoutId > 0)
                     GLib.source_remove(this._removeBarrierTimeoutId);
