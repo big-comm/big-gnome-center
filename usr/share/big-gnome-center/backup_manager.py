@@ -87,7 +87,10 @@ class BackupManager:
         Retorna o caminho do backup mais recente válido, ou None.
         Compatível com Python 3.8+ (usa os.readlink em vez de Path.readlink).
         """
-        BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+        try:
+            BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            return None
         lnk = BACKUP_DIR / "latest.dconf"
 
         # Tenta symlink primeiro
@@ -105,8 +108,8 @@ class BackupManager:
     @classmethod
     def list_all(cls) -> List[Path]:
         """Retorna todos os backups válidos ordenados do mais novo para o mais antigo."""
-        BACKUP_DIR.mkdir(parents=True, exist_ok=True)
         try:
+            BACKUP_DIR.mkdir(parents=True, exist_ok=True)
             return sorted(
                 [
                     p
@@ -174,8 +177,15 @@ class BackupManager:
         inválidos são sempre removidos.
         """
         try:
-            keep_names = {p.name for p in cls.list_all()[: cls.N_KEEP]}
-            for path in BACKUP_DIR.glob("backup_*.dconf"):
+            # Complete the scan before deleting anything; errors abort pruning.
+            entries = [(path, path.stat()) for path in BACKUP_DIR.glob("backup_*.dconf")]
+            valid = sorted(
+                (entry for entry in entries if entry[1].st_size >= cls.MIN_BYTES),
+                key=lambda entry: entry[1].st_mtime,
+                reverse=True,
+            )
+            keep_names = {path.name for path, stat in valid[: max(1, cls.N_KEEP)]}
+            for path, stat in entries:
                 if path.name in keep_names:
                     continue
                 try:

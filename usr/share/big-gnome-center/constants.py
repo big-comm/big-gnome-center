@@ -8,6 +8,7 @@ variables: ok, err, out, val, raw, data, info, etc.
 """
 
 import gettext
+import os
 import shutil
 import tempfile
 from pathlib import Path
@@ -104,6 +105,10 @@ def _migrate_settings_app_folder() -> None:
 
 def migrate_user_data() -> None:
     """Import settings and cache from the former application name."""
+    _migrate_legacy_dir(Path.home() / ".config" / "big-gnome-center", CONFIG_DIR)
+    _migrate_legacy_dir(Path.home() / ".cache" / "big-gnome-center", CACHE_DIR)
+    _migrate_legacy_dir(CONFIG_DIR.parent / "big-appearance", CONFIG_DIR)
+    _migrate_legacy_dir(CACHE_DIR.parent / "layout-switcher", CACHE_DIR)
     _migrate_legacy_dir(Path.home() / ".config" / "big-appearance", CONFIG_DIR)
     _migrate_legacy_dir(Path.home() / ".cache" / "layout-switcher", CACHE_DIR)
     _migrate_settings_app_folder()
@@ -117,8 +122,13 @@ _SHARE_DIRS = [
     Path("/usr/local/share/big-gnome-center"),
 ]
 
-CONFIG_DIR = Path.home() / ".config" / "big-gnome-center"
-CACHE_DIR = Path.home() / ".cache" / "big-gnome-center"
+def _xdg_home(variable: str, fallback: str) -> Path:
+    value = Path(os.environ.get(variable, ""))
+    return value if value.is_absolute() else Path.home() / fallback
+
+
+CONFIG_DIR = _xdg_home("XDG_CONFIG_HOME", ".config") / "big-gnome-center"
+CACHE_DIR = _xdg_home("XDG_CACHE_HOME", ".cache") / "big-gnome-center"
 BACKUP_DIR = CONFIG_DIR / "backups"
 SETTINGS_FILE = CONFIG_DIR / "settings.json"
 

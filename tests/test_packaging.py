@@ -16,7 +16,11 @@ def test_package_preserves_legacy_directories(tmp_path):
             pytest.skip(f"{command} is required for package validation")
     source = tmp_path / "src"
     source.mkdir()
-    (source / "big-gnome-center").symlink_to(ROOT, target_is_directory=True)
+    payload = source / "big-gnome-center"
+    shutil.copytree(ROOT / "usr", payload / "usr", symlinks=True)
+    cache = payload / "usr/share/big-gnome-center/__pycache__"
+    cache.mkdir(exist_ok=True)
+    (cache / "stale.cpython-314.pyc").write_bytes(b"stale bytecode")
     package = tmp_path / "pkg"
     package.mkdir()
     subprocess.run(
@@ -29,6 +33,8 @@ def test_package_preserves_legacy_directories(tmp_path):
     )
     primary = package / "usr/share/big-gnome-center"
     legacy = package / "usr/share/layout-switcher"
+    assert not list(package.rglob("*.pyc"))
+    assert not list(package.rglob("*.pyo"))
     for directory in (legacy, legacy / "ui", legacy / "layouts", legacy / "effects"):
         assert directory.is_dir()
         assert not directory.is_symlink()

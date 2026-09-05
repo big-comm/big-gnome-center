@@ -128,8 +128,31 @@ class TestSettings:
     def test_unwritable_config_directory(self):
         with patch("pathlib.Path.mkdir", side_effect=PermissionError):
             s = self.Settings()
-            s.set("layout", "classic")
+            assert s.set("layout", "classic") is False
+        assert s.get("layout") is None
+        assert s.last_error
+
+    def test_failed_write_preserves_memory_and_disk(self):
+        s = self.Settings()
+        assert s.set("layout", "classic") is True
+        before = self.settings_file.read_bytes()
+        with patch("settings_store.atomic_write_text", side_effect=PermissionError("denied")):
+            assert s.set("layout", "minimal") is False
+            assert s.delete("layout") is False
         assert s.get("layout") == "classic"
+        assert self.settings_file.read_bytes() == before
+        assert s.set("layout", "minimal") is True
+        assert not s.last_error
+
+    def test_failed_read_does_not_overwrite_unreadable_settings(self):
+        s = self.Settings()
+        with (
+            patch("pathlib.Path.read_text", side_effect=PermissionError("denied")),
+            patch("settings_store.atomic_write_text") as write,
+        ):
+            assert s.set("layout", "minimal") is False
+            assert s.delete("layout") is False
+        write.assert_not_called()
 
     def test_delete(self):
         s = self.Settings()

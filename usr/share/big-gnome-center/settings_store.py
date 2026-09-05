@@ -10,6 +10,7 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
 import json
+import logging
 from typing import Callable, Dict, List, Tuple
 
 from constants import CONFIG_DIR, SETTINGS_FILE
@@ -22,11 +23,12 @@ class Settings:
     """
     Configurações persistentes em JSON.
     Escrita atômica via arquivo temporário + rename.
-    Silencia todos os erros de I/O.
+    Failed writes leave the last persisted state intact.
     """
 
     def __init__(self) -> None:
         self._data: Dict = {}
+        self.last_error = ""
         try:
             CONFIG_DIR.mkdir(parents=True, exist_ok=True)
         except OSError:
@@ -45,29 +47,44 @@ class Settings:
         B persisted (e.g. ``intro_shown`` set by window vanished when
         page_layouts later wrote ``active_layout``).
         """
+        self.last_error = ""
         try:
-            if SETTINGS_FILE.exists():
-                data = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
-                if isinstance(data, dict):
-                    self._data = data
-        except Exception:
+            data = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                self._data = data
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            self.last_error = f"{SETTINGS_FILE}: {exc}"
+        except (ValueError, UnicodeError):
             pass
 
-    def set(self, key: str, value) -> None:
+    def set(self, key: str, value) -> bool:
         self._reload_from_disk()
-        self._data[key] = value
-        try:
-            atomic_write_text(SETTINGS_FILE, json.dumps(self._data, indent=2))
-        except Exception:
-            pass
+        if self.last_error:
+            return False
+        data = dict(self._data)
+        data[key] = value
+        return self._write(data)
 
-    def delete(self, key: str) -> None:
+    def delete(self, key: str) -> bool:
         self._reload_from_disk()
-        self._data.pop(key, None)
+        if self.last_error:
+            return False
+        data = dict(self._data)
+        data.pop(key, None)
+        return self._write(data)
+
+    def _write(self, data: Dict) -> bool:
         try:
-            atomic_write_text(SETTINGS_FILE, json.dumps(self._data, indent=2))
-        except Exception:
-            pass
+            atomic_write_text(SETTINGS_FILE, json.dumps(data, indent=2))
+        except Exception as exc:
+            self.last_error = f"{SETTINGS_FILE}: {exc}"
+            logging.getLogger("big-gnome-center").warning("Settings write failed: %s", self.last_error)
+            return False
+        self._data = data
+        self.last_error = ""
+        return True
 
 
 # ── GSettings Monitor ─────────────────────────────────────────────────────────

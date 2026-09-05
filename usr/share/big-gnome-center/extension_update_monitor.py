@@ -192,6 +192,11 @@ class ExtensionUpdateMonitor:
         self._checking = False
         try:
             updates = future.result()
+        except update_checker.UpdateCheckError as exc:
+            log.debug("background update check incomplete: %s", exc)
+            if exc.updates:
+                self._handle_updates(exc.updates)
+            return False
         except Exception as exc:
             log.debug("background update check failed: %s", exc)
             return False

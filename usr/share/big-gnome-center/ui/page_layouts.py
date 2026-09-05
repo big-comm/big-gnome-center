@@ -442,15 +442,22 @@ class LayoutsPage(Gtk.Box):
         elif hasattr(root, "hide_loading"):
             root.hide_loading()
         # Recorded for the poisoned-snapshot guard in _save_current_snapshot.
-        self._prefs.set("last_apply_ok", bool(ok))
+        saved = self._prefs.set("last_apply_ok", bool(ok))
+        save_error = self._prefs.last_error
         if ok:
             prev = self._active_layout
             self._active_layout = name
-            self._prefs.set("active_layout", name)
+            if not self._prefs.set("active_layout", name):
+                saved = False
+                save_error = self._prefs.last_error
             if hasattr(root, "refresh_layout_capabilities"):
                 root.refresh_layout_capabilities()
             self._set_status(f"{name} {tr('applied')}", "ok-col")
             self.rebuild_grid()
+            if not saved:
+                self._set_status(f"{tr('Operation failed')}: {save_error}", "err-col")
+                self._toast(f"{tr('Operation failed')}: {save_error}")
+                return
             overlay = getattr(root, "_toast_overlay", None)
             latest = BackupManager.latest()
 
@@ -543,12 +550,17 @@ class LayoutsPage(Gtk.Box):
         elif hasattr(root, "hide_loading"):
             root.hide_loading()
         self._active_layout = prev_name
+        saved = True
         if prev_name:
-            self._prefs.set("active_layout", prev_name)
+            saved = self._prefs.set("active_layout", prev_name)
         if hasattr(root, "refresh_layout_capabilities"):
             root.refresh_layout_capabilities()
         self._set_status(tr("Layout restored"), "ok-col")
         self.rebuild_grid()
+        if not saved:
+            self._set_status(f"{tr('Operation failed')}: {self._prefs.last_error}", "err-col")
+            self._toast(f"{tr('Operation failed')}: {self._prefs.last_error}")
+            return
         self._toast(tr("Previous layout restored"))
 
     def _set_status(self, text: str, css: str) -> None:

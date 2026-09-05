@@ -76,6 +76,10 @@ package() {
         fi
     done
 
+    # Never package interpreter caches or create compatibility aliases for them.
+    find "${pkgdir}/usr" -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
+    find "${pkgdir}/usr" -depth -type d -name __pycache__ -empty -delete
+
     # Pacman cannot replace an installed directory with a symlink.
     # Keep legacy directories and link individual files after packaging.
     local legacy="${pkgdir}/usr/share/layout-switcher"

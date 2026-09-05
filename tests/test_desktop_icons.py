@@ -133,7 +133,7 @@ def test_notification_selection_applies_then_sends_a_real_preview():
     source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     apply_index = source.index("HelperClient.set_notification_position(value)")
-    persist_index = source.index('self._prefs.set("notification_positions", saved)')
+    persist_index = source.index('self._save_preference("notification_positions", saved)')
     preview_index = source.index("GLib.timeout_add(200, self._send_notification_preview)")
     assert apply_index < persist_index < preview_index
     assert 'Gio.Notification.new(tr("Notification preview"))' in source

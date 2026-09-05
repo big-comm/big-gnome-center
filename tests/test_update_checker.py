@@ -3,8 +3,10 @@
 
 from unittest.mock import patch
 
+import pytest
+
 from ego_client import ExtensionInfo
-from update_checker import UpdateInfo, check_all
+from update_checker import UpdateCheckError, UpdateInfo, check_all
 
 
 def _info(uuid: str, pk: int, shell: str, version: int) -> ExtensionInfo:
@@ -99,7 +101,7 @@ class TestCheckAll:
             updates = check_all()
             assert updates == {}
 
-    def test_skips_when_ego_returns_none(self):
+    def test_reports_failure_when_ego_returns_none(self):
         installed = [{"uuid": "a@x.com", "user": True, "version": "5"}]
         with (
             patch("update_checker.ExtMgr.list_installed", return_value=installed),
@@ -107,8 +109,9 @@ class TestCheckAll:
             patch("update_checker.ExtMgr.installed_version", return_value=5),
             patch("update_checker.ego_client.info", return_value=None),
         ):
-            updates = check_all()
-            assert updates == {}
+            with pytest.raises(UpdateCheckError) as error:
+                check_all()
+            assert error.value.updates == {}
 
     def test_progress_callback(self):
         installed = [
@@ -122,5 +125,6 @@ class TestCheckAll:
             patch("update_checker.ExtMgr.installed_version", return_value=1),
             patch("update_checker.ego_client.info", return_value=None),
         ):
-            check_all(progress_cb=lambda d, t: calls.append((d, t)))
+            with pytest.raises(UpdateCheckError):
+                check_all(progress_cb=lambda d, t: calls.append((d, t)))
         assert calls == [(1, 2), (2, 2)]

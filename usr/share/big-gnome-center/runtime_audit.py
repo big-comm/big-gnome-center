@@ -208,14 +208,16 @@ def _tree_hash(path: Path) -> str:
 
 
 def _application_active_layout() -> str:
-    path = Path.home() / ".config/big-gnome-center/settings.json"
+    from constants import SETTINGS_FILE
+
+    path = SETTINGS_FILE
     if not path.exists():
-        path = Path.home() / ".config/big-appearance/settings.json"
+        path = path.parent.parent / "big-appearance/settings.json"
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, TypeError, ValueError):
         return ""
-    value = data.get("active_layout")
+    value = data.get("active_layout") if isinstance(data, dict) else None
     return value if isinstance(value, str) else ""
 
 

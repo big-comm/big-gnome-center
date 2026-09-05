@@ -511,7 +511,9 @@ class DesktopPage(Gtk.Box):
             saved = self._prefs.get("notification_positions", {})
             saved = dict(saved) if isinstance(saved, dict) else {}
             saved[self._active_layout] = value
-            self._prefs.set("notification_positions", saved)
+            if not self._save_preference("notification_positions", saved):
+                self.refresh()
+                return GLib.SOURCE_REMOVE
             self._toast(
                 tr("{position} notification position applied").format(
                     position=label,
@@ -526,6 +528,12 @@ class DesktopPage(Gtk.Box):
             )
         self.refresh()
         return GLib.SOURCE_REMOVE
+
+    def _save_preference(self, key: str, value) -> bool:
+        if self._prefs.set(key, value):
+            return True
+        self._toast(f"{tr('Operation failed')}: {self._prefs.last_error}")
+        return False
 
     def _send_notification_preview(self) -> bool:
         root = self.get_root()
@@ -550,7 +558,9 @@ class DesktopPage(Gtk.Box):
 
     def _finish_menu_toggle(self, ok: bool, message: str, enable: bool) -> bool:
         if ok:
-            self._prefs.set("community_menu_enabled", enable)
+            if not self._save_preference("community_menu_enabled", enable):
+                self.refresh()
+                return GLib.SOURCE_REMOVE
             self._toast(
                 tr("Application menu enabled") if enable else tr("Application menu disabled")
             )
@@ -593,7 +603,9 @@ class DesktopPage(Gtk.Box):
         name: str,
     ) -> bool:
         if ok:
-            self._prefs.set("community_menu_layout", value)
+            if not self._save_preference("community_menu_layout", value):
+                self.refresh()
+                return GLib.SOURCE_REMOVE
             self._toast(tr("{name} menu style applied").format(name=name))
         else:
             self._toast(
@@ -626,7 +638,9 @@ class DesktopPage(Gtk.Box):
         opens_menu: bool,
     ) -> bool:
         if ok:
-            self._prefs.set("super_key_opens_menu", opens_menu)
+            if not self._save_preference("super_key_opens_menu", opens_menu):
+                self.refresh()
+                return GLib.SOURCE_REMOVE
             self._toast(
                 tr("Super opens the application menu")
                 if opens_menu

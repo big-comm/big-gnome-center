@@ -53,6 +53,27 @@ class TestBackupManager:
         result = self.BackupManager.latest()
         assert result is None
 
+    @pytest.mark.parametrize("error", [PermissionError("denied"), FileNotFoundError("gone")])
+    def test_prune_aborts_on_incomplete_metadata(self, error):
+        files = [self.backup_dir / f"backup_{index}.dconf" for index in range(3)]
+        for path in files:
+            path.write_text("x" * 100)
+        original_stat = Path.stat
+
+        def failing_stat(path, *args, **kwargs):
+            if path == files[1]:
+                raise error
+            return original_stat(path, *args, **kwargs)
+
+        with patch.object(Path, "stat", failing_stat), patch.object(self.BackupManager, "N_KEEP", 1):
+            self.BackupManager._prune()
+        assert all(path.exists() for path in files)
+
+    def test_lookup_handles_inaccessible_directory(self):
+        with patch.object(Path, "mkdir", side_effect=PermissionError("denied")):
+            assert self.BackupManager.list_all() == []
+            assert self.BackupManager.latest() is None
+
     def test_latest_with_backup(self):
         f = self.backup_dir / "backup_20250101_120000.dconf"
         f.write_text("x" * 100)

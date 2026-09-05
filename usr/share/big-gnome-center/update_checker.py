@@ -33,6 +33,14 @@ class UpdateInfo:
     ego_id: int  # pk no EGO; útil para fallback de download direto
 
 
+class UpdateCheckError(RuntimeError):
+    """Incomplete check, with any updates already found."""
+
+    def __init__(self, failed: List[str], updates: Dict[str, UpdateInfo]):
+        super().__init__(", ".join(failed))
+        self.updates = updates
+
+
 def _shell_version_str() -> str:
     """Versão do Shell em formato aceito pelo EGO ('47'), ou 'all' se desconhecido."""
     major, _ = gnome_shell_version()
@@ -56,6 +64,7 @@ def check_all(
     user_exts = [e for e in ExtMgr.list_installed() if e.get("user")]
     total = len(user_exts)
     updates: Dict[str, UpdateInfo] = {}
+    failed: List[str] = []
 
     for index, ext in enumerate(user_exts):
         uuid = ext["uuid"]
@@ -69,6 +78,7 @@ def check_all(
                 use_cache=not force_refresh,
             )
             if detail is None:
+                failed.append(uuid)
                 continue
             latest = ego_client.version_from_info(detail, shell)
             if latest is None or latest <= current:
@@ -80,6 +90,7 @@ def check_all(
                 ego_id=detail.pk,
             )
         except Exception as exc:
+            failed.append(uuid)
             log.debug("update_checker.check_all %s failed: %s", uuid, exc)
         finally:
             if progress_cb:
@@ -88,6 +99,8 @@ def check_all(
                 except Exception:
                     pass
 
+    if failed:
+        raise UpdateCheckError(failed, updates)
     return updates
 
 

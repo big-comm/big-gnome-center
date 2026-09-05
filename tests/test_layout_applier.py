@@ -2,6 +2,7 @@
 """Tests for layout_applier.py — apply layout via dconf load."""
 
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -38,6 +39,9 @@ def test_retired_extensions_are_not_preserved_across_layout_switches():
 def required_helper_available():
     """Keep layout tests focused on the apply stage after helper preflight."""
     with (
+        patch("layout_applier.Settings", return_value=SimpleNamespace(
+            get=lambda key, default=None: default,
+        )),
         patch("layout_applier.HelperClient.ensure_available", return_value=(True, "")),
         patch("layout_applier.HelperClient.helper_version", return_value=0),
         patch("layout_applier.HelperClient._call", return_value=None),

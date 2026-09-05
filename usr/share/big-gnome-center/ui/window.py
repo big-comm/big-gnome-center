@@ -708,17 +708,32 @@ class MainWindow(Adw.ApplicationWindow):
         self._update_check_running = True
 
         def task():
+            failed = False
             try:
                 updates = update_checker.check_all(force_refresh=force_refresh)
+            except update_checker.UpdateCheckError as exc:
+                updates = exc.updates
+                failed = True
             except Exception:
                 updates = {}
-            update_checker.mark_checked(self._prefs)
-            GLib.idle_add(self._on_update_check_done, updates, manual)
+                failed = True
+            if not failed:
+                update_checker.mark_checked(self._prefs)
+            GLib.idle_add(self._on_update_check_done, updates, manual, failed)
 
         self._pool.submit(task)
 
-    def _on_update_check_done(self, updates: Dict, manual: bool) -> bool:
+    def _on_update_check_done(self, updates: Dict, manual: bool, failed: bool = False) -> bool:
         self._update_check_running = False
+        if failed:
+            if manual:
+                self._toast(f"{tr('Check for updates')}: {tr('Operation failed')}")
+            # Preserve known updates when an incomplete check cannot replace them.
+            self._pending_updates.update(updates or {})
+            ext_page = self._pages.get("extensions")
+            if ext_page is not None:
+                ext_page.set_updates(self._pending_updates)
+            return False
         self._pending_updates = dict(updates or {})
         ext_page = self._pages.get("extensions")
         if ext_page is not None:
@@ -750,6 +765,8 @@ class MainWindow(Adw.ApplicationWindow):
 
     def _on_toggle_auto_update(self, action, _param) -> None:
         new_val = not action.get_state().get_boolean()
+        if not self._prefs.set("ext_auto_update", new_val):
+            self._toast(f"{tr('Operation failed')}: {self._prefs.last_error}")
+            return
         action.set_state(GLib.Variant.new_boolean(new_val))
-        self._prefs.set("ext_auto_update", new_val)
         self._toast(tr("Auto-update enabled") if new_val else tr("Auto-update disabled"))
