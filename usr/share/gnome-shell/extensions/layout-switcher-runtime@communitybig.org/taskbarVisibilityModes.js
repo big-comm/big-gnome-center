@@ -19,6 +19,9 @@ export class TaskbarVisibilityModes {
         this._settings.set_boolean('intellihide-hide-from-monitor-windows', false);
         this._settings.set_string('intellihide-behaviour', 'FOCUSED_WINDOWS');
         this._settings.set_boolean('intellihide-use-pointer', true);
+        this._settings.set_int('intellihide-pressure-threshold', 100);
+        this._settings.set_int('intellihide-pressure-time', 1000);
+        this._settings.set_boolean('intellihide-use-pressure', true);
         // Enable last: Intellihide reads the delay and behavior during enable().
         this._settings.set_boolean('intellihide', selected !== 'always-visible');
     }

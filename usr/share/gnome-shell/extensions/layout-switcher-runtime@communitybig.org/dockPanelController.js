@@ -5,6 +5,7 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {PanelAutohide} from './panelAutohide.js';
 
 const SETTINGS_SCHEMA = 'org.communitybig.panel-and-dock';
 const VALID_VISIBILITY = new Set([
@@ -58,6 +59,12 @@ export class PanelController {
             trackFullscreen: true,
         });
         this._positionRevealZone();
+        this._autohide = new PanelAutohide(this._panelBox, this._revealZone, () => {
+            this._pointerReveal = true;
+            this._cancelHide();
+            this._applyVisibility();
+            this._queueHide();
+        });
 
         this._connect(this._settings, 'changed', () => this._apply());
         this._connect(global.display, 'notify::focus-window', () => {
@@ -76,10 +83,9 @@ export class PanelController {
             this._positionRevealZone();
             this._applyVisibility();
         });
-        this._connect(this._revealZone, 'enter-event', () => {
-            this._pointerReveal = true;
-            this._cancelHide();
-            this._applyVisibility();
+        this._connect(this._revealZone, 'leave-event', () => {
+            if (!this._panel.hover)
+                this._queueHide();
         });
         this._connect(this._panel, 'notify::hover', () => {
             if (this._panel.hover) {
@@ -108,6 +114,7 @@ export class PanelController {
 
     destroy() {
         this._cancelHide();
+        this._autohide.destroy();
         this._cancelOpacityApply();
         this._disconnectFullscreenWindowActor();
         this._disconnectFocusWindow();
@@ -484,8 +491,11 @@ export class PanelController {
         try {
             const monitorFullscreen = Boolean(
                 this._focusMonitor()?.inFullscreen) && !this._inOverview;
-            if (monitorFullscreen)
+            if (monitorFullscreen) {
+                this._autohide.setEnabled(false);
+                this._autohide.setVisible(false, true);
                 return;
+            }
 
             const configured = this._settings.get_string('panel-visibility');
             const mode = VALID_VISIBILITY.has(configured)
@@ -499,10 +509,7 @@ export class PanelController {
                 visible = this._inOverview || this._pointerReveal ||
                     !this._focusWindowTouchesPanel();
 
-            if (visible)
-                this._panelBox.show();
-            else
-                this._panelBox.hide();
+            this._autohide.setVisible(visible, this._inOverview);
         } finally {
             this._applying = false;
         }
@@ -510,6 +517,7 @@ export class PanelController {
 
     _applyPanelTracking(mode) {
         const overlayMode = mode !== 'always-visible';
+        this._autohide.setEnabled(overlayMode && !this._inOverview);
         if (!this._panelActorData || this._overlayMode === overlayMode)
             return;
 
@@ -544,6 +552,7 @@ export class PanelController {
             return;
         this._revealZone.set_position(monitor.x, monitor.y);
         this._revealZone.set_size(monitor.width, 2);
+        this._autohide?.reposition();
     }
 
     _queueHide() {

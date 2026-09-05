@@ -4,6 +4,7 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {PanelAutohide} from './panelAutohide.js';
 
 const VALID_VISIBILITY = new Set([
     'always-visible',
@@ -95,6 +96,12 @@ export class NativePanelOpacityIntegration {
             trackFullscreen: true,
         });
         this._positionRevealZone();
+        this._autohide = new PanelAutohide(this._panelBox, this._revealZone, () => {
+            this._pointerReveal = true;
+            this._cancelHide();
+            this._applyVisibility();
+            this._queueHide();
+        });
 
         this._styleChangedId = panel.connect(
             'notify::style', () => this._onStyleChanged());
@@ -109,11 +116,6 @@ export class NativePanelOpacityIntegration {
             () => this._applyVisibility());
         this._connect(Main.layoutManager, 'monitors-changed', () => {
             this._positionRevealZone();
-            this._applyVisibility();
-        });
-        this._connect(this._revealZone, 'enter-event', () => {
-            this._pointerReveal = true;
-            this._cancelHide();
             this._applyVisibility();
         });
         this._connect(this._revealZone, 'leave-event', () => {
@@ -229,8 +231,11 @@ export class NativePanelOpacityIntegration {
             const inOverview = this._overviewActive();
             const monitorFullscreen = Boolean(
                 this._focusMonitor()?.inFullscreen) && !inOverview;
-            if (monitorFullscreen)
+            if (monitorFullscreen) {
+                this._autohide.setEnabled(false);
+                this._autohide.setVisible(false, true);
                 return;
+            }
 
             this._applyPanelTracking(this._visibility, inOverview);
             let visible = this._visibility === 'always-visible' || this._pointerReveal;
@@ -240,10 +245,7 @@ export class NativePanelOpacityIntegration {
                 visible = inOverview || this._pointerReveal ||
                     !this._focusWindowTouchesPanel();
 
-            if (visible)
-                this._panelBox.show();
-            else
-                this._panelBox.hide();
+            this._autohide.setVisible(visible, inOverview);
         } finally {
             this._applyingVisibility = false;
         }
@@ -258,6 +260,7 @@ export class NativePanelOpacityIntegration {
         const overlayMode = mode !== 'always-visible' && !inOverview;
         if (this._revealZone)
             this._revealZone.reactive = overlayMode;
+        this._autohide.setEnabled(overlayMode);
         if (!this._panelActorData || this._overlayMode === overlayMode)
             return;
 
@@ -277,6 +280,7 @@ export class NativePanelOpacityIntegration {
             return;
         this._revealZone.set_position(monitor.x, monitor.y);
         this._revealZone.set_size(monitor.width, 2);
+        this._autohide?.reposition();
     }
 
     _queueHide() {
@@ -351,6 +355,8 @@ export class NativePanelOpacityIntegration {
             return;
 
         this._cancelHide();
+        this._autohide.destroy();
+        this._autohide = null;
         this._disconnectFocusWindow();
         for (const [object, id] of this._signals.splice(0)) {
             try {

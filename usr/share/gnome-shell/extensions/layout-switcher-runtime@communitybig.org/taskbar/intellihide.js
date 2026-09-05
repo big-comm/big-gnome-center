@@ -16,6 +16,7 @@
  */
 
 import Clutter from 'gi://Clutter'
+import GLib from 'gi://GLib'
 import Meta from 'gi://Meta'
 import Mtk from 'gi://Mtk'
 import Shell from 'gi://Shell'
@@ -356,12 +357,17 @@ export const Intellihide = class {
   }
 
   _checkMousePointer(x, y) {
-    if (
+    const atEdge =
       !this._pressureBarrier &&
       !this._hover &&
       !Main.overview.visible &&
       this._pointerIn(x, y, 1, 'intellihide-use-pointer-limit-size')
-    ) {
+    if (!atEdge) this._edgeDwellStart = 0
+    if (atEdge) {
+      const now = GLib.get_monotonic_time()
+      if (!this._edgeDwellStart) this._edgeDwellStart = now
+      if (now - this._edgeDwellStart < 250000) return
+      this._edgeDwellStart = 0
       this._hover = true
       this._queueUpdatePanelPosition(true)
     } else if (this._panelBox.visible) {
