@@ -51,7 +51,7 @@ tr = gettext.translation(_DOMAIN, _LOCALE_DIR, fallback=True).gettext  # purpose
 
 # ── Aplicação ─────────────────────────────────────────────────────────────────
 APP_ID = "br.com.biglinux.BigGnomeCenter"
-APP_VERSION = "3.1.4"
+APP_VERSION = "3.1.5"
 APP_LICENSE = "MIT"
 APP_NAME = "Big Gnome Center"
 ICON_NAME = "big-gnome-center"

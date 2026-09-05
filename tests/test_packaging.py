@@ -32,6 +32,9 @@ def test_package_preserves_legacy_directories(tmp_path):
         check=True, capture_output=True, text=True,
     )
     primary = package / "usr/share/big-gnome-center"
+    policy = Path("usr/share/polkit-1/actions/br.com.biglinux.BigGnomeCenter.policy")
+    assert (package / policy).read_bytes() == (ROOT / policy).read_bytes()
+    assert (package / policy).stat().st_mode & 0o022 == 0
     legacy = package / "usr/share/layout-switcher"
     assert not list(package.rglob("*.pyc"))
     assert not list(package.rglob("*.pyo"))

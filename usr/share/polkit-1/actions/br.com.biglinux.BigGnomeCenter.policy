@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD polkit Policy Configuration 1.0//EN"
+  "http://www.freedesktop.org/software/polkit/policyconfig-1.dtd">
+<policyconfig>
+  <vendor>BigLinux</vendor>
+  <icon_name>big-gnome-center</icon_name>
+  <action id="br.com.biglinux.BigGnomeCenter.remove-system-extension">
+    <description>Remove system GNOME Shell extensions</description>
+    <description xml:lang="pt_BR">Remover extensões do GNOME Shell instaladas no sistema</description>
+    <message>Authentication is required to remove system GNOME Shell extensions.</message>
+    <message xml:lang="pt_BR">É necessário autenticar para remover extensões do GNOME Shell instaladas no sistema.</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/big-gnome-center-remove-extension</annotate>
+  </action>
+</policyconfig>
