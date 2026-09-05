@@ -127,4 +127,68 @@ for (const layout of ['BigGnome', 'G-Unity']) {
     tracking._applyPanelTracking('always-hidden');
     assert.equal(tracking._panelActorData.affectsStruts, false);
 }
-console.log('Startup, menu ownership, anchoring and overview struts passed');
+const Shortcuts = load(read(runtime, 'panelMenuShortcuts.js'), 'PanelMenuShortcuts', {});
+const nativeToggle = function (indicator) {
+    assert.equal(this, shellPanel, 'preserve the native receiver');
+    if (!indicator?.mapped || !indicator.reactive)
+        return;
+    indicator.menu.toggle();
+};
+let shellPanel;
+for (const layout of ['Minimal', 'BigGnome', 'G-Unity']) {
+    let reveals = 0;
+    const makeIndicator = () => ({mapped: false, reactive: true, menu: {
+        isOpen: false, toggle() { this.isOpen = !this.isOpen; },
+    }});
+    shellPanel = Object.create({_toggleMenu: nativeToggle});
+    shellPanel.statusArea = {dateMenu: makeIndicator(), quickSettings: makeIndicator()};
+    const shortcuts = new Shortcuts(shellPanel, () => {
+        reveals++;
+        for (const indicator of Object.values(shellPanel.statusArea))
+            indicator.mapped = true;
+    });
+    for (const indicator of Object.values(shellPanel.statusArea)) {
+        indicator.mapped = false;
+        shellPanel._toggleMenu(indicator);
+        assert.equal(indicator.menu.isOpen, true, `${layout}: reveal before native mapped check`);
+        shellPanel._toggleMenu(indicator);
+        assert.equal(indicator.menu.isOpen, false, `${layout}: repeated shortcut closes menu`);
+    }
+    const before = reveals;
+    shellPanel._toggleMenu(null);
+    shellPanel.statusArea.dateMenu.reactive = false;
+    shellPanel._toggleMenu(shellPanel.statusArea.dateMenu);
+    assert.equal(reveals, before, 'unsupported or disabled indicators must not reveal');
+    shortcuts.destroy();
+    assert.equal(Object.hasOwn(shellPanel, '_toggleMenu'), false, 'restore inherited method');
+    shellPanel._toggleMenu = nativeToggle;
+    const owned = new Shortcuts(shellPanel, () => {});
+    owned.destroy();
+    assert.equal(shellPanel._toggleMenu, nativeToggle, 'restore original own method');
+    const replaced = new Shortcuts(shellPanel, () => {});
+    const external = () => {};
+    shellPanel._toggleMenu = external;
+    replaced.destroy();
+    assert.equal(shellPanel._toggleMenu, external, 'preserve later external hooks');
+}
+for (const file of ['nativePanelOpacityIntegration.js', 'dockPanelController.js']) {
+    const source = read(runtime, file);
+    assert.ok(source.includes('new PanelMenuShortcuts('));
+    assert.ok(source.includes('this._applyVisibility(true);'));
+    assert.ok(source.includes('this._menuShortcuts.destroy();'));
+}
+const statusSource = read(runtime, 'taskbarStatusArea.js');
+const hook = statusSource.slice(statusSource.indexOf('        panel._toggleMenu = indicator => {'),
+    statusSource.indexOf('        this._generation++;'));
+for (const layout of ['Classic', 'Hybrid', 'Desk UX']) {
+    const indicator = {mapped: false, reactive: true, menu: {toggle() { this.opened = true; }}};
+    shellPanel = Object.create({_toggleMenu: nativeToggle});
+    const owner = {intellihide: {enabled: true, revealAndHold(_hold, immediate) {
+        assert.equal(immediate, true);
+        indicator.mapped = true;
+    }}};
+    vm.runInNewContext(hook, {panel: shellPanel, owner});
+    shellPanel._toggleMenu(indicator);
+    assert.equal(indicator.menu.opened, true, `${layout}: existing hidden-panel shortcut works`);
+}
+console.log('Startup, menu ownership, overview struts and all-layout shortcuts passed');

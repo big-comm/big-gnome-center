@@ -6,6 +6,7 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {PanelAutohide} from './panelAutohide.js';
+import {PanelMenuShortcuts} from './panelMenuShortcuts.js';
 
 const SETTINGS_SCHEMA = 'org.communitybig.panel-and-dock';
 const VALID_VISIBILITY = new Set([
@@ -66,6 +67,13 @@ export class PanelController {
             this._queueHide();
         });
 
+        this._menuShortcuts = new PanelMenuShortcuts(this._panel, () => {
+            this._pointerReveal = true;
+            this._cancelHide();
+            this._applyVisibility(true);
+            this._queueHide();
+        });
+
         this._connect(this._settings, 'changed', () => this._apply());
         this._connect(global.display, 'notify::focus-window', () => {
             this._watchFocusWindow();
@@ -114,6 +122,7 @@ export class PanelController {
 
     destroy() {
         this._cancelHide();
+        this._menuShortcuts.destroy();
         this._autohide.destroy();
         this._cancelOpacityApply();
         this._disconnectFullscreenWindowActor();
@@ -484,7 +493,7 @@ export class PanelController {
         this._opacityIdle = 0;
     }
 
-    _applyVisibility() {
+    _applyVisibility(immediate = false) {
         if (this._applying)
             return;
         this._applying = true;
@@ -509,7 +518,7 @@ export class PanelController {
                 visible = this._inOverview || this._pointerReveal ||
                     !this._focusWindowTouchesPanel();
 
-            this._autohide.setVisible(visible, this._inOverview);
+            this._autohide.setVisible(visible, immediate || this._inOverview);
         } finally {
             this._applying = false;
         }

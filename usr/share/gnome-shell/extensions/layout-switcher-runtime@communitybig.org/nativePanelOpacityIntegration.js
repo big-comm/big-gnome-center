@@ -5,6 +5,7 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {PanelAutohide} from './panelAutohide.js';
+import {PanelMenuShortcuts} from './panelMenuShortcuts.js';
 
 const VALID_VISIBILITY = new Set([
     'always-visible',
@@ -100,6 +101,13 @@ export class NativePanelOpacityIntegration {
             this._pointerReveal = true;
             this._cancelHide();
             this._applyVisibility();
+            this._queueHide();
+        });
+
+        this._menuShortcuts = new PanelMenuShortcuts(panel, () => {
+            this._pointerReveal = true;
+            this._cancelHide();
+            this._applyVisibility(true);
             this._queueHide();
         });
 
@@ -223,7 +231,7 @@ export class NativePanelOpacityIntegration {
         this._applyStyle();
     }
 
-    _applyVisibility() {
+    _applyVisibility(immediate = false) {
         if (this._applyingVisibility || !this._panelBox || !this._visibility)
             return;
         this._applyingVisibility = true;
@@ -245,7 +253,7 @@ export class NativePanelOpacityIntegration {
                 visible = inOverview || this._pointerReveal ||
                     !this._focusWindowTouchesPanel();
 
-            this._autohide.setVisible(visible, inOverview);
+            this._autohide.setVisible(visible, immediate || inOverview);
         } finally {
             this._applyingVisibility = false;
         }
@@ -355,6 +363,8 @@ export class NativePanelOpacityIntegration {
             return;
 
         this._cancelHide();
+        this._menuShortcuts.destroy();
+        this._menuShortcuts = null;
         this._autohide.destroy();
         this._autohide = null;
         this._disconnectFocusWindow();
