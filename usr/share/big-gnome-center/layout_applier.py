@@ -136,6 +136,7 @@ _COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
 _RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 _LEGACY_LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 _LEGACY_USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
+_LEGACY_GTK_THEME_UUID = "legacyschemeautoswitcher@joshimukul29.gmail.com"
 _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
 _FROSTED_GLASS_DEFAULT_OPACITY = 37
@@ -547,7 +548,9 @@ class LayoutApplier:
         target_enabled = [
             uuid
             for uuid in target_enabled
-            if uuid not in {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+            if uuid not in {
+                _LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID,
+            }
         ]
 
         # Keep selected system indicators stable across switches. Anything
@@ -792,7 +795,9 @@ class LayoutApplier:
         target_enabled = [
             uuid
             for uuid in target_enabled
-            if uuid not in {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+            if uuid not in {
+                _LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID,
+            }
         ]
 
         # Keep selected system indicators stable across switches.
@@ -1362,10 +1367,10 @@ class LayoutApplier:
             if uuid not in values:
                 values.append(uuid)
 
-        legacy = {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+        legacy = {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID}
         enabled = [uuid for uuid in enabled if uuid not in legacy]
         disabled = [uuid for uuid in disabled if uuid not in legacy]
-        for uuid in (_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID):
+        for uuid in (_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID):
             add_once(disabled, uuid)
 
         text = cls._remove_dconf_section(
@@ -2401,12 +2406,14 @@ class LayoutApplier:
             if not target_enabled:
                 target_enabled = cls._parse_target_enabled_extensions(data)
             target_enabled.difference_update(
-                {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+                {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID}
             )
             target_enabled_order = [
                 uuid
                 for uuid in target_enabled_order
-                if uuid not in {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+                if uuid not in {
+                    _LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID,
+                }
             ]
             live_target_enabled = set(target_enabled)
             before_set = {u for u in (before_uuids or ()) if u}

@@ -12,6 +12,7 @@ from utils import gsettings_get, gsettings_set
 _SHELL_SCHEMA = "org.gnome.shell"
 _LEGACY_LIGHT_STYLE_UUID = "light-style@gnome-shell-extensions.gcampax.github.com"
 _LEGACY_USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
+_LEGACY_GTK_THEME_UUID = "legacyschemeautoswitcher@joshimukul29.gmail.com"
 
 
 class ThemeMgr:
@@ -201,10 +202,10 @@ class ThemeMgr:
             if uuid not in values:
                 values.append(uuid)
 
-        legacy = {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID}
+        legacy = {_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID}
         enabled = [uuid for uuid in enabled if uuid not in legacy]
         disabled = [uuid for uuid in disabled if uuid not in legacy]
-        for uuid in (_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID):
+        for uuid in (_LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID):
             add_once(disabled, uuid)
 
         gsettings_set(_SHELL_SCHEMA, "disabled-extensions", repr(disabled))

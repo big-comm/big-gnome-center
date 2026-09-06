@@ -181,7 +181,8 @@ class TestColorScheme:
     @patch(
         "theme_manager.gsettings_get",
         side_effect=[
-            "['user-theme@gnome-shell-extensions.gcampax.github.com', 'stay@ext']",
+            "['user-theme@gnome-shell-extensions.gcampax.github.com', "
+            "'legacyschemeautoswitcher@joshimukul29.gmail.com', 'stay@ext']",
             "[]",
         ],
     )
@@ -199,4 +200,7 @@ class TestColorScheme:
         assert "user-theme@gnome-shell-extensions.gcampax.github.com" not in enabled
         assert "light-style@gnome-shell-extensions.gcampax.github.com" in disabled
         assert "light-style@gnome-shell-extensions.gcampax.github.com" not in enabled
+        assert "legacyschemeautoswitcher@joshimukul29.gmail.com" in disabled
+        assert "legacyschemeautoswitcher@joshimukul29.gmail.com" not in enabled
+        assert "stay@ext" in enabled
         assert all(schema == "org.gnome.shell" for schema, _key, _value in calls)

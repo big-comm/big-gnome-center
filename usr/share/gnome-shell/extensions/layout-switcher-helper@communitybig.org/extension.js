@@ -64,6 +64,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
+import {GtkThemeFollower} from './gtkTheme.js';
 
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
@@ -71,6 +72,7 @@ const HELPER_VERSION = 7;
 // Retired external theme extensions. Kept only for in-place upgrade cleanup.
 const LEGACY_USER_THEME_UUID = 'user-theme@gnome-shell-extensions.gcampax.github.com';
 const LEGACY_LIGHT_STYLE_UUID = 'light-style@gnome-shell-extensions.gcampax.github.com';
+const LEGACY_GTK_THEME_UUID = 'legacyschemeautoswitcher@joshimukul29.gmail.com';
 const COMMUNITY_PANEL_UUID = 'community-panel@communitybig.org';
 const PANEL_UUIDS = [COMMUNITY_PANEL_UUID];
 const COMMUNITY_DOCK_UUID = 'community-dock@communitybig.org';
@@ -118,7 +120,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 79;
+const HELPER_BUILD = 80;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -298,6 +300,9 @@ export default class LayoutSwitcherHelper extends Extension {
                 this._ifaceSettings = new Gio.Settings({
                     schema_id: 'org.gnome.desktop.interface',
                 });
+                this._gtkThemeFollower = new GtkThemeFollower(
+                    this._ifaceSettings, () => this._busy(),
+                    error => logHelper(`GTK3 theme follow failed: ${error}`));
                 this._schemeSignal = this._ifaceSettings.connect(
                     'changed::color-scheme', () => this._onColorSchemeChanged());
                 this._accentSignal = this._ifaceSettings.connect(
@@ -403,6 +408,8 @@ export default class LayoutSwitcherHelper extends Extension {
     // Stop every pending timer so no step of an in-flight switch fires into a
     // session-mode transition, and never leave the curtain up.
     _hardCancel() {
+        this._gtkThemeFollower?.destroy();
+        this._gtkThemeFollower = null;
         this._teardownPanelSystemIndicator();
         this._teardownHybridFocusedIndicators();
         this._restoreNotificationPosition();
@@ -1754,7 +1761,7 @@ export default class LayoutSwitcherHelper extends Extension {
         if (this._legacyThemeRetired)
             return;
 
-        const legacy = [LEGACY_USER_THEME_UUID, LEGACY_LIGHT_STYLE_UUID];
+        const legacy = [LEGACY_USER_THEME_UUID, LEGACY_LIGHT_STYLE_UUID, LEGACY_GTK_THEME_UUID];
         for (const uuid of legacy) {
             if (!LIVE_STATES.has(mgr.lookup(uuid)?.state))
                 continue;
@@ -1787,6 +1794,7 @@ export default class LayoutSwitcherHelper extends Extension {
         this._applying = true;   // serialize against layout switches
         try {
             await this._retireLegacyThemeExtensions(mgr);
+            this._gtkThemeFollower?.queue();
             // Classic/Hybrid use an explicit -light icon design. The other
             // four layouts use the unsuffixed design in light mode.
             const explicitLightIcons = this._activeLayoutLabel === 'Classic' ||
@@ -2557,6 +2565,12 @@ export default class LayoutSwitcherHelper extends Extension {
         steps.push('panel repaint');
         this._setupPanelSystemIndicator();
 
+        // Settle GTK3 before the caller saves the applied layout snapshot.
+        try {
+            this._gtkThemeFollower?.sync();
+        } catch (error) {
+            logHelper(`GTK3 theme follow failed: ${error}`);
+        }
         this._curtainCheckmark();
         await this._sleep(CURTAIN_CHECK_MS);
         this._curtainDown();

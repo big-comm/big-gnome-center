@@ -256,8 +256,8 @@ sleep-inactive-ac-type='nothing'
 app-picker-layout=[{'AudioVideo': <{'position': <0>}>, 'Office': <{'position': <1>}>, 'Utilities': <{'position': <2>}>, 'Settings': <{'position': <3>}>, 'Network': <{'position': <4>}>, 'Game': <{'position': <5>}>, 'WebApps': <{'position': <6>}>}]
 command-history=['ajustes', 'r']
 disable-user-extensions=false
-disabled-extensions=['ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com', 'gtk4-ding@smedius.gitlab.com', 'community-dock@communitybig.org', 'community-panel@communitybig.org']
-enabled-extensions=['layout-switcher-helper@communitybig.org', 'layout-switcher-runtime@communitybig.org', 'legacyschemeautoswitcher@joshimukul29.gmail.com', 'copyous@boerdereinar.dev', 'big-shot@communitybig.org', 'community-menu@communitybig.org', 'appindicatorsupport@rgcjonas.gmail.com']
+disabled-extensions=['legacyschemeautoswitcher@joshimukul29.gmail.com', 'ddterm@amezin.github.com', 'just-perfection-desktop@just-perfection', 'GPaste@gnome-shell-extensions.gnome.org', 'light-style@gnome-shell-extensions.gcampax.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'arcmenu@arcmenu.com', 'gtk4-ding@smedius.gitlab.com', 'community-dock@communitybig.org', 'community-panel@communitybig.org']
+enabled-extensions=['layout-switcher-helper@communitybig.org', 'layout-switcher-runtime@communitybig.org', 'copyous@boerdereinar.dev', 'big-shot@communitybig.org', 'community-menu@communitybig.org', 'appindicatorsupport@rgcjonas.gmail.com']
 favorite-apps=['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.communitybig.ashyterm.desktop', 'org.gnome.TextEditor.desktop']
 welcome-dialog-last-shown-version='43.2'
 

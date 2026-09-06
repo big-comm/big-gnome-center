@@ -35,6 +35,10 @@ def test_package_preserves_legacy_directories(tmp_path):
     policy = Path("usr/share/polkit-1/actions/br.com.biglinux.BigGnomeCenter.policy")
     assert (package / policy).read_bytes() == (ROOT / policy).read_bytes()
     assert (package / policy).stat().st_mode & 0o022 == 0
+    gtk_follower = Path(
+        "usr/share/gnome-shell/extensions/layout-switcher-helper@communitybig.org/gtkTheme.js"
+    )
+    assert (package / gtk_follower).read_bytes() == (ROOT / gtk_follower).read_bytes()
     legacy = package / "usr/share/layout-switcher"
     assert not list(package.rglob("*.pyc"))
     assert not list(package.rglob("*.pyo"))
