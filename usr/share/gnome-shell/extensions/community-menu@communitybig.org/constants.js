@@ -48,6 +48,14 @@ export const LAYOUTS = {
     MINT: 4
 };
 
+export function resolveMenuLayout(layout, desktopLayout = '') {
+    const desktop = desktopLayout.trim().toLowerCase().replaceAll(/[ _]/g, '-');
+    if (['biggnome', 'minimal', 'g-unity'].includes(desktop))
+        return LAYOUTS.MINT;
+    return [LAYOUTS.APPS_ONLY, LAYOUTS.APP_GRID, LAYOUTS.MINT].includes(layout)
+        ? layout : LAYOUTS.MINT;
+}
+
 export const APPS_ONLY_MENU_HEIGHT = 502;
 export const GRID_MENU_HEIGHT = 600;
 export const HYBRID_MENU_HEIGHT = 620;

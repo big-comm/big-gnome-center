@@ -13,4 +13,7 @@ Layout mapping:
 - `APP_GRID`: Desk-UX
 - `MINT`: Hybrid
 
+Hybrid is the default when enabled on BigGnome, Minimal, or G-Unity.
+Legacy `ALL` and `SYSTEM_ONLY` values migrate to Hybrid.
+
 See `UPSTREAM.md` and `COPYING` for provenance and licensing.

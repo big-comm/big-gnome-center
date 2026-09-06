@@ -227,6 +227,16 @@ def test_original_layouts_retire_user_theme():
         assert "[org/gnome/shell/extensions/user-theme]" not in text
 
 
+def test_layouts_without_menu_prepare_hybrid_for_manual_activation():
+    for filename in NO_PANEL_MENU_LAYOUTS:
+        text = (LAYOUT_DIR / filename).read_text()
+        enabled, disabled = _shell_extension_lists(text)
+        assert COMMUNITY_MENU_UUID not in enabled
+        assert COMMUNITY_MENU_UUID in disabled
+        menu = _section_key_values(text, "org/gnome/shell/extensions/community-menu")
+        assert menu["layout"] == "'MINT'"
+
+
 def test_community_menu_layout_mapping_and_panel_order():
     for filename, menu_layout in COMMUNITY_MENU_LAYOUTS.items():
         text = (LAYOUT_DIR / filename).read_text()

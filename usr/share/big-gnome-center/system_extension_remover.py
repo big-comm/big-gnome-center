@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 from typing import Optional, Sequence
 
+from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR
+
 SYSTEM_EXTENSION_DIR = Path("/usr/share/gnome-shell/extensions")
 _UUID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+@-]*$")
 
@@ -23,6 +25,8 @@ def extension_target(uuid: str, base_dir: Path = SYSTEM_EXTENSION_DIR) -> Path:
 def remove_extension(uuid: str, base_dir: Path = SYSTEM_EXTENSION_DIR) -> None:
     """Remove one directory, or one symlink, directly below ``base_dir``."""
     target = extension_target(uuid, base_dir)
+    if uuid in BUNDLED_EXTENSION_UUIDS:
+        raise ValueError(BUNDLED_REMOVAL_ERROR)
     try:
         mode = target.lstat().st_mode
     except FileNotFoundError as exc:

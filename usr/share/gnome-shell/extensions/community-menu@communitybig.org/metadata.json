@@ -7,5 +7,5 @@
   "description": "Applications menu for BigCommunity desktop layouts.",
   "shell-version": ["50", "51"],
   "url": "https://github.com/big-comm/big-gnome-center",
-  "version": 22
+  "version": 23
 }

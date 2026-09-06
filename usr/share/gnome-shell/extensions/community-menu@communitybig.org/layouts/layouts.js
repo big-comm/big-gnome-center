@@ -22,22 +22,15 @@ import * as AppGridLayout from './appGridLayout.js'
 import * as AppListLayout from './appListLayout.js'
 import * as Constants from '../constants.js';
 import * as HybridLayout from './hybridLayout.js'
-import * as ShortcutsLayout from './shortcutsLayout.js'
-import * as StandardLayout from './standardLayout.js'
 
 export function getLayout(layoutSetting, appsBackend, panelInfo) {
-    switch(layoutSetting) {
-        case Constants.LAYOUTS.ALL:
-            return new StandardLayout.StandardLayout(appsBackend, panelInfo);
+    switch(Constants.resolveMenuLayout(layoutSetting, panelInfo?.desktopLayout)) {
         case Constants.LAYOUTS.APPS_ONLY:
             return new AppListLayout.AppListLayout(appsBackend, panelInfo);
-        case Constants.LAYOUTS.SYSTEM_ONLY:
-            return new ShortcutsLayout.ShortcutsLayout(appsBackend, panelInfo);
         case Constants.LAYOUTS.APP_GRID:
             return new AppGridLayout.AppGridLayout(appsBackend, panelInfo);
         case Constants.LAYOUTS.MINT:
-            return new HybridLayout.HybridLayout(appsBackend, panelInfo);
         default:
-            return new StandardLayout.StandardLayout(appsBackend, panelInfo);
+            return new HybridLayout.HybridLayout(appsBackend, panelInfo);
     }
 }

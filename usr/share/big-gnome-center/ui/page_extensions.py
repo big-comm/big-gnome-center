@@ -389,16 +389,17 @@ class ExtensionsPage(Gtk.Box):
         btm.append(sw)
         inner.append(btm)
 
-        rm = Gtk.Button(label=tr("Remove"))
-        rm.add_css_class("flat")
-        rm.add_css_class("destructive-action")
-        rm.set_halign(Gtk.Align.START)
-        rm.update_property([Gtk.AccessibleProperty.LABEL], [f"{tr('Remove')} {ext['name']}"])
-        rm.connect(
-            "clicked",
-            lambda b, _uuid=ext["uuid"], _name=ext["name"]: self._confirm_remove(_uuid, _name),
-        )
-        inner.append(rm)
+        if ExtMgr.can_remove(ext["uuid"]):
+            rm = Gtk.Button(label=tr("Remove"))
+            rm.add_css_class("flat")
+            rm.add_css_class("destructive-action")
+            rm.set_halign(Gtk.Align.START)
+            rm.update_property([Gtk.AccessibleProperty.LABEL], [f"{tr('Remove')} {ext['name']}"])
+            rm.connect(
+                "clicked",
+                lambda b, _uuid=ext["uuid"], _name=ext["name"]: self._confirm_remove(_uuid, _name),
+            )
+            inner.append(rm)
 
         if ext.get("has_settings") and enabled:
             sb_btn = Gtk.Button(label=tr("Settings"))
@@ -513,6 +514,8 @@ class ExtensionsPage(Gtk.Box):
         d.present(parent)
 
     def _confirm_remove(self, uuid: str, name: str) -> None:
+        if not ExtMgr.can_remove(uuid):
+            return
         parent = self.get_root()
         d = Adw.AlertDialog(
             heading=tr("Remove extension?"),
@@ -875,7 +878,7 @@ class ExtensionsPage(Gtk.Box):
         remove_slot.set_size_request(34, 1)
         remove_slot.set_halign(Gtk.Align.CENTER)
         remove_slot.set_valign(Gtk.Align.CENTER)
-        if not is_required:
+        if ExtMgr.can_remove(ext["uuid"]):
             rm = Gtk.Button(icon_name="user-trash-symbolic")
             rm.add_css_class("flat")
             rm.add_css_class("extension-action-button")
@@ -886,20 +889,6 @@ class ExtensionsPage(Gtk.Box):
                 "clicked",
                 lambda b, _uuid=ext["uuid"], _name=ext["name"]: self._confirm_remove(_uuid, _name),
             )
-            remove_slot.append(rm)
-        else:
-            required_msg = tr("Required for layout switching")
-            rm = Gtk.Button(icon_name="user-trash-symbolic")
-            rm.add_css_class("flat")
-            rm.add_css_class("extension-action-button")
-            rm.add_css_class("extension-action-button-disabled")
-            rm.set_tooltip_text(required_msg)
-            rm.update_property(
-                [Gtk.AccessibleProperty.LABEL],
-                [required_msg],
-            )
-            rm.set_valign(Gtk.Align.CENTER)
-            rm.connect("clicked", lambda b, msg=required_msg: self._toast(msg))
             remove_slot.append(rm)
         ctrl.append(remove_slot)
 

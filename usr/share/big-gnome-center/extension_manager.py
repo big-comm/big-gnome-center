@@ -34,6 +34,7 @@ _PKEXEC = Path("/usr/bin/pkexec")
 _SYSTEM_EXTENSION_REMOVER = Path("/usr/bin/big-gnome-center-remove-extension")
 
 from constants import EXT_SYS_DIR, EXT_USER_DIR
+from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR
 from utils import dconf_read, dconf_write, gnome_shell_version, gsettings_get, run_cmd
 
 
@@ -450,6 +451,15 @@ class ExtMgr:
     # ── Remover ───────────────────────────────────────────────────────────────
 
     @staticmethod
+    def can_remove(uuid: str) -> bool:
+        """Keep package-owned components intact, including user overrides."""
+        return (
+            isinstance(uuid, str)
+            and bool(_EXTENSION_UUID_RE.fullmatch(uuid))
+            and uuid not in BUNDLED_EXTENSION_UUIDS
+        )
+
+    @staticmethod
     def remove(uuid: str) -> Tuple[bool, str]:
         """
         Remove a user or system extension.
@@ -460,6 +470,9 @@ class ExtMgr:
         """
         if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
             return False, "invalid extension UUID"
+
+        if not ExtMgr.can_remove(uuid):
+            return False, BUNDLED_REMOVAL_ERROR
 
         user_path = EXT_USER_DIR / uuid
         if user_path.exists():

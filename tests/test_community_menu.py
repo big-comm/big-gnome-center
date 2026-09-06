@@ -4,8 +4,12 @@
 import gettext
 import json
 import re
+import shutil
+import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 EXTENSION_DIR = ROOT / "usr/share/gnome-shell/extensions/community-menu@communitybig.org"
@@ -26,7 +30,7 @@ def test_community_menu_metadata_is_independent():
     assert metadata["gettext-domain"] == "community-menu"
     assert metadata["settings-schema"] == "org.gnome.shell.extensions.community-menu"
     assert "50" in metadata["shell-version"]
-    assert metadata["version"] == 22
+    assert metadata["version"] == 23
 
 
 def test_registered_gobject_types_are_namespaced_from_legacy_menu():
@@ -42,7 +46,7 @@ def test_registered_gobject_types_are_namespaced_from_legacy_menu():
             )
         )
 
-    assert len(registered_classes) == 47
+    assert len(registered_classes) == 44
     assert all(name.startswith("CommunityBig") for name in registered_classes)
     assert len(registered_classes) == len(set(registered_classes))
 
@@ -66,6 +70,26 @@ def test_community_menu_schema_exposes_only_supported_layouts():
         "desktop-layout",
         "super-key-opens-menu",
     ]
+    assert schema.find("key[@name='layout']/default").text == "'MINT'"
+
+
+def test_menu_defaults_and_migration_behavior():
+    if shutil.which("node") is None:
+        pytest.skip("node is required for menu behavior tests")
+    subprocess.run(
+        ["node", str(ROOT / "tests/community_menu_defaults.mjs")],
+        check=True, capture_output=True, text=True,
+    )
+
+
+def test_obsolete_menu_implementations_are_not_shipped():
+    for name in ("standardLayout.js", "shortcutsLayout.js", "mintLayout.js"):
+        assert not (EXTENSION_DIR / "layouts" / name).exists()
+
+
+def test_menu_normalizes_before_creating_buttons():
+    source = (EXTENSION_DIR / "extension.js").read_text()
+    assert source.index("this._normalizeLayout();") < source.index("this._enableButtons();")
 
 
 def test_community_menu_replaces_arcmenu_package_dependency():

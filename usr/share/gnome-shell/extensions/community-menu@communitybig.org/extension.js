@@ -44,6 +44,7 @@ export default class CommunityMenuExtension extends Extension {
     enable() {
         EXTENSION_PATH = this.path;
         SETTINGS = this.getSettings();
+        this._normalizeLayout();
         SEARCH_EMITTER = new SearchProviderEmitter();
 
         this.menuButtons = [];
@@ -110,6 +111,23 @@ export default class CommunityMenuExtension extends Extension {
 
         EXTENSION_PATH = null;
         SETTINGS = null;
+    }
+
+    _normalizeLayout() {
+        let desktop = SETTINGS.get_string('desktop-layout');
+        const schema = Gio.SettingsSchemaSource.get_default()?.lookup(
+            'org.communitybig.layout-switcher.runtime', true);
+        if (schema?.has_key('active-layout')) {
+            const runtime = new Gio.Settings({settings_schema: schema});
+            desktop = runtime.get_string('active-layout') || desktop;
+        }
+        const current = SETTINGS.get_enum('layout');
+        const target = Constants.resolveMenuLayout(current, desktop);
+        if (current !== target && SETTINGS.is_writable('layout'))
+            SETTINGS.set_enum('layout', target);
+        if (desktop !== SETTINGS.get_string('desktop-layout') &&
+            SETTINGS.is_writable('desktop-layout'))
+            SETTINGS.set_string('desktop-layout', desktop);
     }
 
     _getActivePanelExtension() {

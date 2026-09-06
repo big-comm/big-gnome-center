@@ -16,7 +16,7 @@
   <schema path="/org/gnome/shell/extensions/community-menu/"
           id="org.gnome.shell.extensions.community-menu">
     <key name="layout" enum="org.gnome.shell.extensions.community-menu.layouts">
-      <default>'ALL'</default>
+      <default>'MINT'</default>
       <summary>Layout</summary>
       <description>The layout of the Community Menu popup.</description>
     </key>
