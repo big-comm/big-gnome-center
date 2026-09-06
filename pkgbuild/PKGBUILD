@@ -75,6 +75,10 @@ package() {
         fi
     done
 
+    # Keep translation sources in the repository, not the shared locale root.
+    find "${pkgdir}/usr/share/locale" -maxdepth 1 -type f \
+        \( -name '*.po' -o -name '*.pot' \) -delete
+
     # Never package interpreter caches or create compatibility aliases for them.
     find "${pkgdir}/usr" -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
     find "${pkgdir}/usr" -depth -type d -name __pycache__ -empty -delete

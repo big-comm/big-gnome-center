@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 """Validate the staged package, including legacy upgrade paths."""
 
+import gettext
 import shutil
 import subprocess
 from pathlib import Path
@@ -18,6 +19,13 @@ def test_package_preserves_legacy_directories(tmp_path):
     source.mkdir()
     payload = source / "big-gnome-center"
     shutil.copytree(ROOT / "usr", payload / "usr", symlinks=True)
+    locale_source = payload / "usr/share/locale"
+    catalogs = {
+        path.name: path.read_bytes()
+        for path in locale_source.iterdir()
+        if path.suffix in {".po", ".pot"}
+    }
+    assert catalogs
     cache = payload / "usr/share/big-gnome-center/__pycache__"
     cache.mkdir(exist_ok=True)
     (cache / "stale.cpython-314.pyc").write_bytes(b"stale bytecode")
@@ -31,6 +39,25 @@ def test_package_preserves_legacy_directories(tmp_path):
         ],
         check=True, capture_output=True, text=True,
     )
+    locale_package = package / "usr/share/locale"
+    assert not list(locale_package.glob("*.po"))
+    assert not list(locale_package.glob("*.pot"))
+    for name, content in catalogs.items():
+        assert (locale_source / name).read_bytes() == content
+    translations = list(locale_source.glob("*/LC_MESSAGES/big-gnome-center.mo"))
+    assert translations
+    for translation in translations:
+        installed = locale_package / translation.relative_to(locale_source)
+        assert installed.read_bytes() == translation.read_bytes()
+        with installed.open("rb") as stream:
+            gettext.GNUTranslations(stream)
+    menu_locales = (
+        payload / "usr/share/gnome-shell/extensions/community-menu@communitybig.org/po/LINGUAS"
+    ).read_text().split()
+    assert menu_locales
+    for locale in menu_locales:
+        with (locale_package / locale / "LC_MESSAGES/community-menu.mo").open("rb") as stream:
+            gettext.GNUTranslations(stream)
     primary = package / "usr/share/big-gnome-center"
     policy = Path("usr/share/polkit-1/actions/br.com.biglinux.BigGnomeCenter.policy")
     assert (package / policy).read_bytes() == (ROOT / policy).read_bytes()
