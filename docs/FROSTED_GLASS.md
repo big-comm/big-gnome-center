@@ -10,7 +10,7 @@ to clear stale dconf left by older Big Gnome Center releases.
 
 Settings contract targets:
 
-- GTK, Qt, Electron, and XWayland application windows
+- Wayland application windows requesting native background blur
 - GNOME panel and Community Panel
 - Community Dock
 - Community Menu surfaces used by Classic, Hybrid, and Desk-UX
@@ -40,14 +40,93 @@ scheduled for 2026-09-16. Development packages are available from Arch's
 Mutter 51 implements `ext-background-effect-v1`. A Wayland client must create
 an effect object and submit its surface-local blur region. Therefore the native
 protocol improves cooperating applications but cannot force arbitrary GTK,
-Qt, Electron, or XWayland windows to request blur. Frosted Glass also attaches
-Shell blur actors to `Meta.WindowActor`, giving all toolkits the same fallback.
+Qt, Electron, or XWayland windows to request blur. GTK4 alone is insufficient:
+the application must request a blurred background through its rendering tree.
+For validated native GTK applications, Big Gnome Center supplies that request
+through GTK's user stylesheet: `backdrop-filter` plus translucent background
+colors. This requires GTK 4.23.3 or newer and successful CSS capability parsing.
+Profiles cover Nautilus, Big Gnome Center, GNOME Text Editor and cooperating
+BigLinux/Community applications with explicit window CSS classes.
+Calculator has no exclusive window selector in the tested version and remains
+unchanged. GTK3, Qt, Electron, and Flatpak runtimes are not supported profiles.
+
+### Validated application profiles
+
+- Files (Nautilus): `window.nautilus-window`.
+- Big Gnome Center: `window.big-gnome-center`.
+- GNOME Text Editor: `window.org-gnome-TextEditor`; background-only text-view rule.
+- Ashyterm: `window.ashyterm-window`; blur only, preserving its palette and alpha.
+- Audio/Video Converter: `window.big-audio-converter`, `window.big-video-converter`.
+- Hardware/Network Info: `window.big-hardware-info`, `window.big-network-info`.
+- BigOCR: `window.bigocrpdf`, `window.bigocrimage`, `window.bigocrpdf-editor`.
+- WebApps Manager: `window.biglinux-webapps`; not browser/web content.
+- General Adjustments: `window.biglinux-settings`.
+- Big Recorder: `window.bigrecorder`.
+
+These profiles were tested on the GNOME 51.beta / GTK 4.23.3 VM. This list is
+not a claim that every GTK4 application supports the managed style.
+
+Embedded dialogs restore opaque palette variables at their boundary. Recorder
+chrome follows the inherited palette; text, icons and document canvases are
+not faded. App integration adds a class without replacing toolkit classes.
+
+Cooperating app packages must include their window class; updating Big Gnome
+Center alone does not retrofit older app binaries. The class itself has no
+effect without the managed style. GNOME 50 remains unchanged. No app bundles a
+global GTK override. Media, PDF pages and drawing widgets receive no overrides.
+Reopen running applications after installing either side of the integration.
+
+Big Gnome Center monitors the managed sheet and reloads its GTK provider while
+open. Disabling removes its material class, including matches from GTK's cached
+startup stylesheet. Other profiled applications still require reopening after
+material changes; a static CSS class is not live integration.
+
+Native panel material preserves transparency after runtime opacity updates
+during overview transitions, then restores the latest underlying style on stop.
+
+### Calculator: deferred
+
+GNOME Calculator 51beta-1 has no exclusive window CSS class or explicit widget
+name in its `MathWindow` template. Its GType name is not a CSS ID. Do not use a
+generic window selector, inject code, or patch the executable to force support.
+
+User decision (2026-09-07): defer Calculator support; do not create or maintain
+a separate fork/package. Revisit when upstream provides a suitable selector or
+native application integration. Calculator remains visually unchanged.
 
 The compositor's `set_background_blur_params()` tunes native client-requested
-blur. `Shell.BlurEffect` renders project-owned surfaces. The toolkit-neutral
-`Meta.WindowActor` fallback and native window parameters are currently gated
-off because the tested Mutter 51 beta corrupts repaints. Do not enable either
-path without testing both cooperating and non-cooperating clients.
+blur. Window tuning is opt-in and restricted to GNOME 51. No fallback modifies
+window actors, client opacity, geometry, or input. Opaque clients stay opaque;
+text and icons retain their original contrast.
+Native parameters are changed only for enabled dynamic window blur and restored
+when that path stops. Shell-only blur never overrides native client parameters.
+Disabling tuning restores native defaults; it does not suppress independent
+client blur requests. Static mode and power-saving fallback restore parameters,
+not a static window image. Per-window rules are unavailable through this global
+API and are hidden; legacy schema keys remain for settings compatibility.
+
+### Managed GTK styles
+
+`window_material.py` maintains `gtk-4.0/big-gnome-center-windows.css` under the
+user's XDG config directory. One marked import is prepended to `gtk.css`.
+Existing user bytes, BOM, permissions, and later edits are preserved. Symlinks,
+non-regular files, and unowned material files are refused. Disabling empties the
+owned stylesheet and removes only the exact managed import. No app is restarted
+automatically; existing GTK processes may need reopening after either change.
+
+`windowStyles.js` serializes helper requests across rapid toggles and extension
+re-enables. The Shell drives synchronization without an open GTK control app.
+GNOME 50, disabled targets, static mode, and zero blur remove the managed styles.
+Native parameter tuning still affects independently cooperating applications.
+
+Background tint follows the application's named Adwaita color, including the
+Text Editor's recolored schemes. Opacity maps to 60–100% to retain contrast.
+Text, icons, selections, and button colors are not overridden. High contrast
+skips all managed rules. CSS requests a 30 px blur to reach GTK's native-region
+threshold; the compositor's radius can be tuned when its API is available.
+The GNOME 51.beta VM exposes the protocol but not the optional compositor
+tuning methods. Native styles still work there, using Mutter's blur parameters;
+the strength setting tunes native windows only when that API is available.
 
 Primary references:
 
@@ -62,10 +141,10 @@ Primary references:
 | File | Responsibility |
 | --- | --- |
 | `extension.js` | Lifecycle, version-gated backend loading, power policy, native compositor parameters |
-| `blurSurface.js` | Dynamic/static blur actor, tint, opacity, geometry, cleanup |
+| `windowStyles.js` | Serialized GTK style synchronization and teardown |
+| `window_material.py` | Capability check, scoped CSS, reversible user import |
 | `blurPaintSignal.js` | Throttled repaint workaround for background blur |
 | `roundedCorners.js` and `.glsl` | Rounded alpha mask applied after blur |
-| `windowController.js` | Window discovery, toolkit-neutral fallback, exclusions, maximized/fullscreen policy |
 | `shellSurfaces.js` | Panel, dock, menus, popovers, and system-dialog discovery |
 | `shellBlurSurface.js` | Non-layout Shell blur actor and repaint workaround |
 | `overviewController.js` | Per-monitor wallpaper blur behind Overview |
@@ -75,14 +154,13 @@ Primary references:
 | `schemas/*.xml` | Stable settings contract shared with the GTK UI |
 | `ui/frosted_glass.py` | Big Gnome Center GTK4/libadwaita controls |
 
-`BlurSurface` inserts a non-reactive actor behind application windows.
 `ShellBlurSurface` creates an allocated overlay directly in `Main.uiGroup`,
 positions it from the target's transformed stage geometry, and stacks it below
 the target's top-level Shell actor. It never enters the target's layout. Static
 mode paints a blurred wallpaper copy; dynamic mode samples the framebuffer
 behind the overlay. The original target is made transparent, and no visible
-border is added. The allocated Shell overlay uses the rounded mask safely;
-window actors keep it disabled until their repaint behavior is stable.
+border is added. Application windows have no extension-owned actor or effect;
+Mutter handles their native blur regions.
 
 Quick Settings and date-menu controls use translucent solid-color layers over
 the one shared blur. Do not add per-control shadows or nested blur effects:
@@ -128,7 +206,7 @@ The bundled extension is GPL-3.0-or-later.
 | Key | Type | Meaning |
 | --- | --- | --- |
 | `enabled` | bool | Master switch |
-| `windows-enabled` | bool | Application windows |
+| `windows-enabled` | bool | Tune native client-requested blur on GNOME 51 |
 | `panel-enabled` | bool | GNOME panel and Community Panel |
 | `dock-enabled` | bool | Community Dock |
 | `layout-menus-enabled` | bool | Community Menu layouts |
@@ -137,11 +215,11 @@ The bundled extension is GPL-3.0-or-later.
 | `system-dialogs-enabled` | bool | Power, restart, and other Shell dialogs |
 | `overview-enabled` | bool | Workspace and application overview |
 | `blur-strength` | int 0–100 | Blur radius input |
-| `glass-opacity` | int 10–100 | Material tint and translucent window content |
+| `glass-opacity` | int 0–100 | Shell material tint; never client opacity |
 | `blur-mode` | enum | `automatic`, `dynamic`, or `static` |
-| `application-exclusions` | string array | WM class, instance, or GTK app ID fragments |
-| `maximized-behavior` | enum | `keep`, `opaque`, or `disable` |
-| `fullscreen-behavior` | enum | `keep`, `opaque`, or `disable` |
+| `application-exclusions` | string array | Legacy; unused by native window tuning |
+| `maximized-behavior` | enum | Legacy; unused by native window tuning |
+| `fullscreen-behavior` | enum | Legacy; unused by native window tuning |
 | `power-save-behavior` | enum | `keep`, `static`, or `disable` |
 
 Automatic selects dynamic blur so panel, dock, and popup materials sample the
@@ -232,8 +310,8 @@ journalctl --user -b -o cat | grep -i 'Frosted Glass'
 Manual matrix:
 
 1. Toggle every target independently.
-2. Move a GTK and a Qt window; resize and maximize both.
-3. Test a fullscreen window and an excluded application.
+2. Compare a native blur client with opaque GTK/Qt clients; resize and maximize.
+3. Confirm ordinary clients retain opacity in fullscreen and Overview.
 4. Open Quick Settings, Calendar and notifications, the power/restart dialog,
    and Community Menu in each applicable layout.
 5. Switch between Community Dock and Community Panel layouts while enabled.
@@ -289,20 +367,43 @@ or RC upgrades.
 Implemented locally:
 
 - GNOME 51-only extension and GTK controls
-- Gated native parameters plus toolkit-neutral actor fallback prototype
+- Opt-in GNOME 51 native window tuning and restorable compositor parameters
 - Window, panel, Community Panel, dock, menu, Quick Settings, date-menu, system
   dialog, and Overview targets
 - Rounded blur mask
 - Live strength, material opacity, and rendering mode
-- Application, maximized, fullscreen, and power rules
+- Power rules; legacy per-window settings retained without UI controls
 - Multi-monitor Overview backgrounds
 - Package and layout migration away from Blur My Shell
 - Static tests and pt-BR localization
 
-Window fallback is experimental, defaults off, and is hard-gated in the Shell
-extension and GTK controls while Mutter 51 repaint behavior is validated. It
-must not be exposed until GTK, Qt, and XWayland hover/resize testing completes
-without framebuffer artifacts.
+The forced-opacity window fallback was removed after visual testing showed
+washed-out text and icons. Its former VM matrix does not validate native client
+support. Native parameter ownership, version gating, restoration, and absence of
+window-actor mutation have focused regression coverage. Hardware GPU and
+mixed-scale multi-monitor coverage remain release checks.
+
+A temporary GTK 4.23.3 client on the GNOME 51.beta VM used a translucent
+background with `backdrop-filter: blur(30px)`. Wayland tracing confirmed a
+nonempty `ext_background_effect_surface_v1.set_blur_region` request. Text and
+button content stayed opaque. This native-client check ran with Frosted Glass
+disabled; loading the updated extension still requires a new Shell session.
+
+Isolated native Nautilus and Text Editor profiles were also tested in the VM.
+Both submitted native blur regions. Text Editor retained syntax highlighting.
+The full helper/extension path requires post-login validation after deployment.
+The GJS helper passed real subprocess tests for enable, disable, rapid re-enable,
+and exact restoration of a copy of the VM user's existing stylesheet. A native
+request must not be gated on `set_background_blur_params()`: it is absent from
+the tested Meta-51 typelib despite working protocol support.
+
+Mutter 51 also removed `Meta.is_wayland_compositor()`. Detect the native context
+with `global.context.get_wayland_compositor()` instead. An unguarded call to the
+removed function prevented the full Shell backend from starting. GTK setup and
+refresh now contain their errors so panel, dock, and Overview remain independent.
+The Context method was exercised with the real Meta-51 typelib. Lifecycle tests
+cover absent legacy APIs and GTK initialization failure; post-login rendering
+must still be verified in the Shell process.
 
 Before release, repeat the manual matrix on the current GNOME 51 RC or stable
 build and inspect Shell logs after each actor replacement. Pay special attention

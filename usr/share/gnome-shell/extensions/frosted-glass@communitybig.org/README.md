@@ -3,9 +3,10 @@
 GNOME Shell 51 extension owned by Big Gnome Center. It applies a controlled
 frosted-glass material to application windows and selected Shell surfaces.
 
-The window path operates on Mutter window actors, so GTK and Qt applications
-receive the same fallback effect. Native client-requested blur remains usable
-when an application supports GNOME 51's Wayland protocol.
+Window blur only tunes native client requests through `ext-background-effect-v1`.
+Applications must opt in. Window content and opacity are never modified.
+Disabling window tuning restores the compositor's previous parameters; it does
+not suppress blur requested independently by applications.
 
 License: GPL-3.0-or-later.
 

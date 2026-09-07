@@ -30,6 +30,7 @@ from ui.page_panel_dock import PanelDockPage
 from ui.page_startup import StartupPage
 from ui.page_themes import ThemesPage
 from ui.styles import APP_CSS
+from window_material_client import WindowMaterialClient
 
 
 class NavRow(Gtk.ListBoxRow):
@@ -70,6 +71,8 @@ class MainWindow(Adw.ApplicationWindow):
         self._active_loading_token = 0
 
         self.set_title(tr("Big Gnome Center"))
+        self.add_css_class("big-gnome-center")
+        self._window_material = WindowMaterialClient(self, "big-gnome-center")
         self.set_default_size(1080, 700)
         self.set_size_request(860, 560)
 
@@ -111,6 +114,7 @@ class MainWindow(Adw.ApplicationWindow):
     # ── Ciclo de vida ─────────────────────────────────────────────────────────
 
     def _on_destroy(self, win) -> None:
+        self._window_material.close()
         for tid in self._timeout_ids:
             try:
                 GLib.source_remove(tid)

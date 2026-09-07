@@ -19,9 +19,6 @@ FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
 FROSTED_GLASS_SCHEMA = "org.communitybig.frosted-glass"
 MINIMUM_SHELL_MAJOR = 50
 FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51
-# WindowActor background blur corrupts repaints on the tested Mutter 51 beta.
-# Keep the setting contract visible, but do not expose an unsafe switch yet.
-WINDOW_BLUR_AVAILABLE = False
 _LIVE_EXTENSION_STATES = {1, 8}
 _ACTIVATION_TIMEOUT_SECONDS = 2.5
 _ACTIVATION_POLL_SECONDS = 0.1
@@ -55,7 +52,6 @@ class FrostedGlassControls(Gtk.Box):
         self._overview_only = False
         self._activation_pending = False
         self._dependent_rows: List[Gtk.Widget] = []
-        self._unavailable_rows: List[Gtk.Widget] = []
         self._build()
 
     def _build(self) -> None:
@@ -106,7 +102,6 @@ class FrostedGlassControls(Gtk.Box):
             return
 
         self._settings = Gio.Settings.new(FROSTED_GLASS_SCHEMA)
-        self._normalize_runtime_state()
         if overview_only:
             self._settings.set_boolean("overview-enabled", True)
             self.append(self._build_overview_main_group())
@@ -178,7 +173,7 @@ class FrostedGlassControls(Gtk.Box):
             description=tr("Choose independently where the material is applied."),
         )
         rows = [
-            ("windows-enabled", tr("Windows"), tr("GTK, Qt and other application windows")),
+            ("windows-enabled", tr("Windows"), "ext-background-effect-v1"),
             ("panel-enabled", tr("Panel"), tr("GNOME panel and Community Panel")),
             ("dock-enabled", tr("Dock"), tr("Community Dock surfaces")),
             (
@@ -209,12 +204,6 @@ class FrostedGlassControls(Gtk.Box):
         ]
         for key, title, subtitle in rows:
             row = self._switch_row(key, title, subtitle)
-            if key == "windows-enabled" and not WINDOW_BLUR_AVAILABLE:
-                row.set_subtitle(tr("Not available in this session"))
-                warning = Gtk.Image.new_from_icon_name("dialog-warning-symbolic")
-                warning.set_tooltip_text(tr("Not available in this session"))
-                row.add_suffix(warning)
-                self._unavailable_rows.append(row)
             group.add(row)
             self._dependent_rows.append(row)
         return group
@@ -245,23 +234,7 @@ class FrostedGlassControls(Gtk.Box):
         return group
 
     def _build_rules_group(self) -> Adw.PreferencesGroup:
-        group = Adw.PreferencesGroup(
-            title=tr("Behavior"),
-            description=tr("Application identifiers can be separated by commas."),
-        )
-        exclusions = Adw.EntryRow(title=tr("Application exceptions"))
-        exclusions.set_text(", ".join(self._settings.get_strv("application-exclusions")))
-        exclusions.connect("changed", self._on_exclusions_changed)
-        group.add(exclusions)
-
-        choices = ["keep", "opaque", "disable"]
-        labels = [tr("Keep blur"), tr("Make opaque"), tr("Disable blur")]
-        maximized = self._combo_row(
-            "maximized-behavior", tr("Maximized windows"), "", choices, labels
-        )
-        fullscreen = self._combo_row(
-            "fullscreen-behavior", tr("Fullscreen windows"), "", choices, labels
-        )
+        group = Adw.PreferencesGroup(title=tr("Behavior"))
         power = self._combo_row(
             "power-save-behavior",
             tr("Power saving"),
@@ -269,17 +242,9 @@ class FrostedGlassControls(Gtk.Box):
             ["keep", "static", "disable"],
             [tr("Keep selected mode"), tr("Use static blur"), tr("Disable blur")],
         )
-        for row in [maximized, fullscreen, power]:
-            group.add(row)
-        self._dependent_rows.extend([exclusions, maximized, fullscreen, power])
-        if not WINDOW_BLUR_AVAILABLE:
-            self._unavailable_rows.extend([exclusions, maximized, fullscreen])
+        group.add(power)
+        self._dependent_rows.append(power)
         return group
-
-    def _normalize_runtime_state(self) -> None:
-        """Remove settings that cannot have a safe runtime effect."""
-        if not WINDOW_BLUR_AVAILABLE and self._settings.get_boolean("windows-enabled"):
-            self._settings.set_boolean("windows-enabled", False)
 
     def _switch_row(self, key: str, title: str, subtitle: str) -> Adw.SwitchRow:
         row = Adw.SwitchRow(title=title, subtitle=subtitle)
@@ -407,11 +372,7 @@ class FrostedGlassControls(Gtk.Box):
         self._settings.set_boolean("enabled", False)
         return GLib.SOURCE_REMOVE
 
-    def _on_exclusions_changed(self, row: Adw.EntryRow) -> None:
-        entries = [part.strip() for part in row.get_text().split(",") if part.strip()]
-        self._settings.set_strv("application-exclusions", entries)
-
     def _sync_sensitivity(self) -> None:
         active = self._master.get_active()
         for row in self._dependent_rows:
-            row.set_sensitive(active and row not in self._unavailable_rows)
+            row.set_sensitive(active)

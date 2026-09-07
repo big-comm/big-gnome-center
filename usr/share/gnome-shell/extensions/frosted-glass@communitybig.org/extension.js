@@ -10,10 +10,8 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {ConnectionManager} from './connectionManager.js';
 import {OverviewController} from './overviewController.js';
 import {PowerMonitor} from './powerMonitor.js';
+import {WindowStyles} from './windowStyles.js';
 
-// Meta.WindowActor background blur is gated until Mutter 51 repaints are
-// artifact-free across GTK, Qt, and XWayland windows.
-const WINDOW_FALLBACK_AVAILABLE = false;
 const FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51;
 const SHELL_MAJOR = Number.parseInt(Config.PACKAGE_VERSION.split('.')[0], 10);
 const FULL_BACKEND_AVAILABLE = SHELL_MAJOR >= FULL_BACKEND_MINIMUM_SHELL_MAJOR;
@@ -36,7 +34,6 @@ export default class FrostedGlassExtension extends Extension {
         this._connections = new ConnectionManager();
         this._power = new PowerMonitor(() => this._queueRefresh());
         this._overview = new OverviewController(() => this._config());
-        this._windows = null;
         this._surfaces = null;
 
         this._connections.connect(this._settings, 'changed', () => this._queueRefresh());
@@ -51,6 +48,7 @@ export default class FrostedGlassExtension extends Extension {
         this._overview.enable();
         if (FULL_BACKEND_AVAILABLE)
             void this._enableFullBackend(generation);
+        this._syncWindowStyles();
     }
 
     disable() {
@@ -60,14 +58,13 @@ export default class FrostedGlassExtension extends Extension {
             this._refreshId = 0;
         }
         this._connections?.disconnectAll();
-        this._windows?.destroy();
+        this._windowStyles?.destroy();
         this._surfaces?.destroy();
         this._overview?.destroy();
         this._power?.destroy();
         this._restoreNativeParameters();
 
         this._connections = null;
-        this._windows = null;
         this._surfaces = null;
         this._overview = null;
         this._power = null;
@@ -78,22 +75,15 @@ export default class FrostedGlassExtension extends Extension {
 
     async _enableFullBackend(generation) {
         try {
-            const [{ShellSurfaces}, {WindowController}] = await Promise.all([
-                import('./shellSurfaces.js'),
-                import('./windowController.js'),
-            ]);
+            const {ShellSurfaces} = await import('./shellSurfaces.js');
             if (!this._settings || this._generation !== generation)
                 return;
 
-            this._windows = new WindowController(() => this._config());
             this._surfaces = new ShellSurfaces(() => this._config());
-            this._windows.enable();
             this._surfaces.enable();
             this._applyNativeParameters();
         } catch (error) {
-            this._windows?.destroy();
             this._surfaces?.destroy();
-            this._windows = null;
             this._surfaces = null;
             console.error(`Frosted Glass: cannot load GNOME 51 backend: ${error}`);
         }
@@ -123,7 +113,7 @@ export default class FrostedGlassExtension extends Extension {
             LIGHT_SHELL_MENU_LAYOUTS.has(communityLayout);
         return {
             enabled,
-            windowsEnabled: WINDOW_FALLBACK_AVAILABLE &&
+            windowsEnabled: FULL_BACKEND_AVAILABLE &&
                 this._settings.get_boolean('windows-enabled'),
             panelEnabled: this._settings.get_boolean('panel-enabled'),
             dockEnabled: this._settings.get_boolean('dock-enabled'),
@@ -134,17 +124,14 @@ export default class FrostedGlassExtension extends Extension {
             overviewEnabled: this._settings.get_boolean('overview-enabled'),
             radius: Math.max(0, strength * 1.6),
             brightness: lightMode ? 1.0 : 0.9,
-            opacity: Math.round(255 * opacityPercent / 100),
             tintOpacity: materialOpacity,
             materialOpacity,
+            windowOpacity: opacityPercent,
             useAccentColor: this._settings.settings_schema.has_key('use-accent-color') &&
                 this._settings.get_boolean('use-accent-color'),
             lightMode,
             appLightMode,
             mode,
-            exclusions: this._settings.get_strv('application-exclusions'),
-            maximizedBehavior: this._settings.get_string('maximized-behavior'),
-            fullscreenBehavior: this._settings.get_string('fullscreen-behavior'),
         };
     }
 
@@ -154,7 +141,7 @@ export default class FrostedGlassExtension extends Extension {
         this._refreshId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             this._refreshId = 0;
             this._applyNativeParameters();
-            this._windows?.refresh();
+            this._syncWindowStyles();
             this._surfaces?.refresh();
             this._overview?.refresh();
             return GLib.SOURCE_REMOVE;
@@ -162,6 +149,7 @@ export default class FrostedGlassExtension extends Extension {
     }
 
     _applyNativeParameters() {
+        // Tune client-requested blur; never change window content or opacity.
         if (!FULL_BACKEND_AVAILABLE)
             return;
         const setter = global.compositor?.set_background_blur_params;
@@ -169,7 +157,7 @@ export default class FrostedGlassExtension extends Extension {
             return;
 
         const config = this._config();
-        if (!config.enabled) {
+        if (!config.enabled || !config.windowsEnabled || config.mode !== 'dynamic') {
             this._restoreNativeParameters();
             return;
         }
@@ -178,15 +166,36 @@ export default class FrostedGlassExtension extends Extension {
             try {
                 this._nativeParameters = global.compositor.get_background_blur_params();
             } catch (error) {
-                this._nativeParameters = null;
+                return;
             }
+            if (!Array.isArray(this._nativeParameters) ||
+                this._nativeParameters.length !== 3 ||
+                !this._nativeParameters.every(Number.isFinite))
+                return;
             this._nativeParametersChanged = true;
         }
         try {
-            const nativeRadius = config.windowsEnabled ? Math.round(config.radius) : 0;
+            const nativeRadius = Math.round(config.radius);
             setter.call(global.compositor, nativeRadius, 1.15, 0.008);
         } catch (error) {
             console.debug(`Frosted Glass: native blur parameters unavailable: ${error}`);
+        }
+    }
+
+    _syncWindowStyles() {
+        try {
+            this._windowStyles ??= new WindowStyles(GLib.build_filenamev([
+                this.path, '..', '..', '..', 'big-gnome-center', 'window_material.py',
+            ]));
+            const config = this._config();
+            // Mutter 51 removed Meta.is_wayland_compositor().
+            const wayland = Boolean(global.context?.get_wayland_compositor?.());
+            this._windowStyles.refresh(FULL_BACKEND_AVAILABLE && wayland &&
+                config.enabled && config.windowsEnabled && config.mode === 'dynamic' &&
+                config.radius > 0, config.windowOpacity);
+        } catch (error) {
+            // GTK integration must never interrupt Shell surface rendering.
+            console.warn(`Frosted Glass window styles unavailable: ${error}`);
         }
     }
 

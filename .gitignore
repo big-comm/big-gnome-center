@@ -23,6 +23,7 @@ htmlcov/
 .audit/
 .codex-menu-diag.svg
 /docs/REVIEW_*.md
+/docs/REVIEW_WINDOW_BLUR_APPS.md
 
 # ── Local-only context dump for Claude / dev notes ──────────────────────────
 CONTEXT.md

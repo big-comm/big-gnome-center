@@ -135,6 +135,13 @@ export class ShellBlurSurface {
         this._pointerBorder = this._boxPointer?._border ?? null;
 
         this._connectGeometryHierarchy();
+        if (this._kind === 'panel') {
+            this._connect(this.actor, 'style-changed', () => {
+                if (this._materialApplied && !this._destroyed)
+                    this._applyTransparentStyle(
+                        this.actor, PANEL_TRANSPARENT_STYLE, '_targetStyle');
+            });
+        }
         if (this._kind === 'dash-to-panel') {
             this._connect(this.actor, 'style-changed', () =>
                 this._applyDashToPanelStyles());
@@ -230,8 +237,7 @@ export class ShellBlurSurface {
             this.actor?.add_style_class_name?.(STYLE_CLASS);
             this._materialApplied = true;
         }
-        const transparentStyle = this._kind === 'panel' &&
-            this.actor?.has_style_class_name?.(GUNITY_PANEL_CLASS)
+        const transparentStyle = this._kind === 'panel'
             ? PANEL_TRANSPARENT_STYLE
             : this._kind === 'dash-to-panel'
             ? DASH_TO_PANEL_TRANSPARENT_STYLE

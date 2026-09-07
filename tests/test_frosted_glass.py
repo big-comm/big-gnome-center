@@ -21,9 +21,24 @@ def test_metadata_supports_overview_on_gnome_50_and_full_backend_on_51():
     assert "FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51" in extension
     assert "if (FULL_BACKEND_AVAILABLE)" in extension
     assert "import('./shellSurfaces.js')" in extension
-    assert "import('./windowController.js')" in extension
+    assert "windowController" not in extension
     assert "import {ShellSurfaces}" not in extension
     assert "import {WindowController}" not in extension
+
+
+def test_window_blur_never_forces_client_transparency():
+    extension = (EXTENSION / "extension.js").read_text()
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
+
+    assert not (EXTENSION / "windowController.js").exists()
+    assert not (EXTENSION / "blurSurface.js").exists()
+    assert "get_window_actors" not in extension
+    assert "set_opacity" not in extension
+    assert "ext-background-effect-v1" in controls
+    assert "GTK, Qt and other application windows" not in controls
+    for key in ("application-exclusions", "maximized-behavior", "fullscreen-behavior"):
+        assert key not in controls
+        assert key not in extension
 
 
 def test_bundled_layout_extensions_accept_gnome_51():
@@ -109,13 +124,16 @@ def test_corner_shader_and_overview_are_project_owned():
     assert (EXTENSION / "blurPaintSignal.js").is_file()
 
 
-def test_unsafe_window_fallback_is_gated_in_shell_and_ui():
+def test_window_backend_is_version_gated_without_erasing_preferences():
     extension = (EXTENSION / "extension.js").read_text()
     controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
 
-    assert "const WINDOW_FALLBACK_AVAILABLE = false" in extension
-    assert "WINDOW_BLUR_AVAILABLE = False" in controls
-    assert 'self._settings.set_boolean("windows-enabled", False)' in controls
+    assert "windowsEnabled: FULL_BACKEND_AVAILABLE &&" in extension
+    assert "WINDOW_BLUR_AVAILABLE" not in controls
+    assert 'self._settings.set_boolean("windows-enabled", False)' not in controls
+    settings_start = controls.index("self._settings = Gio.Settings.new")
+    overview_branch = controls.index("if overview_only:", settings_start)
+    assert overview_branch < controls.index("self.append(self._build_targets_group())")
 
 
 def test_layout_switcher_exposes_frosted_glass_controls():
