@@ -22,6 +22,7 @@ from gi.repository import Adw, Gdk, GLib, Gtk
 from backup_manager import BackupManager
 from constants import DISABLED_LAYOUTS, ICONS_DIR, LAYOUTS, tr
 from layout_applier import LayoutApplier
+from helper_client import HelperClient
 from settings_store import Settings
 from snapshot_manager import SnapshotManager
 from ui.tooltip import Tooltip
@@ -48,8 +49,16 @@ class LayoutsPage(Gtk.Box):
         self._toast = toast_cb
         self._prefs = Settings()
         self._active_layout: Optional[str] = self._prefs.get("active_layout")
+        pending = self._prefs.get("pending_layout")
+        if pending and HelperClient.active_runtime_layout() == pending:
+            if self._prefs.set("active_layout", pending):
+                self._active_layout = pending
+                self._prefs.delete("pending_layout")
+                self._prefs.set("last_apply_ok", True)
 
         self._build()
+        if self._prefs.get("pending_layout"):
+            self._set_status(f"{pending} — {tr('Restart now')}", "dim-label")
 
     def _build(self) -> None:
         # Label de status (aplicando/aplicado/erro). Comeca vazio e invisivel —
@@ -340,7 +349,7 @@ class LayoutsPage(Gtk.Box):
         # may be a half-applied mix — snapshotting it would silently capture
         # the breakage, and a later "Resume my changes" would restore it.
         # Skip the save; the previous (healthy) snapshot remains.
-        if self._prefs.get("last_apply_ok") is False:
+        if self._prefs.get("last_apply_ok") is False or self._prefs.get("pending_layout"):
             log.info("skipping snapshot: last layout apply failed")
             return
         for lname, lcfg, *_rest in LAYOUTS:
@@ -441,10 +450,28 @@ class LayoutsPage(Gtk.Box):
                 root.hide_loading()
         elif hasattr(root, "hide_loading"):
             root.hide_loading()
+        if ok and getattr(LayoutApplier, "last_apply_staged", False):
+            # Staging is not a live switch. Keep the current card and never
+            # snapshot the old desktop under the requested layout's name.
+            saved = self._prefs.set("pending_layout", name)
+            saved = self._prefs.set("last_apply_ok", False) and saved
+            if not saved:
+                self._set_status(f"{tr('Operation failed')}: {self._prefs.last_error}", "err-col")
+                return
+            self._set_status(f"{name} — {tr('Restart now')}", "dim-label")
+            overlay = getattr(root, "_toast_overlay", None)
+            if overlay:
+                toast = Adw.Toast(title=f"{name} — {tr('Restart now')}", timeout=0)
+                toast.set_priority(Adw.ToastPriority.HIGH)
+                toast.set_button_label(tr("Restart now"))
+                toast.connect("button-clicked", lambda _t: self._restart_session())
+                overlay.add_toast(toast)
+            return
         # Recorded for the poisoned-snapshot guard in _save_current_snapshot.
         saved = self._prefs.set("last_apply_ok", bool(ok))
         save_error = self._prefs.last_error
         if ok:
+            self._prefs.delete("pending_layout")
             prev = self._active_layout
             self._active_layout = name
             if not self._prefs.set("active_layout", name):

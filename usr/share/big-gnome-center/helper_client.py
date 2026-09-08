@@ -338,6 +338,16 @@ class HelperClient:
         return ""
 
     @classmethod
+    def active_runtime_layout(cls) -> str:
+        """Report the live runtime, never a staged settings-file target."""
+        try:
+            report = json.loads(cls._call("AuditRuntime", None, 800) or "{}")
+            runtime = report.get("runtime") or {}
+            return runtime.get("layout", "") if runtime.get("enabled") else ""
+        except (ValueError, TypeError, AttributeError):
+            return ""
+
+    @classmethod
     def wait_for_active_uuid(cls, uuid: str, timeout_ms: int = 8000) -> bool:
         """Wait for a helper UUID to own the shared D-Bus interface."""
         deadline = time.monotonic() + max(timeout_ms, 0) / 1000.0

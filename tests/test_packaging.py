@@ -61,6 +61,13 @@ def test_package_preserves_legacy_directories(tmp_path):
         with (locale_package / locale / "LC_MESSAGES/community-menu.mo").open("rb") as stream:
             gettext.GNUTranslations(stream)
     primary = package / "usr/share/big-gnome-center"
+    migration_unit = Path(
+        "usr/lib/systemd/user/org.gnome.Shell@.service.d/50-big-gnome-center-migration.conf"
+    )
+    assert (package / migration_unit).read_bytes() == (ROOT / migration_unit).read_bytes()
+    assert (primary / "session_migration.py").read_bytes() == (
+        ROOT / "usr/share/big-gnome-center/session_migration.py"
+    ).read_bytes()
     python_site = package / Path(sysconfig.get_path("purelib")).relative_to("/")
     integration = python_site / "big_gnome_center_material"
     assert (integration / "__init__.py").read_bytes() == (primary / "window_material_client.py").read_bytes()
