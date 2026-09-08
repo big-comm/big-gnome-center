@@ -25,7 +25,7 @@ import St from 'gi://St'
 import * as Layout from 'resource:///org/gnome/shell/ui/layout.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 import * as OverviewControls from 'resource:///org/gnome/shell/ui/overviewControls.js'
-import * as PointerWatcher from 'resource:///org/gnome/shell/ui/pointerWatcher.js'
+import * as PointerWatcher from '../pointerWatcher.js'
 
 import * as Proximity from './proximity.js'
 import * as Utils from './utils.js'

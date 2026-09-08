@@ -28,9 +28,19 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
+import {PopupAnimation} from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as Constants from './constants.js';
 
 const [ShellVersion] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
+
+export function popupAnimationParams(animation) {
+    if (ShellVersion < 51 || typeof animation !== 'number')
+        return animation;
+    return {
+        animate: animation !== PopupAnimation.NONE,
+        fadeOnly: animation === PopupAnimation.FADE,
+    };
+}
 
 Gio._promisify(Gio._LocalFilePrototype, 'query_info_async', 'query_info_finish');
 Gio._promisify(Gio._LocalFilePrototype, 'set_attributes_async', 'set_attributes_finish');

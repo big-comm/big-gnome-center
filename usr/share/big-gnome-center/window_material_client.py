@@ -9,12 +9,23 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gio, GLib, Gtk
 
-from window_material import NAME, OWNER, gtk_supports_blur
+if __package__:
+    from .policy import NAME, OWNER, gtk_supports_blur
+else:
+    from window_material import NAME, OWNER, gtk_supports_blur
+
+
+def attach_window_material(window, css_class):
+    """Attach optional material and release it with the window."""
+    client = WindowMaterialClient(window, css_class)
+    window.connect("destroy", lambda *_args: client.close(remove_class=False))
+    return client
 
 
 class WindowMaterialClient:
     def __init__(self, window, css_class):
         self._window = window
+        self._display = window.get_display()
         self._class = css_class
         self._provider = None
         self._monitor = None
@@ -28,7 +39,7 @@ class WindowMaterialClient:
             return
         self._provider = Gtk.CssProvider()
         Gtk.StyleContext.add_provider_for_display(
-            window.get_display(), self._provider, Gtk.STYLE_PROVIDER_PRIORITY_USER + 1
+            self._display, self._provider, Gtk.STYLE_PROVIDER_PRIORITY_USER + 1
         )
         self._refresh()
 
@@ -66,7 +77,9 @@ class WindowMaterialClient:
             self._window.add_css_class(self._class)
         return GLib.SOURCE_REMOVE
 
-    def close(self):
+    def close(self, *, remove_class=True):
+        if self._closed:
+            return
         self._closed = True
         if self._pending:
             GLib.source_remove(self._pending)
@@ -76,7 +89,9 @@ class WindowMaterialClient:
             self._monitor = None
         if self._provider:
             Gtk.StyleContext.remove_provider_for_display(
-                self._window.get_display(), self._provider
+                self._display, self._provider
             )
             self._provider = None
-        self._window.remove_css_class(self._class)
+        if remove_class:
+            self._window.remove_css_class(self._class)
+        self._window = None

@@ -4,6 +4,8 @@
 import gettext
 import shutil
 import subprocess
+import sys
+import sysconfig
 from pathlib import Path
 
 import pytest
@@ -59,6 +61,16 @@ def test_package_preserves_legacy_directories(tmp_path):
         with (locale_package / locale / "LC_MESSAGES/community-menu.mo").open("rb") as stream:
             gettext.GNUTranslations(stream)
     primary = package / "usr/share/big-gnome-center"
+    python_site = package / Path(sysconfig.get_path("purelib")).relative_to("/")
+    integration = python_site / "big_gnome_center_material"
+    assert (integration / "__init__.py").read_bytes() == (primary / "window_material_client.py").read_bytes()
+    assert (integration / "policy.py").read_bytes() == (primary / "window_material.py").read_bytes()
+    subprocess.run([
+        sys.executable, "-B", "-c",
+        "import sys; sys.path.insert(0, sys.argv[1]); "
+        "from big_gnome_center_material import attach_window_material; "
+        "assert callable(attach_window_material)", str(python_site),
+    ], check=True, capture_output=True, text=True)
     policy = Path("usr/share/polkit-1/actions/br.com.biglinux.BigGnomeCenter.policy")
     assert (package / policy).read_bytes() == (ROOT / policy).read_bytes()
     assert (package / policy).stat().st_mode & 0o022 == 0

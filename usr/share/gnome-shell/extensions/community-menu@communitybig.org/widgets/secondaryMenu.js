@@ -104,12 +104,12 @@ export const AppItemMenu = class extends AppMenu.AppMenu {
     }
 
     open(animate) {
-        super.open(animate);
+        super.open(Utils.popupAnimationParams(animate));
         this.sourceActor.add_style_pseudo_class('active');
     }
 
     close(animate) {
-        super.close(animate);
+        super.close(Utils.popupAnimationParams(animate));
         this.sourceActor?.remove_style_pseudo_class('active');
         this.sourceActor?.sync_hover();
     }
@@ -138,12 +138,12 @@ export const ButtonMenu = class extends PopupMenu.PopupMenu {
     }
 
     open(animate) {
-        super.open(animate);
+        super.open(Utils.popupAnimationParams(animate));
         this.sourceActor.add_style_pseudo_class('active');
     }
 
     close(animate) {
-        super.close(animate);
+        super.close(Utils.popupAnimationParams(animate));
         this.sourceActor?.remove_style_pseudo_class('active');
         this.sourceActor?.sync_hover();
     }

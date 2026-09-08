@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Clutter from 'gi://Clutter';
-import Blur from 'gi://Blur';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
@@ -10,6 +9,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import {attachBlurRepaint} from './blurPaintSignal.js';
 import {RoundedCornersEffect} from './roundedCorners.js';
+import {createBackgroundEffect} from './roundedBackend.js';
 
 const EFFECT_NAME = 'communitybig-frosted-glass-shell';
 const CORNER_EFFECT_NAME = 'communitybig-frosted-glass-shell-corners';
@@ -150,7 +150,10 @@ export class ShellBlurSurface {
                     this._applyDashToPanelStyles());
             }
         }
-        this._connect(this.actor, 'destroy', () => this.destroy());
+        for (const object of [this._boxPointer, this._pointerBorder]) {
+            if (object)
+                this._watchLifetime(object);
+        }
     }
 
     update(config) {
@@ -183,7 +186,7 @@ export class ShellBlurSurface {
         const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
         this._effect.radius = Math.max(0, Math.round(config.radius * scale));
         this._effect.brightness = config.brightness;
-        if (this._mode === 'dynamic')
+        if (this._mode === 'dynamic' && 'corner_radius' in this._effect)
             this._effect.corner_radius = this._cornerRadius * scale;
         if (this._cornerEffect)
             this._cornerEffect.radius = this._cornerRadius;
@@ -199,7 +202,7 @@ export class ShellBlurSurface {
         this._effect.queue_repaint();
     }
 
-    destroy() {
+    destroy(actorDestroyed = false) {
         if (this._destroyed)
             return;
         this._destroyed = true;
@@ -211,25 +214,30 @@ export class ShellBlurSurface {
             }
         }
         try {
-            this.actor?.remove_style_class_name?.(STYLE_CLASS);
-            this.actor?.remove_style_class_name?.(LIGHT_STYLE_CLASS);
-            if (this._kind === 'panel' ||
-                this._kind === 'dash-to-panel' ||
-                this._kind === 'dash-to-dock' ||
-                POINTER_KINDS.has(this._kind))
-                this.actor?.set_style?.(this._targetStyle);
-            if (this._kind === 'dash-to-panel' && this._panelContent)
-                this._panelContent.set_style?.(this._panelContentStyle);
-            if (this._boxPointer)
-                this._boxPointer.set_style?.(this._pointerStyle);
-            if (this._pointerBorder && this._pointerBorderVisible !== null)
-                this._pointerBorder.visible = this._pointerBorderVisible;
+            if (!actorDestroyed)
+                this._restoreTargetStyle();
         } catch (error) {
-            // Actor may already be disposed.
+            // A third-party target may have been detached during teardown.
         }
         this._removeOverlay();
         this._lastConfig = null;
         this.actor = null;
+    }
+
+    _restoreTargetStyle() {
+        this.actor?.remove_style_class_name?.(STYLE_CLASS);
+        this.actor?.remove_style_class_name?.(LIGHT_STYLE_CLASS);
+        if (this._kind === 'panel' ||
+            this._kind === 'dash-to-panel' ||
+            this._kind === 'dash-to-dock' ||
+            POINTER_KINDS.has(this._kind))
+            this.actor?.set_style?.(this._targetStyle);
+        if (this._kind === 'dash-to-panel' && this._panelContent)
+            this._panelContent.set_style?.(this._panelContentStyle);
+        if (this._boxPointer)
+            this._boxPointer.set_style?.(this._pointerStyle);
+        if (this._pointerBorder && this._pointerBorderVisible !== null)
+            this._pointerBorder.visible = this._pointerBorderVisible;
     }
 
     _applyTargetStyle() {
@@ -369,6 +377,14 @@ export class ShellBlurSurface {
             reactive: false,
             clip_to_allocation: true,
         });
+        this._overlay.connect('destroy', () => {
+            this._overlay = null;
+            this._wallpaper = null;
+            this._tint = null;
+            this._effect = null;
+            this._cornerEffect = null;
+            this._paintSignal = null;
+        });
         Main.uiGroup.add_child(this._overlay);
 
         if (mode === 'static' && this._cornerRadius > 0) {
@@ -388,7 +404,7 @@ export class ShellBlurSurface {
                 controlPosition: false,
             });
         } else {
-            this._effect = new Blur.BlurEffect({mode: Blur.BlurMode.BACKGROUND});
+            this._effect = createBackgroundEffect();
             this._paintSignal = attachBlurRepaint(
                 this._overlay, () => this._effect);
             this._overlay.add_effect_with_name(EFFECT_NAME, this._effect);
@@ -523,9 +539,33 @@ export class ShellBlurSurface {
 
     _connect(object, signal, callback) {
         try {
+            this._watchLifetime(object);
             this._signals.push([object, object.connect(signal, callback)]);
         } catch (error) {
             // Optional notify signals differ between actor implementations.
+        }
+    }
+
+    _watchLifetime(object) {
+        try {
+            if (!this._signals.some(([target]) => target === object)) {
+                const destroyId = object.connect('destroy', () => {
+                    // Disconnect while the emitter is still alive, not after disposal.
+                    const owned = this._signals.filter(([target]) => target === object);
+                    this._signals = this._signals.filter(([target]) => target !== object);
+                    for (const [, id] of owned)
+                        object.disconnect(id);
+                    for (const key of ['_panelContent', '_boxPointer', '_pointerBorder', '_dockSlider']) {
+                        if (this[key] === object)
+                            this[key] = null;
+                    }
+                    if (this.actor === object)
+                        this.destroy(true);
+                });
+                this._signals.push([object, destroyId]);
+            }
+        } catch (error) {
+            // Only live actors expose the destroy signal.
         }
     }
 }

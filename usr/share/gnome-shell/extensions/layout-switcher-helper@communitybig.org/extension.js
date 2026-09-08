@@ -2021,7 +2021,7 @@ export default class LayoutSwitcherHelper extends Extension {
         });
 
         const box = new St.BoxLayout({
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             style: 'spacing: 36px;',
@@ -2071,7 +2071,7 @@ export default class LayoutSwitcherHelper extends Extension {
         // its name; the target card gets an accent border + neon glow.
         const makeCard = (path, name, highlight) => {
             const card = new St.BoxLayout({
-                vertical: true,
+                orientation: Clutter.Orientation.VERTICAL,
                 style: highlight
                     ? 'background-color: rgba(255, 255, 255, 0.07); ' +
                       'border-radius: 18px; padding: 22px 26px; spacing: 14px; ' +

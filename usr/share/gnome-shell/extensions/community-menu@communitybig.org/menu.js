@@ -27,6 +27,7 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import {PopupAnimation} from 'resource:///org/gnome/shell/ui/boxpointer.js';
+import {popupAnimationParams} from './utils.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
@@ -145,7 +146,7 @@ const ApplicationsMenu = class extends PopupMenu.PopupMenu {
     // Handle opening the menu
     open(animate) {
         this._maybeShowPanel();
-        super.open(animate);
+        super.open(popupAnimationParams(animate));
 
         const keyboardBox = Main.layoutManager.keyboardBox;
         if (this.actor.get_parent?.() === Main.uiGroup &&
@@ -179,7 +180,7 @@ const ApplicationsMenu = class extends PopupMenu.PopupMenu {
         const monitor = Main.layoutManager.monitors[this._monitorIndex];
 
         this._layout?.closePopups?.();
-        super.close(animate);
+        super.close(popupAnimationParams(animate));
 
         if (this._panelParent?.intellihide?.enabled) {
             this._panelParent.intellihide?.release(1);

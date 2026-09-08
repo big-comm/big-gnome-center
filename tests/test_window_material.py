@@ -130,6 +130,8 @@ def test_extension_gates_styles_and_cleans_up():
     "big-audio-converter", "big-video-converter", "big-hardware-info",
     "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
     "biglinux-webapps", "biglinux-settings", "bigrecorder",
+    "community-release", "biglinux-microphone",
+    "big-driver-manager",
 ])
 def test_application_profiles_use_exclusive_window_classes(window_class):
     css = material.render_css(37).decode()
@@ -144,6 +146,16 @@ def test_terminal_profile_preserves_its_own_palette_and_transparency():
     assert "ashyterm-window" not in material.WINDOW_CLASSES
     terminal = css.split("window.ashyterm-window {", 1)[1].split("}", 1)[0]
     assert terminal.strip() == "backdrop-filter: blur(30px);"
+
+
+def test_camera_profile_preserves_preview_and_opacity():
+    css = material.render_css(37).decode()
+    assert "bgc-bigcam" not in material.WINDOW_CLASSES
+    camera = css.split("window.bgc-bigcam {", 1)[1].split("}", 1)[0]
+    assert camera.strip() == "backdrop-filter: blur(30px);"
+    assert "window.bigcam" not in css
+    assert "preview-picture" not in css
+    assert "video-bg" not in css
 
 
 def test_embedded_dialogs_restore_background_palette():

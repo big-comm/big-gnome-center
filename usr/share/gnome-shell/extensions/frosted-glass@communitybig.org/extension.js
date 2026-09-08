@@ -75,6 +75,10 @@ export default class FrostedGlassExtension extends Extension {
 
     async _enableFullBackend(generation) {
         try {
+            const {prepareRoundedBackend} = await import('./roundedBackend.js');
+            await prepareRoundedBackend();
+            if (!this._settings || this._generation !== generation)
+                return;
             const {ShellSurfaces} = await import('./shellSurfaces.js');
             if (!this._settings || this._generation !== generation)
                 return;

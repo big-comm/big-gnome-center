@@ -574,7 +574,13 @@ def test_dynamic_blur_texture_is_replaced_by_outer_corner_mask():
 def test_dynamic_blur_uses_integrated_native_corner_mask():
     surface = (EXTENSION / "shellBlurSurface.js").read_text()
 
-    assert "import Blur from 'gi://Blur';" in surface
-    assert "new Blur.BlurEffect({mode: Blur.BlurMode.BACKGROUND})" in surface
+    backend = (EXTENSION / "roundedBackend.js").read_text()
+    assert "import Blur from 'gi://Blur';" not in surface
+    assert "createBackgroundEffect()" in surface
+    assert "'corner_radius' in this._effect" in surface
+    assert "LD_BIND_NOW" in backend
+    assert "process.wait_check_async" in backend
+    assert backend.index("process.wait_check_async") < backend.index("await import('gi://Blur')")
+    assert "new Shell.BlurEffect({mode: Shell.BlurMode.BACKGROUND})" in backend
     assert "this._effect.corner_radius = this._cornerRadius * scale" in surface
     assert "mode === 'static' && this._cornerRadius > 0" in surface

@@ -14,3 +14,10 @@ def test_window_blur_lifecycle():
         ["node", str(Path(__file__).with_name("window_blur.mjs"))],
         check=True, capture_output=True, text=True,
     )
+
+
+def test_rounded_backend_abi_guard():
+    if shutil.which("node") is None:
+        pytest.skip("node required")
+    subprocess.run(["node", str(Path(__file__).with_name("rounded_backend.mjs"))],
+                   check=True, capture_output=True, text=True)

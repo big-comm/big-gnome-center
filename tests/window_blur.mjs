@@ -141,6 +141,55 @@ assert.equal(panelStyle, 'background-color: rgba(0,0,0,0.90);',
 assert.equal(panelSignals.size, 0);
 console.log('Panel overview style repair and current-style restoration passed');
 
+// GNOME may dispose popup children and overlays before their controller.
+const dyingSurface = new Surface(panel, {kind: 'panel'});
+dyingSurface._applyTargetStyle();
+const writesBeforeDestroy = styleWrites;
+for (const [name, callback] of [...panelSignals.values()])
+    if (name === 'destroy') callback();
+assert.equal(styleWrites, writesBeforeDestroy, 'Do not restyle a destroying target');
+assert.equal(dyingSurface.actor, null);
+assert.equal(panelSignals.size, 0);
+dyingSurface.destroy();
+
+const childSignals = new Map();
+let childDisposed = false;
+const child = {
+    connect(name, callback) { childSignals.set(1, callback); return 1; },
+    disconnect(id) { assert.equal(childDisposed, false); childSignals.delete(id); },
+    set visible(_value) { assert.fail('Do not restore a disposed popup border'); },
+};
+const popup = new Surface(panel, {kind: 'panel'});
+popup._pointerBorder = child;
+popup._pointerBorderVisible = true;
+popup._watchLifetime(child);
+childSignals.get(1)();
+childDisposed = true;
+popup.destroy();
+assert.equal(popup._pointerBorder, null);
+assert.equal(childSignals.size, 0);
+
+let disposedOverlay = false;
+let overlayDestroy;
+const OverlaySurface = vm.runInNewContext(surfaceSource + '\nShellBlurSurface;', {
+    console, Main: {uiGroup: {add_child() {}}},
+    attachBlurRepaint() {}, createBackgroundEffect: () => ({}),
+    St: {Widget: class {
+        connect(_signal, callback) { overlayDestroy = callback; }
+        add_effect_with_name() {} add_child() {}
+        get_parent() { assert.equal(disposedOverlay, false); return null; }
+        destroy() { assert.equal(disposedOverlay, false); }
+    }},
+});
+const overlaySurface = new OverlaySurface(panel, {kind: 'panel'});
+overlaySurface._rebuild('dynamic', null);
+overlayDestroy();
+disposedOverlay = true;
+overlaySurface.destroy();
+assert.equal(overlaySurface._overlay, null);
+assert.equal(overlaySurface._effect, null);
+console.log('Target, popup child and external overlay disposal passed');
+
 for (const version of ['50.4', '51.beta']) {
     let wayland = true;
     const requests = [];

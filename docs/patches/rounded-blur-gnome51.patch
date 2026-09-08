@@ -1,0 +1,185 @@
+diff --git a/meson.build b/meson.build
+index 5546f35..627a0a3 100644
+--- a/meson.build
++++ b/meson.build
+@@ -21,8 +21,8 @@ libdir = join_paths(prefix, get_option('libdir'))
+ includedir = join_paths(prefix, get_option('includedir'))
+ datadir = join_paths(prefix, get_option('datadir'))
+ 
+-mutter_api_version = '18'
+-mutter_req = '>= 50.0'
++mutter_api_version = '51'
++mutter_req = '>= 51.rc'
+ 
+ clutter_pc = 'mutter-clutter-' + mutter_api_version
+ cogl_pc = 'mutter-cogl-' + mutter_api_version
+@@ -37,7 +37,7 @@ clutter_dep = dependency(clutter_pc, version: mutter_req,
+ cogl_dep = dependency(cogl_pc, version: mutter_req,
+   required: false,
+ )
+-libmutter_dep = dependency('libmutter-18')
++libmutter_dep = dependency('libmutter-51')
+ 
+ # Required dependencies
+ deps = [
+diff --git a/src/meson.build b/src/meson.build
+index 826567e..c304755 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -40,7 +40,7 @@ gnome_rounded_blur_gir = gnome.generate_gir(
+   namespace: 'Blur',
+   symbol_prefix: 'gb',
+   identifier_prefix: 'Gb',
+-  includes: ['GObject-2.0'],
++  includes: ['GObject-2.0', 'Clutter-51'],
+   install: true,
+   install_dir_gir: join_paths(datadir, 'gir-1.0'),
+   install_dir_typelib: join_paths(libdir, 'girepository-1.0'),
+diff --git a/src/rounded-blur-effect.c b/src/rounded-blur-effect.c
+index b06552b..dcc4511 100644
+--- a/src/rounded-blur-effect.c
++++ b/src/rounded-blur-effect.c
+@@ -112,16 +112,12 @@ enum {
+ static GParamSpec *properties [N_PROPS] = { NULL, };
+ 
+ static CoglPipeline*
+-create_base_pipeline (void)
++create_base_pipeline (CoglContext *ctx)
+ {
+   static CoglPipeline *base_pipeline = NULL;
+ 
+   if (G_UNLIKELY (base_pipeline == NULL))
+     {
+-       ClutterBackend *backend = clutter_get_default_backend ();
+-      
+-      CoglContext *ctx =
+-        clutter_backend_get_cogl_context (backend);
+       
+         
+       
+@@ -141,7 +137,7 @@ create_base_pipeline (void)
+ }
+ 
+ static CoglPipeline*
+-create_brightness_pipeline (void)
++create_brightness_pipeline (CoglContext *ctx)
+ {
+   static CoglPipeline *brightness_pipeline = NULL;
+ 
+@@ -149,7 +145,7 @@ create_brightness_pipeline (void)
+     {
+       CoglSnippet *snippet;
+ 
+-      brightness_pipeline = create_base_pipeline ();
++      brightness_pipeline = create_base_pipeline (ctx);
+ 
+       snippet = cogl_snippet_new (COGL_SNIPPET_HOOK_FRAGMENT,
+                                   brightness_glsl_declarations,
+@@ -162,14 +158,14 @@ create_brightness_pipeline (void)
+ }
+ 
+ static CoglPipeline*
+-create_mask_pipeline (void)
++create_mask_pipeline (CoglContext *ctx)
+ {
+   static CoglPipeline *mask_pipeline = NULL;
+ 
+   if (G_UNLIKELY (mask_pipeline == NULL))
+   {
+     CoglSnippet *snippet;
+-    mask_pipeline = create_base_pipeline ();
++    mask_pipeline = create_base_pipeline (ctx);
+     snippet = cogl_snippet_new (COGL_SNIPPET_HOOK_FRAGMENT,
+                                 mask_glsl_declarations,
+                                 mask_glsl);
+@@ -238,12 +234,13 @@ setup_projection_matrix (CoglFramebuffer *framebuffer,
+ }
+ 
+ static gboolean
+-update_fbo (FramebufferData *data,
++update_fbo (ClutterActor *actor,
++            FramebufferData *data,
+             unsigned int     width,
+             unsigned int     height,
+             float            downscale_factor)
+ {
+-   ClutterBackend *backend = clutter_get_default_backend ();
++   ClutterBackend *backend = clutter_context_get_backend (clutter_actor_get_context (actor));
+   
+   CoglContext *ctx =
+     clutter_backend_get_cogl_context (backend);
+@@ -292,7 +289,7 @@ update_actor_fbo (GbBlurEffect *self,
+ 
+   self->cache_flags &= ~ACTOR_PAINTED;
+ 
+-  return update_fbo (&self->actor_fb, width, height, downscale_factor);
++  return update_fbo (self->actor, &self->actor_fb, width, height, downscale_factor);
+ }
+ 
+ static gboolean
+@@ -309,7 +306,7 @@ update_brightness_fbo (GbBlurEffect *self,
+       return TRUE;
+     }
+ 
+-  return update_fbo (&self->brightness_fb,
++  return update_fbo (self->actor, &self->brightness_fb,
+                      width, height,
+                      downscale_factor);
+ }
+@@ -326,7 +323,7 @@ update_background_fbo (GbBlurEffect *self,
+       return TRUE;
+     }
+ 
+-  return update_fbo (&self->background_fb, width, height, 1.0);
++  return update_fbo (self->actor, &self->background_fb, width, height, 1.0);
+ }
+ 
+ static gboolean
+@@ -343,7 +340,7 @@ update_mask_fbo (GbBlurEffect *self,
+     return TRUE;
+   }
+ 
+-  return update_fbo (&self->mask_fb, width, height, downscale_factor);
++  return update_fbo (self->actor, &self->mask_fb, width, height, downscale_factor);
+ }
+ 
+ static void
+@@ -399,6 +396,18 @@ gb_blur_effect_set_actor (ClutterActorMeta *meta,
+ 
+   /* we keep a back pointer here, to avoid going through the ActorMeta */
+   self->actor = clutter_actor_meta_get_actor (meta);
++  if (self->actor && !self->actor_fb.pipeline)
++    {
++      ClutterBackend *backend = clutter_context_get_backend (clutter_actor_get_context (self->actor));
++      CoglContext *ctx = clutter_backend_get_cogl_context (backend);
++      self->actor_fb.pipeline = create_base_pipeline (ctx);
++      self->background_fb.pipeline = create_base_pipeline (ctx);
++      self->brightness_fb.pipeline = create_brightness_pipeline (ctx);
++      self->mask_fb.pipeline = create_mask_pipeline (ctx);
++      self->brightness_uniform = cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "brightness");
++      self->corner_radius_uniform = cogl_pipeline_get_uniform_location (self->mask_fb.pipeline, "u_corner_radius");
++      self->mask_size_uniform = cogl_pipeline_get_uniform_location (self->mask_fb.pipeline, "u_size");
++    }
+ }
+ 
+ static void
+@@ -911,16 +920,9 @@ gb_blur_effect_init (GbBlurEffect *self)
+   self->brightness = 1.f;
+   self->corner_radius = 0.f;
+ 
+-  self->actor_fb.pipeline = create_base_pipeline ();
+-  self->background_fb.pipeline = create_base_pipeline ();
+-  self->brightness_fb.pipeline = create_brightness_pipeline ();
+-  self->mask_fb.pipeline = create_mask_pipeline ();
+-  self->brightness_uniform =
+-    cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "brightness");
+-  self->corner_radius_uniform =
+-    cogl_pipeline_get_uniform_location (self->mask_fb.pipeline, "u_corner_radius");
+-  self->mask_size_uniform =
+-    cogl_pipeline_get_uniform_location (self->mask_fb.pipeline, "u_size");
++  self->brightness_uniform = -1;
++  self->corner_radius_uniform = -1;
++  self->mask_size_uniform = -1;
+ }
+ 
+ GbBlurEffect *

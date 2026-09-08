@@ -62,9 +62,16 @@ unchanged. GTK3, Qt, Electron, and Flatpak runtimes are not supported profiles.
 - WebApps Manager: `window.biglinux-webapps`; not browser/web content.
 - General Adjustments: `window.biglinux-settings`.
 - Big Recorder: `window.bigrecorder`.
+- System / Distribution Info: `window.community-release`; live client.
+- Big Microphone (Python): `window.biglinux-microphone`; live client.
+- BigCam: `window.bgc-bigcam`; live blur only, preserving camera opacity.
+- Big Driver Manager: `window.big-driver-manager`; live client.
 
 These profiles were tested on the GNOME 51.beta / GTK 4.23.3 VM. This list is
 not a claim that every GTK4 application supports the managed style.
+Camera/audio discovery and driver detection were disabled in the new UI tests;
+recording and package operations were not exercised. The current Rust Microphone
+clone shares its profile but has startup-only integration; VM validation pending.
 
 Embedded dialogs restore opaque palette variables at their boundary. Recorder
 chrome follows the inherited palette; text, icons and document canvases are
@@ -78,8 +85,26 @@ Reopen running applications after installing either side of the integration.
 
 Big Gnome Center monitors the managed sheet and reloads its GTK provider while
 open. Disabling removes its material class, including matches from GTK's cached
-startup stylesheet. Other profiled applications still require reopening after
+startup stylesheet. System / Distribution Info, Python Microphone, BigCam and
+Driver Manager use the same client. Other profiles still require reopening after
 material changes; a static CSS class is not live integration.
+
+The package exposes optional Python integration:
+
+```python
+try:
+    from big_gnome_center_material import attach_window_material
+except ImportError:
+    attach_window_material = None
+
+# After initializing the GTK window; requires a registered app profile.
+self.add_css_class("community-release")
+if attach_window_material is not None:
+    self._window_material = attach_window_material(self, "community-release")
+```
+
+The client monitors atomic stylesheet updates, gates unsupported GTK versions,
+and releases providers on window destruction. It never changes window opacity.
 
 Native panel material preserves transparency after runtime opacity updates
 during overview transitions, then restores the latest underlying style on stop.
@@ -175,12 +200,31 @@ not change target allocation or create another offscreen render pass. Keep
 the outer highlight near seven-percent opacity and control edges near five
 percent so light wallpapers do not turn them into visible frames.
 
-Dynamic Shell blur uses the bundled GNOME 51 `Blur.BlurEffect` helper. It is
-derived from `ShellBlurEffect` and applies the rounded mask inside the same
-paint-node pipeline after blurring the real framebuffer. Separate stacked
-Clutter effects cannot provide the same result: an inner mask is blurred back
-into a rectangle, while an outer offscreen mask prevents background sampling.
-The Mutter-derived JavaScript corner shader remains the static-mode mask.
+Dynamic Shell blur defaults to native `Shell.BlurEffect`. Rounded dynamic
+corners require the optional `gnome-rounded-blur` library; it is not bundled
+or built by this package. Earlier documentation incorrectly called it bundled.
+Its `Blur.BlurEffect` applies the rounded mask in the native paint-node pipeline.
+Separate stacked Clutter effects cannot provide the same result: an inner mask
+is blurred back into a rectangle, while an outer offscreen mask prevents
+background sampling. The JavaScript corner shader remains the static-mode mask.
+
+Before importing the optional library, `roundedBackend.js` resolves its symbols
+in an isolated GJS process with `LD_BIND_NOW=1`, matching the Shell GI/library
+paths. Failed imports and a three-second timeout fall back to native Shell blur.
+This avoids terminating the desktop when a Mutter upgrade invalidates the
+library. The fallback has rectangular dynamic blur bounds; it does not promise
+rounded clipping. Native GTK window blur is independent of this library.
+
+GNOME 51 RC removed `clutter_get_default_backend()`. The optional library must
+obtain the backend from its actor's Clutter context and defer pipeline creation
+until that actor is attached. A tested source patch for upstream revision
+`f3bfcc796e1214c1e1d4287ee35cb132ad8133f0` is in
+`docs/patches/rounded-blur-gnome51.patch`. Build it against Mutter 51, including
+Clutter-51 introspection. Do not copy a GNOME 50 binary into a GNOME 51 package.
+The patch is a packaging aid, not an automatic system-library installer.
+
+GNOME 51 porting reference:
+<https://gjs.guide/extensions/upgrading/gnome-shell-51.html>.
 
 Community Dock writes an opaque background color directly on its
 `dash-background` actor, which outranks extension CSS. `ShellBlurSurface`
@@ -330,6 +374,27 @@ Panel, Community Dock, and Quick Settings corner geometry was visually validated
 against the same surfaces with blur disabled. The final mask reads the active
 theme radius and uses Mutter-compatible pixel coverage; it does not resize or
 reposition the target actor.
+
+### Mutter 51 RC software-rendering regression
+
+Mutter 51.rc introduced a primary-GPU FBO path that breaks rendering on some
+software-rendered systems. On the QEMU/llvmpipe VM, native window and dynamic
+Shell blur became transparent without blur; ordinary headless output still
+worked. The visible-session A/B test restored blur with
+`MUTTER_DEBUG_USE_FBOS=0`, without changing application or extension code.
+
+Upstream fix:
+[290f201b2da7](https://gitlab.gnome.org/GNOME/mutter/-/commit/290f201b2da76155e9f20605e6ef670fd4a26042),
+“onscreen/native: Disable FBO path by default with software rendering”
+([MR !5286](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/5286)).
+It selects the supported path automatically for software rendering, preserving
+the accelerated-GPU policy. Use a Mutter package containing that commit or an
+explicit downstream backport. Do not ship the diagnostic environment variable,
+renderer overrides, or compositor-library replacements in Big Gnome Center.
+
+Internal Shell screenshots are insufficient for native-window blur validation:
+their repaint can lack the stage view required by Mutter's native blur path.
+Use direct VM display captures or actual stage-view framebuffer captures.
 
 ### Deferred application-grid icons
 

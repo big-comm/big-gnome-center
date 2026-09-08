@@ -75,6 +75,14 @@ package() {
         fi
     done
 
+    # Expose the optional GTK client without application-specific import paths.
+    local python_site
+    python_site="$(python -c 'import sysconfig; print(sysconfig.get_path("purelib"))')"
+    install -Dm644 "${pkgsrc}/usr/share/big-gnome-center/window_material_client.py" \
+        "${pkgdir}${python_site}/big_gnome_center_material/__init__.py"
+    install -Dm644 "${pkgsrc}/usr/share/big-gnome-center/window_material.py" \
+        "${pkgdir}${python_site}/big_gnome_center_material/policy.py"
+
     # Keep translation sources in the repository, not the shared locale root.
     find "${pkgdir}/usr/share/locale" -maxdepth 1 -type f \
         \( -name '*.po' -o -name '*.pot' \) -delete

@@ -716,7 +716,7 @@ const CategoryAppsMenu = class extends PopupMenu.PopupMenu {
         if (this._inheritLightStyle)
             this._syncLightStyle();
         this._ensureContent();
-        super.open(animate);
+        super.open(Utils.popupAnimationParams(animate));
         this.sourceActor.add_style_pseudo_class('active');
     }
 
@@ -756,7 +756,7 @@ const CategoryAppsMenu = class extends PopupMenu.PopupMenu {
 
     close(animate) {
         const wasOpen = this.isOpen;
-        super.close(animate);
+        super.close(Utils.popupAnimationParams(animate));
         if (wasOpen) {
             this.sourceActor?.remove_style_pseudo_class('active');
             this.sourceActor?.sync_hover();

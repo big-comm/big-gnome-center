@@ -114,7 +114,7 @@ class MainWindow(Adw.ApplicationWindow):
     # ── Ciclo de vida ─────────────────────────────────────────────────────────
 
     def _on_destroy(self, win) -> None:
-        self._window_material.close()
+        self._window_material.close(remove_class=False)
         for tid in self._timeout_ids:
             try:
                 GLib.source_remove(tid)

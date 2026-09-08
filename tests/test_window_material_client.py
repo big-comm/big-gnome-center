@@ -77,3 +77,25 @@ def test_old_gtk_does_not_install_live_provider(monkeypatch):
     instance = client.WindowMaterialClient(Mock(), "big-gnome-center")
     provider.assert_not_called()
     instance.close()
+
+
+def test_public_attachment_releases_client_when_window_is_destroyed(monkeypatch):
+    controller = Mock()
+    factory = Mock(return_value=controller)
+    monkeypatch.setattr(client, "WindowMaterialClient", factory)
+    window = Mock()
+    assert client.attach_window_material(window, "example") is controller
+    factory.assert_called_once_with(window, "example")
+    signal, callback = window.connect.call_args.args
+    assert signal == "destroy"
+    callback(window)
+    controller.close.assert_called_once_with(remove_class=False)
+
+
+def test_destroy_cleanup_does_not_access_disposed_window(live):
+    instance, window, provider, style, config = live
+    window.get_display.side_effect = RuntimeError("disposed window")
+    window.remove_css_class.side_effect = RuntimeError("disposed window")
+    instance.close(remove_class=False)
+    style.remove_provider_for_display.assert_called_once()
+    instance.close()

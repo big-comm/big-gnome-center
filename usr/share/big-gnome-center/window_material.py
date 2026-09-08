@@ -20,6 +20,8 @@ WINDOW_CLASSES = (
     "big-audio-converter", "big-video-converter", "big-hardware-info",
     "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
     "biglinux-webapps", "biglinux-settings", "bigrecorder",
+    "community-release", "biglinux-microphone",
+    "big-driver-manager",
 )
 SELECTORS = ", ".join(f"window.{name}" for name in WINDOW_CLASSES)
 DIALOG_SELECTORS = ", ".join(f"window.{name} dialog" for name in WINDOW_CLASSES)
@@ -59,7 +61,14 @@ def render_css(opacity: int) -> bytes:
     window.org-gnome-TextEditor textview text {{
         background-color: transparent;
     }}
+    window.community-release .main-view,
+    window.community-release headerbar {{
+        background-color: var(--window-bg-color);
+    }}
     window.ashyterm-window {{
+        backdrop-filter: blur(30px);
+    }}
+    window.bgc-bigcam {{
         backdrop-filter: blur(30px);
     }}
 }}
