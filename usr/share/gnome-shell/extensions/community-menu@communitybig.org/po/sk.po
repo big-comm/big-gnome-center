@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: community-menu 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 00:52-0300\n"
+"POT-Creation-Date: 2026-09-12 19:18-0300\n"
 "PO-Revision-Date: 2024-08-17 11:27+0000\n"
 "Last-Translator: Marek <celes38.on.gameteam@gmail.com>\n"
 "Language-Team: Slovak <https://translations.zorin.com/projects/zorin-menu/"
@@ -15,6 +15,8 @@ msgstr ""
 "X-Generator: Weblate 4.18.1\n"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:48
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:202
 msgid "All Apps"
 msgstr "Všetky aplikácie"
@@ -86,6 +88,75 @@ msgstr "Aplikácie"
 msgid "Shortcuts"
 msgstr "Skratky"
 
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:283
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:411
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:491
+msgid "New Folder"
+msgstr "Nový priečinok"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:280
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
+msgid "Back"
+msgstr "Späť"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:284
+msgid "Folder Name"
+msgstr "Názov priečinka"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:402
+msgid "Rename"
+msgstr "Premenovať"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+msgid "Create Folder"
+msgstr "Vytvoriť priečinok"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:303
+msgid "Select at least two applications"
+msgstr "Vyberte aspoň dve aplikácie"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:311
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:412
+msgid "Move outside folders"
+msgstr "Presunúť mimo priečinkov"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
+msgid "Pinned Applications"
+msgstr "Pripnuté aplikácie"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:325
+msgid "Right-click an application to pin it"
+msgstr "Kliknutím pravým tlačidlom na aplikáciu ju môžete pripnúť"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+msgid "Folders"
+msgstr "Priečinky"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:332
+msgid "Other Applications"
+msgstr "Ostatné aplikácie"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:380
+msgid "Could not update application folders"
+msgstr "Nepodarilo sa aktualizovať priečinky aplikácií"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:381
+msgid "No applications were removed. Check whether folder settings are locked."
+msgstr ""
+"Žiadne aplikácie neboli odstránené. Skontrolujte, či sú nastavenia "
+"priečinkov uzamknuté."
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:403
+msgid "Dissolve Folder"
+msgstr "Zrušiť zoskupenie priečinka"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:407
+msgid "Move to Folder"
+msgstr "Presunúť do priečinka"
+
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:23
 msgid "Copy"
 msgstr "Kopírovať"
@@ -101,10 +172,6 @@ msgstr "Zobraziť text"
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:82
 msgid "Hide Text"
 msgstr "Skryť text"
-
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
-msgid "Back"
-msgstr "Späť"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/searchEntry.js:28
 msgid "Type to search"

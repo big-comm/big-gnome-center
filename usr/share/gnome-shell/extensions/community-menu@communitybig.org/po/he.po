@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: community-menu 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 00:52-0300\n"
+"POT-Creation-Date: 2026-09-12 19:18-0300\n"
 "PO-Revision-Date: 2025-11-04 12:30+0000\n"
 "Last-Translator: \"Omer I.S.\" <omeritzicschwartz@gmail.com>\n"
 "Language-Team: Hebrew <https://translations.zorin.com/projects/zorin-menu/"
@@ -16,6 +16,8 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:48
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:202
 msgid "All Apps"
 msgstr "כל היישומים"
@@ -86,6 +88,73 @@ msgstr "יישומים"
 msgid "Shortcuts"
 msgstr "קיצורי דרך"
 
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:283
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:411
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:491
+msgid "New Folder"
+msgstr "תיקייה חדשה"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:280
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
+msgid "Back"
+msgstr "חזרה"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:284
+msgid "Folder Name"
+msgstr "שם התיקייה"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:402
+msgid "Rename"
+msgstr "שינוי שם"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+msgid "Create Folder"
+msgstr "יצירת תיקייה"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:303
+msgid "Select at least two applications"
+msgstr "יש לבחור לפחות שני יישומים"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:311
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:412
+msgid "Move outside folders"
+msgstr "העברה אל מחוץ לתיקיות"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
+msgid "Pinned Applications"
+msgstr "יישומים מוצמדים"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:325
+msgid "Right-click an application to pin it"
+msgstr "לחיצה ימנית על יישום מאפשרת להצמיד אותו"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+msgid "Folders"
+msgstr "תיקיות"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:332
+msgid "Other Applications"
+msgstr "יישומים אחרים"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:380
+msgid "Could not update application folders"
+msgstr "לא ניתן לעדכן את תיקיות היישומים"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:381
+msgid "No applications were removed. Check whether folder settings are locked."
+msgstr "לא הוסרו יישומים. יש לבדוק אם הגדרות התיקיות נעולות."
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:403
+msgid "Dissolve Folder"
+msgstr "פירוק התיקייה"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:407
+msgid "Move to Folder"
+msgstr "העברה לתיקייה"
+
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:23
 msgid "Copy"
 msgstr "העתקה"
@@ -101,10 +170,6 @@ msgstr "הצגת טקסט"
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:82
 msgid "Hide Text"
 msgstr "הסתרת טקסט"
-
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
-msgid "Back"
-msgstr "חזרה"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/searchEntry.js:28
 msgid "Type to search"

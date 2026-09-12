@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: community-menu 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 00:52-0300\n"
+"POT-Creation-Date: 2026-09-12 19:18-0300\n"
 "PO-Revision-Date: 2023-12-26 18:27+0000\n"
 "Last-Translator: Svetoslav <webmaster@it-playground.net>\n"
 "Language-Team: Bulgarian <https://translations.zorin.com/projects/zorin-menu/"
@@ -15,6 +15,8 @@ msgstr ""
 "X-Generator: Weblate 4.18.1\n"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:48
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:202
 msgid "All Apps"
 msgstr "Всички приложения"
@@ -85,6 +87,75 @@ msgstr "Приложения"
 msgid "Shortcuts"
 msgstr "Преки пътища"
 
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:283
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:411
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:491
+msgid "New Folder"
+msgstr "Нова папка"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:280
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
+msgid "Back"
+msgstr "Назад"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:284
+msgid "Folder Name"
+msgstr "Име на папката"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:402
+msgid "Rename"
+msgstr "Преименуване"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+msgid "Create Folder"
+msgstr "Създаване на папка"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:303
+msgid "Select at least two applications"
+msgstr "Изберете поне две приложения"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:311
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:412
+msgid "Move outside folders"
+msgstr "Преместване извън папките"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
+msgid "Pinned Applications"
+msgstr "Закачени приложения"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:325
+msgid "Right-click an application to pin it"
+msgstr "Щракнете с десния бутон върху приложение, за да го закачите"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+msgid "Folders"
+msgstr "Папки"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:332
+msgid "Other Applications"
+msgstr "Други приложения"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:380
+msgid "Could not update application folders"
+msgstr "Папките с приложения не можаха да бъдат обновени"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:381
+msgid "No applications were removed. Check whether folder settings are locked."
+msgstr ""
+"Няма премахнати приложения. Проверете дали настройките на папките са "
+"заключени."
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:403
+msgid "Dissolve Folder"
+msgstr "Разгрупиране на папката"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:407
+msgid "Move to Folder"
+msgstr "Преместване в папка"
+
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:23
 msgid "Copy"
 msgstr "Копиране"
@@ -100,10 +171,6 @@ msgstr "Показване на текста"
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:82
 msgid "Hide Text"
 msgstr "Скриване на текста"
-
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
-msgid "Back"
-msgstr "Назад"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/searchEntry.js:28
 msgid "Type to search"

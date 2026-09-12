@@ -473,6 +473,69 @@
     padding: 8px;
 }
 
+/* Desk UX organizer. Shared app-list and Hybrid widgets remain unchanged. */
+.community-menu .desk-ux-apps { min-height: 0; }
+.community-menu .desk-ux-content { padding: 10px; spacing: 8px; }
+.community-menu .desk-ux-heading { spacing: 8px; padding: 6px; font-weight: bold; }
+.community-menu .desk-ux-action { padding: 6px 10px; font-weight: normal; }
+.community-menu .desk-ux-tile {
+    width: 6.8em;
+    height: 8em;
+    padding: 6px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    text-align: center;
+}
+.community-menu .desk-ux-tile-content { spacing: 6px; }
+.community-menu .desk-ux-icon-slot { height: 48px; }
+.community-menu .desk-ux-selection-box {
+    width: 16px;
+    height: 16px;
+    padding: 1px;
+    border: 1px solid rgba(255,255,255,0.65);
+    border-radius: 4px;
+    background-color: rgba(0,0,0,0.2);
+}
+.community-menu .desk-ux-selection-box:checked {
+    color: -st-accent-fg-color;
+    background-color: -st-accent-color;
+    border-color: -st-accent-color;
+}
+.community-menu .desk-ux-selection-count { min-width: 3em; text-align: right; }
+.community-menu .desk-ux-tile StLabel { max-width: 6.8em; height: 3.6em; }
+.community-menu .desk-ux-folder {
+    width: 10.9em;
+    height: 9.5em;
+    background-color: rgba(255,255,255,0.055);
+    border-color: rgba(255,255,255,0.10);
+}
+.community-menu .desk-ux-folder StLabel { max-width: 10.9em; }
+.community-menu .grid-layout-box .desk-ux-folder .desk-ux-folder-preview { padding-bottom: 0; }
+.community-menu .desk-ux-preview-cell { width: 34px; height: 34px; }
+.community-menu .desk-ux-tile:hover { background-color: rgba(255,255,255,0.12); }
+.community-menu .desk-ux-tile:focus,
+.community-menu .desk-ux-tile:checked,
+.community-menu .desk-ux-tile:drop,
+.community-menu .desk-ux-heading:drop,
+.community-menu .desk-ux-grid:drop,
+.community-menu .desk-ux-action:drop {
+    background-color: st-transparentize(-st-accent-color, 0.75);
+    border-color: -st-accent-color;
+}
+.community-menu.community-menu-light .desk-ux-folder {
+    background-color: rgba(46,46,51,0.055);
+    border-color: rgba(46,46,51,0.12);
+}
+.community-menu.community-menu-light .desk-ux-tile:hover { background-color: rgba(46,46,51,0.12); }
+.community-menu.community-menu-light .desk-ux-selection-box {
+    border-color: rgba(46,46,51,0.65);
+    background-color: rgba(255,255,255,0.55);
+}
+.community-menu.community-menu-light .desk-ux-selection-box:checked {
+    background-color: -st-accent-color;
+    border-color: -st-accent-color;
+}
+
 .community-menu .grid-layout-box .grid-header-box {
     padding: 10px 14px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: community-menu 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 00:52-0300\n"
+"POT-Creation-Date: 2026-09-12 19:18-0300\n"
 "PO-Revision-Date: 2025-10-17 14:50+0000\n"
 "Last-Translator: Sveinn í Felli <sv1@fellsnet.is>\n"
 "Language-Team: Icelandic <https://translations.zorin.com/projects/zorin-menu/"
@@ -15,6 +15,8 @@ msgstr ""
 "X-Generator: Weblate 4.18.1\n"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:48
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:202
 msgid "All Apps"
 msgstr "Öll forrit"
@@ -85,6 +87,73 @@ msgstr "Forrit"
 msgid "Shortcuts"
 msgstr "Flýtileiðir"
 
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:283
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:411
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:491
+msgid "New Folder"
+msgstr "Ný mappa"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:280
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
+msgid "Back"
+msgstr "Til baka"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:284
+msgid "Folder Name"
+msgstr "Heiti möppu"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:402
+msgid "Rename"
+msgstr "Endurnefna"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+msgid "Create Folder"
+msgstr "Búa til möppu"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:303
+msgid "Select at least two applications"
+msgstr "Veldu að minnsta kosti tvö forrit"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:311
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:412
+msgid "Move outside folders"
+msgstr "Færa út úr möppum"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
+msgid "Pinned Applications"
+msgstr "Fest forrit"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:325
+msgid "Right-click an application to pin it"
+msgstr "Hægrismelltu á forrit til að festa það"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+msgid "Folders"
+msgstr "Möppur"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:332
+msgid "Other Applications"
+msgstr "Önnur forrit"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:380
+msgid "Could not update application folders"
+msgstr "Ekki tókst að uppfæra forritamöppur"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:381
+msgid "No applications were removed. Check whether folder settings are locked."
+msgstr "Engin forrit voru fjarlægð. Athugaðu hvort möppustillingar séu læstar."
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:403
+msgid "Dissolve Folder"
+msgstr "Leysa upp möppu"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:407
+msgid "Move to Folder"
+msgstr "Færa í möppu"
+
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:23
 msgid "Copy"
 msgstr "Afrita"
@@ -100,10 +169,6 @@ msgstr "Sýna texta"
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:82
 msgid "Hide Text"
 msgstr "Fela texta"
-
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
-msgid "Back"
-msgstr "Til baka"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/searchEntry.js:28
 msgid "Type to search"

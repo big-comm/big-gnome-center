@@ -3,6 +3,7 @@
 
 import gettext
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -30,7 +31,7 @@ def test_community_menu_metadata_is_independent():
     assert metadata["gettext-domain"] == "community-menu"
     assert metadata["settings-schema"] == "org.gnome.shell.extensions.community-menu"
     assert "50" in metadata["shell-version"]
-    assert metadata["version"] == 23
+    assert metadata["version"] == 24
 
 
 def test_registered_gobject_types_are_namespaced_from_legacy_menu():
@@ -46,7 +47,7 @@ def test_registered_gobject_types_are_namespaced_from_legacy_menu():
             )
         )
 
-    assert len(registered_classes) == 44
+    assert len(registered_classes) == 46
     assert all(name.startswith("CommunityBig") for name in registered_classes)
     assert len(registered_classes) == len(set(registered_classes))
 
@@ -82,6 +83,53 @@ def test_menu_defaults_and_migration_behavior():
     )
 
 
+def test_native_folder_operations():
+    if shutil.which("node") is None:
+        pytest.skip("node is required for folder model tests")
+    subprocess.run(["node", str(ROOT / "tests/community_menu_folders.mjs")],
+                   check=True, capture_output=True, text=True)
+
+
+def test_native_folder_settings():
+    if shutil.which("gjs") is None:
+        pytest.skip("gjs is required for native folder settings tests")
+    subprocess.run(["gjs", "-m", str(ROOT / "tests/community_menu_folder_settings.js")],
+                   env={**os.environ, "GSETTINGS_BACKEND": "memory"},
+                   check=True, capture_output=True, text=True)
+
+
+def test_desk_ux_search_scope():
+    if shutil.which("node") is None:
+        pytest.skip("node is required for search scope tests")
+    subprocess.run(["node", str(ROOT / "tests/community_menu_search_scope.mjs")],
+                   check=True, capture_output=True, text=True)
+
+
+def test_desk_ux_drag_and_selection_lifecycle():
+    source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
+    assert "DND.makeDraggable" in source
+    assert "DND.removeDragMonitor(this._monitor)" in source
+    assert "GLib.source_remove(this._scrollTimer)" in source
+    assert "GLib.source_remove(this._idle)" in source
+    assert "this._store.destroy()" in source
+    assert "toggle_mode: Boolean(app && owner.view === '@create')" in source
+    assert "tile.checked = true" in source
+    assert "source?.owner === this" in source
+    assert "this._suppressActivation" in source
+
+
+def test_desk_ux_tiles_reserve_aligned_icon_and_preview_slots():
+    source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
+    css = (EXTENSION_DIR / "stylesheet.css").read_text()
+    assert "content.y_align = Clutter.ActorAlign.START" in source
+    assert "for (let index = 0; index < 4; index++)" in source
+    assert "create_icon_texture(34)" in source
+    assert "visible: this.toggle_mode" in source
+    assert "selected.opacity = this.checked ? 255 : 0" in source
+    assert ".desk-ux-icon-slot { height: 48px; }" in css
+    assert ".desk-ux-preview-cell { width: 34px; height: 34px; }" in css
+
+
 def test_obsolete_menu_implementations_are_not_shipped():
     for name in ("standardLayout.js", "shortcutsLayout.js", "mintLayout.js"):
         assert not (EXTENSION_DIR / "layouts" / name).exists()
@@ -108,6 +156,28 @@ def test_community_menu_packages_all_supported_catalogs():
 
     template = (EXTENSION_DIR / "po/community-menu.pot").read_text()
     assert "Community Panel Settings" not in template
+
+
+@pytest.mark.parametrize("locale", SUPPORTED_LOCALES)
+def test_desk_ux_translations_are_compiled(locale, tmp_path):
+    if shutil.which("msgfmt") is None:
+        pytest.skip("msgfmt is required for catalog validation")
+    compiled = tmp_path / "community-menu.mo"
+    subprocess.run(
+        ["msgfmt", "--check", "--output-file", str(compiled),
+         str(EXTENSION_DIR / f"po/{locale}.po")],
+        check=True, capture_output=True, text=True,
+    )
+    packaged = ROOT / f"usr/share/locale/{locale}/LC_MESSAGES/community-menu.mo"
+    assert compiled.read_bytes() == packaged.read_bytes()
+    with compiled.open("rb") as stream:
+        translations = gettext.GNUTranslations(stream)
+    source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
+    messages = set(re.findall(r"_\('([^']+)'\)", source))
+    assert "Create Folder" in messages
+    assert "Select at least two applications" in messages
+    for message in messages:
+        assert translations._catalog.get(message), (locale, message)
 
 
 def test_menu_button_uses_shared_bigcommunity_icon():

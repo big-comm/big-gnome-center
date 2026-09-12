@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: community-menu 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 00:52-0300\n"
+"POT-Creation-Date: 2026-09-12 19:18-0300\n"
 "PO-Revision-Date: 2026-07-10 00:00-0300\n"
 "Last-Translator: Community Big contributors\n"
 "Language-Team: English\n"
@@ -18,6 +18,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/appsbackend.js:48
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:202
 msgid "All Apps"
 msgstr "All Apps"
@@ -88,6 +90,74 @@ msgstr "Applications"
 msgid "Shortcuts"
 msgstr "Shortcuts"
 
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:279
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:283
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:411
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:491
+msgid "New Folder"
+msgstr "New Folder"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:280
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
+msgid "Back"
+msgstr "Back"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:284
+msgid "Folder Name"
+msgstr "Folder Name"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:402
+msgid "Rename"
+msgstr "Rename"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:294
+msgid "Create Folder"
+msgstr "Create Folder"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:303
+msgid "Select at least two applications"
+msgstr "Select at least two applications"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:311
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:412
+msgid "Move outside folders"
+msgstr "Move outside folders"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:320
+msgid "Pinned Applications"
+msgstr "Pinned Applications"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:325
+msgid "Right-click an application to pin it"
+msgstr "Right-click an application to pin it"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:326
+msgid "Folders"
+msgstr "Folders"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:332
+msgid "Other Applications"
+msgstr "Other Applications"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:380
+msgid "Could not update application folders"
+msgstr "Could not update application folders"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:381
+msgid "No applications were removed. Check whether folder settings are locked."
+msgstr ""
+"No applications were removed. Check whether folder settings are locked."
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:403
+msgid "Dissolve Folder"
+msgstr "Dissolve Folder"
+
+#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js:407
+msgid "Move to Folder"
+msgstr "Move to Folder"
+
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:23
 msgid "Copy"
 msgstr "Copy"
@@ -103,10 +173,6 @@ msgstr "Show Text"
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/entryMenu.js:82
 msgid "Hide Text"
 msgstr "Hide Text"
-
-#: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/miscMenuItems.js:28
-msgid "Back"
-msgstr "Back"
 
 #: usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/searchEntry.js:28
 msgid "Type to search"

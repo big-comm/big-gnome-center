@@ -27,6 +27,7 @@ import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.j
 import * as BaseLayout from './baseLayout.js'
 import * as Constants from '../constants.js';
 import * as SearchEntry from '../widgets/searchEntry.js';
+import {DeskUxApps} from '../widgets/deskUxApps.js';
 import * as Sections from '../sections.js';
 import * as SessionButtons from '../widgets/sessionButtons.js';
 import * as UserWidgets from '../widgets/userWidgets.js';
@@ -49,6 +50,7 @@ export const AppGridLayout = GObject.registerClass({
         this._searchEntry = new SearchEntry.SearchEntry(this._searchResults);
         this._searchEntry.x_expand = false;
         this._searchEntry.x_align = Clutter.ActorAlign.CENTER;
+        this._deskUxApps = new DeskUxApps();
         this._headerBox = new St.BoxLayout({
             ...getOrientationProp(false),
             x_expand: true,
@@ -93,6 +95,7 @@ export const AppGridLayout = GObject.registerClass({
 
         // Fill Box
         this._box.add_child(this._headerBox);
+        this._box.add_child(this._deskUxApps);
         this._box.add_child(this._appsSection);
         this._box.add_child(this._sessionBox);
 
@@ -101,6 +104,9 @@ export const AppGridLayout = GObject.registerClass({
     }
 
     _connectSignals() {
+        this._deskUxApps.connectObject('activated', this._activated.bind(this), this);
+        this._deskUxApps.connectObject('name-entry-changed', (_actor, editing) => this._syncSearchInterceptor(editing), this);
+        this._searchEntry.connectObject('notify::mapped', () => this._syncSearchInterceptor(), this);
         this._appsSection.connectObject('activated', this._activated.bind(this), this);
         this._searchEntry.connectObject('notify::search-active', this._onSearchChanged.bind(this), this);
         this._searchEntry.connectObject('entry-key-press', this._onSearchEntryKeyPress.bind(this), this);
@@ -113,18 +119,42 @@ export const AppGridLayout = GObject.registerClass({
     _onSearchChanged() {
         Utils.blockHover();
         const {searchActive} = this._searchEntry;
+        this._deskUxApps.visible = !searchActive;
+        this._appsSection.visible = searchActive;
+        this._syncSearchInterceptor();
         if (searchActive) {
             this._appsSection.searchActive();
             this._searchEntry.grab_key_focus();
         } else {
-            this._appsSection.displayAllApps();
-            this._appsSection.grab_key_focus();
+            this._searchEntry.grab_key_focus();
         }
     }
 
+    _syncSearchInterceptor(editing = this._deskUxApps.hasNameEntry) {
+        const text = this._searchEntry.clutter_text;
+        if (typeof text.set_input_interceptor === 'function')
+            text.set_input_interceptor(this._searchEntry.mapped &&
+                (this._searchEntry.searchActive || !editing) ? global.stage : null);
+    }
+
+    _onKeyPress(actor, event) {
+        const focus = global.stage.key_focus;
+        if (event.get_key_symbol() === Clutter.KEY_Escape && !this._searchEntry.searchActive && this._deskUxApps.back())
+            return Clutter.EVENT_STOP;
+        // Folder names must not be forwarded to the application search field.
+        if (focus instanceof Clutter.Text && focus.editable && this._deskUxApps.contains(focus))
+            return Clutter.EVENT_PROPAGATE;
+        return super._onKeyPress(actor, event);
+    }
+
     reset(){
+        this._deskUxApps.reset();
         this._searchEntry.clear();
         this._onSearchChanged();
+    }
+
+    closePopups() {
+        this._deskUxApps?.closeMenus();
     }
 
     updateHeight() {
@@ -135,6 +165,8 @@ export const AppGridLayout = GObject.registerClass({
     }
 
     _onDestroy() {
+        this._deskUxApps?.destroy();
+        this._deskUxApps = null;
         this._systemActions = null;
 
         this._searchEntry?.destroy();
