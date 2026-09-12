@@ -1545,6 +1545,14 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
     )
     checks.append(Check("INFO", "color-scheme", snapshot.color_scheme))
     checks.append(Check("INFO", "icon-theme", snapshot.icon_theme))
+    folder_accent = snapshot.runtime_diagnostics.get("folderAccent")
+    if isinstance(folder_accent, dict):
+        status = folder_accent.get("status", "pending")
+        level = {"ready": "PASS", "original": "PASS", "error": "FAIL",
+                 "unavailable": "WARN"}.get(status, "INFO")
+        if folder_accent.get("pending"):
+            level = "INFO"
+        checks.append(Check(level, "folder-accent", json.dumps(folder_accent, sort_keys=True)))
     checks.extend(_runtime_checks(snapshot))
     for payload, digest in sorted(snapshot.payload_hashes.items()):
         checks.append(Check("INFO", f"hash:{payload}", digest))

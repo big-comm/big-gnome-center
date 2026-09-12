@@ -81,6 +81,7 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Set, Tuple
 
 from constants import tr
+from folder_accent import base_theme
 from helper_client import (
     HELPER_UUID,
     LEGACY_HELPER_UUID,
@@ -1456,7 +1457,7 @@ class LayoutApplier:
         Unrelated/custom icon designs are untouched.
         """
         values = cls._section_key_values(text, _INTERFACE_SECTION)
-        icon = cls._gvariant_string(values.get("icon-theme"))
+        icon = base_theme(cls._gvariant_string(values.get("icon-theme")) or "")
         variants = {
             "bigicons-papient",
             "bigicons-papient-dark",

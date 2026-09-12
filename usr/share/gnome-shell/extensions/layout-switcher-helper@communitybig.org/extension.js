@@ -65,6 +65,7 @@ import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
 import {GtkThemeFollower} from './gtkTheme.js';
+import {FolderAccentFollower, folderBaseTheme} from './folderAccent.js';
 
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
@@ -120,7 +121,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 80;
+const HELPER_BUILD = 81;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -303,6 +304,9 @@ export default class LayoutSwitcherHelper extends Extension {
                 this._gtkThemeFollower = new GtkThemeFollower(
                     this._ifaceSettings, () => this._busy(),
                     error => logHelper(`GTK3 theme follow failed: ${error}`));
+                this._folderAccentFollower = new FolderAccentFollower(
+                    this._ifaceSettings, () => this._busy(),
+                    error => logHelper(`Folder accent follow failed: ${error}`));
                 this._schemeSignal = this._ifaceSettings.connect(
                     'changed::color-scheme', () => this._onColorSchemeChanged());
                 this._accentSignal = this._ifaceSettings.connect(
@@ -408,6 +412,8 @@ export default class LayoutSwitcherHelper extends Extension {
     // Stop every pending timer so no step of an in-flight switch fires into a
     // session-mode transition, and never leave the curtain up.
     _hardCancel() {
+        this._folderAccentFollower?.destroy();
+        this._folderAccentFollower = null;
         this._gtkThemeFollower?.destroy();
         this._gtkThemeFollower = null;
         this._teardownPanelSystemIndicator();
@@ -476,6 +482,7 @@ export default class LayoutSwitcherHelper extends Extension {
 
         return JSON.stringify({
             helperBuild: HELPER_BUILD,
+            folderAccent: this._folderAccentFollower?.diagnostics() ?? null,
             shellTheme: this._shellThemeDiagnostics(),
             gUnity: this._gUnityDiagnostics(),
             runtime,
@@ -1800,7 +1807,7 @@ export default class LayoutSwitcherHelper extends Extension {
             const explicitLightIcons = this._activeLayoutLabel === 'Classic' ||
                 this._activeLayoutLabel === 'Hybrid';
             try {
-                const icon = this._ifaceSettings.get_string('icon-theme');
+                const icon = folderBaseTheme(this._ifaceSettings.get_string('icon-theme'));
                 const variants = new Set([
                     'bigicons-papient',
                     'bigicons-papient-dark',

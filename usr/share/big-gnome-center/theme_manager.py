@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import List, Tuple
 
 from constants import ACCENT_COLORS
+from folder_accent import PREFIX as FOLDER_ACCENT_PREFIX
+from folder_accent import base_theme
 from theme_preview import is_icon_theme
 from utils import gsettings_get, gsettings_set
 
@@ -91,7 +93,8 @@ class ThemeMgr:
             except PermissionError:
                 continue
             for d in entries:
-                if not d.is_dir() or d.name.startswith(".") or d.name in seen:
+                if (not d.is_dir() or d.name.startswith((".", FOLDER_ACCENT_PREFIX))
+                        or d.name in seen):
                     continue
                 if ThemeMgr._is_valid_theme(d, kind):
                     seen[d.name] = True
@@ -225,7 +228,7 @@ class ThemeMgr:
         if not schema:
             return ""
         value = gsettings_get(schema, key) or ""
-        return value
+        return base_theme(value) if kind == "icons" else value
 
     @staticmethod
     def color_scheme() -> str:

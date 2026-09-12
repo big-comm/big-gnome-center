@@ -513,6 +513,15 @@ def test_strict_audit_checks_original_hybrid_contract(tmp_path):
     assert {"layout-menu", "layout-desktop-icons", "layout-indicator"} <= failures.keys()
 
 
+def test_folder_accent_generation_errors_are_audited(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    diagnostics["folderAccent"] = {"status": "error", "error": "Missing icon theme"}
+    failures = _failures(audit_snapshot(_snapshot(runtime_diagnostics=diagnostics), tmp_path))
+    assert "folder-accent" in failures
+
+
 def test_strict_audit_rejects_original_biggnome_with_lift_hover(tmp_path):
     _payload(tmp_path)
     snapshot = _snapshot()

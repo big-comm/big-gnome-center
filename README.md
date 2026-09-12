@@ -40,7 +40,9 @@ a single responsive interface.
   antialiasing, and text scale; search Google Fonts and install a family for
   the current user.
 - **Themes** — Select one of ten GNOME accent colors and browse, preview,
-  filter, and apply installed icon themes.
+  filter, and apply installed icon themes. Papient folders follow the accent
+  on GNOME 50/51 through user-local inherited themes; original assets and
+  unrelated icon themes remain untouched. See [folder accents](docs/FOLDER_ACCENTS.md).
 - **Desktop** — Control desktop icons, application-menu style, Super-key
   behavior, and notification placement independently from layout snapshots.
 - **Panel and Dock** — Configure opacity, visibility, intelligent hiding, and
