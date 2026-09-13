@@ -18,7 +18,17 @@ disabled preferences, including original restoration and failed-apply cleanup.
 
 ## Behavior
 
-- Pinned apps share GNOME Shell favorites and dock order.
+- Pinned apps use independent menu order. Copy GNOME Shell favorites once on
+  first use; subsequent pinning, removal, and reordering never change the dock.
+- App context menus expose a Pinned Applications switch, including search results.
+- Back stays at the end of every internal header, including folder rename mode.
+- Folder header color button and context action expose the ten system accent
+  colors. Default restores the existing ID-based tint. Selection persists by ID.
+- List rows reserve a fixed icon column and vertically center single-line names
+  and descriptions. Action rows follow the same horizontal layout.
+- Navigation fades out for 60ms and in for 110ms. Rapid navigation cancels stale
+  callbacks; closing, dragging, and destruction restore full opacity. Disabled
+  animations and reduced motion skip the transition. No geometry animation.
 - Folder cards read native GNOME names, categories, apps, and exclusions.
 - Open folders inside the menu. Rename reveals the name field; Enter/button saves.
 - Drag an app onto another app to create a folder; onto a folder to move it.
@@ -48,14 +58,24 @@ disabled preferences, including original restoration and failed-apply cleanup.
 `org.gnome.desktop.app-folders.folder` settings are the sole folder store.
 No duplicate database, overview actor reparenting, or private AppDisplay mutation.
 
+Menu pins use `org.gnome.shell.extensions.community-menu.pins:apps` at
+`/org/communitybig/community-menu/pins/`, outside layout-owned extension resets.
+An explicit empty list stays empty across restarts. Hidden/uninstalled IDs remain
+stored. Bulk pinning writes one ordered list; locked/rejected saves retain selection.
+
+Folder color overrides use `org.gnome.shell.extensions.community-menu.folders:colors`
+at `/org/communitybig/community-menu/folders/`. Only visual metadata is stored;
+native folder membership remains unchanged. Invisible folder colors are retained.
+The picker reuses the translated theme palette from `big-gnome-center` catalogs.
+
 Moving a category member records an exclusion in its source folder. Moving into
 a folder clears that app's exclusion. Explicit moves normalize duplicate
 membership; merely opening the menu does not rewrite user organization.
 
 Display filtering respects visibility and parental controls. Empty filtered
 folders are hidden, not deleted. Hidden/uninstalled explicit app IDs are retained.
-Pinned apps remain folder members here; GNOME's overview can hide pinned apps
-inside its folder view.
+Menu pins remain folder members. GNOME's overview independently filters its own
+Shell favorites inside folder views.
 
 Pure operations validate before writes. The adapter preflights all affected keys
 and rolls back accepted writes if a setter rejects a change. GSettings does not
@@ -100,6 +120,27 @@ timer and resets interaction state and opacity; layout
 and scroll positions remain unchanged.
 APIs checked against the installed GNOME 50/51 typelibs and
 [St.ScrollView](https://gnome.pages.gitlab.gnome.org/gnome-shell/st/method.ScrollView.update_fade_effect.html).
+
+## List, colors, and navigation validation — 2026-09-13
+
+- Full suite: 969 passed; one existing GLib deprecation warning. Focused: 68 tests.
+- Covers fixed list icon columns, horizontal action rows, system palette parity,
+  all translated labels, narrow palettes, persistence, and interrupted fades.
+- Memory-backed color tests passed on GNOME 50.4 and 51.rc; installed hashes match.
+  Fresh-session visual validation of alignment, palette, and fade remains pending.
+- Backups: GNOME 50 `/var/tmp/bgc-menu-refinements.a5g7n065`; GNOME 51
+  `/var/tmp/bgc-menu-refinements.d49_hhct`.
+
+## Independent pins validation — 2026-09-13
+
+- Full suite: 967 passed; one existing GLib deprecation warning.
+- Focused: 66 menu tests; header order, tile/search context toggles, drag order,
+  one-time migration, empty state, hidden IDs, and locked/rejected writes.
+- Memory-backed GJS persistence tests passed on GNOME 50.4 and 51.rc.
+- Installed three JavaScript files and the schema on both VMs; hashes matched.
+  Real Shell favorites remained unchanged. Fresh-session visual validation pending.
+- Backups: GNOME 50 `/var/tmp/bgc-menu-pins.kwuz7q8g`; GNOME 51
+  `/var/tmp/bgc-menu-pins.ps8mh1wa`. `absent.json` records newly introduced files.
 
 ## v25 validation
 

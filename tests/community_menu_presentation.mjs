@@ -41,6 +41,23 @@ console.log('Responsive grids, stable colors, search, and ephemeral recents pass
 
 const source = fs.readFileSync(new URL(
     '../usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js', import.meta.url), 'utf8');
+const header = source.slice(source.indexOf('            const heading = this._heading(title, null'),
+    source.indexOf("            if (['@all', '@recent', '@categories'].includes(this.view))"));
+const renderHeader = vm.runInNewContext(`(function(current) { const title = 'Title'; ${header} })`, {
+    _: text => text, themeText: text => text, button: label => ({label}),
+    St: {Entry: class {constructor() {this.clutter_text = {connect() {}};}},
+        Icon: class {}, Button: class {connect() {}}},
+});
+for (const view of ['@all', '@create', '@pin', 'folder']) {
+    for (const renaming of view === 'folder' ? [false, true] : [false]) {
+        const buttons = [];
+        const screen = {view, _renaming: renaming, _toolbar: {add_child() {}},
+            _heading: () => ({add_child: item => buttons.push(item.label)})};
+        renderHeader.call(screen, view === 'folder' ? {id: 'folder'} : null);
+        assert.equal(buttons.at(-1), 'Back', `${view}, rename=${renaming}: Back stays in the corner`);
+        assert.equal(buttons.filter(label => label === 'Back').length, 1);
+    }
+}
 const gridMethod = source.slice(source.indexOf('    _grid('), source.indexOf('    _dropArea('));
 const viewMethods = source.slice(source.indexOf('    get selecting()'), source.indexOf('    _remember('));
 const sizingMethod = source.slice(source.indexOf('    setLayoutWidth('), source.indexOf('    _appRecords('));

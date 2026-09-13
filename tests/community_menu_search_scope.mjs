@@ -63,9 +63,12 @@ console.log('Creation selection, counter, name validation, and toggle synchroniz
 const saveMethods = widgets.slice(widgets.indexOf('    _save() {'), widgets.indexOf('    perform(operation) {'));
 let writable = true;
 const Saving = vm.runInNewContext(`class Saving {${saveMethods}}; Saving`, {
-    _: text => text, global: {settings: {is_writable: () => writable}},
+    _: text => text,
 });
 const editor = new Saving();
+let accepted = false;
+let pinned;
+editor._pins = {get writable() { return writable; }, add: ids => { pinned = ids; return accepted; }};
 editor._selected = new Set(['one.desktop']);
 editor._saveButton = {};
 editor._selectionCount = {};
@@ -85,6 +88,13 @@ editor.perform = () => 'destination';
 editor._save();
 assert.equal(destination, 'destination');
 editor.view = '@pin';
+destination = 'unchanged';
+editor._save();
+assert.equal(destination, 'unchanged', 'Rejected pin writes keep the picker open');
+assert.deepEqual(Array.from(pinned), ['one.desktop']);
+accepted = true;
+editor._save();
+assert.equal(destination, undefined, 'Accepted pin writes return home');
 writable = false;
 editor._updateSave();
 assert.equal(editor._saveButton.reactive, false, 'Locked favorites disable bulk pinning');

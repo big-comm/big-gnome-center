@@ -1,4 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+// Match Big Gnome Center's system accent palette.
+export const FOLDER_COLORS = [
+    ['blue', '#3584e4', 'Blue'],
+    ['teal', '#2190a4', 'Teal'],
+    ['green', '#3a944a', 'Green'],
+    ['yellow', '#c88800', 'Yellow'],
+    ['orange', '#ed5b00', 'Orange'],
+    ['red', '#e62d42', 'Red'],
+    ['pink', '#d56199', 'Pink'],
+    ['purple', '#9141ac', 'Purple'],
+    ['slate', '#6f8396', 'Slate'],
+    ['maia', '#16a085', 'Maia'],
+];
+
 export function matchesQuery(name, query) {
     const normalize = text => text.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase();
     return normalize(name).includes(normalize(query.trim()));

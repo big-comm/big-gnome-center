@@ -31,12 +31,15 @@ import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.j
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import * as Utils from '../utils.js';
+import {LAYOUTS} from '../constants.js';
+import {SETTINGS} from '../extension.js';
+import {MenuPins} from '../menuPins.js';
 
 
 export const AppItemMenu = class extends AppMenu.AppMenu {
     constructor(source) {
         super(source, St.Side.TOP);
-        this._enableFavorites = true;
+        this._enableFavorites = SETTINGS.get_enum('layout') !== LAYOUTS.APP_GRID;
         this._showSingleWindows = true;
 
         this._newWindowItem.connect('activate', () => this.emit('activate-window'));
@@ -54,6 +57,21 @@ export const AppItemMenu = class extends AppMenu.AppMenu {
 
         this.setApp(source.app);
 
+        if (!this._enableFavorites) {
+            this._menuPins = new MenuPins(() => this._syncMenuPin());
+            this._menuPinItem = new PopupMenu.PopupSwitchMenuItem(_('Pinned Applications'), false);
+            this._menuPinItem.connect('toggled', (_item, pinned) => {
+                const id = this._app.get_id();
+                if (pinned)
+                    this._menuPins.add([id]);
+                else
+                    this._menuPins.remove(id);
+                this._syncMenuPin();
+            });
+            this.addMenuItem(this._menuPinItem, 7);
+            this._syncMenuPin();
+        }
+
         Main.uiGroup.add_child(this.actor);
         this.actor.connect('key-press-event', this._menuKeyPress.bind(this));
     }
@@ -61,6 +79,15 @@ export const AppItemMenu = class extends AppMenu.AppMenu {
     setApp(app) {
         super.setApp(app);
         this._updateAddToDesktopItem();
+        this._syncMenuPin();
+    }
+
+    _syncMenuPin() {
+        if (!this._menuPinItem)
+            return;
+        this._menuPinItem.visible = Boolean(this._app);
+        this._menuPinItem.setToggleState(Boolean(this._app && this._menuPins.has(this._app.get_id())));
+        this._menuPinItem.setSensitive(this._menuPins.writable);
     }
 
     _updateAddToDesktopItem() {
@@ -123,6 +150,7 @@ export const AppItemMenu = class extends AppMenu.AppMenu {
     }
 
     destroy() {
+        this._menuPins?.destroy();
         this.actor?.get_parent()?.remove_child(this.actor);
         super.destroy();
     }

@@ -528,9 +528,26 @@
 .community-menu .grid-layout-box .desk-ux-folder .desk-ux-folder-preview { padding-bottom: 0; }
 .community-menu .desk-ux-preview-cell { width: 35px; height: 35px; }
 .community-menu .desk-ux-list-tile { height: 40px; text-align: left; }
+.community-menu .desk-ux-list-tile:rtl { text-align: right; }
 .community-menu .desk-ux-list-tile .desk-ux-icon-slot { width: 40px; height: 40px; }
 .community-menu .desk-ux-list-tile StLabel { height: 1.5em; }
 .community-menu .desk-ux-list-tile .desk-ux-caption { max-width: 18em; }
+.community-menu .desk-ux-color-action { padding: 8px; }
+.community-menu .desk-ux-color-picker { padding: 4px 12px; }
+.community-menu .desk-ux-color-swatch { width: 24px; height: 24px; padding: 2px; border: 2px solid transparent; border-radius: 99px; color: white; }
+.community-menu .desk-ux-color-swatch:hover,
+.community-menu .desk-ux-color-swatch:focus,
+.community-menu .desk-ux-color-swatch:checked { border-color: -st-accent-fg-color; box-shadow: 0 0 0 1px -st-accent-color; }
+.community-menu .desk-ux-color-blue { background-color: rgba(53,132,228,0.22); border-color: rgba(53,132,228,0.4); }
+.community-menu .desk-ux-color-teal { background-color: rgba(33,144,164,0.22); border-color: rgba(33,144,164,0.4); }
+.community-menu .desk-ux-color-green { background-color: rgba(58,148,74,0.22); border-color: rgba(58,148,74,0.4); }
+.community-menu .desk-ux-color-yellow { background-color: rgba(200,136,0,0.22); border-color: rgba(200,136,0,0.4); }
+.community-menu .desk-ux-color-orange { background-color: rgba(237,91,0,0.22); border-color: rgba(237,91,0,0.4); }
+.community-menu .desk-ux-color-red { background-color: rgba(230,45,66,0.22); border-color: rgba(230,45,66,0.4); }
+.community-menu .desk-ux-color-pink { background-color: rgba(213,97,153,0.22); border-color: rgba(213,97,153,0.4); }
+.community-menu .desk-ux-color-purple { background-color: rgba(145,65,172,0.22); border-color: rgba(145,65,172,0.4); }
+.community-menu .desk-ux-color-slate { background-color: rgba(111,131,150,0.22); border-color: rgba(111,131,150,0.4); }
+.community-menu .desk-ux-color-maia { background-color: rgba(22,160,133,0.22); border-color: rgba(22,160,133,0.4); }
 .community-menu .desk-ux-add { border-style: dashed; background-color: transparent; }
 .community-menu .desk-ux-tint-0 { background-color: rgba(153,65,140,0.22); border-color: rgba(195,92,180,0.4); }
 .community-menu .desk-ux-tint-1 { background-color: rgba(49,133,86,0.22); border-color: rgba(67,171,111,0.4); }

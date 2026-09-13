@@ -31,4 +31,21 @@
       <description>Open Community Menu instead of the overview when pressing Super.</description>
     </key>
   </schema>
+  <!-- Personal app order must survive layout-owned extension resets. -->
+  <schema path="/org/communitybig/community-menu/pins/"
+          id="org.gnome.shell.extensions.community-menu.pins">
+    <key name="apps" type="as">
+      <default>[]</default>
+      <summary>Pinned menu applications</summary>
+      <description>Ordered application IDs, independent of GNOME Shell favorites.</description>
+    </key>
+  </schema>
+  <schema path="/org/communitybig/community-menu/folders/"
+          id="org.gnome.shell.extensions.community-menu.folders">
+    <key name="colors" type="a{ss}">
+      <default>{}</default>
+      <summary>Folder accent colors</summary>
+      <description>Optional menu colors keyed by native GNOME folder ID.</description>
+    </key>
+  </schema>
 </schemalist>

@@ -105,6 +105,57 @@ def test_desk_ux_search_scope():
                    check=True, capture_output=True, text=True)
 
 
+def test_independent_menu_pins(tmp_path):
+    if not shutil.which("gjs") or not shutil.which("glib-compile-schemas"):
+        pytest.skip("gjs and glib-compile-schemas are required")
+    shutil.copy2(SCHEMA_FILE, tmp_path / SCHEMA_FILE.name)
+    subprocess.run(["glib-compile-schemas", "--strict", str(tmp_path)], check=True)
+    subprocess.run(["gjs", "-m", str(ROOT / "tests/community_menu_pins.js")],
+                   env={**os.environ, "GSETTINGS_BACKEND": "memory",
+                        "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
+                   check=True, capture_output=True, text=True)
+
+    schema = ET.parse(SCHEMA_FILE).getroot().find(
+        "schema[@id='org.gnome.shell.extensions.community-menu.pins']")
+    assert schema.attrib["path"] == "/org/communitybig/community-menu/pins/"
+    source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
+    assert "AppFavorites" not in source
+    assert "favorite-apps" not in source
+
+
+def test_independent_menu_pins_ui():
+    if shutil.which("node") is None:
+        pytest.skip("node is required for menu pin interaction tests")
+    subprocess.run(["node", str(ROOT / "tests/community_menu_pins_ui.mjs")],
+                   check=True, capture_output=True, text=True)
+
+
+def test_desk_ux_folder_colors(tmp_path):
+    if not shutil.which("gjs") or not shutil.which("glib-compile-schemas"):
+        pytest.skip("gjs and glib-compile-schemas are required")
+    shutil.copy2(SCHEMA_FILE, tmp_path / SCHEMA_FILE.name)
+    subprocess.run(["glib-compile-schemas", "--strict", str(tmp_path)], check=True)
+    subprocess.run(["gjs", "-m", str(ROOT / "tests/community_menu_colors.js")],
+                   env={**os.environ, "GSETTINGS_BACKEND": "memory",
+                        "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
+                   check=True, capture_output=True, text=True)
+
+
+def test_desk_ux_list_colors_and_navigation():
+    if shutil.which("node") is None:
+        pytest.skip("node is required for Desk UX presentation tests")
+    subprocess.run(["node", str(ROOT / "tests/community_menu_refinements.mjs")],
+                   check=True, capture_output=True, text=True)
+
+    model = (EXTENSION_DIR / "deskUxModel.js").read_text()
+    labels = re.findall(r"\['[a-z]+', '#[a-f0-9]+', '([^']+)'\]", model)
+    assert len(labels) == 10
+    for locale in SUPPORTED_LOCALES:
+        translations = gettext.translation("big-gnome-center", ROOT / "usr/share/locale", [locale])
+        for label in [*labels, "Default", "Accent color"]:
+            assert translations._catalog.get(label), (locale, label)
+
+
 def test_desk_ux_presentation_model():
     if shutil.which("node") is None:
         pytest.skip("node is required for presentation tests")

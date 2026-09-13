@@ -6,8 +6,8 @@ import GObject from 'gi://GObject';
 import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
+import Gettext from 'gettext';
 
-import * as AppFavorites from 'resource:///org/gnome/shell/ui/appFavorites.js';
 import * as DND from 'resource:///org/gnome/shell/ui/dnd.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as ParentalControlsManager from 'resource:///org/gnome/shell/misc/parentalControlsManager.js';
@@ -15,11 +15,16 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {AppFolders} from '../appFolders.js';
-import {matchesQuery, folderTint, gridColumns, tileWidth, scrollEdge, SessionRecents} from '../deskUxModel.js';
+import {FolderColors} from '../folderColors.js';
+import {MenuPins} from '../menuPins.js';
+import {FOLDER_COLORS, matchesQuery, folderTint, gridColumns, tileWidth, scrollEdge, SessionRecents} from '../deskUxModel.js';
 import {folderMembers, containsApp} from '../folderModel.js';
 import {getOrientationProp} from '../utils.js';
 import {AppItemMenu} from './secondaryMenu.js';
 import {Grid, ScrollView} from './widgets.js';
+
+// Reuse the system theme picker's translated palette labels.
+const themeText = text => Gettext.dgettext('big-gnome-center', text);
 
 function box(vertical, style = '') {
     return new St.BoxLayout({...getOrientationProp(vertical), x_expand: true, style_class: style});
@@ -52,7 +57,7 @@ const Tile = GObject.registerClass(class CommunityBigDeskUxTile extends St.Butto
             this.icon.set({x_expand: true, y_expand: true,
                 x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
             const iconBox = new St.Widget({layout_manager: new Clutter.BinLayout(),
-                style_class: 'desk-ux-icon-slot', x_expand: true});
+                style_class: 'desk-ux-icon-slot', x_expand: !list});
             iconBox.add_child(this.icon);
             const selected = new St.Icon({icon_name: 'object-select-symbolic', icon_size: 14,
                 opacity: 0});
@@ -70,7 +75,8 @@ const Tile = GObject.registerClass(class CommunityBigDeskUxTile extends St.Butto
             });
             content.add_child(iconBox);
         } else {
-            this.add_style_class_name(`desk-ux-tint-${folderTint(folder.id)}`);
+            const color = owner._folderColors.get(folder.id);
+            this.add_style_class_name(color ? `desk-ux-color-${color}` : `desk-ux-tint-${folderTint(folder.id)}`);
             const preview = box(false, 'desk-ux-folder-preview');
             preview.add_style_class_name('desk-ux-folder-preview');
             for (let index = 0; index < 3; index++) {
@@ -82,11 +88,11 @@ const Tile = GObject.registerClass(class CommunityBigDeskUxTile extends St.Butto
             content.add_child(preview);
         }
         const label = new St.Label({text: title, x_align: folder || list ? Clutter.ActorAlign.FILL : Clutter.ActorAlign.CENTER,
-            y_align: Clutter.ActorAlign.START});
-        label.clutter_text.set_single_line_mode(false);
-        label.clutter_text.set_line_wrap(true);
+            y_align: list ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START});
+        label.clutter_text.set_single_line_mode(Boolean(list));
+        label.clutter_text.set_line_wrap(!list);
         label.clutter_text.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR);
-        label.clutter_text.set_ellipsize(Pango.EllipsizeMode.NONE);
+        label.clutter_text.set_ellipsize(list ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE);
         content.add_child(label);
         if (folder) {
             label.add_style_class_name('desk-ux-folder-title');
@@ -99,7 +105,7 @@ const Tile = GObject.registerClass(class CommunityBigDeskUxTile extends St.Butto
         if (list) {
             label.x_expand = true;
             const description = new St.Label({text: app.get_app_info()?.get_description() ?? '',
-                style_class: 'desk-ux-caption'});
+                style_class: 'desk-ux-caption', y_align: Clutter.ActorAlign.CENTER});
             description.clutter_text.ellipsize = Pango.EllipsizeMode.END;
             content.add_child(description);
         }
@@ -166,11 +172,13 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         this._columns = 5;
         this._folderColumns = 4;
         this._layoutWidth = 700;
+        this._navigationSerial = 0;
         this._recents = new SessionRecents();
         this._privacy = new Gio.Settings({schema_id: 'org.gnome.desktop.privacy'});
         this._appSystem = Shell.AppSystem.get_default();
         this._parental = ParentalControlsManager.getDefault();
-        this._favorites = AppFavorites.getAppFavorites();
+        this._pins = new MenuPins(() => this.queueRender());
+        this._folderColors = new FolderColors(() => this.queueRender());
         this.menuManager = new PopupMenu.PopupMenuManager(this);
         this._store = new AppFolders(() => this.queueRender(), () => this._appRecords(false));
         this._scroll = new ScrollView({x_expand: true, y_expand: true});
@@ -224,13 +232,13 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             this.queueRender();
         }, this);
         this._parental.connectObject('app-filter-changed', () => this.queueRender(), this);
-        this._favorites.connectObject('changed', () => this.queueRender(), this);
         this.connect('notify::mapped', () => {
             if (this.mapped) {
                 const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
                 this._scroll.update_fade_effect(new Clutter.Margin({top: 12 * scale, bottom: 12 * scale}));
                 this.queueRender();
             } else {
+                this._cancelNavigation();
                 this._resetScrollbarVisibility();
                 this._resetScrollFeedback();
                 this.closeMenus();
@@ -238,6 +246,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         });
         this.connect('destroy', () => {
             this._destroyed = true;
+            this._cancelNavigation();
             this._resetScrollbarVisibility();
             this._resetScrollFeedback();
             this.endDrag();
@@ -245,6 +254,8 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
                 GLib.source_remove(this._idle);
             this._idle = 0;
             this._store.destroy();
+            this._pins.destroy();
+            this._folderColors.destroy();
         });
     }
 
@@ -280,7 +291,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
     }
 
     queueRender() {
-        if (this._destroyed || this._dragging || this._idle)
+        if (this._destroyed || this._dragging || this._idle || this._navigationFading)
             return;
         this._idle = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             this._idle = 0;
@@ -289,20 +300,46 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         });
     }
 
-    navigate(view = null, selected = []) {
+    navigate(view = null, selected = [], animate = true) {
+        const settings = St.Settings.get();
+        animate = animate && view !== this.view && this.mapped && !this._dragging &&
+            !this._destroyed && settings.enable_animations &&
+            !('reduced_motion' in settings && settings.reduced_motion);
+        this._cancelNavigation();
         this.closeMenus();
         this.view = view;
         this._selected = new Set(selected);
         this._query = '';
         this._draftName = '';
         this._renaming = false;
-        this._scroll.resetScroll();
+        this._choosingColor = false;
+        this._resetScrollOnRender = true;
         this._focusOnRender = view !== null;
-        this.queueRender();
+        if (!animate) {
+            this.queueRender();
+            return;
+        }
+        this._navigationFading = true;
+        const serial = this._navigationSerial;
+        this.ease({opacity: 0, duration: 60, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                if (serial !== this._navigationSerial || this._destroyed || !this.mapped)
+                    return;
+                this._navigationFading = false;
+                this._render();
+                this.ease({opacity: 255, duration: 110, mode: Clutter.AnimationMode.EASE_OUT_QUAD});
+            }});
+    }
+
+    _cancelNavigation() {
+        this._navigationSerial++;
+        this._navigationFading = false;
+        this.remove_transition('opacity');
+        this.opacity = 255;
     }
 
     reset() {
-        this.navigate();
+        this.navigate(null, [], false);
     }
 
     back() {
@@ -468,11 +505,16 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
     }
 
     _render() {
-        if (this._dragging || !this.mapped)
+        if (this._dragging || !this.mapped || this._navigationFading)
             return;
+        if (this._resetScrollOnRender) {
+            this._scroll.resetScroll();
+            this._resetScrollOnRender = false;
+        }
         this._resetScrollFeedback();
         const nameFocused = this._nameEntry?.clutter_text.has_key_focus();
         const filterFocused = this._filterEntry?.clutter_text.has_key_focus();
+        const colorFocused = this._colorButtons?.find(actor => actor.has_key_focus())?.colorKey;
         const cursor = nameFocused ? this._nameEntry.clutter_text.cursor_position
             : this._filterEntry?.clutter_text.cursor_position;
         const folders = this._store.snapshot();
@@ -486,6 +528,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         if (global.stage.key_focus && this._toolbar.contains(global.stage.key_focus))
             global.stage.set_key_focus(null);
         this._toolbar.destroy_all_children();
+        this._colorButtons = [];
         this._footer.destroy_all_children();
         this._nameEntry = null;
         this._filterEntry = null;
@@ -500,8 +543,17 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
                 : this.selecting ? _('Add Applications')
                 : this.view === '@recent' ? _('Recent Applications')
                 : this.view === '@categories' ? _('Folders') : _('All Apps');
-            const heading = this._heading(title, button(_('Back'), () => this.back()), this._toolbar);
+            const heading = this._heading(title, null, this._toolbar);
             if (current) {
+                const colorButton = new St.Button({can_focus: true,
+                    accessible_name: themeText('Accent color'),
+                    style_class: 'button desk-ux-action desk-ux-color-action',
+                    child: new St.Icon({icon_name: 'color-select-symbolic', icon_size: 16})});
+                colorButton.connect('clicked', () => {
+                    this._choosingColor = !this._choosingColor;
+                    this.queueRender();
+                });
+                heading.add_child(colorButton);
                 heading.add_child(button(_('Rename'), () => {
                     this._renaming = !this._renaming;
                     this._draftName = this.folderName(current);
@@ -530,6 +582,9 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
                     heading.add_child(this._saveButton);
                 }
             }
+            heading.add_child(button(_('Back'), () => this.back()));
+            if (current && this._choosingColor)
+                this._colorPicker(current);
             if (['@all', '@recent', '@categories'].includes(this.view)) {
                 const tabs = box(false, 'desk-ux-tabs');
                 for (const [view, label] of [['@recent', _('Recent Applications')],
@@ -591,20 +646,57 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         } else if (filterFocused && this._filterEntry) {
             this._filterEntry.grab_key_focus();
             this._filterEntry.clutter_text.cursor_position = cursor;
+        } else if (colorFocused) {
+            this._colorButtons.find(actor => actor.colorKey === colorFocused)?.grab_key_focus();
         }
+    }
+
+    _colorPicker(folder) {
+        const selected = this._folderColors.get(folder.id);
+        const reset = button(themeText('Default'), () => this._folderColors.set(folder.id, null));
+        reset.colorKey = 'default';
+        this._colorButtons.push(reset);
+        if (!selected)
+            reset.add_style_pseudo_class('checked');
+        reset.reactive = reset.can_focus = this._folderColors.writable;
+        this._heading(themeText('Accent color'), reset, this._toolbar);
+        const columns = Math.max(1, Math.min(FOLDER_COLORS.length, Math.floor((this._layoutWidth - 48) / 38)));
+        const colors = new Grid(columns, 6, 6);
+        colors.add_style_class_name('desk-ux-color-picker');
+        for (const [color, hex, label] of FOLDER_COLORS) {
+            const swatch = new St.Button({can_focus: this._folderColors.writable,
+                reactive: this._folderColors.writable, toggle_mode: true, checked: color === selected,
+                accessible_name: themeText(label), style_class: 'desk-ux-color-swatch',
+                style: `background-color: ${hex};`,
+                child: new St.Icon({icon_name: 'object-select-symbolic', icon_size: 16,
+                    opacity: color === selected ? 255 : 0})});
+            swatch.connect('clicked', () => {
+                // Restore the saved choice even if the backend rejects the write.
+                this._folderColors.set(folder.id, color);
+                this.queueRender();
+            });
+            swatch.colorKey = color;
+            this._colorButtons.push(swatch);
+            colors.add_item(swatch);
+        }
+        this._toolbar.add_child(colors);
     }
 
     _actionTile(label, action, parent) {
         const tile = new St.Button({can_focus: true, style_class: 'desk-ux-tile desk-ux-add'});
+        const list = this.listMode;
+        if (list)
+            tile.add_style_class_name('desk-ux-list-tile');
         tile.set_style(parent._tileStyle);
-        const content = box(true, 'desk-ux-tile-content');
-        content.add_child(new St.Bin({style_class: 'desk-ux-icon-slot',
-            child: new St.Icon({icon_name: 'list-add-symbolic', icon_size: 40})}));
-        const title = new St.Label({text: label});
-        title.clutter_text.set_single_line_mode(false);
-        title.clutter_text.set_line_wrap(true);
+        const content = box(!list, 'desk-ux-tile-content');
+        content.add_child(new St.Bin({style_class: 'desk-ux-icon-slot', x_expand: !list,
+            child: new St.Icon({icon_name: 'list-add-symbolic', icon_size: list ? 36 : 40})}));
+        const title = new St.Label({text: label, x_expand: Boolean(list),
+            y_align: list ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START});
+        title.clutter_text.set_single_line_mode(Boolean(list));
+        title.clutter_text.set_line_wrap(!list);
         title.clutter_text.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR);
-        title.clutter_text.set_ellipsize(Pango.EllipsizeMode.NONE);
+        title.clutter_text.set_ellipsize(list ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE);
         content.add_child(title);
         tile.set_child(content);
         tile.connect('clicked', action);
@@ -636,7 +728,8 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             const heading = this._heading(_('Pinned Applications'),
                 button(_('All Apps'), () => this.navigate('@all')), section);
             this._dropArea(heading, 'pin');
-            const favorites = this._favorites.getFavorites().filter(app => ids.has(app.get_id()));
+            const favorites = this._pins.ids().filter(id => ids.has(id))
+                .map(id => this._appSystem.lookup_app(id));
             const pinned = this._grid(favorites.map(app => ({app, favorite: true})), false, section);
             this._actionTile(_('Add Applications'), () => this.navigate('@pin'), pinned);
             this._dropArea(pinned, 'pin');
@@ -646,7 +739,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
                 button(_('New Folder'), () => this.navigate('@create')), folderSection);
             this._grid(visibleFolders, true, folderSection);
             const ungrouped = apps.filter(app => !folders.some(folder => containsApp(folder, app)) &&
-                !this._favorites.isFavorite(app.id));
+                !this._pins.has(app.id));
             if (ungrouped.length) {
                 this._dropArea(this._heading(_('Other Applications')), 'ungroup');
                 this._dropArea(this._grid(ungrouped.map(record => ({app: record.app}))), 'ungroup');
@@ -671,7 +764,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             if (this.view === '@recent')
                 records = this._recents.visible(apps);
             if (this.view === '@pin')
-                records = apps.filter(app => !this._favorites.isFavorite(app.id));
+                records = apps.filter(app => !this._pins.has(app.id));
             if (this.view === '@add') {
                 const target = folders.find(folder => folder.id === this._targetFolder);
                 records = target ? apps.filter(app => !containsApp(target, app)) : [];
@@ -701,11 +794,8 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             return;
         const apps = [...this._selected];
         if (this.view === '@pin') {
-            if (!global.settings.is_writable('favorite-apps'))
-                return;
-            for (const id of apps)
-                this._favorites.addFavorite(id);
-            this.navigate();
+            if (this._pins.add(apps))
+                this.navigate();
         } else if (this.view === '@add') {
             if (this.perform({type: 'move', folder: this._targetFolder, apps}))
                 this.navigate(this._targetFolder);
@@ -726,7 +816,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         const enabled = name.length > 0 && name.length <= 120 &&
             (this.view !== '@create' || this._selected.size >= 2) &&
             (!['@pin', '@add'].includes(this.view) || this._selected.size > 0) &&
-            (this.view !== '@pin' || global.settings.is_writable('favorite-apps'));
+            (this.view !== '@pin' || this._pins.writable);
         if (this._selectionCount)
             this._selectionCount.text = this.view === '@create'
                 ? `${this._selected.size.toLocaleString()} / ${(2).toLocaleString()}`
@@ -736,7 +826,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
     }
 
     activateTile(tile) {
-        if (this._dragging || this._suppressActivation)
+        if (this._dragging || this._suppressActivation || this._navigationFading)
             return;
         if (tile.folder) {
             if (this.view !== '@move' || this.perform({type: 'move', folder: tile.folder.id, apps: [...this._selected]}))
@@ -785,6 +875,10 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             menu.connect('activate-window', () => this.emit('activated'));
         this.menuManager.addMenu(menu);
         if (tile.folder) {
+            menu.addAction(themeText('Accent color'), () => {
+                this.navigate(tile.folder.id);
+                this._choosingColor = true;
+            });
             menu.addAction(_('Rename'), () => {
                 this.navigate(tile.folder.id);
                 this._renaming = true;
@@ -802,6 +896,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
     }
 
     beginDrag() {
+        this._cancelNavigation();
         this._resetScrollFeedback();
         this.closeMenus();
         this._dragging = true;
@@ -845,7 +940,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
     }
 
     _canDrop(target, source) {
-        return !this.selecting && this.view !== '@move' && source?.owner === this && source.app && source !== target &&
+        return !this._navigationFading && !this.selecting && this.view !== '@move' && source?.owner === this && source.app && source !== target &&
             (!target.app || source.app.get_id() !== target.app.get_id());
     }
 
@@ -862,14 +957,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             return false;
         const id = source.app.get_id();
         if (target.favorite || target.kind === 'pin') {
-            if (!global.settings.is_writable('favorite-apps'))
-                return false;
-            const pos = target.app ? this._favorites.getFavorites().findIndex(a => a.get_id() === target.app.get_id()) : -1;
-            if (this._favorites.isFavorite(id))
-                this._favorites.moveFavoriteToPos(id, pos);
-            else
-                this._favorites.addFavoriteAtPos(id, pos);
-            return true;
+            return this._pins.move(id, target.app?.get_id() ?? null);
         }
         if (target.kind === 'ungroup')
             return Boolean(this.perform({type: 'ungroup', apps: [id]}));
