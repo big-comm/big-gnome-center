@@ -50,9 +50,14 @@ def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> d
     cfg = configparser.ConfigParser(interpolation=None, strict=False)
     cfg.optionxform = str
     cfg.read_string(index.read_text())
-    files = {}
+    candidates = {}
+    tinted_names = set()
     sections = {}
-    for directory in cfg.get("Icon Theme", "Directories").split(","):
+    directories = {
+        key: [d.strip() for d in cfg.get("Icon Theme", key, fallback="").split(",") if d.strip()]
+        for key in ("Directories", "ScaledDirectories")
+    }
+    for directory in dict.fromkeys(directories["Directories"] + directories["ScaledDirectories"]):
         relative = Path(directory)
         if relative.is_absolute() or ".." in relative.parts:
             raise ValueError("Invalid icon directory")
@@ -65,23 +70,31 @@ def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> d
             folder = source / directory
             if not folder.is_dir():
                 continue
-            for svg in sorted(folder.glob("*.svg")):
-                if svg.name in seen:
+            for icon in sorted(folder.iterdir()):
+                if icon.suffix not in (".svg", ".png", ".xpm") or icon.name in seen:
                     continue
-                seen.add(svg.name)
+                seen.add(icon.name)
+                # user-* also includes trash and bookmarks, which are not folders.
                 if not (
-                    svg.name.startswith(("folder", "user-"))
-                    or svg.name in ("desktop.svg", "inode-directory.svg")
-                ):
+                    icon.stem.startswith(("folder", "user-home", "user-desktop"))
+                    or icon.stem in ("desktop", "inode-directory")
+                ) or icon.stem.endswith("-symbolic"):
                     continue
-                if svg.stat().st_size > 1024 * 1024:
-                    raise ValueError(f"Oversized folder icon: {svg.name}")
-                text = svg.read_text()
-                tinted, count = _HIGHLIGHT.subn(lambda m: m[1] + ACCENT_COLORS[accent] + m[2], text)
-                if not count:
-                    continue
-                files[relative / svg.name] = tinted.encode()
+                if icon.stat().st_size > 1024 * 1024:
+                    raise ValueError(f"Oversized folder icon: {icon.name}")
+                data = icon.read_bytes()
+                if icon.suffix == ".svg":
+                    tinted, count = _HIGHLIGHT.subn(
+                        lambda m: m[1] + ACCENT_COLORS[accent] + m[2], data.decode()
+                    )
+                    if count:
+                        data = tinted.encode()
+                        tinted_names.add(icon.stem)
+                candidates[relative / icon.name] = data
                 sections[directory] = dict(cfg[directory])
+    # Theme lookup stops at the first theme containing an icon name. Include
+    # every size/scale of recolored names, even variants without an accent.
+    files = {path: data for path, data in candidates.items() if path.stem in tinted_names}
     if not files:
         # Do not leave an outdated overlay after a source theme loses support.
         return {**result, "theme": base, "status": "unavailable"}
@@ -92,10 +105,15 @@ def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> d
         "Comment": "Big Gnome Center folder accents",
         "Inherits": base,
         "Hidden": "true",
-        "Directories": ",".join(sections),
     }
-    for name, values in sections.items():
-        overlay[name] = values
+    used = {str(path.parent) for path in files}
+    for key, names in directories.items():
+        included = list(dict.fromkeys(name for name in names if name in used))
+        if included or key == "Directories":
+            overlay["Icon Theme"][key] = ",".join(included)
+    for name in sections:
+        if name in used:
+            overlay[name] = sections[name]
     stream = io.StringIO()
     overlay.write(stream, space_around_delimiters=False)
     files[Path("index.theme")] = stream.getvalue().encode()

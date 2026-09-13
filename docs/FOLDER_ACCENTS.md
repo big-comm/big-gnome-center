@@ -9,6 +9,10 @@ full-color icons. BGC materializes that declared color in a user-local theme.
 - Replaces only the SVG's declared highlight color. Geometry, opacity, emblems,
   fixed-color artwork and symbolic icons are retained. No generic SVG recoloring.
 - Uses standard `index.theme` inheritance. Applications/devices inherit the base.
+- Only folder, home, desktop, and directory aliases are recolored. Trash,
+  bookmarks, and other `user-*` icons inherit the original artwork.
+- Recolored names retain all source size/scale variants, including untinted
+  variants. `ScaledDirectories` metadata is preserved for HiDPI lookup.
 - Outputs immutable content-addressed themes beneath `$XDG_DATA_HOME/icons`
   (default `~/.local/share/icons`), with the `bgc-folders--` prefix and Hidden=true.
   Source theme directory metadata is retained. Blue restores the original base.
@@ -26,6 +30,14 @@ full-color icons. BGC materializes that declared color in a user-local theme.
   pending state or error. The Python auditor flags generation failures.
 
 ## Validation
+
+- 2026-09-13 lookup fix: 43 focused tests; full suite 978 passed, one existing
+  GLib warning. GTK lookup verified 54 non-folder icon names across three
+  installed Papient bases, ten accents, four sizes, and two scales: 12,960
+  comparisons matched original paths. Earlier overlays incorrectly shadowed
+  scalable trash icons with their recolored 16px variants.
+- Host generator updated; backup: `/var/tmp/bgc-folder-icon-fix.5abpa_fq`.
+  Reselect an accent to regenerate its overlay. User visual confirmation pending.
 
 - Unit coverage: palette/bases, aliases, fixed-color assets, source preservation,
   content updates, collisions, unsupported themes, blue restoration, UI and layout.

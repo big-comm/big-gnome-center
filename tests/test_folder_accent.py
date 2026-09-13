@@ -39,6 +39,8 @@ def icons(tmp_path):
         (places / "user-home.svg").symlink_to("folder.svg")
         (places / "folder-red.svg").write_text('<svg fill="#ff0000"/>')
         (places / "drive.svg").write_text(SVG)
+        for name in ("user-trash", "user-trash-full", "user-bookmarks", "user-available"):
+            (places / f"{name}.svg").write_text(SVG)
     return root
 
 
@@ -62,6 +64,9 @@ def test_palette_and_source_preservation(tmp_path, icons, base, accent):
         assert not (theme / "scalable/places" / name).is_symlink()
     assert not (theme / "scalable/places/drive.svg").exists()
     assert not (theme / "scalable/places/folder-red.svg").exists()
+    assert not any(theme.rglob("user-trash*.svg"))
+    assert not any(theme.rglob("user-bookmarks.svg"))
+    assert not any(theme.rglob("user-available.svg"))
     cfg = configparser.ConfigParser()
     cfg.read(theme / "index.theme")
     assert cfg["Icon Theme"]["Inherits"] == base
@@ -94,6 +99,62 @@ def test_custom_missing_and_unsupported(tmp_path, icons):
     folder.write_text("<svg/>")
     assert build_theme(BASES[0], "red", [icons], output)["status"] == "unavailable"
     assert not output.exists()
+
+
+@pytest.mark.parametrize("accent", [color for color in ACCENT_COLORS if color != "blue"])
+def test_native_lookup_preserves_artwork_and_sizes(tmp_path, icons, accent):
+    gi = pytest.importorskip("gi")
+    gi.require_version("Gtk", "4.0")
+    from gi.repository import Gtk
+
+    base = icons / BASES[0]
+    small = base / "16x16/places"
+    large_scaled = base / "48x48@2/places"
+    small.mkdir(parents=True)
+    large_scaled.mkdir(parents=True)
+    fixed = '<svg width="16" height="16"><path fill="#123456"/></svg>'
+    (small / "folder.svg").write_text(fixed)
+    (large_scaled / "folder.svg").write_text(SVG)
+    for name in ("user-trash", "user-trash-full", "user-bookmarks"):
+        (small / f"{name}.svg").write_text(SVG)
+        (base / "scalable/places" / f"{name}.svg").write_text(fixed)
+    cfg = configparser.ConfigParser()
+    cfg.optionxform = str
+    cfg.read(base / "index.theme")
+    cfg["Icon Theme"]["Directories"] += ",16x16/places"
+    cfg["Icon Theme"]["ScaledDirectories"] = "48x48@2/places"
+    cfg["16x16/places"] = {"Context": "Places", "Size": "16", "Type": "Fixed"}
+    cfg["48x48@2/places"] = {"Context": "Places", "Size": "48", "Scale": "2", "Type": "Fixed"}
+    with (base / "index.theme").open("w") as stream:
+        cfg.write(stream)
+
+    output = tmp_path / "output"
+    result = build_theme(BASES[0], accent, [icons], output)
+    generated = output / result["theme"]
+    assert (generated / "16x16/places/folder.svg").read_text() == fixed
+    assert ACCENT_COLORS[accent] in (generated / "48x48@2/places/folder.svg").read_text()
+    overlay_cfg = configparser.ConfigParser()
+    overlay_cfg.read(generated / "index.theme")
+    assert overlay_cfg["Icon Theme"]["ScaledDirectories"] == "48x48@2/places"
+    assert overlay_cfg["48x48@2/places"]["Scale"] == "2"
+
+    def lookup(theme_name, icon, size, scale):
+        theme = Gtk.IconTheme.new()
+        theme.set_search_path([str(output), str(icons)])
+        theme.set_theme_name(theme_name)
+        found = theme.lookup_icon(icon, [], size, scale, Gtk.TextDirection.LTR,
+                                  Gtk.IconLookupFlags.FORCE_REGULAR)
+        return Path(found.get_file().get_path())
+
+    for size in (16, 24, 48, 64):
+        for scale in (1, 2):
+            for icon in ("user-trash", "user-trash-full", "user-bookmarks", "drive", "folder-red"):
+                assert lookup(result["theme"], icon, size, scale) == lookup(
+                    BASES[0], icon, size, scale
+                )
+            original = lookup(BASES[0], "folder", size, scale)
+            tinted = lookup(result["theme"], "folder", size, scale)
+            assert tinted.relative_to(generated) == original.relative_to(base)
 
 
 def test_overlay_is_presented_as_base(tmp_path, icons, monkeypatch):
