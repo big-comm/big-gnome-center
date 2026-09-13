@@ -163,9 +163,9 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         this._draftName = '';
         this._listMode = false;
         this._descending = false;
-        this._columns = 6;
+        this._columns = 5;
         this._folderColumns = 4;
-        this._layoutWidth = 820;
+        this._layoutWidth = 700;
         this._recents = new SessionRecents();
         this._privacy = new Gio.Settings({schema_id: 'org.gnome.desktop.privacy'});
         this._appSystem = Shell.AppSystem.get_default();
@@ -181,19 +181,6 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         this.add_child(this._toolbar);
         this.add_child(this._scroll);
         this.add_child(this._footer);
-        const updateSize = () => {
-            if (!this.mapped)
-                return;
-            const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-            const width = Math.round(this.width / scale);
-            if (width > 0 && width !== this._layoutWidth) {
-                this._layoutWidth = width;
-                this._columns = gridColumns(width - 64);
-                this._folderColumns = gridColumns(width - 64, true);
-                this.queueRender();
-            }
-        };
-        this.connect('notify::width', updateSize);
         this._appSystem.connectObject('installed-changed', () => this.queueRender(), this);
         this._appSystem.connectObject('app-state-changed', (_system, app) => {
             if (app.state === Shell.AppState.RUNNING)
@@ -208,7 +195,6 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         this._favorites.connectObject('changed', () => this.queueRender(), this);
         this.connect('notify::mapped', () => {
             if (this.mapped) {
-                updateSize();
                 this.queueRender();
             } else {
                 this.closeMenus();
@@ -222,6 +208,16 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             this._idle = 0;
             this._store.destroy();
         });
+    }
+
+    setLayoutWidth(width) {
+        // Use the parent's logical width, never child allocation feedback.
+        if (width > 0 && width !== this._layoutWidth) {
+            this._layoutWidth = width;
+            this._columns = gridColumns(width - 64);
+            this._folderColumns = gridColumns(width - 64, true);
+            this.queueRender();
+        }
     }
 
     _appRecords(visible = true) {

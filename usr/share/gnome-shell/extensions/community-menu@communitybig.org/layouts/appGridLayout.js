@@ -171,6 +171,7 @@ export const AppGridLayout = GObject.registerClass({
         const area = Main.layoutManager.getWorkAreaForMonitor(this._monitorIndex);
         const width = Math.max(1, Math.min(700, area.width / scaleFactor - 48));
         this._box.set_style(`width: ${width}px;`);
+        this._deskUxApps.setLayoutWidth(width);
         this.set_height((naturalHeight > availableHeight) ? availableHeight : naturalHeight);
     }
 

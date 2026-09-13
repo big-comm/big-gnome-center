@@ -40,16 +40,32 @@ const source = fs.readFileSync(new URL(
     '../usr/share/gnome-shell/extensions/community-menu@communitybig.org/widgets/deskUxApps.js', import.meta.url), 'utf8');
 const gridMethod = source.slice(source.indexOf('    _grid('), source.indexOf('    _dropArea('));
 const viewMethods = source.slice(source.indexOf('    get selecting()'), source.indexOf('    _remember('));
+const sizingMethod = source.slice(source.indexOf('    setLayoutWidth('), source.indexOf('    _appRecords('));
 class TestGrid {
     constructor(columns) { this.columns = columns; this.styles = []; }
     add_style_class_name(style) { this.styles.push(style); }
 }
-const Presentation = vm.runInNewContext(`class Presentation {${viewMethods}${gridMethod}}; Presentation`,
-    {Grid: TestGrid, tileWidth});
+const Presentation = vm.runInNewContext(`class Presentation {${sizingMethod}${viewMethods}${gridMethod}}; Presentation`,
+    {Grid: TestGrid, tileWidth, gridColumns});
 const ui = new Presentation();
-ui._layoutWidth = 700;
-ui._columns = 5;
-ui._folderColumns = 4;
+let renders = 0;
+ui.queueRender = () => renders++;
+ui.setLayoutWidth(700);
+assert.equal(ui._columns, 5);
+assert.equal(ui._folderColumns, 4);
+for (const allocation of [820, 652, 620, 570, 700]) {
+    ui.width = allocation;
+    ui.setLayoutWidth(700);
+    assert.equal(ui._columns, 5, 'Child allocations cannot wrap the add tile');
+    assert.equal(ui._folderColumns, 4, 'Child allocations cannot drop a folder column');
+}
+assert.equal(renders, 1, 'Stable menu width must not create render feedback');
+ui.setLayoutWidth(480);
+assert.equal(ui._columns, 3, 'Constrained monitors retain responsive fallback');
+assert.equal(ui._folderColumns, 2);
+ui.setLayoutWidth(700);
+assert.equal(ui._columns, 5);
+assert.equal(ui._folderColumns, 4);
 ui._content = {add_child() {}};
 for (const view of [null, '@create', '@add', '@pin', '@all', '@recent', 'folder-id']) {
     for (const list of [false, true]) {
@@ -68,3 +84,32 @@ for (const view of [null, '@create', '@add', '@pin', '@all', '@recent', 'folder-
     }
 }
 console.log('Square cards across every app grid; horizontal list rows preserved');
+
+const layoutSource = fs.readFileSync(new URL(
+    '../usr/share/gnome-shell/extensions/community-menu@communitybig.org/layouts/appGridLayout.js', import.meta.url), 'utf8');
+const heightStart = layoutSource.indexOf('    updateHeight()');
+const heightEnd = layoutSource.indexOf('\n    }', heightStart) + 6;
+for (const scale of [1, 2]) {
+    let monitorWidth = 1280 * scale;
+    const Layout = vm.runInNewContext(`class Layout {${layoutSource.slice(heightStart, heightEnd)}}; Layout`, {
+        St: {ThemeContext: {get_for_stage: () => ({scale_factor: scale})}},
+        global: {stage: {}},
+        Main: {layoutManager: {getWorkAreaForMonitor: () => ({width: monitorWidth})}},
+    });
+    const layout = new Layout();
+    layout._box = {set_style(style) { this.style = style; }};
+    layout._deskUxApps = ui;
+    layout._availableHeight = () => 760 * scale;
+    layout.set_height = height => { layout.height = height; };
+    layout.updateHeight();
+    assert.equal(layout._box.style, 'width: 700px;');
+    assert.equal(layout.height, 640 * scale);
+    assert.equal(ui._layoutWidth, 700, 'Grid budget remains logical at every scale');
+    assert.equal(ui._columns, 5);
+    assert.equal(ui._folderColumns, 4);
+    monitorWidth = 528 * scale;
+    layout.updateHeight();
+    assert.equal(ui._layoutWidth, 480, 'Only monitor constraints shrink the grid budget');
+    assert.equal(ui._folderColumns, 2);
+}
+console.log('Fixed menu dimensions and grid budget at 1x/2x; constrained monitors supported');

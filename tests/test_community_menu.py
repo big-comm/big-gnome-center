@@ -124,6 +124,10 @@ def test_desk_ux_destination_picker_and_fixed_controls():
     assert "changed::remember-app-usage" in source
     assert "this._recents.clear()" in source
     assert "width !== this._layoutWidth" in source
+    assert "this.connect('notify::width'" not in source
+    assert "setLayoutWidth(width)" in source
+    layout = (EXTENSION_DIR / "layouts/appGridLayout.js").read_text()
+    assert "this._deskUxApps.setLayoutWidth(width)" in layout
     assert "tileWidth(this._layoutWidth, columns, compact ? 18 : 26," in source
     assert "const compact = !folders && !this.listMode" in source
     assert "if (folders || compact)" in source

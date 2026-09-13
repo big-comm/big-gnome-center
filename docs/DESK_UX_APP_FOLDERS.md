@@ -55,9 +55,11 @@ drag monitors, settings signals, and secondary menus are released on destruction
 Search interception is suspended for the inline name editor. Native feature
 detection retains compatibility with both supported Shell releases.
 
-Sizing uses the mapped actor's cached logical width. Recompute tile widths even
-when the column count remains unchanged. Never query preferred geometry while
-rebuilding children. The menu respects monitor work area and a 640px natural
+Sizing uses the parent menu's explicit logical width, not child allocations.
+This prevents theme and allocation feedback from reducing columns in GNOME 51.
+Recompute tile widths when the monitor-constrained menu width changes. Never
+query preferred geometry while rebuilding children. The menu respects monitor
+work area and a 640px natural
 height. Internal views use their own filter, hiding the global search field.
 Preferred size: 700 × 640px; four folder columns at normal scale. Folder and
 pinned cards use equal content width/height, capped at 112px and 94px respectively.
@@ -68,6 +70,10 @@ keeps Log Out, Suspend, Restart, and Power Off; no replacement with Lock.
 
 ## v25 validation
 
+- Reopen regression: GNOME 50 retained four folder columns and five pinned tiles
+  after ten Super-key close/open cycles with the fixed parent-width budget.
+  GNOME 51 files match. User confirmed the corrected layout after deployment.
+- Sizing regressions cover transient child widths, 1x/2x scale, and narrow monitors.
 - Initial suite: 934 passed, three existing GI/theme warnings.
 - Focused: responsive columns, same-column resizing, search normalization, stable
   tints, bounded recent history, folder operations, and all 29 compiled catalogs.
