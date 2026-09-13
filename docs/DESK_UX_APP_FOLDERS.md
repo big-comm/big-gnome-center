@@ -1,22 +1,29 @@
 # Desk UX app folders
 
-Community Menu v24. Applies to the grid layout used by Desk UX. Classic and
+Community Menu v25. Applies to the grid layout used by Desk UX. Classic and
 Hybrid retain their existing views.
 
 ## Behavior
 
 - Pinned apps share GNOME Shell favorites and dock order.
 - Folder cards read native GNOME names, categories, apps, and exclusions.
-- Open folders inside the menu. Rename with the name field and Enter/button.
+- Open folders inside the menu. Rename reveals the name field; Enter/button saves.
 - Drag an app onto another app to create a folder; onto a folder to move it.
 - New Folder offers keyboard-accessible selection. Requires two distinct apps.
 - Selection boxes are visible before clicking. A localized numeric counter tracks
   selection against the two-app minimum; a name alone does not enable creation.
-- Tiles reserve equal icon/label regions. Folder previews use four fixed cells
-  with 34px icons (previously 28px), including placeholders for missing members.
+- Tiles reserve equal icon/label regions. Folder previews use three 32px icons
+  in a row, stable ID-based tints, and localized application counts.
+- Favorites have an Add Applications picker. Existing folders support bulk adding.
+- Move to Folder opens an internal searchable, scrollable destination picker.
+- Creation and selection actions remain outside the scrolling content.
+- All Apps supports grid/list and ascending/descending locale-aware ordering.
+- Recent Applications records up to 24 IDs in memory while this menu instance is
+  alive. Tracks launches and RUNNING transitions; no inferred startup history.
+  Clear affects this list only. Honors `org.gnome.desktop.privacy:remember-app-usage`.
 - Right-click/Menu key offers move, ungroup, create, and native app actions.
 - Drag onto the pinned section to pin; onto a pinned app to insert/reorder.
-- Drag onto Other Applications or the folder's ungroup area to remove membership.
+- Drag onto Other Applications to remove membership; context actions also ungroup.
 - Scroll edges while dragging. No nested folders.
 - Keep one-app folders. Remove a folder after its last effective app is moved out.
 - Dissolving a folder removes organization only, never applications.
@@ -48,7 +55,30 @@ drag monitors, settings signals, and secondary menus are released on destruction
 Search interception is suspended for the inline name editor. Native feature
 detection retains compatibility with both supported Shell releases.
 
-## Validation — 2026-09-12
+Sizing uses the mapped actor's cached logical width. Recompute tile widths even
+when the column count remains unchanged. Never query preferred geometry while
+rebuilding children. The menu respects monitor work area and a 640px natural
+height. Internal views use their own filter, hiding the global search field.
+Preferred size: 700 × 640px; four folder columns at normal scale. Folder and
+pinned cards use equal content width/height, capped at 112px and 94px respectively.
+All app grids use the same compact square cards, including New Folder, Add
+Applications, Other Applications, and All Apps. List mode retains horizontal rows.
+Folder previews retain 32px icons; favorites retain 48px icons. The session footer
+keeps Log Out, Suspend, Restart, and Power Off; no replacement with Lock.
+
+## v25 validation
+
+- Initial suite: 934 passed, three existing GI/theme warnings.
+- Focused: responsive columns, same-column resizing, search normalization, stable
+  tints, bounded recent history, folder operations, and all 29 compiled catalogs.
+- Initial GNOME 50 visual check caught 48px tiles from premature geometry reads.
+  Corrected by caching allocated width and deferring rendering until mapped.
+- Updated candidates copied to GNOME 50.4 and 51.rc, with backups. Final visual
+  checks after new login remain pending; do not treat static tests as UI approval.
+- Eight new strings translated in 29 locales; one unused hint removed. Each
+  compiled catalog contains 61 translated messages.
+
+## v24 validation — 2026-09-12
 
 - Full suite: 902 passed; three existing GI/theme-test warnings. Focused Ruff,
   JavaScript syntax, gettext catalog checks, and diff whitespace checks passed.

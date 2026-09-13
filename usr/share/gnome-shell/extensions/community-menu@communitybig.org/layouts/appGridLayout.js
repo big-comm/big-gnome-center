@@ -23,9 +23,9 @@ import GObject from 'gi://GObject';
 import St from 'gi://St';
 
 import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import * as BaseLayout from './baseLayout.js'
-import * as Constants from '../constants.js';
 import * as SearchEntry from '../widgets/searchEntry.js';
 import {DeskUxApps} from '../widgets/deskUxApps.js';
 import * as Sections from '../sections.js';
@@ -48,8 +48,8 @@ export const AppGridLayout = GObject.registerClass({
         this._appsSection = new Sections.AppsListSection(this._appsBackend, true, this._monitorIndex);
         this._searchResults = this._appsSection.searchResults;
         this._searchEntry = new SearchEntry.SearchEntry(this._searchResults);
-        this._searchEntry.x_expand = false;
-        this._searchEntry.x_align = Clutter.ActorAlign.CENTER;
+        this._searchEntry.x_expand = true;
+        this._searchEntry.x_align = Clutter.ActorAlign.FILL;
         this._deskUxApps = new DeskUxApps();
         this._headerBox = new St.BoxLayout({
             ...getOrientationProp(false),
@@ -64,8 +64,8 @@ export const AppGridLayout = GObject.registerClass({
         this._userButton = new UserWidgets.UserMenuButton(this._systemActions);
         this._userButton.x_align = Clutter.ActorAlign.START;
         this._sessionActions = [
-            new SessionButtons.SuspendButton(this._systemActions),
             new SessionButtons.LogoutButton(this._systemActions),
+            new SessionButtons.SuspendButton(this._systemActions),
             new SessionButtons.RestartButton(this._systemActions),
             new SessionButtons.PowerButton(this._systemActions),
         ];
@@ -105,7 +105,10 @@ export const AppGridLayout = GObject.registerClass({
 
     _connectSignals() {
         this._deskUxApps.connectObject('activated', this._activated.bind(this), this);
-        this._deskUxApps.connectObject('name-entry-changed', (_actor, editing) => this._syncSearchInterceptor(editing), this);
+        this._deskUxApps.connectObject('name-entry-changed', (_actor, editing) => {
+            this._headerBox.visible = this._deskUxApps.view === null;
+            this._syncSearchInterceptor(editing);
+        }, this);
         this._searchEntry.connectObject('notify::mapped', () => this._syncSearchInterceptor(), this);
         this._appsSection.connectObject('activated', this._activated.bind(this), this);
         this._searchEntry.connectObject('notify::search-active', this._onSearchChanged.bind(this), this);
@@ -144,6 +147,10 @@ export const AppGridLayout = GObject.registerClass({
         // Folder names must not be forwarded to the application search field.
         if (focus instanceof Clutter.Text && focus.editable && this._deskUxApps.contains(focus))
             return Clutter.EVENT_PROPAGATE;
+        if (this._deskUxApps.view !== null && this._searchEntry.shouldTriggerSearch(event.get_key_symbol())) {
+            this._deskUxApps.focusFilter(event);
+            return Clutter.EVENT_STOP;
+        }
         return super._onKeyPress(actor, event);
     }
 
@@ -159,8 +166,11 @@ export const AppGridLayout = GObject.registerClass({
 
     updateHeight() {
         const scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-        const availableHeight = this._availableHeight();
-        const naturalHeight = Constants.GRID_MENU_HEIGHT * scaleFactor;
+        const availableHeight = Math.max(1, this._availableHeight() - 32 * scaleFactor);
+        const naturalHeight = 640 * scaleFactor;
+        const area = Main.layoutManager.getWorkAreaForMonitor(this._monitorIndex);
+        const width = Math.max(1, Math.min(700, area.width / scaleFactor - 48));
+        this._box.set_style(`width: ${width}px;`);
         this.set_height((naturalHeight > availableHeight) ? availableHeight : naturalHeight);
     }
 

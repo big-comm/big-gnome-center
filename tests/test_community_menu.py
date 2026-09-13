@@ -31,7 +31,7 @@ def test_community_menu_metadata_is_independent():
     assert metadata["gettext-domain"] == "community-menu"
     assert metadata["settings-schema"] == "org.gnome.shell.extensions.community-menu"
     assert "50" in metadata["shell-version"]
-    assert metadata["version"] == 24
+    assert metadata["version"] == 25
 
 
 def test_registered_gobject_types_are_namespaced_from_legacy_menu():
@@ -105,6 +105,33 @@ def test_desk_ux_search_scope():
                    check=True, capture_output=True, text=True)
 
 
+def test_desk_ux_presentation_model():
+    if shutil.which("node") is None:
+        pytest.skip("node is required for presentation tests")
+    subprocess.run(["node", str(ROOT / "tests/community_menu_presentation.mjs")],
+                   check=True, capture_output=True, text=True)
+
+
+def test_desk_ux_destination_picker_and_fixed_controls():
+    source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
+    assert "new PopupMenu.PopupSubMenuMenuItem" not in source
+    assert "this.navigate('@move', [id])" in source
+    toolbar = source.index("this.add_child(this._toolbar)")
+    scroll = source.index("this.add_child(this._scroll)")
+    footer = source.index("this.add_child(this._footer)")
+    assert toolbar < scroll < footer
+    assert "matchesQuery(this.folderName(item.folder), this._query)" in source
+    assert "changed::remember-app-usage" in source
+    assert "this._recents.clear()" in source
+    assert "width !== this._layoutWidth" in source
+    assert "tileWidth(this._layoutWidth, columns, compact ? 18 : 26," in source
+    assert "const compact = !folders && !this.listMode" in source
+    assert "if (folders || compact)" in source
+    assert "grid.add_style_class_name('desk-ux-compact-grid')" in source
+    assert "height: ${grid._tileWidth}px;" in source
+    assert "this._dragging || !this.mapped" in source
+
+
 def test_desk_ux_drag_and_selection_lifecycle():
     source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
     assert "DND.makeDraggable" in source
@@ -112,7 +139,7 @@ def test_desk_ux_drag_and_selection_lifecycle():
     assert "GLib.source_remove(this._scrollTimer)" in source
     assert "GLib.source_remove(this._idle)" in source
     assert "this._store.destroy()" in source
-    assert "toggle_mode: Boolean(app && owner.view === '@create')" in source
+    assert "toggle_mode: Boolean(app && owner.selecting)" in source
     assert "tile.checked = true" in source
     assert "source?.owner === this" in source
     assert "this._suppressActivation" in source
@@ -122,12 +149,12 @@ def test_desk_ux_tiles_reserve_aligned_icon_and_preview_slots():
     source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
     css = (EXTENSION_DIR / "stylesheet.css").read_text()
     assert "content.y_align = Clutter.ActorAlign.START" in source
-    assert "for (let index = 0; index < 4; index++)" in source
-    assert "create_icon_texture(34)" in source
+    assert "for (let index = 0; index < 3; index++)" in source
+    assert "create_icon_texture(32)" in source
     assert "visible: this.toggle_mode" in source
     assert "selected.opacity = this.checked ? 255 : 0" in source
-    assert ".desk-ux-icon-slot { height: 48px; }" in css
-    assert ".desk-ux-preview-cell { width: 34px; height: 34px; }" in css
+    assert ".desk-ux-icon-slot { height: 54px; }" in css
+    assert ".desk-ux-preview-cell { width: 32px; height: 32px; }" in css
 
 
 def test_obsolete_menu_implementations_are_not_shipped():
@@ -427,29 +454,36 @@ def test_app_grid_menu_uses_monitor_center_anchor():
     assert "this._boxPointer.setPosition(this._centerAnchor, 0.5)" in source
 
 
-def test_app_grid_uses_compact_windows_style_header_and_session_footer():
+def test_app_grid_uses_responsive_header_and_session_footer():
     layout = (EXTENSION_DIR / "layouts/appGridLayout.js").read_text()
     stylesheet = (EXTENSION_DIR / "stylesheet.css").read_text()
 
     assert "style_class: 'grid-header-box'" in layout
-    assert "this._searchEntry.x_align = Clutter.ActorAlign.CENTER" in layout
+    assert "this._searchEntry.x_align = Clutter.ActorAlign.FILL" in layout
     assert "new SessionButtons.SuspendButton" in layout
     assert "new SessionButtons.LogoutButton" in layout
+    assert "new SessionButtons.LockButton" not in layout
+    assert "Math.min(700, area.width / scaleFactor - 48)" in layout
+    assert "const naturalHeight = 640 * scaleFactor" in layout
     assert "new SessionButtons.RestartButton" in layout
     assert "new SessionButtons.PowerButton" in layout
     assert "new SessionButtons.PowerMenuButton" not in layout
     assert "style_class: 'session-actions-box'" in layout
+    footer_style = stylesheet.split(
+        ".community-menu .grid-layout-box .session-box {", 1
+    )[1].split("}", 1)[0]
+    assert "border-radius: 14px;" in footer_style
     assert ".community-menu .grid-layout-box .grid-header-box {" in stylesheet
-    assert "border-bottom: 1px solid rgba(255, 255, 255, 0.08)" in stylesheet
+    assert "Main.layoutManager.getWorkAreaForMonitor(this._monitorIndex)" in layout
     assert "background-color: rgba(255, 255, 255, 0.055)" in stylesheet
     assert "border-bottom-color: rgba(46, 46, 51, 0.12)" in stylesheet
     assert ".grid-header-box .search-entry" in stylesheet
     assert ".grid-header-box .search-entry:hover" in stylesheet
     assert ".grid-header-box .search-entry:focus" in stylesheet
-    assert "width: 44em" in stylesheet
+    assert "width: 44em" not in stylesheet
     assert "background-color: transparent !important" in stylesheet
     assert "background-image: none !important" in stylesheet
-    assert "border-color: transparent !important" in stylesheet
+    assert "border-radius: 20px" in stylesheet
     assert (
         ".community-menu-light .grid-layout-box .grid-header-box .search-entry:focus" in stylesheet
     )

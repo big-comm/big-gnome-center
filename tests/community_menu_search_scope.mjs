@@ -33,6 +33,7 @@ const selectionMethods = widgets.slice(widgets.indexOf('    _updateSave() {'), w
 const Selection = vm.runInNewContext(`class Selection {${selectionMethods}}; Selection`);
 const picker = new Selection();
 picker.view = '@create';
+picker.selecting = true;
 picker._selected = new Set();
 picker._nameEntry = {get_text: () => 'Test'};
 picker._saveButton = {};
@@ -58,3 +59,37 @@ picker.activateTile(first);
 assert.equal(picker._selectionCount.text, '1 / 2');
 assert.equal(picker._saveButton.reactive, false, 'Deselection updates creation availability');
 console.log('Creation selection, counter, name validation, and toggle synchronization passed');
+
+const saveMethods = widgets.slice(widgets.indexOf('    _save() {'), widgets.indexOf('    perform(operation) {'));
+let writable = true;
+const Saving = vm.runInNewContext(`class Saving {${saveMethods}}; Saving`, {
+    _: text => text, global: {settings: {is_writable: () => writable}},
+});
+const editor = new Saving();
+editor._selected = new Set(['one.desktop']);
+editor._saveButton = {};
+editor._selectionCount = {};
+editor.view = '@add';
+editor._targetFolder = 'destination';
+editor._updateSave();
+assert(editor._saveButton.reactive, 'Adding to an existing folder only requires one selection');
+let operation;
+let destination;
+editor.perform = value => { operation = value; return false; };
+editor.navigate = value => { destination = value; };
+editor._save();
+assert.equal(operation.type, 'move');
+assert.equal(operation.folder, 'destination');
+assert.equal(destination, undefined, 'Failed writes keep the picker open');
+editor.perform = () => 'destination';
+editor._save();
+assert.equal(destination, 'destination');
+editor.view = '@pin';
+writable = false;
+editor._updateSave();
+assert.equal(editor._saveButton.reactive, false, 'Locked favorites disable bulk pinning');
+writable = true;
+editor._selected.clear();
+editor._updateSave();
+assert.equal(editor._saveButton.reactive, false, 'Empty selections cannot be saved');
+console.log('Bulk selection, failed-write preservation, and favorite locks passed');

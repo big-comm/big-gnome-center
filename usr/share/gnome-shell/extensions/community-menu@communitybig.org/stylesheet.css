@@ -475,19 +475,29 @@
 
 /* Desk UX organizer. Shared app-list and Hybrid widgets remain unchanged. */
 .community-menu .desk-ux-apps { min-height: 0; }
-.community-menu .desk-ux-content { padding: 10px; spacing: 8px; }
-.community-menu .desk-ux-heading { spacing: 8px; padding: 6px; font-weight: bold; }
-.community-menu .desk-ux-action { padding: 6px 10px; font-weight: normal; }
+.community-menu .desk-ux-content { padding: 12px; spacing: 12px; }
+.community-menu .desk-ux-toolbar { padding: 8px 12px; spacing: 8px; }
+.community-menu .desk-ux-heading { spacing: 8px; padding: 6px 0; font-weight: bold; }
+.community-menu .desk-ux-action { padding: 8px 14px; border-radius: 18px; font-weight: normal; }
+.community-menu .desk-ux-controls, .community-menu .desk-ux-tabs { spacing: 8px; }
+.community-menu .desk-ux-footer { padding: 12px; spacing: 12px; border-top: 1px solid rgba(128,128,128,0.25); }
+.community-menu .desk-ux-entry { padding: 8px 12px; border-radius: 12px; }
+.community-menu .desk-ux-pinned { padding: 8px; spacing: 8px; border-radius: 18px; background-color: rgba(128,128,128,0.10); }
+.community-menu .desk-ux-compact-grid .desk-ux-tile { padding: 8px; }
+.community-menu .desk-ux-compact-grid .desk-ux-tile-content { spacing: 4px; }
+.community-menu .desk-ux-compact-grid .desk-ux-icon-slot { height: 48px; }
+.community-menu .desk-ux-caption { font-size: 0.85em; font-weight: normal; color: rgba(255,255,255,0.65); }
 .community-menu .desk-ux-tile {
     width: 6.8em;
-    height: 8em;
-    padding: 6px;
-    border-radius: 9px;
-    border: 1px solid transparent;
+    height: 116px;
+    padding: 12px;
+    border-radius: 14px;
+    background-color: rgba(128,128,128,0.08);
+    border: 1px solid rgba(128,128,128,0.12);
     text-align: center;
 }
-.community-menu .desk-ux-tile-content { spacing: 6px; }
-.community-menu .desk-ux-icon-slot { height: 48px; }
+.community-menu .desk-ux-tile-content { spacing: 10px; }
+.community-menu .desk-ux-icon-slot { height: 54px; }
 .community-menu .desk-ux-selection-box {
     width: 16px;
     height: 16px;
@@ -502,16 +512,30 @@
     border-color: -st-accent-color;
 }
 .community-menu .desk-ux-selection-count { min-width: 3em; text-align: right; }
-.community-menu .desk-ux-tile StLabel { max-width: 6.8em; height: 3.6em; }
+.community-menu .desk-ux-tile StLabel { height: 2.8em; }
 .community-menu .desk-ux-folder {
-    width: 10.9em;
-    height: 9.5em;
+    height: 110px;
     background-color: rgba(255,255,255,0.055);
     border-color: rgba(255,255,255,0.10);
 }
-.community-menu .desk-ux-folder StLabel { max-width: 10.9em; }
+.community-menu .desk-ux-folder StLabel { height: 1.5em; text-align: left; }
+.community-menu .desk-ux-folder:rtl StLabel { text-align: right; }
+.community-menu .desk-ux-folder .desk-ux-folder-title { font-weight: bold; height: 2.8em; }
+.community-menu .desk-ux-folder .desk-ux-tile-content { spacing: 4px; }
+.community-menu .desk-ux-folder-preview { spacing: 8px; height: 34px; }
 .community-menu .grid-layout-box .desk-ux-folder .desk-ux-folder-preview { padding-bottom: 0; }
-.community-menu .desk-ux-preview-cell { width: 34px; height: 34px; }
+.community-menu .desk-ux-preview-cell { width: 32px; height: 32px; }
+.community-menu .desk-ux-list-tile { height: 40px; text-align: left; }
+.community-menu .desk-ux-list-tile .desk-ux-icon-slot { width: 40px; height: 40px; }
+.community-menu .desk-ux-list-tile StLabel { height: 1.5em; }
+.community-menu .desk-ux-list-tile .desk-ux-caption { max-width: 18em; }
+.community-menu .desk-ux-add { border-style: dashed; background-color: transparent; }
+.community-menu .desk-ux-tint-0 { background-color: rgba(153,65,140,0.22); border-color: rgba(195,92,180,0.4); }
+.community-menu .desk-ux-tint-1 { background-color: rgba(49,133,86,0.22); border-color: rgba(67,171,111,0.4); }
+.community-menu .desk-ux-tint-2 { background-color: rgba(166,126,41,0.22); border-color: rgba(200,151,48,0.4); }
+.community-menu .desk-ux-tint-3 { background-color: rgba(47,112,175,0.22); border-color: rgba(58,139,216,0.4); }
+.community-menu .desk-ux-tint-4 { background-color: rgba(176,69,69,0.22); border-color: rgba(217,86,86,0.4); }
+.community-menu .desk-ux-tint-5 { background-color: rgba(121,77,176,0.22); border-color: rgba(151,97,218,0.4); }
 .community-menu .desk-ux-tile:hover { background-color: rgba(255,255,255,0.12); }
 .community-menu .desk-ux-tile:focus,
 .community-menu .desk-ux-tile:checked,
@@ -523,9 +547,9 @@
     border-color: -st-accent-color;
 }
 .community-menu.community-menu-light .desk-ux-folder {
-    background-color: rgba(46,46,51,0.055);
-    border-color: rgba(46,46,51,0.12);
+    color: #242429;
 }
+.community-menu.community-menu-light .desk-ux-caption { color: rgba(46,46,51,0.72); }
 .community-menu.community-menu-light .desk-ux-tile:hover { background-color: rgba(46,46,51,0.12); }
 .community-menu.community-menu-light .desk-ux-selection-box {
     border-color: rgba(46,46,51,0.65);
@@ -538,26 +562,26 @@
 
 .community-menu .grid-layout-box .grid-header-box {
     padding: 10px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 0;
     border-radius: 9px 9px 0 0;
-    background-color: rgba(255, 255, 255, 0.055);
+    background-color: transparent;
 }
 
 .community-menu.community-menu-light .grid-layout-box .grid-header-box {
     border-bottom-color: rgba(46, 46, 51, 0.12);
-    background-color: rgba(46, 46, 51, 0.06);
+    background-color: transparent;
 }
 
 .community-menu .grid-layout-box .grid-header-box .search-entry,
 .community-menu .grid-layout-box .grid-header-box .search-entry:hover,
 .community-menu .grid-layout-box .grid-header-box .search-entry:focus {
-    width: 44em;
+    min-width: 0;
     margin: 0;
-    border-width: 0 !important;
-    border-color: transparent !important;
-    border-radius: 0;
+    border-width: 1px !important;
+    border-color: rgba(128,128,128,0.35) !important;
+    border-radius: 20px;
     box-shadow: none !important;
-    background-color: transparent !important;
+    background-color: rgba(128,128,128,0.10) !important;
     background-image: none !important;
 }
 
@@ -566,8 +590,8 @@
 .community-menu.community-menu-light .grid-layout-box .grid-header-box .search-entry:focus {
     color: #2e2e33 !important;
     caret-color: #2e2e33 !important;
-    border-width: 0 !important;
-    border-color: transparent !important;
+    border-width: 1px !important;
+    border-color: rgba(46,46,51,0.25) !important;
     box-shadow: none !important;
     background-color: transparent !important;
     background-image: none !important;
@@ -615,7 +639,7 @@
     margin-top: 0;
     padding: 8px 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0 0 9px 9px;
+    border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.055);
 }
 
