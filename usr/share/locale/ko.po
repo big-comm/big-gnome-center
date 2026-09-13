@@ -413,10 +413,6 @@ msgstr "기본값"
 msgid "Application menu"
 msgstr "응용 프로그램 메뉴"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Classic, Desk-UX 및 Hybrid 레이아웃에서 사용할 수 있습니다."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1912,18 +1908,3 @@ msgstr "필요한 레이아웃 도우미가 설치되지 않았습니다."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "필요한 레이아웃 도우미가 시작되지 않았습니다."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "시스템 확장 기능 — 제거할 수 없습니다"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "이 확장 기능은 시스템에 의해 설치되었으므로 여기서 제거할 수 없습니다."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "GNOME Shell의 밝은 모양을 사용합니다."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "활성 레이아웃이 선택한 Shell 테마를 불러옵니다."

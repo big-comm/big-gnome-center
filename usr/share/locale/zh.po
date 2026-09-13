@@ -412,10 +412,6 @@ msgstr "默认"
 msgid "Application menu"
 msgstr "应用菜单"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "适用于经典、Desk-UX 和混合布局。"
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1901,17 +1897,3 @@ msgstr "所需的布局助手未安装。"
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "所需的布局助手未能启动。"
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "系统扩展 — 无法移除"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr "此扩展程序无法在此处移除，因为它由系统安装。"
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "使用 GNOME Shell 的浅色外观。"
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "加载活动布局选择的 Shell 主题。"

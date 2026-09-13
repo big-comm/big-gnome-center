@@ -9,11 +9,7 @@ const policy = constants.slice(constants.indexOf('export function resolveMenuLay
     constants.indexOf('export const APPS_ONLY_MENU_HEIGHT')).replace('export ', '');
 const LAYOUTS = {ALL: 0, APPS_ONLY: 1, SYSTEM_ONLY: 2, APP_GRID: 3, MINT: 4};
 const resolveMenuLayout = vm.runInNewContext(`${policy}; resolveMenuLayout`, {LAYOUTS});
-for (const desktop of ['BigGnome', 'Minimal', 'G-Unity', 'g_unity', '  minimal  ']) {
-    for (const value of [0, 1, 2, 3, 4, 99])
-        assert.equal(resolveMenuLayout(value, desktop), LAYOUTS.MINT);
-}
-for (const desktop of ['Classic', 'Desk UX', 'Hybrid', '']) {
+for (const desktop of ['BigGnome', 'Minimal', 'G-Unity', 'g_unity', '  minimal  ', 'Classic', 'Desk UX', 'Hybrid', '']) {
     for (const value of [1, 3, 4])
         assert.equal(resolveMenuLayout(value, desktop), value);
     for (const value of [0, 2, 99, undefined])
@@ -32,7 +28,11 @@ assert.equal(makeLayout(1, {}, {desktopLayout: 'classic'}).type, 'classic');
 assert.equal(makeLayout(3, {}, {desktopLayout: 'desk-ux'}).type, 'grid');
 for (const value of [0, 2, 4, 99])
     assert.equal(makeLayout(value, {}, {}).type, 'hybrid');
-assert.equal(makeLayout(1, {}, {desktopLayout: 'minimal'}).type, 'hybrid');
+for (const desktopLayout of ['BigGnome', 'G-Unity', 'Minimal']) {
+    assert.equal(makeLayout(1, {}, {desktopLayout}).type, 'classic');
+    assert.equal(makeLayout(3, {}, {desktopLayout}).type, 'grid');
+    assert.equal(makeLayout(4, {}, {desktopLayout}).type, 'hybrid');
+}
 
 const extension = fs.readFileSync(new URL('extension.js', root), 'utf8');
 const normalizer = extension.slice(extension.indexOf('    _normalizeLayout() {'),

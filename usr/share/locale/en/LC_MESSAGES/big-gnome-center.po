@@ -423,10 +423,6 @@ msgstr ""
 msgid "Application menu"
 msgstr "Main menu"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr ""
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1944,98 +1940,3 @@ msgstr ""
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr ""
-
-#~ msgid "Visual effects for your GNOME desktop"
-#~ msgstr "Visual effects for your GNOME desktop"
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "System extension — cannot remove"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-
-#~ msgid "This layout is already active"
-#~ msgstr "This layout is already active"
-
-#~ msgid "GTK"
-#~ msgstr "GTK"
-
-#~ msgid "User Themes required"
-#~ msgstr "User Themes required"
-
-#~ msgid "Install and enable the User Themes extension to apply shell themes."
-#~ msgstr "Install and enable the User Themes extension to apply shell themes."
-
-#~ msgid "Open Extensions Page"
-#~ msgstr "Open Extensions Page"
-
-#~ msgid "system"
-#~ msgstr "system"
-
-#~ msgid "Fonts used by the GNOME interface"
-#~ msgstr "Fonts used by the GNOME interface"
-
-#~ msgid "Window titles (legacy)"
-#~ msgstr "Window titles (legacy)"
-
-#~ msgid "Choose…"
-#~ msgstr "Choose…"
-
-#~ msgid "Appearance"
-#~ msgstr "Appearance"
-
-#~ msgid "How fonts are rendered on screen"
-#~ msgstr "How fonts are rendered on screen"
-
-#~ msgid "Antialiasing"
-#~ msgstr "Antialiasing"
-
-#~ msgid "Grayscale"
-#~ msgstr "Grayscale"
-
-#~ msgid "Subpixel (RGBA)"
-#~ msgstr "Subpixel (RGBA)"
-
-#~ msgid "Installed fonts"
-#~ msgstr "Installed fonts"
-
-#~ msgid "Browse font families installed on your system"
-#~ msgstr "Browse font families installed on your system"
-
-#~ msgid "No fonts match your search"
-#~ msgstr "No fonts match your search"
-
-#~ msgid "(refine search to see more)"
-#~ msgstr "(refine search to see more)"
-
-#~ msgid "fonts"
-#~ msgstr "fonts"
-
-#~ msgid "The quick brown fox jumps over the lazy dog 0123"
-#~ msgstr "The quick brown fox jumps over the lazy dog 0123"
-
-#~ msgid "Install more fonts"
-#~ msgstr "Install more fonts"
-
-#~ msgid "Opens fonts.google.com in your browser"
-#~ msgstr "Opens fonts.google.com in your browser"
-
-#~ msgid "How to install"
-#~ msgstr "How to install"
-
-#~ msgid ""
-#~ "Place .ttf/.otf files in ~/.local/share/fonts/ then run 'fc-cache -f -v' "
-#~ "and refresh this list."
-#~ msgstr ""
-#~ "Place .ttf/.otf files in ~/.local/share/fonts/ then run 'fc-cache -f -v' "
-#~ "and refresh this list."
-
-#~ msgid "theme"
-#~ msgstr "theme"
-
-#~ msgid "Click a layout to apply"
-#~ msgstr "Click a layout to apply"

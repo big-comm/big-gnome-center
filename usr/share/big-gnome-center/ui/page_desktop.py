@@ -21,6 +21,9 @@ MENU_LAYOUT_DEFAULTS = {
     "Classic": "APPS_ONLY",
     "Desk UX": "APP_GRID",
     "Hybrid": "MINT",
+    "BigGnome": "MINT",
+    "G-Unity": "MINT",
+    "Minimal": "MINT",
 }
 MENU_STYLES = (
     ("Classic", "APPS_ONLY"),
@@ -192,7 +195,6 @@ class DesktopPage(Gtk.Box):
     def _build_shell_group(self) -> Adw.PreferencesGroup:
         group = Adw.PreferencesGroup(
             title=tr("Application menu"),
-            description=tr("Available for Classic, Desk-UX and Hybrid layouts."),
         )
 
         self._menu_row = Adw.ActionRow(
@@ -439,11 +441,6 @@ class DesktopPage(Gtk.Box):
         self._syncing = False
         self._notification_flow.set_sensitive(True)
 
-        supports_menu = self._active_layout in MENU_LAYOUT_DEFAULTS
-        self._shell_group.set_visible(supports_menu)
-        if not supports_menu:
-            return
-
         installed = ExtMgr.is_installed(COMMUNITY_MENU_UUID)
         enabled = ExtMgr.is_enabled(COMMUNITY_MENU_UUID) if installed else False
         stored_super = self._prefs.get("super_key_opens_menu")
@@ -451,13 +448,13 @@ class DesktopPage(Gtk.Box):
             stored_super = dconf_read(SUPER_KEY_PATH) != "false"
         menu_style = (dconf_read(MENU_LAYOUT_PATH) or "").strip("'\"")
         if menu_style not in self._menu_style_buttons:
-            menu_style = MENU_LAYOUT_DEFAULTS[self._active_layout]
+            menu_style = MENU_LAYOUT_DEFAULTS.get(self._active_layout, "MINT")
 
         self._syncing = True
         self._menu_switch.set_active(enabled)
         self._super_row.set_selected(0 if stored_super else 1)
         self._menu_style_buttons[menu_style].set_active(True)
-        default_style = MENU_LAYOUT_DEFAULTS[self._active_layout]
+        default_style = MENU_LAYOUT_DEFAULTS.get(self._active_layout, "MINT")
         for value, badge in self._menu_style_badges.items():
             badge.set_visible(value == default_style)
         self._syncing = False

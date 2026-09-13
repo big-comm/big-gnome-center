@@ -415,10 +415,6 @@ msgstr "Varsayılan"
 msgid "Application menu"
 msgstr "Uygulama menüsü"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Classic, Desk-UX ve Hybrid düzenleri için kullanılabilir."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1918,18 +1914,3 @@ msgstr "Gerekli düzen yardımcısı yüklü değil."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Gerekli düzen yardımcısı başlatılamadı."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Sistem uzantısı — kaldırılamaz"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Bu eklenti buradan kaldırılamaz çünkü sistem tarafından yüklenmiştir."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "GNOME Shell'in açık görünümünü kullanır."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Etkin düzenin seçtiği Shell temasını yükler."

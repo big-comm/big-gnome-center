@@ -418,10 +418,6 @@ msgstr "Alapértelmezett"
 msgid "Application menu"
 msgstr "Alkalmazásmenü"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Elérhető a Classic, Desk-UX és Hybrid elrendezésekhez."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1930,18 +1926,3 @@ msgstr "A szükséges elrendezés-segéd nincs telepítve."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "A szükséges elrendezés-segéd nem indult el."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Rendszerbővítmény — nem távolítható el"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Ez a kiegészítő nem távolítható el innen, mert a rendszer telepítette."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "A GNOME Shell világos megjelenését használja."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Az aktív elrendezés által kiválasztott Shell-témát tölti be."

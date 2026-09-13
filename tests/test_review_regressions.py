@@ -137,12 +137,12 @@ def test_window_worker_does_not_mark_failed_check(error):
 
 
 def test_audit_uses_same_settings_path_and_rejects_non_object_json(tmp_path, monkeypatch):
-    from runtime_audit import _application_active_layout
+    from runtime_audit import _application_preferences
 
     path = tmp_path / "xdg/big-gnome-center/settings.json"
     path.parent.mkdir(parents=True)
     monkeypatch.setattr(constants, "SETTINGS_FILE", path)
     path.write_text('{"active_layout":"Classic"}')
-    assert _application_active_layout() == "Classic"
+    assert _application_preferences()["active_layout"] == "Classic"
     path.write_text('[]')
-    assert _application_active_layout() == ""
+    assert _application_preferences() == {}

@@ -416,10 +416,6 @@ msgstr "По подразбиране"
 msgid "Application menu"
 msgstr "Меню на приложенията"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Налично за класически, Desk-UX и хибридни оформления."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1921,19 +1917,3 @@ msgstr "Изискваният помощник за оформление не �
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Изискваният помощник за оформление не стартира."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Системно разширение — не може да бъде премахнато"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Това разширение не може да бъде премахнато оттук, защото е инсталирано от "
-#~ "системата."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "Използва светлия облик на GNOME Shell."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Зарежда темата на Shell, избрана от активното оформление."

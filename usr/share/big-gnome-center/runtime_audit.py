@@ -89,6 +89,7 @@ class Snapshot:
     indicator_overrides: dict[str, str]
     runtime_diagnostics: dict = field(default_factory=dict)
     payload_hashes: dict[str, str] = field(default_factory=dict)
+    menu_override: bool | None = None
 
 
 @dataclass(frozen=True)
@@ -207,7 +208,7 @@ def _tree_hash(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _application_active_layout() -> str:
+def _application_preferences() -> dict:
     from constants import SETTINGS_FILE
 
     path = SETTINGS_FILE
@@ -216,9 +217,8 @@ def _application_active_layout() -> str:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, TypeError, ValueError):
-        return ""
-    value = data.get("active_layout") if isinstance(data, dict) else None
-    return value if isinstance(value, str) else ""
+        return {}
+    return data if isinstance(data, dict) else {}
 
 
 def _payload_hashes(root: Path) -> dict[str, str]:
@@ -237,6 +237,9 @@ def _payload_hashes(root: Path) -> dict[str, str]:
 
 
 def collect_snapshot() -> Snapshot:
+    app_prefs = _application_preferences()
+    app_layout = app_prefs.get("active_layout")
+    menu_override = app_prefs.get("community_menu_enabled")
     enabled = _setting(SHELL_SCHEMA, "enabled-extensions")
     overrides = _setting(RUNTIME_SCHEMA, "indicator-style-overrides")
     if not isinstance(enabled, list) or not all(isinstance(item, str) for item in enabled):
@@ -246,7 +249,7 @@ def collect_snapshot() -> Snapshot:
 
     return Snapshot(
         active_layout=str(_setting(RUNTIME_SCHEMA, "active-layout")),
-        app_active_layout=_application_active_layout(),
+        app_active_layout=app_layout if isinstance(app_layout, str) else "",
         enabled_extensions=tuple(enabled),
         runtime_state=_extension_state(RUNTIME_UUID),
         helper_state=_extension_state(HELPER_UUID),
@@ -257,6 +260,7 @@ def collect_snapshot() -> Snapshot:
         indicator_overrides={str(key): str(value) for key, value in overrides.items()},
         runtime_diagnostics=_helper_json("AuditRuntime"),
         payload_hashes=_payload_hashes(_default_root()),
+        menu_override=menu_override if isinstance(menu_override, bool) else None,
     )
 
 
@@ -1559,7 +1563,8 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
 
     if strict_layout and snapshot.active_layout in SURFACES:
         layout = snapshot.active_layout
-        menu_expected = layout in MENU_LAYOUTS
+        menu_expected = (snapshot.menu_override if isinstance(snapshot.menu_override, bool)
+                         else layout in MENU_LAYOUTS)
         icons_expected = layout in DESKTOP_ICON_LAYOUTS
         actual_indicator = snapshot.indicator_overrides.get(layout, INDICATOR_DEFAULTS[layout])
         actual_hover = (

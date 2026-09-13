@@ -35,13 +35,16 @@ def test_desktop_page_exposes_global_menu_and_super_controls():
     assert "SUPER_KEY_PATH" in source
 
 
-def test_community_menu_controls_are_limited_to_supported_layouts():
+def test_community_menu_controls_are_available_in_every_layout():
     source = (ROOT / "usr/share/big-gnome-center/ui/page_desktop.py").read_text()
 
     assert '"Classic": "APPS_ONLY"' in source
     assert '"Desk UX": "APP_GRID"' in source
     assert '"Hybrid": "MINT"' in source
-    assert "self._shell_group.set_visible(supports_menu)" in source
+    for layout in ("BigGnome", "G-Unity", "Minimal"):
+        assert f'"{layout}": "MINT"' in source
+    assert "self._shell_group.set_visible(supports_menu)" not in source
+    assert "Available for Classic, Desk-UX and Hybrid layouts." not in source
 
 
 def test_community_menu_exposes_three_visual_style_choices():
@@ -147,7 +150,7 @@ def test_notification_choices_are_reenabled_after_each_request():
     assert "self._notification_flow.set_sensitive(False)" in source
     assert "self._notification_flow.set_sensitive(True)" in source
     assert source.index("self._notification_flow.set_sensitive(True)") < source.index(
-        "supports_menu = self._active_layout in MENU_LAYOUT_DEFAULTS"
+        "installed = ExtMgr.is_installed(COMMUNITY_MENU_UUID)"
     )
 
 

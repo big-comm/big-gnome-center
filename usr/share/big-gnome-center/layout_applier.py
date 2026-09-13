@@ -152,7 +152,6 @@ _LAYOUT_INDEPENDENT_SETTINGS_PREFIXES = (
     "/org/gnome/shell/extensions/gtk4-ding",
 )
 _GNOME50_OVERVIEW_BLUR_LAYOUTS = frozenset({"biggnome", "desk-ux", "g-unity"})
-_COMMUNITY_MENU_LAYOUTS = frozenset({"classic", "desk-ux", "hybrid"})
 _STRUCTURAL_EXTENSION_UUIDS = frozenset(
     {
         _ARCMENU_UUID,
@@ -1215,19 +1214,10 @@ class LayoutApplier:
         return data
 
     @classmethod
-    def _apply_user_component_overrides(cls, data: str, layout_id: str = "") -> str:
-        """Apply explicit global menu choices over a layout snapshot."""
-        if not layout_id:
-            runtime = cls._section_key_values(data, _RUNTIME_SETTINGS_SECTION)
-            label = runtime.get("active-layout", "").strip("'\"")
-            layout_id = next(
-                (stem for stem, name in _LAYOUT_DISPLAY_NAMES.items() if name == label),
-                "",
-            )
+    def _apply_user_component_overrides(cls, data: str, *, original: bool = False) -> str:
+        """Preserve original menu defaults; retain the global Super preference."""
         prefs = Settings()
-        menu_state = prefs.get("community_menu_enabled")
-        if layout_id and layout_id not in _COMMUNITY_MENU_LAYOUTS:
-            menu_state = False
+        menu_state = None if original else prefs.get("community_menu_enabled")
         overrides = ((_COMMUNITY_MENU_UUID, menu_state),)
         shell = cls._section_key_values(data, "/org/gnome/shell")
         enabled = cls._string_list(shell.get("enabled-extensions"))
@@ -2291,7 +2281,7 @@ class LayoutApplier:
             active_helper_uuid=active_helper_uuid if discovered else "",
             available_uuids=HelperClient.installed_extension_uuids(),
         )
-        data = cls._apply_user_component_overrides(data, layout_id=layout_id)
+        data = cls._apply_user_component_overrides(data, original=bool(layout_id))
         if layout_id:
             data = cls._inject_runtime_active_layout(data, layout_id)
             data = cls._apply_original_frosted_glass_defaults(data)
@@ -2662,7 +2652,7 @@ class LayoutApplier:
         )
         if not force_shell_dark:
             layout_text = cls._adjust_dtp_label_colors_for_scheme(layout_text)
-        return cls.load_dconf_safely(
+        result = cls.load_dconf_safely(
             layout_text,
             persist=True,
             before_uuids=before,
@@ -2674,3 +2664,8 @@ class LayoutApplier:
             icon_to=icon_to,
             layout_id=config_path.stem,
         )
+        if result[0]:
+            prefs = Settings()
+            if not prefs.delete("community_menu_enabled"):
+                log.warning("cannot clear original layout menu override: %s", prefs.last_error)
+        return result

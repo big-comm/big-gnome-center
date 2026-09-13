@@ -15,7 +15,7 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {AppFolders} from '../appFolders.js';
-import {matchesQuery, folderTint, gridColumns, tileWidth, SessionRecents} from '../deskUxModel.js';
+import {matchesQuery, folderTint, gridColumns, tileWidth, scrollEdge, SessionRecents} from '../deskUxModel.js';
 import {folderMembers, containsApp} from '../folderModel.js';
 import {getOrientationProp} from '../utils.js';
 import {AppItemMenu} from './secondaryMenu.js';
@@ -76,7 +76,7 @@ const Tile = GObject.registerClass(class CommunityBigDeskUxTile extends St.Butto
             for (let index = 0; index < 3; index++) {
                 const cell = new St.Bin({style_class: 'desk-ux-preview-cell'});
                 if (members[index])
-                    cell.set_child(members[index].app.create_icon_texture(32));
+                    cell.set_child(members[index].app.create_icon_texture(35));
                 preview.add_child(cell);
             }
             content.add_child(preview);
@@ -174,8 +174,40 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         this.menuManager = new PopupMenu.PopupMenuManager(this);
         this._store = new AppFolders(() => this.queueRender(), () => this._appRecords(false));
         this._scroll = new ScrollView({x_expand: true, y_expand: true});
+        this._scrollbars = this._scroll.get_children().filter(child => child instanceof St.ScrollBar);
+        for (const scrollbar of this._scrollbars) {
+            scrollbar.set({opacity: 0, track_hover: true});
+            scrollbar.connect('captured-event', (_actor, event) => {
+                const type = event.type();
+                if ((type === Clutter.EventType.BUTTON_PRESS || type === Clutter.EventType.BUTTON_RELEASE) &&
+                    event.get_button() === Clutter.BUTTON_PRIMARY) {
+                    this._scrollbarPressed = type === Clutter.EventType.BUTTON_PRESS;
+                    this.notePointerMotion();
+                }
+                return Clutter.EVENT_PROPAGATE;
+            });
+            scrollbar.connect('scroll-start', () => {
+                this._scrollbarDragging = true;
+                this.notePointerMotion();
+            });
+            scrollbar.connect('scroll-stop', () => {
+                this._scrollbarDragging = false;
+                this._scrollbarPressed = false;
+                this.notePointerMotion();
+            });
+        }
         this._content = box(true, 'desk-ux-content');
         this._scroll.set_child(this._content);
+        this._scroll.connect('captured-event', (_actor, event) => {
+            if (event.type() !== Clutter.EventType.SCROLL)
+                return Clutter.EVENT_PROPAGATE;
+            const direction = event.get_scroll_direction();
+            const delta = direction === Clutter.ScrollDirection.SMOOTH ? event.get_scroll_delta()[1]
+                : direction === Clutter.ScrollDirection.UP ? -1
+                : direction === Clutter.ScrollDirection.DOWN ? 1 : 0;
+            this._pulseScrollEdge(scrollEdge(delta, this._scroll.vadjustment));
+            return Clutter.EVENT_PROPAGATE;
+        });
         this._toolbar = box(true, 'desk-ux-toolbar');
         this._footer = box(false, 'desk-ux-footer');
         this.add_child(this._toolbar);
@@ -195,13 +227,19 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         this._favorites.connectObject('changed', () => this.queueRender(), this);
         this.connect('notify::mapped', () => {
             if (this.mapped) {
+                const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+                this._scroll.update_fade_effect(new Clutter.Margin({top: 12 * scale, bottom: 12 * scale}));
                 this.queueRender();
             } else {
+                this._resetScrollbarVisibility();
+                this._resetScrollFeedback();
                 this.closeMenus();
             }
         });
         this.connect('destroy', () => {
             this._destroyed = true;
+            this._resetScrollbarVisibility();
+            this._resetScrollFeedback();
             this.endDrag();
             if (this._idle)
                 GLib.source_remove(this._idle);
@@ -215,7 +253,8 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         if (width > 0 && width !== this._layoutWidth) {
             this._layoutWidth = width;
             this._columns = gridColumns(width - 64);
-            this._folderColumns = gridColumns(width - 64, true);
+            // Folder rows have no nested pinned-section inset.
+            this._folderColumns = gridColumns(width - 40, true);
             this.queueRender();
         }
     }
@@ -319,8 +358,8 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         const compact = !folders && !this.listMode;
         const columns = folders ? this._folderColumns : this.listMode ? 1 : this._columns;
         const grid = new Grid(columns, 10, 10);
-        grid._tileWidth = tileWidth(this._layoutWidth, columns, compact ? 18 : 26,
-            folders ? 112 : compact ? 94 : Infinity);
+        grid._tileWidth = tileWidth(this._layoutWidth, columns, folders ? 28 : compact ? 18 : 26,
+            folders ? 124 : compact ? 94 : Infinity, folders ? 40 : 64);
         grid._tileStyle = `width: ${grid._tileWidth}px;`;
         if (folders || compact)
             grid._tileStyle += ` height: ${grid._tileWidth}px;`;
@@ -356,9 +395,82 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         };
     }
 
+    notePointerMotion() {
+        if (!this.mapped || this._destroyed)
+            return;
+        this._fadeScrollbars(true);
+        if (this._scrollbarHideId)
+            GLib.source_remove(this._scrollbarHideId);
+        this._scrollbarHideId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+            if (this._scrollbarDragging || (this._scrollbarPressed &&
+                (global.get_pointer()[2] & Clutter.ModifierType.BUTTON1_MASK)))
+                return GLib.SOURCE_CONTINUE;
+            // Release may occur outside the menu while a native gesture owns input.
+            this._scrollbarPressed = false;
+            const focus = global.stage.key_focus;
+            if (this._scrollbars.some(bar => bar.hover || (focus && bar.contains(focus))))
+                return GLib.SOURCE_CONTINUE;
+            this._scrollbarHideId = 0;
+            this._fadeScrollbars(false);
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _fadeScrollbars(visible) {
+        if (this._scrollbarsVisible === visible)
+            return;
+        this._scrollbarsVisible = visible;
+        const settings = St.Settings.get();
+        const animate = settings.enable_animations &&
+            !('reduced_motion' in settings && settings.reduced_motion);
+        for (const scrollbar of this._scrollbars) {
+            scrollbar.remove_transition('opacity');
+            scrollbar.ease({opacity: visible ? 255 : 0, duration: animate ? (visible ? 120 : 2000) : 0,
+                mode: visible ? Clutter.AnimationMode.EASE_OUT_QUAD : Clutter.AnimationMode.EASE_IN_OUT_QUAD});
+        }
+    }
+
+    _resetScrollbarVisibility() {
+        if (this._scrollbarHideId)
+            GLib.source_remove(this._scrollbarHideId);
+        this._scrollbarHideId = 0;
+        this._scrollbarPressed = false;
+        this._scrollbarDragging = false;
+        this._scrollbarsVisible = false;
+        for (const scrollbar of this._scrollbars) {
+            scrollbar.remove_transition('opacity');
+            scrollbar.opacity = 0;
+        }
+    }
+
+    _resetScrollFeedback() {
+        this._content.remove_transition('translation-y');
+        this._content.translation_y = 0;
+        this._edgeAnimating = false;
+    }
+
+    _pulseScrollEdge(edge) {
+        const settings = St.Settings.get();
+        if (!edge || this._edgeAnimating || !this.mapped || this._dragging ||
+            !settings.enable_animations || ('reduced_motion' in settings && settings.reduced_motion))
+            return;
+        this._edgeAnimating = true;
+        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+        this._content.ease({translation_y: edge * 4 * scale, duration: 80,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => {
+                if (this._destroyed || !this.mapped)
+                    return;
+                this._content.ease({translation_y: 0, duration: 160,
+                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                    onComplete: () => { this._edgeAnimating = false; }});
+            }});
+    }
+
     _render() {
         if (this._dragging || !this.mapped)
             return;
+        this._resetScrollFeedback();
         const nameFocused = this._nameEntry?.clutter_text.has_key_focus();
         const filterFocused = this._filterEntry?.clutter_text.has_key_focus();
         const cursor = nameFocused ? this._nameEntry.clutter_text.cursor_position
@@ -519,7 +631,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         const visibleFolders = folders.map(folder => ({folder, members: folderMembers(folder, apps)}))
             .filter(item => item.members.length && matchesQuery(this.folderName(item.folder), this._query));
         if (this.view === null) {
-            const section = box(true, 'desk-ux-pinned');
+            const section = box(true, 'desk-ux-section');
             this._content.add_child(section);
             const heading = this._heading(_('Pinned Applications'),
                 button(_('All Apps'), () => this.navigate('@all')), section);
@@ -528,8 +640,11 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             const pinned = this._grid(favorites.map(app => ({app, favorite: true})), false, section);
             this._actionTile(_('Add Applications'), () => this.navigate('@pin'), pinned);
             this._dropArea(pinned, 'pin');
-            this._heading(_('Folders'), button(_('New Folder'), () => this.navigate('@create')));
-            this._grid(visibleFolders, true);
+            const folderSection = box(true, 'desk-ux-section');
+            this._content.add_child(folderSection);
+            this._heading(_('Folders'),
+                button(_('New Folder'), () => this.navigate('@create')), folderSection);
+            this._grid(visibleFolders, true, folderSection);
             const ungrouped = apps.filter(app => !folders.some(folder => containsApp(folder, app)) &&
                 !this._favorites.isFavorite(app.id));
             if (ungrouped.length) {
@@ -687,6 +802,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
     }
 
     beginDrag() {
+        this._resetScrollFeedback();
         this.closeMenus();
         this._dragging = true;
         this._suppressActivation = true;

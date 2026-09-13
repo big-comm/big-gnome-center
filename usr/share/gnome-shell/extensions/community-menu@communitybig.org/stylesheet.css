@@ -477,12 +477,12 @@
 .community-menu .desk-ux-apps { min-height: 0; }
 .community-menu .desk-ux-content { padding: 12px; spacing: 12px; }
 .community-menu .desk-ux-toolbar { padding: 8px 12px; spacing: 8px; }
-.community-menu .desk-ux-heading { spacing: 8px; padding: 6px 0; font-weight: bold; }
+.community-menu .desk-ux-heading { spacing: 8px; padding: 6px 12px; font-weight: bold; }
 .community-menu .desk-ux-action { padding: 8px 14px; border-radius: 18px; font-weight: normal; }
 .community-menu .desk-ux-controls, .community-menu .desk-ux-tabs { spacing: 8px; }
 .community-menu .desk-ux-footer { padding: 12px; spacing: 12px; border-top: 1px solid rgba(128,128,128,0.25); }
 .community-menu .desk-ux-entry { padding: 8px 12px; border-radius: 12px; }
-.community-menu .desk-ux-pinned { padding: 8px; spacing: 8px; border-radius: 18px; background-color: rgba(128,128,128,0.10); }
+.community-menu .desk-ux-section { padding: 8px 0; spacing: 8px; border-radius: 18px; background-color: rgba(128,128,128,0.10); }
 .community-menu .desk-ux-compact-grid .desk-ux-tile { padding: 8px; }
 .community-menu .desk-ux-compact-grid .desk-ux-tile-content { spacing: 4px; }
 .community-menu .desk-ux-compact-grid .desk-ux-icon-slot { height: 48px; }
@@ -515,16 +515,18 @@
 .community-menu .desk-ux-tile StLabel { height: 2.8em; }
 .community-menu .desk-ux-folder {
     height: 110px;
+    padding: 13px;
+    font-size: 1.1em;
     background-color: rgba(255,255,255,0.055);
     border-color: rgba(255,255,255,0.10);
 }
 .community-menu .desk-ux-folder StLabel { height: 1.5em; text-align: left; }
 .community-menu .desk-ux-folder:rtl StLabel { text-align: right; }
 .community-menu .desk-ux-folder .desk-ux-folder-title { font-weight: bold; height: 2.8em; }
-.community-menu .desk-ux-folder .desk-ux-tile-content { spacing: 4px; }
-.community-menu .desk-ux-folder-preview { spacing: 8px; height: 34px; }
+.community-menu .desk-ux-folder .desk-ux-tile-content { spacing: 4.4px; }
+.community-menu .desk-ux-folder-preview { spacing: 9px; height: 38px; }
 .community-menu .grid-layout-box .desk-ux-folder .desk-ux-folder-preview { padding-bottom: 0; }
-.community-menu .desk-ux-preview-cell { width: 32px; height: 32px; }
+.community-menu .desk-ux-preview-cell { width: 35px; height: 35px; }
 .community-menu .desk-ux-list-tile { height: 40px; text-align: left; }
 .community-menu .desk-ux-list-tile .desk-ux-icon-slot { width: 40px; height: 40px; }
 .community-menu .desk-ux-list-tile StLabel { height: 1.5em; }
@@ -637,7 +639,7 @@
     margin-right: 0;
     margin-bottom: 0;
     margin-top: 0;
-    padding: 8px 14px;
+    padding: 5px 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.055);

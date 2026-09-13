@@ -414,10 +414,6 @@ msgstr "Standard"
 msgid "Application menu"
 msgstr "Applikationsmenu"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Tilgængelig for Classic-, Desk-UX- og Hybrid-layouts."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1916,18 +1912,3 @@ msgstr "Den nødvendige layout-hjælper er ikke installeret."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Den nødvendige layout-hjælper startede ikke."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Systemudvidelse — kan ikke fjernes"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Denne udvidelse kan ikke fjernes her, da den blev installeret af systemet."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "Bruger GNOME Shells lyse udseende."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Indlæser det Shell-tema, som det aktive layout har valgt."

@@ -417,10 +417,6 @@ msgstr "Zadano"
 msgid "Application menu"
 msgstr "Izbornik aplikacija"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Dostupno za Classic, Desk-UX i Hybrid rasporede."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1918,18 +1914,3 @@ msgstr "Potrebni pomoćnik za izgled nije instaliran."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Potrebni pomoćnik za izgled nije se pokrenuo."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Sustavna ekstenzija — ne može se ukloniti"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Ova se ekstenzija ovdje ne može ukloniti jer ju je instalirao sustav."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "Koristi svijetli izgled GNOME Shella."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Učitava temu Shella koju je odabrao aktivni raspored."

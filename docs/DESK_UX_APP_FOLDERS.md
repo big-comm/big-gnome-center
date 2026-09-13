@@ -3,6 +3,19 @@
 Community Menu v25. Applies to the grid layout used by Desk UX. Classic and
 Hybrid retain their existing views.
 
+## Availability
+
+Desktop settings expose Community Menu in all six layouts. Classic, Desk UX,
+and Hybrid retain enabled defaults; BigGnome, G-Unity, and Minimal retain
+disabled defaults. Applying an original ignores inherited menu enablement and
+clears that preference only after success. Manual toggles remain available in
+every layout; snapshot restores retain explicit overrides. All three menu styles
+remain selectable in every layout.
+Strict runtime audits honor the same explicit preference before profile defaults.
+The obsolete availability hint was removed from all application catalogs.
+Defaults are tested against all six shipped profiles with absent, enabled, and
+disabled preferences, including original restoration and failed-apply cleanup.
+
 ## Behavior
 
 - Pinned apps share GNOME Shell favorites and dock order.
@@ -12,7 +25,7 @@ Hybrid retain their existing views.
 - New Folder offers keyboard-accessible selection. Requires two distinct apps.
 - Selection boxes are visible before clicking. A localized numeric counter tracks
   selection against the two-app minimum; a name alone does not enable creation.
-- Tiles reserve equal icon/label regions. Folder previews use three 32px icons
+- Tiles reserve equal icon/label regions. Folder previews use three 35px icons
   in a row, stable ID-based tints, and localized application counts.
 - Favorites have an Add Applications picker. Existing folders support bulk adding.
 - Move to Folder opens an internal searchable, scrollable destination picker.
@@ -62,14 +75,36 @@ query preferred geometry while rebuilding children. The menu respects monitor
 work area and a 640px natural
 height. Internal views use their own filter, hiding the global search field.
 Preferred size: 700 × 640px; four folder columns at normal scale. Folder and
-pinned cards use equal content width/height, capped at 112px and 94px respectively.
+pinned cards use equal content width/height, capped at 124px and 94px respectively.
 All app grids use the same compact square cards, including New Folder, Add
 Applications, Other Applications, and All Apps. List mode retains horizontal rows.
-Folder previews retain 32px icons; favorites retain 48px icons. The session footer
+Folder previews use 35px icons; favorites retain 48px icons. The session footer
 keeps Log Out, Suspend, Restart, and Power Off; no replacement with Lock.
+
+Refinements: centered grids keep 10px gaps on both axes; no flexible gap columns.
+Cards retain square dimensions. Section headings share a 12px horizontal inset.
+Pinned apps and folders share aligned, full-width rounded section backgrounds.
+Each panel contains its heading, action, and grid; tile dimensions stay unchanged.
+Folder cards grow from 138px to 152px overall (10%, pixel-rounded), including
+35px icons, 13px padding, and 1.1em text. App cards remain unchanged. Folder rows
+reserve 40px for outer insets; app rows retain their conservative 64px budget.
+Session padding is 5px vertically (6px less total height). Scroll edges use a
+12px native fade and a non-stacking 4px, 240ms feedback translation. Closing,
+rebuilding, or dragging resets it. No adjustment values or allocations change.
+Animations honor `enable-animations` and GNOME 51's optional `reduced-motion`.
+Overlay scrollbars start hidden. Pointer motion anywhere in the menu reveals
+them in 120ms; 1000ms idle fades them out smoothly over 2000ms. Pressed buttons,
+native drag signals, and hover/focus keep scrollbar interaction available.
+Pointer-button state handles releases outside the menu. Closing cancels the
+timer and resets interaction state and opacity; layout
+and scroll positions remain unchanged.
+APIs checked against the installed GNOME 50/51 typelibs and
+[St.ScrollView](https://gnome.pages.gitlab.gnome.org/gnome-shell/st/method.ScrollView.update_fade_effect.html).
 
 ## v25 validation
 
+- Refinements: 935 tests passed; three existing GI/theme warnings. Native fade
+  API verified on both VMs. Final visual validation after login remains pending.
 - Reopen regression: GNOME 50 retained four folder columns and five pinned tiles
   after ten Super-key close/open cycles with the fixed parent-width budget.
   GNOME 51 files match. User confirmed the corrected layout after deployment.

@@ -12,12 +12,23 @@ export function folderTint(id) {
 }
 
 export function gridColumns(width, folders = false) {
-    return Math.max(1, Math.min(folders ? 4 : 6, Math.floor((width + 10) / (folders ? 148 : 116))));
+    return Math.max(1, Math.min(folders ? 4 : 6, Math.floor((width + 10) / (folders ? 162 : 116))));
 }
 
-export function tileWidth(width, columns, inset = 26, maximum = Infinity) {
+export function tileWidth(width, columns, inset = 26, maximum = Infinity, reserved = 64) {
     return Math.max(48, Math.min(maximum,
-        Math.floor((width - 64 - (columns - 1) * 10) / columns - inset)));
+        Math.floor((width - reserved - (columns - 1) * 10) / columns - inset)));
+}
+
+export function scrollEdge(delta, {lower, upper, page_size, value}) {
+    const end = upper - page_size;
+    if (end <= lower)
+        return 0;
+    if (delta < 0 && value <= lower + 0.5)
+        return 1;
+    if (delta > 0 && value >= end - 0.5)
+        return -1;
+    return 0;
 }
 
 export class SessionRecents {

@@ -41,6 +41,7 @@ def required_helper_available():
     with (
         patch("layout_applier.Settings", return_value=SimpleNamespace(
             get=lambda key, default=None: default,
+            delete=lambda key: True,
         )),
         patch("layout_applier.HelperClient.ensure_available", return_value=(True, "")),
         patch("layout_applier.HelperClient.helper_version", return_value=0),
@@ -52,6 +53,32 @@ def required_helper_available():
 
 
 class TestLayoutApplier:
+    @pytest.mark.parametrize("success", [False, True])
+    def test_original_clears_menu_preference_only_after_success(self, tmp_path, success):
+        layout = tmp_path / "biggnome.txt"
+        layout.write_text("[org/gnome/shell]\nenabled-extensions=[]\n")
+        with (
+            patch("layout_applier.Settings") as settings,
+            patch.object(LayoutApplier, "_read_dtp_monitor_keys", return_value={}),
+            patch.object(LayoutApplier, "_enabled_extensions", return_value=[]),
+            patch.object(LayoutApplier, "_reset_original_runtime_overrides",
+                         side_effect=lambda data, _layout: data),
+            patch.object(LayoutApplier, "_preserve_user_color_scheme",
+                         side_effect=lambda data, **_kwargs: data),
+            patch.object(LayoutApplier, "_adjust_gtk_theme_for_scheme",
+                         side_effect=lambda data: data),
+            patch.object(LayoutApplier, "_adjust_icon_theme_for_scheme",
+                         side_effect=lambda data, **_kwargs: data),
+            patch.object(LayoutApplier, "load_dconf_safely",
+                         return_value=(success, "test")) as load,
+        ):
+            assert LayoutApplier.apply(layout) == (success, "test")
+        assert load.call_args.kwargs["layout_id"] == "biggnome"
+        if success:
+            settings.return_value.delete.assert_called_once_with("community_menu_enabled")
+        else:
+            settings.return_value.delete.assert_not_called()
+
     def test_all_layouts_show_file_size_as_the_first_grid_caption(self):
         layouts_dir = ROOT / "usr/share/big-gnome-center/layouts"
         for layout in layouts_dir.glob("*.txt"):
@@ -125,8 +152,59 @@ enabled-extensions=['community-menu@communitybig.org']
 
         assert out == data
 
+    @pytest.mark.parametrize(
+        "layout_id", ["biggnome", "minimal", "g-unity", "classic", "desk-ux", "hybrid"],
+    )
+    @pytest.mark.parametrize("override", [None, False, True])
+    def test_menu_defaults_and_explicit_choices_across_all_layouts(self, layout_id, override):
+        data = (ROOT / f"usr/share/big-gnome-center/layouts/{layout_id}.txt").read_text()
+        expected = (override if override is not None
+                    else layout_id in {"classic", "desk-ux", "hybrid"})
+        with patch("layout_applier.Settings") as settings:
+            settings.return_value.get.side_effect = (
+                lambda key: override if key == "community_menu_enabled" else None
+            )
+            result = LayoutApplier._apply_user_component_overrides(data)
+        shell = LayoutApplier._section_key_values(result, "/org/gnome/shell")
+        enabled = LayoutApplier._string_list(shell["enabled-extensions"])
+        disabled = LayoutApplier._string_list(shell.get("disabled-extensions"))
+        uuid = "community-menu@communitybig.org"
+        assert (uuid in enabled) == expected
+        assert not (uuid in enabled and uuid in disabled)
+        if override is None:
+            assert result == data, "Default profiles remain unchanged"
+
     @pytest.mark.parametrize("layout_id", ["biggnome", "minimal", "g-unity"])
-    def test_native_menu_layouts_reject_global_community_menu_override(self, layout_id):
+    @pytest.mark.parametrize("override", [False, True])
+    def test_original_native_layout_ignores_inherited_menu(self, layout_id, override):
+        data = (ROOT / f"usr/share/big-gnome-center/layouts/{layout_id}.txt").read_text()
+        with patch("layout_applier.Settings") as settings:
+            settings.return_value.get.side_effect = (
+                lambda key: override if key == "community_menu_enabled" else None
+            )
+            result = LayoutApplier._apply_user_component_overrides(data, original=True)
+        assert result == data
+        shell = LayoutApplier._section_key_values(result, "/org/gnome/shell")
+        assert "community-menu@communitybig.org" not in LayoutApplier._string_list(
+            shell["enabled-extensions"],
+        )
+
+    @pytest.mark.parametrize("layout_id", ["classic", "desk-ux", "hybrid"])
+    def test_original_menu_layout_ignores_inherited_disabled_menu(self, layout_id):
+        data = (ROOT / f"usr/share/big-gnome-center/layouts/{layout_id}.txt").read_text()
+        with patch("layout_applier.Settings") as settings:
+            settings.return_value.get.side_effect = (
+                lambda key: False if key == "community_menu_enabled" else None
+            )
+            result = LayoutApplier._apply_user_component_overrides(data, original=True)
+        assert result == data
+        shell = LayoutApplier._section_key_values(result, "/org/gnome/shell")
+        assert "community-menu@communitybig.org" in LayoutApplier._string_list(
+            shell["enabled-extensions"],
+        )
+
+    @pytest.mark.parametrize("layout_id", ["biggnome", "minimal", "g-unity"])
+    def test_native_menu_layouts_accept_global_community_menu_override(self, layout_id):
         class FakeSettings:
             values = {
                 "community_menu_enabled": True,
@@ -143,15 +221,15 @@ disabled-extensions=[]
 """
         with patch("layout_applier.Settings", FakeSettings):
             out = LayoutApplier._apply_user_component_overrides(
-                data,
-                layout_id=layout_id,
+                data + "\n[org/communitybig/layout-switcher/runtime]\n"
+                f"active-layout='{layout_id}'\n",
             )
 
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
         enabled = LayoutApplier._string_list(shell["enabled-extensions"])
         disabled = LayoutApplier._string_list(shell["disabled-extensions"])
-        assert "community-menu@communitybig.org" not in enabled
-        assert "community-menu@communitybig.org" in disabled
+        assert "community-menu@communitybig.org" in enabled
+        assert "community-menu@communitybig.org" not in disabled
 
     @pytest.mark.parametrize("layout_id", ["classic", "desk-ux", "hybrid"])
     def test_community_menu_layouts_accept_global_menu_override(self, layout_id):
@@ -168,8 +246,8 @@ disabled-extensions=['community-menu@communitybig.org']
 """
         with patch("layout_applier.Settings", FakeSettings):
             out = LayoutApplier._apply_user_component_overrides(
-                data,
-                layout_id=layout_id,
+                data + "\n[org/communitybig/layout-switcher/runtime]\n"
+                f"active-layout='{layout_id}'\n",
             )
 
         shell = LayoutApplier._section_key_values(out, "/org/gnome/shell")
@@ -180,7 +258,7 @@ disabled-extensions=['community-menu@communitybig.org']
 
     @pytest.mark.parametrize(
         ("label", "menu_expected"),
-        [("BigGnome", False), ("Minimal", False), ("G-Unity", False),
+        [("BigGnome", True), ("Minimal", True), ("G-Unity", True),
          ("Classic", True), ("Desk UX", True), ("Hybrid", True)],
     )
     def test_snapshot_menu_override_uses_saved_layout_identity(self, label, menu_expected):

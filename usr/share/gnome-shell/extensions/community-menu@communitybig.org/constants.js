@@ -48,10 +48,7 @@ export const LAYOUTS = {
     MINT: 4
 };
 
-export function resolveMenuLayout(layout, desktopLayout = '') {
-    const desktop = desktopLayout.trim().toLowerCase().replaceAll(/[ _]/g, '-');
-    if (['biggnome', 'minimal', 'g-unity'].includes(desktop))
-        return LAYOUTS.MINT;
+export function resolveMenuLayout(layout) {
     return [LAYOUTS.APPS_ONLY, LAYOUTS.APP_GRID, LAYOUTS.MINT].includes(layout)
         ? layout : LAYOUTS.MINT;
 }

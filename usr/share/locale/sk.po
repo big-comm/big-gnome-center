@@ -415,10 +415,6 @@ msgstr "Predvolené"
 msgid "Application menu"
 msgstr "Ponuka aplikácií"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Dostupné pre rozloženia Classic, Desk-UX a Hybrid."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1915,18 +1911,3 @@ msgstr "Požadovaný layout helper nie je nainštalovaný."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Požadovaný layout helper sa nespustil."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Systémové rozšírenie — nemožno odstrániť"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Toto rozšírenie tu nemožno odstrániť, pretože bolo nainštalované systémom."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "Používa svetlý vzhľad GNOME Shell."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Načítava tému Shellu vybranú aktívnym rozložením."

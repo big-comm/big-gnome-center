@@ -417,10 +417,6 @@ msgstr "Oletus"
 msgid "Application menu"
 msgstr "Sovellusvalikko"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Saatavilla Classic-, Desk-UX- ja Hybrid-asetteluissa."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1923,19 +1919,3 @@ msgstr "Tarvittava asetteluapuohjelma ei ole asennettu."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Tarvittava asetteluapuohjelma ei käynnistynyt."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Järjestelmälaajennus — ei voi poistaa"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Tätä laajennusta ei voi poistaa täältä, koska järjestelmä on asentanut "
-#~ "sen."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "Käyttää GNOME Shellin vaaleaa ulkoasua."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Lataa aktiivisen asettelun valitseman Shell-teeman."

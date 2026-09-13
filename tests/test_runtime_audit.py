@@ -513,6 +513,20 @@ def test_strict_audit_checks_original_hybrid_contract(tmp_path):
     assert {"layout-menu", "layout-desktop-icons", "layout-indicator"} <= failures.keys()
 
 
+def test_strict_menu_audit_accepts_explicit_user_choices(tmp_path):
+    _payload(tmp_path)
+    for layout in ("BigGnome", "G-Unity", "Minimal", "Classic", "Desk UX", "Hybrid"):
+        for enabled in (False, True):
+            extensions = (RUNTIME_UUID, HELPER_UUID) + ((COMMUNITY_MENU_UUID,) if enabled else ())
+            snapshot = _snapshot(active_layout=layout, enabled_extensions=extensions,
+                                 menu_override=enabled)
+            checks = audit_snapshot(snapshot, tmp_path, strict_layout=True)
+            assert next(check for check in checks if check.name == "layout-menu").status == "PASS"
+            invalid = _snapshot(active_layout=layout, enabled_extensions=extensions,
+                                menu_override=not enabled)
+            assert "layout-menu" in _failures(audit_snapshot(invalid, tmp_path, strict_layout=True))
+
+
 def test_folder_accent_generation_errors_are_audited(tmp_path):
     _payload(tmp_path)
     snapshot = _snapshot()

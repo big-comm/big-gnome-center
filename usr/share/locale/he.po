@@ -412,10 +412,6 @@ msgstr "ברירת מחדל"
 msgid "Application menu"
 msgstr "תפריט יישומים"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "זמין עבור ערכות הנושא Classic, Desk-UX ו־Hybrid."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1907,17 +1903,3 @@ msgstr "עוזר הפריסה הנדרש אינו מותקן."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "עוזר הפריסה הנדרש לא התחיל."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "תוסף מערכת — לא ניתן להסיר"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr "לא ניתן להסיר תוסף זה כאן מכיוון שהוא הותקן על ידי המערכת."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "משתמש במראה הבהיר של GNOME Shell."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "טוען את ערכת הנושא של Shell שנבחרה בפריסה הפעילה."

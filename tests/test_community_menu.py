@@ -128,7 +128,7 @@ def test_desk_ux_destination_picker_and_fixed_controls():
     assert "setLayoutWidth(width)" in source
     layout = (EXTENSION_DIR / "layouts/appGridLayout.js").read_text()
     assert "this._deskUxApps.setLayoutWidth(width)" in layout
-    assert "tileWidth(this._layoutWidth, columns, compact ? 18 : 26," in source
+    assert "tileWidth(this._layoutWidth, columns, folders ? 28 : compact ? 18 : 26," in source
     assert "const compact = !folders && !this.listMode" in source
     assert "if (folders || compact)" in source
     assert "grid.add_style_class_name('desk-ux-compact-grid')" in source
@@ -149,16 +149,51 @@ def test_desk_ux_drag_and_selection_lifecycle():
     assert "this._suppressActivation" in source
 
 
+def test_desk_ux_refined_alignment_and_edge_feedback():
+    css = (EXTENSION_DIR / "stylesheet.css").read_text()
+    pinned = re.search(r"\.community-menu \.desk-ux-section \{([^}]+)", css).group(1)
+    assert "padding: 8px 0;" in pinned
+    assert "border-radius: 18px;" in pinned
+    assert "background-color: rgba(128,128,128,0.10);" in pinned
+    heading = re.search(r"\.community-menu \.desk-ux-heading \{([^}]+)", css).group(1)
+    assert "padding: 6px 12px;" in heading
+    footer = re.search(r"\.community-menu \.grid-layout-box \.session-box \{([^}]+)", css).group(1)
+    assert "padding: 5px 14px;" in footer
+    assert "border-radius: 14px;" in footer
+    source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
+    assert "const section = box(true, 'desk-ux-section');" in source
+    assert "const folderSection = box(true, 'desk-ux-section');" in source
+    assert "this._content.add_child(section);" in source
+    assert "this._content.add_child(folderSection);" in source
+    assert "button(_('New Folder'), () => this.navigate('@create')), folderSection);" in source
+    assert "this._grid(visibleFolders, true, folderSection);" in source
+    assert "new Grid(columns, 10, 10)" in source
+    assert "new Clutter.Margin({top: 12 * scale, bottom: 12 * scale})" in source
+    assert "return Clutter.EVENT_PROPAGATE;" in source
+    assert "scrollbar.set({opacity: 0, track_hover: true})" in source
+    assert "this._resetScrollbarVisibility();" in source
+    assert "scrollbar.connect('scroll-start'" in source
+    assert "scrollbar.connect('scroll-stop'" in source
+    assert "Clutter.EventType.BUTTON_PRESS" in source
+    assert "Clutter.ModifierType.BUTTON1_MASK" in source
+    layout = (EXTENSION_DIR / "layouts/appGridLayout.js").read_text()
+    assert "Clutter.EventType.MOTION" in layout
+    assert "this._deskUxApps.notePointerMotion()" in layout
+
+
 def test_desk_ux_tiles_reserve_aligned_icon_and_preview_slots():
     source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
     css = (EXTENSION_DIR / "stylesheet.css").read_text()
     assert "content.y_align = Clutter.ActorAlign.START" in source
     assert "for (let index = 0; index < 3; index++)" in source
-    assert "create_icon_texture(32)" in source
+    assert "create_icon_texture(35)" in source
     assert "visible: this.toggle_mode" in source
     assert "selected.opacity = this.checked ? 255 : 0" in source
     assert ".desk-ux-icon-slot { height: 54px; }" in css
-    assert ".desk-ux-preview-cell { width: 32px; height: 32px; }" in css
+    assert ".desk-ux-preview-cell { width: 35px; height: 35px; }" in css
+    folder = re.search(r"\.community-menu \.desk-ux-folder \{([^}]+)", css).group(1)
+    assert "padding: 13px;" in folder
+    assert "font-size: 1.1em;" in folder
 
 
 def test_obsolete_menu_implementations_are_not_shipped():

@@ -415,10 +415,6 @@ msgstr "Vaikimisi"
 msgid "Application menu"
 msgstr "Rakenduste menüü"
 
-#: usr/share/big-gnome-center/ui/page_desktop.py:195
-msgid "Available for Classic, Desk-UX and Hybrid layouts."
-msgstr "Saadaval Classic, Desk-UX ja Hybrid paigutustega."
-
 #: usr/share/big-gnome-center/ui/page_desktop.py:200
 #: usr/share/big-gnome-center/ui/page_desktop.py:469
 msgid "Use Community Menu as the application menu"
@@ -1915,19 +1911,3 @@ msgstr "Nõutav paigutuse abi programm pole installitud."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Nõutav paigutuse abi programm ei käivitunud."
-
-#~ msgid "System extension — cannot remove"
-#~ msgstr "Süsteemi laiendus — ei saa eemaldada"
-
-#~ msgid ""
-#~ "This extension cannot be removed here because it was installed by the "
-#~ "system."
-#~ msgstr ""
-#~ "Seda laiendust ei saa siit eemaldada, kuna see on paigaldatud süsteemi "
-#~ "poolt."
-
-#~ msgid "Uses the light GNOME Shell appearance."
-#~ msgstr "Kasutab GNOME Shelli heledat välimust."
-
-#~ msgid "Loads the Shell theme selected by the active layout."
-#~ msgstr "Laadib aktiivse paigutuse valitud Shelli teema."

@@ -104,6 +104,11 @@ export const AppGridLayout = GObject.registerClass({
     }
 
     _connectSignals() {
+        this.connectObject('captured-event', (_actor, event) => {
+            if (event.type() === Clutter.EventType.MOTION)
+                this._deskUxApps.notePointerMotion();
+            return Clutter.EVENT_PROPAGATE;
+        }, this);
         this._deskUxApps.connectObject('activated', this._activated.bind(this), this);
         this._deskUxApps.connectObject('name-entry-changed', (_actor, editing) => {
             this._headerBox.visible = this._deskUxApps.view === null;
