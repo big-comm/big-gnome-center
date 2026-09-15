@@ -1912,3 +1912,243 @@ msgstr "Nauðsynlegur útlitshjálpari er ekki uppsettur."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "Nauðsynlegi útlitshjálparinn ræstist ekki."
+
+#: usr/share/big-gnome-center/folder_icons.py:48
+msgid "Alternate Folder"
+msgstr "Önnur mappa"
+
+#: usr/share/big-gnome-center/folder_icons.py:18
+msgid "Applications"
+msgstr "Forrit"
+
+#: usr/share/big-gnome-center/folder_icons.py:63
+msgid "Archives"
+msgstr "Safnskrár"
+
+#: usr/share/big-gnome-center/folder_icons.py:19
+msgid "Backup"
+msgstr "Öryggisafrit"
+
+#: usr/share/big-gnome-center/folder_icons.py:20
+msgid "Bookmark"
+msgstr "Bókamerki"
+
+#: usr/share/big-gnome-center/folder_icons.py:21
+msgid "Bookmarks"
+msgstr "Bókamerki"
+
+#: usr/share/big-gnome-center/folder_icons.py:22
+msgid "Books"
+msgstr "Bækur"
+
+#: usr/share/big-gnome-center/folder_icons.py:23
+msgid "Camera"
+msgstr "Myndavél"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:46
+msgid "Choose a design. The folder color follows your system theme."
+msgstr "Veldu útlit. Litur möppunnar fylgir þema kerfisins."
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:30
+msgid "Choose a folder design that follows the theme color"
+msgstr "Veldu möppuútlit sem fylgir lit þemans"
+
+#: usr/share/big-gnome-center/folder_icons.py:130
+#: usr/share/big-gnome-center/folder_icons.py:135
+msgid "Choose a local folder."
+msgstr "Veldu staðbundna möppu."
+
+#: usr/share/big-gnome-center/folder_icons.py:24
+msgid "Cloud"
+msgstr "Ský"
+
+#: usr/share/big-gnome-center/folder_icons.py:42
+msgid "Cloud Mail"
+msgstr "Skýpóstur"
+
+#: usr/share/big-gnome-center/folder_icons.py:25
+msgid "Comics"
+msgstr "Teiknimyndasögur"
+
+#: usr/share/big-gnome-center/folder_icons.py:202
+msgid "Could not restore the previous folder icon."
+msgstr "Ekki tókst að endurheimta fyrra möpputáknið."
+
+#: usr/share/big-gnome-center/folder_icons.py:182
+msgid "Could not save the folder icon."
+msgstr "Ekki tókst að vista möpputáknið."
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:29
+msgid "Customize Folder Icon…"
+msgstr "Sérsníða möpputákn…"
+
+#: usr/share/big-gnome-center/folder_icons.py:26
+msgid "Decrypted"
+msgstr "Afkóðuð"
+
+#: usr/share/big-gnome-center/folder_icons.py:28
+msgid "Development"
+msgstr "Þróun"
+
+#: usr/share/big-gnome-center/folder_icons.py:29
+msgid "Documents"
+msgstr "Skjöl"
+
+#: usr/share/big-gnome-center/folder_icons.py:32
+msgid "Encrypted"
+msgstr "Dulkóðuð"
+
+#: usr/share/big-gnome-center/folder_icons.py:33
+msgid "Favorites"
+msgstr "Eftirlæti"
+
+#: usr/share/big-gnome-center/folder_icons.py:17
+msgid "Folder"
+msgstr "Mappa"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:21
+msgid "Folder Icon"
+msgstr "Möpputákn"
+
+#: usr/share/big-gnome-center/folder_icons.py:34
+msgid "Games"
+msgstr "Leikir"
+
+#: usr/share/big-gnome-center/folder_icons.py:35
+#: usr/share/big-gnome-center/folder_icons.py:36
+msgid "Home"
+msgstr "Heimamappa"
+
+#: usr/share/big-gnome-center/folder_icons.py:40
+msgid "Important"
+msgstr "Mikilvægt"
+
+#: usr/share/big-gnome-center/folder_icons.py:41
+msgid "Locked"
+msgstr "Læst"
+
+#: usr/share/big-gnome-center/folder_icons.py:43
+msgid "Mail"
+msgstr "Póstur"
+
+#: usr/share/big-gnome-center/folder_icons.py:44
+msgid "Manuals"
+msgstr "Handbækur"
+
+#: usr/share/big-gnome-center/folder_icons.py:45
+#: usr/share/big-gnome-center/folder_icons.py:61
+msgid "Music"
+msgstr "Tónlist"
+
+#: usr/share/big-gnome-center/folder_icons.py:46
+msgid "Network"
+msgstr "Net"
+
+#: usr/share/big-gnome-center/folder_icons.py:47
+msgid "Notes"
+msgstr "Glósur"
+
+#: usr/share/big-gnome-center/folder_icons.py:37
+msgid "People"
+msgstr "Fólk"
+
+#: usr/share/big-gnome-center/folder_icons.py:49
+msgid "Photo"
+msgstr "Ljósmynd"
+
+#: usr/share/big-gnome-center/folder_icons.py:50
+msgid "Photos"
+msgstr "Ljósmyndir"
+
+#: usr/share/big-gnome-center/folder_icons.py:38
+#: usr/share/big-gnome-center/folder_icons.py:39
+#: usr/share/big-gnome-center/folder_icons.py:51
+#: usr/share/big-gnome-center/folder_icons.py:52
+msgid "Pictures"
+msgstr "Myndir"
+
+#: usr/share/big-gnome-center/folder_icons.py:53
+msgid "Printing"
+msgstr "Prentun"
+
+#: usr/share/big-gnome-center/folder_icons.py:54
+msgid "Private"
+msgstr "Einkamál"
+
+#: usr/share/big-gnome-center/folder_icons.py:55
+msgid "Projects"
+msgstr "Verkefni"
+
+#: usr/share/big-gnome-center/folder_icons.py:56
+#: usr/share/big-gnome-center/folder_icons.py:57
+msgid "Public"
+msgstr "Almennt"
+
+#: usr/share/big-gnome-center/folder_icons.py:59
+msgid "Remote"
+msgstr "Fjartengt"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:66
+msgid "Restore Default"
+msgstr "Endurheimta sjálfgefið"
+
+#: usr/share/big-gnome-center/folder_icons.py:60
+msgid "Scripts"
+msgstr "Skriftur"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:50
+msgid "Search folder icons"
+msgstr "Leita að möpputáknum"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:116
+msgid "Select the BigIcons Papient icon theme to choose a design."
+msgstr "Veldu táknþemað BigIcons Papient til að velja útlit."
+
+#: usr/share/big-gnome-center/folder_icons.py:62
+msgid "Synchronization"
+msgstr "Samstilling"
+
+#: usr/share/big-gnome-center/folder_icons.py:65
+msgid "Templates"
+msgstr "Sniðmát"
+
+#: usr/share/big-gnome-center/folder_icons.py:64
+msgid "Temporary"
+msgstr "Tímabundið"
+
+#: usr/share/big-gnome-center/folder_icons.py:66
+#: usr/share/big-gnome-center/folder_icons.py:67
+msgid "Text"
+msgstr "Texti"
+
+#: usr/share/big-gnome-center/folder_icons.py:189
+msgid "The folder icon changed. Close this window and try again."
+msgstr "Möpputáknið hefur breyst. Lokaðu þessum glugga og reyndu aftur."
+
+#: usr/share/big-gnome-center/folder_icons.py:68
+msgid "Unlocked"
+msgstr "Ólæst"
+
+#: usr/share/big-gnome-center/folder_icons.py:70
+msgid "Video Camera"
+msgstr "Myndbandsupptökuvél"
+
+#: usr/share/big-gnome-center/folder_icons.py:69
+#: usr/share/big-gnome-center/folder_icons.py:71
+msgid "Videos"
+msgstr "Myndskeið"
+
+#: usr/share/big-gnome-center/folder_icons.py:72
+msgid "Visiting"
+msgstr "Heimsóknir"
+
+#: usr/share/big-gnome-center/folder_icons.py:73
+msgid "Word Processing"
+msgstr "Ritvinnsla"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:118
+msgid ""
+"Your custom image is kept until you apply a design or restore the default."
+msgstr ""
+"Sérsniðna myndin þín helst þar til þú virkjar útlit eða endurheimtir "
+"sjálfgefna táknið."

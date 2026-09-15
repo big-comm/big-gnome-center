@@ -1911,3 +1911,241 @@ msgstr "必要なレイアウトヘルパーがインストールされていま
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "必要なレイアウトヘルパーが起動しませんでした。"
+
+#: usr/share/big-gnome-center/folder_icons.py:48
+msgid "Alternate Folder"
+msgstr "別のフォルダー"
+
+#: usr/share/big-gnome-center/folder_icons.py:18
+msgid "Applications"
+msgstr "アプリケーション"
+
+#: usr/share/big-gnome-center/folder_icons.py:63
+msgid "Archives"
+msgstr "アーカイブ"
+
+#: usr/share/big-gnome-center/folder_icons.py:19
+msgid "Backup"
+msgstr "バックアップ"
+
+#: usr/share/big-gnome-center/folder_icons.py:20
+msgid "Bookmark"
+msgstr "ブックマーク"
+
+#: usr/share/big-gnome-center/folder_icons.py:21
+msgid "Bookmarks"
+msgstr "ブックマーク"
+
+#: usr/share/big-gnome-center/folder_icons.py:22
+msgid "Books"
+msgstr "本"
+
+#: usr/share/big-gnome-center/folder_icons.py:23
+msgid "Camera"
+msgstr "カメラ"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:46
+msgid "Choose a design. The folder color follows your system theme."
+msgstr "デザインを選択してください。フォルダーの色はシステムのテーマに合わせて変わります。"
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:30
+msgid "Choose a folder design that follows the theme color"
+msgstr "テーマの色に合わせて変わるフォルダーデザインを選択"
+
+#: usr/share/big-gnome-center/folder_icons.py:130
+#: usr/share/big-gnome-center/folder_icons.py:135
+msgid "Choose a local folder."
+msgstr "ローカルフォルダーを選択してください。"
+
+#: usr/share/big-gnome-center/folder_icons.py:24
+msgid "Cloud"
+msgstr "クラウド"
+
+#: usr/share/big-gnome-center/folder_icons.py:42
+msgid "Cloud Mail"
+msgstr "クラウドメール"
+
+#: usr/share/big-gnome-center/folder_icons.py:25
+msgid "Comics"
+msgstr "コミック"
+
+#: usr/share/big-gnome-center/folder_icons.py:202
+msgid "Could not restore the previous folder icon."
+msgstr "以前のフォルダーアイコンを復元できませんでした。"
+
+#: usr/share/big-gnome-center/folder_icons.py:182
+msgid "Could not save the folder icon."
+msgstr "フォルダーアイコンを保存できませんでした。"
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:29
+msgid "Customize Folder Icon…"
+msgstr "フォルダーアイコンをカスタマイズ…"
+
+#: usr/share/big-gnome-center/folder_icons.py:26
+msgid "Decrypted"
+msgstr "復号済み"
+
+#: usr/share/big-gnome-center/folder_icons.py:28
+msgid "Development"
+msgstr "開発"
+
+#: usr/share/big-gnome-center/folder_icons.py:29
+msgid "Documents"
+msgstr "ドキュメント"
+
+#: usr/share/big-gnome-center/folder_icons.py:32
+msgid "Encrypted"
+msgstr "暗号化済み"
+
+#: usr/share/big-gnome-center/folder_icons.py:33
+msgid "Favorites"
+msgstr "お気に入り"
+
+#: usr/share/big-gnome-center/folder_icons.py:17
+msgid "Folder"
+msgstr "フォルダー"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:21
+msgid "Folder Icon"
+msgstr "フォルダーアイコン"
+
+#: usr/share/big-gnome-center/folder_icons.py:34
+msgid "Games"
+msgstr "ゲーム"
+
+#: usr/share/big-gnome-center/folder_icons.py:35
+#: usr/share/big-gnome-center/folder_icons.py:36
+msgid "Home"
+msgstr "ホーム"
+
+#: usr/share/big-gnome-center/folder_icons.py:40
+msgid "Important"
+msgstr "重要"
+
+#: usr/share/big-gnome-center/folder_icons.py:41
+msgid "Locked"
+msgstr "ロック済み"
+
+#: usr/share/big-gnome-center/folder_icons.py:43
+msgid "Mail"
+msgstr "メール"
+
+#: usr/share/big-gnome-center/folder_icons.py:44
+msgid "Manuals"
+msgstr "マニュアル"
+
+#: usr/share/big-gnome-center/folder_icons.py:45
+#: usr/share/big-gnome-center/folder_icons.py:61
+msgid "Music"
+msgstr "音楽"
+
+#: usr/share/big-gnome-center/folder_icons.py:46
+msgid "Network"
+msgstr "ネットワーク"
+
+#: usr/share/big-gnome-center/folder_icons.py:47
+msgid "Notes"
+msgstr "メモ"
+
+#: usr/share/big-gnome-center/folder_icons.py:37
+msgid "People"
+msgstr "人物"
+
+#: usr/share/big-gnome-center/folder_icons.py:49
+msgid "Photo"
+msgstr "写真"
+
+#: usr/share/big-gnome-center/folder_icons.py:50
+msgid "Photos"
+msgstr "写真"
+
+#: usr/share/big-gnome-center/folder_icons.py:38
+#: usr/share/big-gnome-center/folder_icons.py:39
+#: usr/share/big-gnome-center/folder_icons.py:51
+#: usr/share/big-gnome-center/folder_icons.py:52
+msgid "Pictures"
+msgstr "画像"
+
+#: usr/share/big-gnome-center/folder_icons.py:53
+msgid "Printing"
+msgstr "印刷"
+
+#: usr/share/big-gnome-center/folder_icons.py:54
+msgid "Private"
+msgstr "プライベート"
+
+#: usr/share/big-gnome-center/folder_icons.py:55
+msgid "Projects"
+msgstr "プロジェクト"
+
+#: usr/share/big-gnome-center/folder_icons.py:56
+#: usr/share/big-gnome-center/folder_icons.py:57
+msgid "Public"
+msgstr "公開"
+
+#: usr/share/big-gnome-center/folder_icons.py:59
+msgid "Remote"
+msgstr "リモート"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:66
+msgid "Restore Default"
+msgstr "標準に戻す"
+
+#: usr/share/big-gnome-center/folder_icons.py:60
+msgid "Scripts"
+msgstr "スクリプト"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:50
+msgid "Search folder icons"
+msgstr "フォルダーアイコンを検索"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:116
+msgid "Select the BigIcons Papient icon theme to choose a design."
+msgstr "デザインを選択するには、アイコンテーマを BigIcons Papient に設定してください。"
+
+#: usr/share/big-gnome-center/folder_icons.py:62
+msgid "Synchronization"
+msgstr "同期"
+
+#: usr/share/big-gnome-center/folder_icons.py:65
+msgid "Templates"
+msgstr "テンプレート"
+
+#: usr/share/big-gnome-center/folder_icons.py:64
+msgid "Temporary"
+msgstr "一時"
+
+#: usr/share/big-gnome-center/folder_icons.py:66
+#: usr/share/big-gnome-center/folder_icons.py:67
+msgid "Text"
+msgstr "テキスト"
+
+#: usr/share/big-gnome-center/folder_icons.py:189
+msgid "The folder icon changed. Close this window and try again."
+msgstr "フォルダーアイコンが変更されました。このウィンドウを閉じて、もう一度お試しください。"
+
+#: usr/share/big-gnome-center/folder_icons.py:68
+msgid "Unlocked"
+msgstr "ロック解除済み"
+
+#: usr/share/big-gnome-center/folder_icons.py:70
+msgid "Video Camera"
+msgstr "ビデオカメラ"
+
+#: usr/share/big-gnome-center/folder_icons.py:69
+#: usr/share/big-gnome-center/folder_icons.py:71
+msgid "Videos"
+msgstr "動画"
+
+#: usr/share/big-gnome-center/folder_icons.py:72
+msgid "Visiting"
+msgstr "訪問"
+
+#: usr/share/big-gnome-center/folder_icons.py:73
+msgid "Word Processing"
+msgstr "文書作成"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:118
+msgid ""
+"Your custom image is kept until you apply a design or restore the default."
+msgstr "カスタム画像は、デザインを適用するか標準に戻すまで保持されます。"

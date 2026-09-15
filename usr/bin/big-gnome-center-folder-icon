@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""Launch the Big Gnome Center folder icon picker."""
+
+import runpy
+import sys
+from pathlib import Path
+
+app_dir = Path(__file__).resolve().parents[1] / "share/big-gnome-center"
+sys.path.insert(0, str(app_dir))
+runpy.run_path(str(app_dir / "folder_icon_picker.py"), run_name="__main__")

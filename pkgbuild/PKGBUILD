@@ -10,6 +10,7 @@ depends=(
     'libadwaita'
     'gnome-shell'
     'polkit'
+    'nautilus-python'
     # GNOME Shell extensions used by the bundled layouts
     'gnome-shell-big-shot'
     'gnome-shell-extension-appindicator'

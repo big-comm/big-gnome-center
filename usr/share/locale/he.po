@@ -1903,3 +1903,241 @@ msgstr "עוזר הפריסה הנדרש אינו מותקן."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "עוזר הפריסה הנדרש לא התחיל."
+
+#: usr/share/big-gnome-center/folder_icons.py:48
+msgid "Alternate Folder"
+msgstr "תיקייה חלופית"
+
+#: usr/share/big-gnome-center/folder_icons.py:18
+msgid "Applications"
+msgstr "יישומים"
+
+#: usr/share/big-gnome-center/folder_icons.py:63
+msgid "Archives"
+msgstr "ארכיונים"
+
+#: usr/share/big-gnome-center/folder_icons.py:19
+msgid "Backup"
+msgstr "גיבוי"
+
+#: usr/share/big-gnome-center/folder_icons.py:20
+msgid "Bookmark"
+msgstr "סימנייה"
+
+#: usr/share/big-gnome-center/folder_icons.py:21
+msgid "Bookmarks"
+msgstr "סימניות"
+
+#: usr/share/big-gnome-center/folder_icons.py:22
+msgid "Books"
+msgstr "ספרים"
+
+#: usr/share/big-gnome-center/folder_icons.py:23
+msgid "Camera"
+msgstr "מצלמה"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:46
+msgid "Choose a design. The folder color follows your system theme."
+msgstr "יש לבחור עיצוב. צבע התיקייה תואם לערכת הנושא של המערכת."
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:30
+msgid "Choose a folder design that follows the theme color"
+msgstr "בחירת עיצוב לתיקייה שתואם לצבע ערכת הנושא"
+
+#: usr/share/big-gnome-center/folder_icons.py:130
+#: usr/share/big-gnome-center/folder_icons.py:135
+msgid "Choose a local folder."
+msgstr "יש לבחור תיקייה מקומית."
+
+#: usr/share/big-gnome-center/folder_icons.py:24
+msgid "Cloud"
+msgstr "ענן"
+
+#: usr/share/big-gnome-center/folder_icons.py:42
+msgid "Cloud Mail"
+msgstr "דואר בענן"
+
+#: usr/share/big-gnome-center/folder_icons.py:25
+msgid "Comics"
+msgstr "קומיקס"
+
+#: usr/share/big-gnome-center/folder_icons.py:202
+msgid "Could not restore the previous folder icon."
+msgstr "לא ניתן לשחזר את סמל התיקייה הקודם."
+
+#: usr/share/big-gnome-center/folder_icons.py:182
+msgid "Could not save the folder icon."
+msgstr "לא ניתן לשמור את סמל התיקייה."
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:29
+msgid "Customize Folder Icon…"
+msgstr "התאמה אישית של סמל התיקייה…"
+
+#: usr/share/big-gnome-center/folder_icons.py:26
+msgid "Decrypted"
+msgstr "מפוענחת"
+
+#: usr/share/big-gnome-center/folder_icons.py:28
+msgid "Development"
+msgstr "פיתוח"
+
+#: usr/share/big-gnome-center/folder_icons.py:29
+msgid "Documents"
+msgstr "מסמכים"
+
+#: usr/share/big-gnome-center/folder_icons.py:32
+msgid "Encrypted"
+msgstr "מוצפנת"
+
+#: usr/share/big-gnome-center/folder_icons.py:33
+msgid "Favorites"
+msgstr "מועדפים"
+
+#: usr/share/big-gnome-center/folder_icons.py:17
+msgid "Folder"
+msgstr "תיקייה"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:21
+msgid "Folder Icon"
+msgstr "סמל התיקייה"
+
+#: usr/share/big-gnome-center/folder_icons.py:34
+msgid "Games"
+msgstr "משחקים"
+
+#: usr/share/big-gnome-center/folder_icons.py:35
+#: usr/share/big-gnome-center/folder_icons.py:36
+msgid "Home"
+msgstr "תיקיית הבית"
+
+#: usr/share/big-gnome-center/folder_icons.py:40
+msgid "Important"
+msgstr "חשוב"
+
+#: usr/share/big-gnome-center/folder_icons.py:41
+msgid "Locked"
+msgstr "נעולה"
+
+#: usr/share/big-gnome-center/folder_icons.py:43
+msgid "Mail"
+msgstr "דואר"
+
+#: usr/share/big-gnome-center/folder_icons.py:44
+msgid "Manuals"
+msgstr "מדריכים"
+
+#: usr/share/big-gnome-center/folder_icons.py:45
+#: usr/share/big-gnome-center/folder_icons.py:61
+msgid "Music"
+msgstr "מוזיקה"
+
+#: usr/share/big-gnome-center/folder_icons.py:46
+msgid "Network"
+msgstr "רשת"
+
+#: usr/share/big-gnome-center/folder_icons.py:47
+msgid "Notes"
+msgstr "הערות"
+
+#: usr/share/big-gnome-center/folder_icons.py:37
+msgid "People"
+msgstr "אנשים"
+
+#: usr/share/big-gnome-center/folder_icons.py:49
+msgid "Photo"
+msgstr "תצלום"
+
+#: usr/share/big-gnome-center/folder_icons.py:50
+msgid "Photos"
+msgstr "תצלומים"
+
+#: usr/share/big-gnome-center/folder_icons.py:38
+#: usr/share/big-gnome-center/folder_icons.py:39
+#: usr/share/big-gnome-center/folder_icons.py:51
+#: usr/share/big-gnome-center/folder_icons.py:52
+msgid "Pictures"
+msgstr "תמונות"
+
+#: usr/share/big-gnome-center/folder_icons.py:53
+msgid "Printing"
+msgstr "הדפסה"
+
+#: usr/share/big-gnome-center/folder_icons.py:54
+msgid "Private"
+msgstr "פרטית"
+
+#: usr/share/big-gnome-center/folder_icons.py:55
+msgid "Projects"
+msgstr "מיזמים"
+
+#: usr/share/big-gnome-center/folder_icons.py:56
+#: usr/share/big-gnome-center/folder_icons.py:57
+msgid "Public"
+msgstr "ציבורית"
+
+#: usr/share/big-gnome-center/folder_icons.py:59
+msgid "Remote"
+msgstr "מרוחקת"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:66
+msgid "Restore Default"
+msgstr "שחזור ברירת המחדל"
+
+#: usr/share/big-gnome-center/folder_icons.py:60
+msgid "Scripts"
+msgstr "סקריפטים"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:50
+msgid "Search folder icons"
+msgstr "חיפוש סמלי תיקיות"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:116
+msgid "Select the BigIcons Papient icon theme to choose a design."
+msgstr "יש לבחור בערכת הסמלים BigIcons Papient כדי לבחור עיצוב."
+
+#: usr/share/big-gnome-center/folder_icons.py:62
+msgid "Synchronization"
+msgstr "סנכרון"
+
+#: usr/share/big-gnome-center/folder_icons.py:65
+msgid "Templates"
+msgstr "תבניות"
+
+#: usr/share/big-gnome-center/folder_icons.py:64
+msgid "Temporary"
+msgstr "זמנית"
+
+#: usr/share/big-gnome-center/folder_icons.py:66
+#: usr/share/big-gnome-center/folder_icons.py:67
+msgid "Text"
+msgstr "טקסט"
+
+#: usr/share/big-gnome-center/folder_icons.py:189
+msgid "The folder icon changed. Close this window and try again."
+msgstr "סמל התיקייה השתנה. יש לסגור את החלון הזה ולנסות שוב."
+
+#: usr/share/big-gnome-center/folder_icons.py:68
+msgid "Unlocked"
+msgstr "לא נעולה"
+
+#: usr/share/big-gnome-center/folder_icons.py:70
+msgid "Video Camera"
+msgstr "מצלמת וידאו"
+
+#: usr/share/big-gnome-center/folder_icons.py:69
+#: usr/share/big-gnome-center/folder_icons.py:71
+msgid "Videos"
+msgstr "סרטונים"
+
+#: usr/share/big-gnome-center/folder_icons.py:72
+msgid "Visiting"
+msgstr "ביקורים"
+
+#: usr/share/big-gnome-center/folder_icons.py:73
+msgid "Word Processing"
+msgstr "עיבוד תמלילים"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:118
+msgid ""
+"Your custom image is kept until you apply a design or restore the default."
+msgstr "התמונה המותאמת אישית שלך נשמרת עד להחלת עיצוב או לשחזור ברירת המחדל."

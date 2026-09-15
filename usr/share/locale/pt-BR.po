@@ -1915,3 +1915,243 @@ msgstr "O auxiliar de layout obrigatório não está instalado."
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr "O auxiliar de layout obrigatório não iniciou."
+
+#: usr/share/big-gnome-center/folder_icons.py:48
+msgid "Alternate Folder"
+msgstr "Pasta alternativa"
+
+#: usr/share/big-gnome-center/folder_icons.py:18
+msgid "Applications"
+msgstr "Aplicativos"
+
+#: usr/share/big-gnome-center/folder_icons.py:63
+msgid "Archives"
+msgstr "Arquivos compactados"
+
+#: usr/share/big-gnome-center/folder_icons.py:19
+msgid "Backup"
+msgstr "Backup"
+
+#: usr/share/big-gnome-center/folder_icons.py:20
+msgid "Bookmark"
+msgstr "Marcador"
+
+#: usr/share/big-gnome-center/folder_icons.py:21
+msgid "Bookmarks"
+msgstr "Marcadores"
+
+#: usr/share/big-gnome-center/folder_icons.py:22
+msgid "Books"
+msgstr "Livros"
+
+#: usr/share/big-gnome-center/folder_icons.py:23
+msgid "Camera"
+msgstr "Câmera"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:46
+msgid "Choose a design. The folder color follows your system theme."
+msgstr "Escolha um desenho. A cor da pasta acompanha o tema do sistema."
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:30
+msgid "Choose a folder design that follows the theme color"
+msgstr "Escolha um desenho de pasta que acompanhe a cor do tema"
+
+#: usr/share/big-gnome-center/folder_icons.py:130
+#: usr/share/big-gnome-center/folder_icons.py:135
+msgid "Choose a local folder."
+msgstr "Escolha uma pasta local."
+
+#: usr/share/big-gnome-center/folder_icons.py:24
+msgid "Cloud"
+msgstr "Nuvem"
+
+#: usr/share/big-gnome-center/folder_icons.py:42
+msgid "Cloud Mail"
+msgstr "E-mail na nuvem"
+
+#: usr/share/big-gnome-center/folder_icons.py:25
+msgid "Comics"
+msgstr "Quadrinhos"
+
+#: usr/share/big-gnome-center/folder_icons.py:202
+msgid "Could not restore the previous folder icon."
+msgstr "Não foi possível restaurar o ícone anterior da pasta."
+
+#: usr/share/big-gnome-center/folder_icons.py:182
+msgid "Could not save the folder icon."
+msgstr "Não foi possível salvar o ícone da pasta."
+
+#: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:29
+msgid "Customize Folder Icon…"
+msgstr "Personalizar ícone da pasta…"
+
+#: usr/share/big-gnome-center/folder_icons.py:26
+msgid "Decrypted"
+msgstr "Descriptografada"
+
+#: usr/share/big-gnome-center/folder_icons.py:28
+msgid "Development"
+msgstr "Desenvolvimento"
+
+#: usr/share/big-gnome-center/folder_icons.py:29
+msgid "Documents"
+msgstr "Documentos"
+
+#: usr/share/big-gnome-center/folder_icons.py:32
+msgid "Encrypted"
+msgstr "Criptografada"
+
+#: usr/share/big-gnome-center/folder_icons.py:33
+msgid "Favorites"
+msgstr "Favoritos"
+
+#: usr/share/big-gnome-center/folder_icons.py:17
+msgid "Folder"
+msgstr "Pasta"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:21
+msgid "Folder Icon"
+msgstr "Ícone da pasta"
+
+#: usr/share/big-gnome-center/folder_icons.py:34
+msgid "Games"
+msgstr "Jogos"
+
+#: usr/share/big-gnome-center/folder_icons.py:35
+#: usr/share/big-gnome-center/folder_icons.py:36
+msgid "Home"
+msgstr "Pasta pessoal"
+
+#: usr/share/big-gnome-center/folder_icons.py:40
+msgid "Important"
+msgstr "Importante"
+
+#: usr/share/big-gnome-center/folder_icons.py:41
+msgid "Locked"
+msgstr "Bloqueada"
+
+#: usr/share/big-gnome-center/folder_icons.py:43
+msgid "Mail"
+msgstr "E-mail"
+
+#: usr/share/big-gnome-center/folder_icons.py:44
+msgid "Manuals"
+msgstr "Manuais"
+
+#: usr/share/big-gnome-center/folder_icons.py:45
+#: usr/share/big-gnome-center/folder_icons.py:61
+msgid "Music"
+msgstr "Música"
+
+#: usr/share/big-gnome-center/folder_icons.py:46
+msgid "Network"
+msgstr "Rede"
+
+#: usr/share/big-gnome-center/folder_icons.py:47
+msgid "Notes"
+msgstr "Notas"
+
+#: usr/share/big-gnome-center/folder_icons.py:37
+msgid "People"
+msgstr "Pessoas"
+
+#: usr/share/big-gnome-center/folder_icons.py:49
+msgid "Photo"
+msgstr "Foto"
+
+#: usr/share/big-gnome-center/folder_icons.py:50
+msgid "Photos"
+msgstr "Fotos"
+
+#: usr/share/big-gnome-center/folder_icons.py:38
+#: usr/share/big-gnome-center/folder_icons.py:39
+#: usr/share/big-gnome-center/folder_icons.py:51
+#: usr/share/big-gnome-center/folder_icons.py:52
+msgid "Pictures"
+msgstr "Imagens"
+
+#: usr/share/big-gnome-center/folder_icons.py:53
+msgid "Printing"
+msgstr "Impressão"
+
+#: usr/share/big-gnome-center/folder_icons.py:54
+msgid "Private"
+msgstr "Privada"
+
+#: usr/share/big-gnome-center/folder_icons.py:55
+msgid "Projects"
+msgstr "Projetos"
+
+#: usr/share/big-gnome-center/folder_icons.py:56
+#: usr/share/big-gnome-center/folder_icons.py:57
+msgid "Public"
+msgstr "Pública"
+
+#: usr/share/big-gnome-center/folder_icons.py:59
+msgid "Remote"
+msgstr "Remota"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:66
+msgid "Restore Default"
+msgstr "Restaurar padrão"
+
+#: usr/share/big-gnome-center/folder_icons.py:60
+msgid "Scripts"
+msgstr "Scripts"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:50
+msgid "Search folder icons"
+msgstr "Pesquisar ícones de pastas"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:116
+msgid "Select the BigIcons Papient icon theme to choose a design."
+msgstr "Selecione o tema de ícones BigIcons Papient para escolher um desenho."
+
+#: usr/share/big-gnome-center/folder_icons.py:62
+msgid "Synchronization"
+msgstr "Sincronização"
+
+#: usr/share/big-gnome-center/folder_icons.py:65
+msgid "Templates"
+msgstr "Modelos"
+
+#: usr/share/big-gnome-center/folder_icons.py:64
+msgid "Temporary"
+msgstr "Temporária"
+
+#: usr/share/big-gnome-center/folder_icons.py:66
+#: usr/share/big-gnome-center/folder_icons.py:67
+msgid "Text"
+msgstr "Texto"
+
+#: usr/share/big-gnome-center/folder_icons.py:189
+msgid "The folder icon changed. Close this window and try again."
+msgstr "O ícone da pasta foi alterado. Feche esta janela e tente novamente."
+
+#: usr/share/big-gnome-center/folder_icons.py:68
+msgid "Unlocked"
+msgstr "Desbloqueada"
+
+#: usr/share/big-gnome-center/folder_icons.py:70
+msgid "Video Camera"
+msgstr "Filmadora"
+
+#: usr/share/big-gnome-center/folder_icons.py:69
+#: usr/share/big-gnome-center/folder_icons.py:71
+msgid "Videos"
+msgstr "Vídeos"
+
+#: usr/share/big-gnome-center/folder_icons.py:72
+msgid "Visiting"
+msgstr "Visitantes"
+
+#: usr/share/big-gnome-center/folder_icons.py:73
+msgid "Word Processing"
+msgstr "Processamento de texto"
+
+#: usr/share/big-gnome-center/folder_icon_picker.py:118
+msgid ""
+"Your custom image is kept until you apply a design or restore the default."
+msgstr ""
+"Sua imagem personalizada será mantida até você aplicar um desenho ou "
+"restaurar o padrão."

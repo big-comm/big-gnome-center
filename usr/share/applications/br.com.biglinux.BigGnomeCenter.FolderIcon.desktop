@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Big Gnome Center
+Exec=big-gnome-center-folder-icon %u
+Icon=big-gnome-center
+NoDisplay=true
+Terminal=false
+Categories=Settings;DesktopSettings;
+StartupNotify=true
