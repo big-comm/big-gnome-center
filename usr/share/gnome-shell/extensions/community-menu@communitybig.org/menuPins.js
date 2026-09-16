@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import Gio from 'gi://Gio';
+import {createMenuSettings} from './settings.js';
 
 export class MenuPins {
     constructor(changed = () => {}, settings = null, legacy = null) {
-        this._settings = settings ?? new Gio.Settings({
-            schema_id: 'org.gnome.shell.extensions.community-menu.pins',
-        });
+        this._settings = settings ?? createMenuSettings('org.gnome.shell.extensions.community-menu.pins');
         // An explicit empty list is final; never repopulate it from the dock.
         if (this._settings.get_user_value('apps') === null && this.writable) {
             const shell = legacy ?? new Gio.Settings({schema_id: 'org.gnome.shell'});

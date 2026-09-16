@@ -130,6 +130,33 @@ def test_independent_menu_pins_ui():
                    check=True, capture_output=True, text=True)
 
 
+def test_menu_schema_catalog_after_package_upgrade(tmp_path):
+    if not shutil.which("gjs") or not shutil.which("glib-compile-schemas"):
+        pytest.skip("gjs and glib-compile-schemas are required")
+    directory = tmp_path / "glib-2.0/schemas"
+    directory.mkdir(parents=True)
+    old = ET.parse(SCHEMA_FILE)
+    for schema in list(old.getroot().findall("schema")):
+        if schema.attrib["id"].endswith((".pins", ".folders")):
+            old.getroot().remove(schema)
+    old.write(directory / "community-menu.gschema.xml")
+    subprocess.run(["glib-compile-schemas", "--strict", str(directory)], check=True)
+    subprocess.run(
+        ["gjs", "-m", str(ROOT / "tests/community_menu_schema_upgrade.js"),
+         str(SCHEMA_FILE), str(directory)],
+        env={**os.environ, "GSETTINGS_BACKEND": "memory", "XDG_DATA_DIRS": str(tmp_path),
+             "GSETTINGS_SCHEMA_DIR": str(directory)},
+        check=True, capture_output=True, text=True,
+    )
+
+
+def test_explicit_logout_button_respects_policy_and_confirms():
+    if not shutil.which("node"):
+        pytest.skip("node is required")
+    subprocess.run(["node", str(ROOT / "tests/community_menu_logout.mjs")],
+                   check=True, capture_output=True, text=True)
+
+
 def test_desk_ux_folder_colors(tmp_path):
     if not shutil.which("gjs") or not shutil.which("glib-compile-schemas"):
         pytest.skip("gjs and glib-compile-schemas are required")

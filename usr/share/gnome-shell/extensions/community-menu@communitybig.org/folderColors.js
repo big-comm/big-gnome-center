@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
 import {FOLDER_COLORS} from './deskUxModel.js';
 import {validFolderId} from './folderModel.js';
+import {createMenuSettings} from './settings.js';
 
 const supported = color => FOLDER_COLORS.some(([name]) => name === color);
 
 export class FolderColors {
     constructor(changed, settings = null) {
-        this._settings = settings ?? new Gio.Settings({
-            schema_id: 'org.gnome.shell.extensions.community-menu.folders',
-        });
+        this._settings = settings ?? createMenuSettings('org.gnome.shell.extensions.community-menu.folders');
         this._signals = [
             this._settings.connect('changed::colors', changed),
             this._settings.connect('writable-changed::colors', changed),

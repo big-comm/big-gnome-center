@@ -16,6 +16,25 @@ The obsolete availability hint was removed from all application catalogs.
 Defaults are tested against all six shipped profiles with absent, enabled, and
 disabled preferences, including original restoration and failed-apply cleanup.
 
+## Package upgrades and session actions
+
+The running Shell caches its default GSettings schema source. A package upgrade
+can install the pins/colors schemas while that cache still lacks them, preventing
+Desk UX from opening. Missing menu schemas are looked up in fresh compiled sources
+before reporting an installation error. Existing settings paths and values stay
+unchanged. Already imported extension code still requires a new session to load
+updated JavaScript.
+
+The explicit Log Out button follows lockdown and session-mode restrictions,
+independently of Shell's single-user visibility heuristic. It requests the native
+session manager's normal confirmation with `LogoutAsync(0)`; no global settings
+are changed and logout is never forced.
+
+2026-09-16: reproduced stale schema lookup after an in-process catalog upgrade.
+70 focused and 1008 full-suite tests passed. Isolated schema-upgrade and mocked
+logout policy/confirmation tests passed in GNOME 50.4 and 51.rc guests. No live
+logout, session restart, or visual validation of the patched button was performed.
+
 ## Behavior
 
 - Pinned apps use independent menu order. Copy GNOME Shell favorites once on

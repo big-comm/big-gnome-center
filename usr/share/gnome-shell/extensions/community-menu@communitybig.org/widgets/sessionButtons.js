@@ -1,10 +1,12 @@
 // Modified by Community Big, 2026-07-10: renamed, de-Zorinized, and adapted for GNOME Shell 50.
 import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as GnomeSession from 'resource:///org/gnome/shell/misc/gnomeSession.js';
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
@@ -245,16 +247,32 @@ export const LogoutButton = GObject.registerClass({
     _init(systemActions) {
         super._init(systemActions, _("Log Out"), 'application-exit-symbolic');
 
-        let bindFlags = GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE;
-        this._systemActions.bind_property('can-logout',
-            this, 'visible',
-            bindFlags
-        );
+        this._lockdown = new Gio.Settings({schema_id: 'org.gnome.desktop.lockdown'});
+        this._lockdown.connectObject('changed::disable-log-out', () => this._syncLogout(), this);
+        Main.sessionMode.connectObject('updated', () => this._syncLogout(), this);
+        this._syncLogout();
+    }
+
+    _syncLogout() {
+        // Shell's can-logout also hides the action for a single local account.
+        this.visible = !this._lockdown.get_boolean('disable-log-out') &&
+            !Main.sessionMode.isLocked && !Main.sessionMode.isGreeter;
     }
 
     activate(event) {
+        this._syncLogout();
+        if (!this.visible)
+            return;
         super.activate(event);
-        this._systemActions.activateLogout();
+        Main.overview.hide();
+        GnomeSession.SessionManager().LogoutAsync(0).catch(error => console.error(error));
+    }
+
+    _onDestroy() {
+        this._lockdown?.disconnectObject(this);
+        Main.sessionMode.disconnectObject(this);
+        this._lockdown = null;
+        super._onDestroy();
     }
 });
 
