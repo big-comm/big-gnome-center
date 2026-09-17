@@ -23,8 +23,10 @@ class _Gallery:
 def test_cursor_columns_survive_selection_and_long_names():
     if not Gtk.init_check():
         raise unittest.SkipTest("Requires a GTK display")
-    Adw.init()
     display = Gdk.Display.get_default()
+    if display is None:
+        raise unittest.SkipTest("Requires a GTK display")
+    Adw.init()
     provider = Gtk.CssProvider()
     provider.load_from_string(APP_CSS)
     Gtk.StyleContext.add_provider_for_display(display, provider, 800)
