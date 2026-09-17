@@ -9,6 +9,7 @@ Classes:
 DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
+import fcntl
 import json
 import logging
 from typing import Callable, Dict, List, Tuple
@@ -60,27 +61,44 @@ class Settings:
             pass
 
     def set(self, key: str, value) -> bool:
-        self._reload_from_disk()
-        if self.last_error:
-            return False
-        data = dict(self._data)
-        data[key] = value
-        return self._write(data)
+        return self._mutate(key, value)
 
     def delete(self, key: str) -> bool:
-        self._reload_from_disk()
-        if self.last_error:
+        return self._mutate(key, delete=True)
+
+    def _mutate(self, key: str, value=None, *, delete: bool = False) -> bool:
+        """Serialize the full read/modify/replace transaction across writers."""
+        try:
+            SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+            # Keep a stable inode: atomic replacement changes the JSON inode.
+            # Never unlink the sidecar; waiting writers may already hold it open.
+            lock_path = SETTINGS_FILE.with_name(SETTINGS_FILE.name + ".lock")
+            with lock_path.open("a", encoding="utf-8") as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                self._reload_from_disk()
+                if self.last_error:
+                    return False
+                data = dict(self._data)
+                if delete:
+                    data.pop(key, None)
+                else:
+                    data[key] = value
+                return self._write(data)
+        except OSError as exc:
+            self.last_error = f"{SETTINGS_FILE}: {exc}"
+            logging.getLogger("big-gnome-center").warning(
+                "Settings update failed: %s", self.last_error,
+            )
             return False
-        data = dict(self._data)
-        data.pop(key, None)
-        return self._write(data)
 
     def _write(self, data: Dict) -> bool:
         try:
             atomic_write_text(SETTINGS_FILE, json.dumps(data, indent=2))
         except Exception as exc:
             self.last_error = f"{SETTINGS_FILE}: {exc}"
-            logging.getLogger("big-gnome-center").warning("Settings write failed: %s", self.last_error)
+            logging.getLogger("big-gnome-center").warning(
+                "Settings write failed: %s", self.last_error,
+            )
             return False
         self._data = data
         self.last_error = ""
