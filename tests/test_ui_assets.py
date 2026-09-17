@@ -102,7 +102,7 @@ def test_effect_assets_and_gallery_geometry():
     assert "Gtk.Picture.new_for_filename" in effects_source
     assert "icon_frame = Gtk.CenterBox()" in effects_source
     assert "icon_frame.set_center_widget(ico)" in effects_source
-    assert "set_max_children_per_line(5)" in themes_source
+    assert 'set_max_children_per_line(3 if kind == "cursors" else 5)' in themes_source
     assert "set_size_request(128, 68)" in themes_source
     assert 'self._section = "accent"' in themes_source
     assert themes_source.index('("accent", tr("Colors"))') < themes_source.index(

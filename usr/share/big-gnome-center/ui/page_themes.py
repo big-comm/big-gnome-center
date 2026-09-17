@@ -283,7 +283,7 @@ class ThemesPage(Gtk.Box):
     ) -> Gtk.Widget:
         grid = Gtk.FlowBox()
         grid.set_selection_mode(Gtk.SelectionMode.NONE)
-        grid.set_max_children_per_line(5)
+        grid.set_max_children_per_line(3 if kind == "cursors" else 5)
         grid.set_min_children_per_line(1)
         grid.set_row_spacing(10)
         grid.set_column_spacing(10)
@@ -301,6 +301,7 @@ class ThemesPage(Gtk.Box):
         tile = ThemeTile(theme_name=name)
         tile.add_css_class("theme-tile")
         tile.set_size_request(142, -1)
+        tile.set_tooltip_text(name)
         if is_active:
             tile.add_css_class("theme-tile-active")
 
@@ -341,6 +342,8 @@ class ThemesPage(Gtk.Box):
         label.set_halign(Gtk.Align.START)
         label.set_xalign(0)
         label.set_ellipsize(Pango.EllipsizeMode.END)
+        # Keep long or bold names from changing the grid's column count.
+        label.set_max_width_chars(20)
         content.append(label)
         tile.set_child(content)
 
