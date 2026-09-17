@@ -2151,3 +2151,16 @@ msgid ""
 msgstr ""
 "Det egendefinerte bildet beholdes til du bruker et motiv eller gjenoppretter"
 " standardikonet."
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "Installer big-bibata-cursor-theme for å bruke matchende pekere."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "Følg systemets aksentfarge"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "Tilpass pekeren til systemets aksentfarge og lyse eller mørke utseende."

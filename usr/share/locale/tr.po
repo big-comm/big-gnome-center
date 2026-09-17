@@ -2154,3 +2154,16 @@ msgid ""
 msgstr ""
 "Özel resminiz, bir tasarım uygulayana veya varsayılanı geri yükleyene kadar "
 "korunur."
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "Eşleşen imleçleri kullanmak için big-bibata-cursor-theme paketini yükleyin."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "Sistem vurgu rengini izle"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "İmleci sistem vurgu rengine ve açık ya da koyu görünüme uydurun."

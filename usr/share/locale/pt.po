@@ -2160,3 +2160,16 @@ msgid ""
 msgstr ""
 "Sua imagem personalizada será mantida até você aplicar um desenho ou "
 "restaurar o padrão."
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "Instale o big-bibata-cursor-theme para utilizar cursores a condizer."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "Seguir a cor de destaque do sistema"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "Adaptar o cursor à cor de destaque e ao aspeto claro ou escuro do sistema."

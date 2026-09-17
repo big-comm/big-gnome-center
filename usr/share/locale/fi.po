@@ -2159,3 +2159,16 @@ msgid ""
 msgstr ""
 "Oma kuvasi säilytetään, kunnes otat kuvion käyttöön tai palautat "
 "oletuskuvakkeen."
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "Asenna paketti big-bibata-cursor-theme, jotta voit käyttää yhteensopivia osoittimia."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "Seuraa järjestelmän korostusväriä"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "Sovita osoitin järjestelmän korostusväriin ja vaaleaan tai tummaan ulkoasuun."

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.communitybig.big-gnome-center.themes" path="/org/communitybig/big-gnome-center/themes/">
+    <key name="cursor-follow-accent" type="b">
+      <default>false</default>
+      <summary>Match the cursor to the system accent and color scheme</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -10,6 +10,7 @@ gi.require_version("Adw", "1")
 gi.require_version("Pango", "1.0")
 from gi.repository import Adw, GLib, Gtk, Pango
 
+import cursor_accent
 from constants import ACCENT_COLORS, tr
 from theme_manager import ThemeMgr
 from theme_preview import find_theme_cursors, find_theme_icons
@@ -63,6 +64,12 @@ class ThemesPage(Gtk.Box):
         surface.set_margin_end(14)
         surface.set_margin_bottom(10)
         surface.set_vexpand(True)
+
+        self._syncing_cursor_follow = False
+        self._cursor_follow_row = Adw.SwitchRow(title=tr("Follow system accent color"))
+        self._cursor_follow_row.set_visible(False)
+        self._cursor_follow_row.connect("notify::active", self._on_cursor_follow_changed)
+        surface.append(self._cursor_follow_row)
 
         self._search_entry = Gtk.SearchEntry()
         self._search_entry.set_placeholder_text(tr("Filter themes…"))
@@ -141,6 +148,7 @@ class ThemesPage(Gtk.Box):
 
     def refresh_themes(self) -> None:
         """Refresh the active section."""
+        self._sync_cursor_follow()
         self._clear_content()
         if self._section == "accent":
             self._populate_accents()
@@ -161,6 +169,36 @@ class ThemesPage(Gtk.Box):
             GLib.idle_add(self._populate_theme_section, section, active, names)
 
         self._pool.submit(scan)
+
+    def _sync_cursor_follow(self) -> None:
+        enabled = cursor_accent.is_enabled()
+        available = bool(cursor_accent.read_palettes())
+        self._syncing_cursor_follow = True
+        try:
+            self._cursor_follow_row.set_visible(self._section == "cursors")
+            self._cursor_follow_row.set_active(enabled)
+            self._cursor_follow_row.set_sensitive(
+                cursor_accent.preferences() is not None and (available or enabled))
+            self._cursor_follow_row.set_subtitle(
+                tr("Match the cursor to the system accent and light or dark appearance.")
+                if available else
+                tr("Install big-bibata-cursor-theme to use matching cursors."))
+        finally:
+            self._syncing_cursor_follow = False
+
+    def _on_cursor_follow_changed(self, row, _param) -> None:
+        if self._syncing_cursor_follow:
+            return
+        enabled = row.get_active()
+        row.set_sensitive(False)
+
+        def task():
+            ok, error = cursor_accent.set_enabled(enabled)
+            if not ok:
+                GLib.idle_add(self._toast, tr("Error") + f": {error}")
+            GLib.idle_add(self.refresh_themes)
+
+        self._pool.submit(task)
 
     def _populate_accents(self) -> None:
         active = ThemeMgr.accent_color()
@@ -371,6 +409,8 @@ class ThemesPage(Gtk.Box):
         def task() -> None:
             ok, error = ThemeMgr.apply(kind, name)
             if ok:
+                if kind == "cursors":
+                    cursor_accent.set_enabled(False)
                 GLib.idle_add(self._toast, name)
                 GLib.idle_add(self.refresh_themes)
             else:

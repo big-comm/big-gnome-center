@@ -2167,3 +2167,16 @@ msgid ""
 msgstr ""
 "Az egyéni kép megmarad, amíg nem alkalmaz egy mintát, vagy vissza nem "
 "állítja az alapértelmezett ikont."
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "Telepítse a big-bibata-cursor-theme csomagot a hozzá illő kurzorok használatához."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "Rendszer kiemelő színének követése"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "A kurzor igazítása a rendszer kiemelő színéhez és világos vagy sötét megjelenéséhez."

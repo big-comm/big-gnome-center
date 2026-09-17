@@ -163,6 +163,15 @@ class MainWindow(Adw.ApplicationWindow):
             "icon-theme",
             lambda: self._schedule_refresh("theme", self._on_theme_changed),
         )
+        for key in ("cursor-theme", "color-scheme"):
+            self._monitor.watch(
+                "org.gnome.desktop.interface", key,
+                lambda: self._schedule_refresh("theme", self._on_theme_changed),
+            )
+        self._monitor.watch(
+            "org.communitybig.big-gnome-center.themes", "cursor-follow-accent",
+            lambda: self._schedule_refresh("theme", self._on_theme_changed),
+        )
 
     def _schedule_refresh(self, key: str, fn: Callable, delay_ms: int = 300) -> None:
         """

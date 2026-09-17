@@ -2180,3 +2180,16 @@ msgid ""
 msgstr ""
 "Η προσαρμοσμένη εικόνα σας διατηρείται μέχρι να εφαρμόσετε ένα σχέδιο ή να "
 "επαναφέρετε την προεπιλογή."
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "Εγκαταστήστε το πακέτο big-bibata-cursor-theme για να χρησιμοποιήσετε ταιριαστούς δείκτες."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "Ακολούθηση χρώματος έμφασης συστήματος"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "Προσαρμογή του δείκτη στο χρώμα έμφασης και στη φωτεινή ή σκοτεινή εμφάνιση του συστήματος."

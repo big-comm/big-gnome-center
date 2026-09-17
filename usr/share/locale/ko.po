@@ -2146,3 +2146,16 @@ msgstr "워드 프로세싱"
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
 msgstr "사용자 지정 이미지는 디자인을 적용하거나 기본값을 복원할 때까지 유지됩니다."
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "커서 색상을 일치시키려면 big-bibata-cursor-theme을 설치하세요."
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "시스템 강조 색상 따르기"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "커서 색상을 시스템 강조 색상 및 라이트 또는 다크 모양에 맞춥니다."

@@ -2135,3 +2135,16 @@ msgstr "文字处理"
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
 msgstr "自定义图片将保留，直到您应用图案或恢复默认图标。"
+
+#: usr/share/big-gnome-center/cursor_accent.py:79
+#: usr/share/big-gnome-center/ui/page_themes.py:185
+msgid "Install big-bibata-cursor-theme to use matching cursors."
+msgstr "安装 big-bibata-cursor-theme 以使用匹配的光标。"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:69
+msgid "Follow system accent color"
+msgstr "跟随系统强调色"
+
+#: usr/share/big-gnome-center/ui/page_themes.py:183
+msgid "Match the cursor to the system accent and light or dark appearance."
+msgstr "使光标与系统强调色及浅色或深色外观相匹配。"

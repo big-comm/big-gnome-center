@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Big Gnome Center Cursor Accent
+Exec=/usr/bin/python3 /usr/share/big-gnome-center/cursor_accent.py --watch
+Icon=big-gnome-center
+OnlyShowIn=GNOME;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
