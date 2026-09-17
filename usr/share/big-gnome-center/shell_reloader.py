@@ -89,6 +89,16 @@ class ShellReloader:
         Funciona em Wayland sem precisar de logout (GS 3.36+).
         Retorna (sucesso, mensagem).
         """
+        accepted, message = ShellReloader._request_extension_state(uuid, enable, timeout)
+        return accepted is True, message
+
+    @staticmethod
+    def _request_extension_state(
+        uuid: str, enable: bool, timeout: int = 8,
+    ) -> Tuple[Optional[bool], str]:
+        """Return None for transport failure, False for rejection/invalid replies."""
+        from gi.repository import GLib
+
         method = (
             f"{DBUS_EXT_IFACE}.EnableExtension" if enable else f"{DBUS_EXT_IFACE}.DisableExtension"
         )
@@ -107,7 +117,15 @@ class ShellReloader:
             ],
             timeout=timeout,
         )
-        return ok, out
+        if not ok:
+            return None, out
+        try:
+            accepted, = GLib.Variant.parse(
+                GLib.VariantType.new("(b)"), out, None, None,
+            ).unpack()
+        except GLib.Error:
+            return False, f"{tr('Operation failed')}: {out}"
+        return accepted, out if accepted else tr("Operation failed")
 
     # ── Estado das extensões ──────────────────────────────────────────────────
 
@@ -266,13 +284,8 @@ class ShellReloader:
     @staticmethod
     def apply_extension_state(uuid: str, enable: bool) -> Tuple[bool, str]:
         """
-        Ativa ou desativa uma extensão e recarrega em tempo real.
-
-        Fluxo:
-          1. Tenta D-Bus direto (sem logout, Wayland-safe).
-          2. Em caso de falha, cai para gsettings + reload geral.
-
-        Retorna (sucesso, mensagem).
+        Apply live state, falling back to settings only when D-Bus is unavailable.
+        An explicit Shell refusal must not be bypassed by rewriting preferences.
         """
         from helper_client import HELPER_UUID
 
@@ -283,16 +296,9 @@ class ShellReloader:
         from extension_manager import ExtMgr
 
         # 1. D-Bus direto
-        ok, msg = ShellReloader.enable_extension_dbus(uuid, enable)
-        if ok:
-            if enable:
-                ShellReloader.reload_extension(uuid)
-            return True, msg
+        accepted, msg = ShellReloader._request_extension_state(uuid, enable)
+        if accepted is not None:
+            return accepted, msg
 
-        # 2. Fallback: gsettings + reload geral
-        ok2, msg2 = ExtMgr._set_enabled_gsettings(uuid, enable)
-        if ok2:
-            ShellReloader.reload_all()
-            return True, msg2
-
-        return False, msg2
+        # Shell observes preferences; no reload or X11 restart is needed.
+        return ExtMgr._set_enabled_gsettings(uuid, enable)

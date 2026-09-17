@@ -90,9 +90,9 @@ class ExtMgr:
     def all_globally_enabled() -> bool:
         """
         Retorna True se extensões estão globalmente habilitadas.
-        False quando disable-extensions=true no dconf.
+        False when disable-user-extensions is true.
         """
-        val = dconf_read("/org/gnome/shell/disable-extensions")
+        val = dconf_read("/org/gnome/shell/disable-user-extensions")
         return val is None or val.lower() != "true"
 
     # ── Listar instaladas ─────────────────────────────────────────────────────
@@ -115,7 +115,11 @@ class ExtMgr:
             except PermissionError:
                 continue
             for entry in entries:
-                if not entry.is_dir() or entry.name in seen:
+                if (
+                    not entry.is_dir()
+                    or not _EXTENSION_UUID_RE.fullmatch(entry.name)
+                    or entry.name in seen
+                ):
                     continue
                 seen.add(entry.name)
                 meta: Dict = {}
@@ -126,14 +130,21 @@ class ExtMgr:
                         meta = json.loads(raw_text)
                     except Exception:
                         meta = {}
-                uuid = meta.get("uuid") or entry.name
+                if not isinstance(meta, dict):
+                    meta = {}
+                # Operations address the directory, not an untrusted metadata UUID.
+                uuid = entry.name
+                name = meta.get("name")
+                description = meta.get("description")
+                url = meta.get("url")
+                version = meta.get("version", "")
                 results.append(
                     {
                         "uuid": uuid,
-                        "name": meta.get("name") or uuid,
-                        "description": meta.get("description", ""),
-                        "version": str(meta.get("version", "")),
-                        "url": meta.get("url", ""),
+                        "name": name if isinstance(name, str) and name else uuid,
+                        "description": description if isinstance(description, str) else "",
+                        "version": str(version) if type(version) in (str, int) else "",
+                        "url": url if isinstance(url, str) else "",
                         "user": is_user,
                         "enabled": uuid in enabled,
                         "has_prefs": (entry / "prefs.js").is_file(),
@@ -155,6 +166,8 @@ class ExtMgr:
             try:
                 meta = json.loads(meta_path.read_text(encoding="utf-8", errors="replace"))
             except Exception:
+                return 0
+            if not isinstance(meta, dict):
                 return 0
             version = meta.get("version")
             if isinstance(version, int):
@@ -228,15 +241,11 @@ class ExtMgr:
         disable=True  → desabilita tudo
         disable=False → re-habilita tudo
         """
-        from shell_reloader import ShellReloader
-
-        ok, msg = dconf_write(
-            "/org/gnome/shell/disable-extensions",
+        # Shell observes this key; reloading extensions is unnecessary.
+        return dconf_write(
+            "/org/gnome/shell/disable-user-extensions",
             "true" if disable else "false",
         )
-        if ok:
-            ShellReloader.reload_all()
-        return ok, msg
 
     # ── Instalar ──────────────────────────────────────────────────────────────
 

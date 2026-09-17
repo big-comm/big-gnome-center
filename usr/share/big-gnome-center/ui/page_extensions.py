@@ -17,7 +17,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 gi.require_version("Pango", "1.0")
-from gi.repository import Adw, GLib, Gtk, Pango
+from gi.repository import Adw, Gio, GLib, Gtk, Pango
 
 import update_checker
 from constants import FEATURED_EXTENSIONS, tr
@@ -132,7 +132,33 @@ class ExtensionsPage(Gtk.Box):
         self._installed_query = ""
         # uuid → UpdateInfo. Populated by MainWindow after running the checker.
         self._updates: Dict[str, update_checker.UpdateInfo] = {}
+        self._pending_extension_toggles = 0
+        self._shell_refresh_source = 0
         self._build()
+        self._shell_settings = Gio.Settings.new("org.gnome.shell")
+        self._shell_settings.connect_object(
+            "changed", ExtensionsPage._on_shell_settings_changed, self,
+        )
+        # Read watched keys to enable GSettings change notifications.
+        for key in ("enabled-extensions", "disabled-extensions", "disable-user-extensions"):
+            self._shell_settings.get_value(key)
+
+    def _on_shell_settings_changed(self, key: str) -> None:
+        """Refresh after Shell's asynchronous preference writes become visible."""
+        if key not in ("enabled-extensions", "disabled-extensions", "disable-user-extensions"):
+            return
+        if self._pending_extension_toggles or self._shell_refresh_source:
+            return
+        self._shell_refresh_source = GLib.idle_add(self._refresh_shell_settings)
+
+    def _refresh_shell_settings(self) -> bool:
+        self._shell_refresh_source = 0
+        # Completion handles pending operations; detached pages need no refresh.
+        if self._pending_extension_toggles or self.get_root() is None:
+            return GLib.SOURCE_REMOVE
+        self.rebuild_featured()
+        self.refresh_installed()
+        return GLib.SOURCE_REMOVE
 
     def set_updates(self, updates: Dict[str, update_checker.UpdateInfo]) -> None:
         """Recebe o dict de atualizações disponíveis e atualiza a UI."""
@@ -459,19 +485,47 @@ class ExtensionsPage(Gtk.Box):
         status_lbl: Gtk.Label,
         switch: Gtk.Switch,
     ) -> None:
-        def task():
-            ok, err = ShellReloader.apply_extension_state(uuid, enable)
-            if ok:
-                GLib.idle_add(self.rebuild_featured)
-                GLib.idle_add(self.refresh_installed)
-                short = uuid.split("@")[0]
-                msg = f"{short} " + (tr("enabled") if enable else tr("disabled"))
-                GLib.idle_add(self._toast, msg)
-            else:
-                GLib.idle_add(switch.set_active, not enable)
-                GLib.idle_add(self._toast, tr("Error") + f": {err}")
+        self._toggle_extension(uuid, enable, switch, featured=True)
 
-        self._pool.submit(task)
+    def _toggle_extension(
+        self, uuid: str, enable: bool, switch: Gtk.Switch, *, featured: bool = False,
+    ) -> None:
+        """Suppress rollback notifications and allow one request per control."""
+        if getattr(switch, "_bgc_toggle_pending", False):
+            return
+        self._pending_extension_toggles = getattr(self, "_pending_extension_toggles", 0) + 1
+        switch._bgc_toggle_pending = True
+        switch.set_sensitive(False)
+
+        def complete(ok, err):
+            try:
+                if ok:
+                    self.rebuild_featured()
+                    self.refresh_installed()
+                    if featured:
+                        short = uuid.split("@")[0]
+                        self._toast(f"{short} " + (tr("enabled") if enable else tr("disabled")))
+                else:
+                    # Keep the guard until notify::active has finished synchronously.
+                    switch.set_active(not enable)
+                    self._toast(tr("Error") + f": {err}")
+            finally:
+                self._pending_extension_toggles -= 1
+                switch._bgc_toggle_pending = False
+                switch.set_sensitive(True)
+            return GLib.SOURCE_REMOVE
+
+        def task():
+            try:
+                ok, err = ShellReloader.apply_extension_state(uuid, enable)
+            except Exception as error:
+                ok, err = False, str(error)
+            GLib.idle_add(complete, ok, err)
+
+        try:
+            self._pool.submit(task)
+        except Exception as error:
+            complete(False, str(error))
 
     def _confirm_install(self, ext: Dict, card: Gtk.Box) -> None:
         parent = self.get_root()
@@ -852,18 +906,7 @@ class ExtensionsPage(Gtk.Box):
         uuid_ref = ext["uuid"]
 
         def on_sw(s, p, _uuid=uuid_ref) -> None:
-            en = s.get_active()
-
-            def task():
-                ok, err = ShellReloader.apply_extension_state(_uuid, en)
-                if ok:
-                    GLib.idle_add(self.refresh_installed)
-                    GLib.idle_add(self.rebuild_featured)
-                else:
-                    GLib.idle_add(s.set_active, not en)
-                    GLib.idle_add(self._toast, tr("Error") + f": {err}")
-
-            self._pool.submit(task)
+            self._toggle_extension(_uuid, s.get_active(), s)
 
         if not is_required:
             sw.connect("notify::active", on_sw)

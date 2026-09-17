@@ -1922,7 +1922,7 @@ class TestShellReloader:
         assert mock_run.call_count == 0
 
     @patch("shell_reloader.ShellReloader.reload_extension")
-    @patch("shell_reloader.ShellReloader.enable_extension_dbus", return_value=(True, ""))
+    @patch("shell_reloader.ShellReloader._request_extension_state", return_value=(True, ""))
     def test_apply_extension_state_disable_does_not_reload(self, _mock_dbus, mock_reload):
         from shell_reloader import ShellReloader
 
@@ -1931,7 +1931,7 @@ class TestShellReloader:
         assert ok is True
         mock_reload.assert_not_called()
 
-    @patch("shell_reloader.ShellReloader.enable_extension_dbus")
+    @patch("shell_reloader.ShellReloader._request_extension_state")
     def test_required_helper_cannot_be_disabled(self, mock_dbus):
         from helper_client import HELPER_UUID
         from shell_reloader import ShellReloader
