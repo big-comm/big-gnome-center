@@ -9,7 +9,6 @@ Botão global On/Off para desabilitar/habilitar todas as extensões de uma vez.
 DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
-import shutil
 from typing import Dict, Iterable, List
 
 import gi
@@ -20,13 +19,13 @@ gi.require_version("Pango", "1.0")
 from gi.repository import Adw, Gio, GLib, Gtk, Pango
 
 import update_checker
+from app_launcher import launch_extensions_app, launch_uri
 from constants import FEATURED_EXTENSIONS, tr
 from extension_manager import ExtMgr
 from helper_client import HELPER_UUID
 from shell_reloader import ShellReloader
 from ui.ext_browse_view import ExtBrowseView
 from ui.ext_detail_view import ExtDetailView
-from utils import run_cmd
 
 _BIG_SHOT_DESCRIPTION = tr("Captures, annotates and records the screen.")
 _HIDDEN_SYSTEM_EXTENSION_UUIDS = frozenset(
@@ -433,7 +432,7 @@ class ExtensionsPage(Gtk.Box):
             sb_btn.set_halign(Gtk.Align.START)
             sb_btn.connect(
                 "clicked",
-                lambda b, _uuid=ext["uuid"]: ExtMgr.open_prefs(_uuid),
+                lambda b, _uuid=ext["uuid"]: ExtMgr.open_prefs(_uuid, self._launch_error),
             )
             inner.append(sb_btn)
 
@@ -470,9 +469,8 @@ class ExtensionsPage(Gtk.Box):
             ego_btn.set_margin_top(4)
             ego_btn.connect(
                 "clicked",
-                lambda b, _id=ego_id: run_cmd(
-                    ["xdg-open", f"https://extensions.gnome.org/extension/{_id}/"],
-                    timeout=5,
+                lambda b, _id=ego_id: launch_uri(
+                    f"https://extensions.gnome.org/extension/{_id}/", self._launch_error,
                 ),
             )
             inner.append(ego_btn)
@@ -689,12 +687,10 @@ class ExtensionsPage(Gtk.Box):
         return outer
 
     def _open_gnome_extensions(self, btn) -> None:
-        for app_cmd in [["gnome-extensions-app"], ["gnome-shell-extension-prefs"]]:
-            if shutil.which(app_cmd[0]):
-                ok, err = run_cmd(app_cmd, timeout=5)
-                if ok:
-                    return
-        run_cmd(["xdg-open", "https://extensions.gnome.org"], timeout=5)
+        launch_extensions_app(self._launch_error)
+
+    def _launch_error(self, detail: str) -> None:
+        self._toast(tr("Error") + f": {detail}")
 
     def refresh_installed(self) -> None:
         exts = _visible_installed_extensions(ExtMgr.list_installed())
@@ -889,7 +885,9 @@ class ExtensionsPage(Gtk.Box):
                 [f"{tr('Settings')} {ext['name']}"],
             )
             uuid_pref = ext["uuid"]
-            pref_btn.connect("clicked", lambda b, _u=uuid_pref: ExtMgr.open_prefs(_u))
+            pref_btn.connect(
+                "clicked", lambda b, _u=uuid_pref: ExtMgr.open_prefs(_u, self._launch_error)
+            )
             prefs_slot.append(pref_btn)
         ctrl.append(prefs_slot)
 

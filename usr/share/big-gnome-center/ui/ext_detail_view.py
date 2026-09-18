@@ -19,9 +19,10 @@ gi.require_version("Pango", "1.0")
 from gi.repository import Adw, GLib, Gtk, Pango
 
 import ego_client
+from app_launcher import launch_uri
 from constants import EGO_BASE_URL, tr
 from extension_manager import ExtMgr
-from utils import gnome_shell_version, run_cmd
+from utils import gnome_shell_version
 
 
 class ExtDetailView(Adw.NavigationPage):
@@ -285,9 +286,8 @@ class ExtDetailView(Adw.NavigationPage):
             link.set_halign(Gtk.Align.START)
             link.connect(
                 "clicked",
-                lambda b: run_cmd(
-                    ["xdg-open", f"{EGO_BASE_URL}/extension/{self._pk}/"],
-                    timeout=5,
+                lambda b: launch_uri(
+                    f"{EGO_BASE_URL}/extension/{self._pk}/", self._launch_error,
                 ),
             )
             box.append(link)
@@ -367,8 +367,11 @@ class ExtDetailView(Adw.NavigationPage):
     def _link_button(self, label: str, url: str) -> Gtk.Button:
         b = Gtk.Button(label=label)
         b.add_css_class("flat")
-        b.connect("clicked", lambda btn, _u=url: run_cmd(["xdg-open", _u], timeout=5))
+        b.connect("clicked", lambda btn, _u=url: launch_uri(_u, self._launch_error))
         return b
+
+    def _launch_error(self, detail: str) -> None:
+        self._toast(tr("Error") + f": {detail}")
 
     # ── Botão de ação (Install / Update / Open prefs) ────────────────────────
 
@@ -402,7 +405,7 @@ class ExtDetailView(Adw.NavigationPage):
     def _on_action_clicked(self) -> None:
         mode = getattr(self, "_mode", "install")
         if mode == "prefs":
-            ExtMgr.open_prefs(self._uuid)
+            ExtMgr.open_prefs(self._uuid, self._launch_error)
             return
         if mode in ("install", "update"):
             self._action_btn.set_sensitive(False)

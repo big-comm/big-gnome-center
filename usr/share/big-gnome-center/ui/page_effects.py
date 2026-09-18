@@ -21,11 +21,11 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, GLib, Gtk
 
+from app_launcher import launch_uri
 from constants import EFFECT_EXTENSIONS, tr
 from extension_manager import ExtMgr
 from shell_reloader import ShellReloader
 from ui.frosted_glass import FrostedGlassControls, is_frosted_glass_supported
-from utils import run_cmd
 
 _PREVIEW_DIR = Path(__file__).resolve().parent.parent / "effects"
 
@@ -225,7 +225,7 @@ class EffectsPage(Gtk.Box):
             sb_btn.set_halign(Gtk.Align.START)
             sb_btn.connect(
                 "clicked",
-                lambda b, _uuid=ext["uuid"]: ExtMgr.open_prefs(_uuid),
+                lambda b, _uuid=ext["uuid"]: ExtMgr.open_prefs(_uuid, self._launch_error),
             )
             inner.append(sb_btn)
 
@@ -261,14 +261,16 @@ class EffectsPage(Gtk.Box):
             ego_btn.set_margin_top(4)
             ego_btn.connect(
                 "clicked",
-                lambda b, _id=ego_id: run_cmd(
-                    ["xdg-open", f"https://extensions.gnome.org/extension/{_id}/"],
-                    timeout=5,
+                lambda b, _id=ego_id: launch_uri(
+                    f"https://extensions.gnome.org/extension/{_id}/", self._launch_error,
                 ),
             )
             inner.append(ego_btn)
 
     # ── Acoes ────────────────────────────────────────────────────────────────
+
+    def _launch_error(self, detail: str) -> None:
+        self._toast(tr("Error") + f": {detail}")
 
     def _toggle(self, uuid: str, enable: bool, switch: Gtk.Switch) -> None:
         def task():

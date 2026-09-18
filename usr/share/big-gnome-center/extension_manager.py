@@ -34,6 +34,7 @@ _EXTENSION_UUID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+@-]*$")
 _PKEXEC = Path("/usr/bin/pkexec")
 _SYSTEM_EXTENSION_REMOVER = Path("/usr/bin/big-gnome-center-remove-extension")
 
+from app_launcher import launch_command, report_launch_error
 from constants import CONFIG_DIR, EXT_SYS_DIR, EXT_USER_DIR, tr
 from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR
 from utils import dconf_read, dconf_write, gnome_shell_version, gsettings_get, run_cmd
@@ -533,36 +534,40 @@ class ExtMgr:
     # ── Preferências ──────────────────────────────────────────────────────────
 
     @staticmethod
-    def open_prefs(uuid: str) -> None:
-        """
-        Abre as preferências de uma extensão.
-        Suporta X11 e Wayland via D-Bus OpenExtensionPrefs (GS 40+).
-        """
+    def open_prefs(uuid: str, on_error=None) -> None:
+        """Prepare schemas and open preferences without blocking the caller."""
         from constants import DBUS_EXT_IFACE, DBUS_EXT_PATH, DBUS_SHELL_NAME
 
-        ExtMgr._compile_user_schemas(uuid)
+        if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
+            report_launch_error("invalid extension UUID", on_error)
+            return
 
-        # Método 1: gnome-extensions prefs (Wayland-safe, GS 3.36+)
-        if shutil.which("gnome-extensions"):
-            ok, err = run_cmd(["gnome-extensions", "prefs", uuid], timeout=5)
-            if ok:
+        def open_dbus(detail=None):
+            launch_command(
+                [
+                    "gdbus", "call", "--session", "--dest", DBUS_SHELL_NAME,
+                    "--object-path", DBUS_EXT_PATH,
+                    "--method", f"{DBUS_EXT_IFACE}.OpenExtensionPrefs", uuid, "", "{}",
+                ],
+                on_error,
+            )
+
+        def open_window():
+            if shutil.which("gnome-extensions"):
+                launch_command(["gnome-extensions", "prefs", uuid], open_dbus)
+            else:
+                open_dbus()
+
+        # Keep schema preparation bounded; never time out the preferences window.
+        schema_dir = EXT_USER_DIR / uuid / "schemas"
+        try:
+            if schema_dir.is_dir() and any(schema_dir.glob("*.gschema.xml")):
+                launch_command(
+                    ["glib-compile-schemas", "--strict", str(schema_dir)],
+                    on_error, on_success=open_window, timeout=20,
+                )
                 return
-
-        # Método 2: D-Bus OpenExtensionPrefs (GS 40+)
-        run_cmd(
-            [
-                "gdbus",
-                "call",
-                "--session",
-                "--dest",
-                DBUS_SHELL_NAME,
-                "--object-path",
-                DBUS_EXT_PATH,
-                "--method",
-                f"{DBUS_EXT_IFACE}.OpenExtensionPrefs",
-                uuid,
-                "",
-                "{}",
-            ],
-            timeout=5,
-        )
+        except OSError as exc:
+            report_launch_error(str(exc), on_error)
+            return
+        open_window()
