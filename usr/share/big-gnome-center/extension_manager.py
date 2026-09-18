@@ -12,6 +12,7 @@ Responsabilidades:
 DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
+import fcntl
 import io
 import json
 import logging
@@ -33,7 +34,7 @@ _EXTENSION_UUID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+@-]*$")
 _PKEXEC = Path("/usr/bin/pkexec")
 _SYSTEM_EXTENSION_REMOVER = Path("/usr/bin/big-gnome-center-remove-extension")
 
-from constants import EXT_SYS_DIR, EXT_USER_DIR
+from constants import CONFIG_DIR, EXT_SYS_DIR, EXT_USER_DIR, tr
 from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR
 from utils import dconf_read, dconf_write, gnome_shell_version, gsettings_get, run_cmd
 
@@ -193,26 +194,49 @@ class ExtMgr:
 
     @staticmethod
     def _set_enabled_gsettings(uuid: str, enable: bool) -> Tuple[bool, str]:
-        """
-        Fallback: modifica a lista de extensões diretamente via gsettings.
-        Usado quando D-Bus não está disponível.
-        """
-        cur = ExtMgr.enabled_list()
-        if enable:
-            if uuid not in cur:
-                cur.append(uuid)
-        else:
-            cur = [e for e in cur if e != uuid]
-        inner = ", ".join(f"'{e}'" for e in cur)
-        return run_cmd(
-            [
-                "gsettings",
-                "set",
-                "org.gnome.shell",
-                "enabled-extensions",
-                f"[{inner}]",
-            ]
-        )
+        """Reconcile both Shell lists when the live D-Bus API is unavailable."""
+        if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
+            return False, "invalid extension UUID"
+        try:
+            from gi.repository import Gio
+
+            source = Gio.SettingsSchemaSource.get_default()
+            schema = source.lookup("org.gnome.shell", True) if source else None
+            keys = ("enabled-extensions", "disabled-extensions")
+            if schema is None or not all(schema.has_key(key) for key in keys):
+                return False, tr("Operation failed")
+            CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+            # Coordinate fallback writers across processes; retain the lock inode.
+            with (CONFIG_DIR / "extension-state.lock").open("a", encoding="utf-8") as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                settings = Gio.Settings.new_full(schema, None, None)
+                before = {key: list(settings.get_strv(key)) for key in keys}
+                after = {key: [entry for entry in before[key] if entry != uuid] for key in keys}
+                selected = keys[0] if enable else keys[1]
+                # Preserve existing order when the target already occurs once.
+                after[selected] = before[selected] if before[selected].count(uuid) == 1 else (
+                    after[selected] + [uuid]
+                )
+                changed = [key for key in keys if before[key] != after[key]]
+                if not changed:
+                    return True, ""
+                if not all(settings.is_writable(key) for key in changed):
+                    return False, tr("Operation failed")
+                settings.delay()
+                try:
+                    for key in changed:
+                        if not settings.set_strv(key, after[key]):
+                            return False, f"{tr('Operation failed')}: {key}"
+                    settings.apply()
+                    Gio.Settings.sync()
+                    persisted = Gio.Settings.new_full(schema, None, None)
+                    if any(list(persisted.get_strv(key)) != after[key] for key in keys):
+                        return False, tr("Operation failed")
+                    return True, ""
+                finally:
+                    settings.revert()
+        except Exception as exc:
+            return False, str(exc)
 
     @staticmethod
     def enable_after_install(uuid: str) -> Tuple[bool, str]:
