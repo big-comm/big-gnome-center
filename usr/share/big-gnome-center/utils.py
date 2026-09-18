@@ -75,10 +75,7 @@ def run_cmd(
     timeout: int = 30,
     env: Optional[Dict] = None,
 ) -> Tuple[bool, str]:
-    """
-    Executa um subprocesso com segurança; nunca levanta exceção.
-    Retorna (sucesso, saída).
-    """
+    """Return (success, stdout); on failure, prefer stderr diagnostics."""
     try:
         merged_env = None
         if env:
@@ -92,11 +89,14 @@ def run_cmd(
             timeout=timeout,
             env=merged_env,
         )
-        out = (result.stdout.strip() or result.stderr.strip() or "").strip()
+        stdout = result.stdout.strip()
+        stderr = result.stderr.strip()
         ok = result.returncode == 0
+        if stderr:
+            log.debug("cmd stderr rc=%d: %s → %s", result.returncode, args, stderr)
         if not ok:
-            log.debug("cmd fail rc=%d: %s → %s", result.returncode, args, out)
-        return ok, out
+            log.debug("cmd fail rc=%d: %s → %s", result.returncode, args, stdout)
+        return ok, stdout if ok else (stderr or stdout)
     except FileNotFoundError:
         log.warning("cmd not found: %s", args[0])
         return False, f"command not found: {args[0]}"
@@ -115,9 +115,19 @@ def run_cmd(
 
 
 def gsettings_get(schema: str, key: str) -> Optional[str]:
-    """Lê um valor de gsettings; retorna None em caso de falha."""
+    """Decode strings; preserve nonstring GVariant text. Return None on failure."""
     ok, out = run_cmd(["gsettings", "get", schema, key])
-    return out.strip("'\" ") if ok else None
+    if not ok or not out:
+        return None
+
+    from gi.repository import GLib
+
+    try:
+        value = GLib.Variant.parse(None, out, None, None)
+    except GLib.Error as exc:
+        log.debug("invalid gsettings value: %s %s → %s", schema, key, exc)
+        return None
+    return value.get_string() if value.get_type_string() == "s" else out
 
 
 def gsettings_set(schema: str, key: str, value: str) -> Tuple[bool, str]:
