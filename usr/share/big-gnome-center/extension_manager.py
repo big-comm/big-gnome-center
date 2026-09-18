@@ -4,7 +4,7 @@ extension_manager.py — Gerenciamento de extensões do GNOME Shell.
 
 Responsabilidades:
   - Consultar extensões instaladas e habilitadas
-  - Instalar (CLI / download EGO / gerenciador de pacotes)
+  - Install validated EGO downloads or distro packages
   - Remove user and system extensions
   - Ativar/desativar em tempo real via D-Bus (sem logout)
   - Abrir preferências de extensão
@@ -275,39 +275,20 @@ class ExtMgr:
 
     @staticmethod
     def install(uuid: str, ego_id: int, pkg: str) -> Tuple[bool, str]:
-        """
-        Instala uma extensão usando o melhor método disponível.
-
-        Prioridade:
-          1. gnome-extensions install  (GS 3.36+, funciona no Wayland)
-          2. Download direto de extensions.gnome.org com shell_version correto
-          3. Gerenciadores de pacotes do sistema
-
-        Retorna (True, método_usado) ou (False, mensagem_erro).
-        """
+        """Install a remote UUID through validation, or a named distro package."""
         if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
             return False, "invalid extension UUID"
 
-        # 1. gnome-extensions CLI (mais confiável, Wayland-safe)
-        if shutil.which("gnome-extensions"):
-            ok, out = run_cmd(
-                ["gnome-extensions", "install", "--force", uuid],
-                timeout=90,
-            )
-            if ok:
-                schema_ok, schema_msg = ExtMgr._compile_user_schemas(uuid)
-                if not schema_ok:
-                    return False, f"schema compile failed: {schema_msg}"
-                return True, "gnome-extensions"
-
-        # 2. Download direto do EGO com shell_version correto
-        if ego_id > 0:
+        # The EGO download endpoint needs only the UUID. The CLI expects a local ZIP.
+        # Keep package-only entries independent of EGO availability.
+        if ego_id > 0 or not pkg:
             ok, out = ExtMgr._install_from_ego(uuid, ego_id)
             if ok:
                 return True, "ego-download"
+            if not pkg:
+                return False, out
 
-        # 3. Gerenciadores de pacotes. Browse/EGO callers may not know a
-        # distro package name; never invoke a package manager with an empty arg.
+        # Never invoke a package manager with an empty package name.
         if pkg:
             for cmd in [
                 ["pkcon", "install", "-y", pkg],

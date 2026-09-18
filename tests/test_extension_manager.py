@@ -326,12 +326,13 @@ class TestInstall:
 
         with (
             patch("extension_manager.shutil.which", side_effect=fake_which),
+            patch("extension_manager.ExtMgr._install_from_ego", return_value=(False, "offline")),
             patch("extension_manager.run_cmd") as mock_run,
         ):
             ok, msg = ExtMgr.install("uuid@x.com", ego_id=0, pkg="")
 
         assert ok is False
-        assert msg == "no installation method succeeded"
+        assert msg == "offline"
         mock_run.assert_not_called()
 
 
