@@ -52,7 +52,7 @@ def session(monkeypatch):
         (module.HelperClient, "begin_switch", (True, "")),
         (module.HelperClient, "complete_switch", (True, "")),
         (module.HelperClient, "abort_switch", True),
-        (module.LayoutApplier, "_restore_settings_backup", True),
+        (module.LayoutApplier, "_restore_persisted_settings", (True, "")),
         (module.LayoutApplier, "_enabled_extensions", []),
         (module.LayoutApplier, "_managed_extension_subdirs", ["owned", "second"]),
         (module.ShellReloader, "list_extensions_state", {}),
@@ -212,11 +212,8 @@ def test_failed_reset_does_not_overwrite_unattempted_branch(session, monkeypatch
     assert state == {**OLD, BASE + "second/value": "42"}
 
 
-@pytest.mark.parametrize("restore_persisted", [False, True])
 @pytest.mark.parametrize("point", ["dump", "begin", "load", "complete"])
-def test_backup_restore_requires_this_operation_to_have_persisted(
-    session, monkeypatch, restore_persisted, point
-):
+def test_helper_failure_leaves_persistence_to_caller(session, monkeypatch, point):
     state, events, mocks, run = session
     if point in {"begin", "complete"}:
         mocks[point + "_switch"].return_value = False, "failed"
@@ -226,11 +223,9 @@ def test_backup_restore_requires_this_operation_to_have_persisted(
                 return False, "failed"
             return run(argv, **kwargs)
         monkeypatch.setattr(module, "run_cmd", fail)
-    ok, message = module.LayoutApplier._apply_via_helper_v7(
-        TARGET, restore_persisted=restore_persisted
-    )
+    ok, message = module.LayoutApplier._apply_via_helper_v7(TARGET)
     assert not ok
-    assert mocks["_restore_settings_backup"].call_count == int(restore_persisted)
+    mocks["_restore_persisted_settings"].assert_not_called()
 
 
 def test_serialized_variants_survive_recovery(session):

@@ -73,17 +73,23 @@ def test_refuses_live_shell_before_writing(monkeypatch):
         session_migration.run()
 
 
-def test_prestart_migrates_saved_and_live_lists_with_backup(monkeypatch, tmp_path):
+def test_prestart_migrates_saved_and_live_lists_via_locked_store(monkeypatch, tmp_path):
     from gi.repository import Gio, GLib
     from types import SimpleNamespace
     import layout_applier
     import session_migration
+    import layout_persistence
+    from unittest.mock import MagicMock
 
     installed = set(IDENTITIES.values())
     values = {"enabled-extensions": list(IDENTITIES), "disabled-extensions": ["unrelated"]}
     before = "[org/gnome/shell]\nenabled-extensions=" + repr(list(IDENTITIES)) + "\n"
     saved = tmp_path / "settings.gnome"
     saved.write_text(before)
+    store = MagicMock()
+    store.read.return_value = {}
+    store.candidates.side_effect = [iter([before]), iter([migrate_dump(before, installed)])]
+    monkeypatch.setattr(layout_persistence, 'open_store', lambda path: store)
     monkeypatch.setattr(layout_applier, "SETTINGS_GNOME", saved)
     monkeypatch.setattr(layout_applier, "_LAYOUT_HASH_FILE", tmp_path / "layout.sha256")
     monkeypatch.setattr(HelperClient, "installed_extension_uuids", lambda: installed)
@@ -99,7 +105,8 @@ def test_prestart_migrates_saved_and_live_lists_with_backup(monkeypatch, tmp_pat
     session_migration.run()
     assert values["enabled-extensions"] == list(IDENTITIES.values())
     assert values["disabled-extensions"] == ["unrelated"]
-    assert saved.read_text() == migrate_dump(before, installed)
-    assert saved.with_suffix(".gnome.bak").read_text() == before
+    store.publish.assert_called_once_with(migrate_dump(before, installed), managed=True, staged=False)
+    store.lock.assert_called_once()
+    assert saved.read_text() == before  # No writer bypasses the store.
     session_migration.run()
-    assert saved.with_suffix(".gnome.bak").read_text() == before
+    store.publish.assert_called_once()

@@ -39,6 +39,10 @@ def test_retired_extensions_are_not_preserved_across_layout_switches():
 def required_helper_available(tmp_path):
     """Keep layout tests focused on the apply stage after helper preflight."""
     with (
+        patch("layout_applier.open_store"),
+        patch("layout_applier.LayoutApplier._refresh_sync_monitor"),
+        patch("layout_applier.SETTINGS_GNOME", tmp_path / "settings.gnome"),
+        patch("layout_applier._LAYOUT_HASH_FILE", tmp_path / "settings.sha256"),
         patch("layout_applier._LAYOUT_MUTATION_LOCK_PATH", tmp_path / "mutation.lock"),
         patch("layout_applier._SYNC_LOCK_PATH", tmp_path / "sync.lock"),
         patch("layout_applier.Settings", return_value=SimpleNamespace(
@@ -2309,7 +2313,7 @@ class TestHelperIntegration:
         assert ok is True
         mock_reload.assert_called_once_with("kiwi@kemma")
 
-    @patch("layout_applier.LayoutApplier._restore_settings_backup")
+    @patch("layout_applier.LayoutApplier._restore_persisted_settings")
     @patch("layout_applier.HelperClient.abort_switch")
     @patch(
         "layout_applier.ShellReloader.list_extensions_state",
@@ -2366,7 +2370,7 @@ class TestHelperIntegration:
         mock_abort.assert_not_called()
         mock_restore.assert_not_called()
 
-    @patch("layout_applier.LayoutApplier._restore_settings_backup")
+    @patch("layout_applier.LayoutApplier._restore_persisted_settings")
     @patch("layout_applier.HelperClient.abort_switch")
     @patch(
         "layout_applier.ShellReloader.list_extensions_state",

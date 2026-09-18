@@ -5,6 +5,7 @@ pkgdesc="Manage the BigLinux GNOME desktop"
 depends=(
     # Runtime
     'python'
+    'comm-gnome-config'
     'python-gobject'
     'gtk4'
     'libadwaita'

@@ -51,7 +51,8 @@ def migrate_dump(text, installed):
 
 def run():
     from gi.repository import Gio, GLib
-    from layout_applier import LayoutApplier, SETTINGS_GNOME
+    from layout_applier import SETTINGS_GNOME
+    from layout_persistence import open_store
 
     bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     reply = bus.call_sync(
@@ -71,13 +72,16 @@ def run():
     # without replacing a layout explicitly staged by the user.
     if SETTINGS_GNOME.is_symlink():
         raise RuntimeError("Refusing symlinked settings.gnome")
-    if SETTINGS_GNOME.exists():
-        original = SETTINGS_GNOME.read_text(encoding="utf-8")
-        migrated = migrate_dump(original, installed)
-        if original != migrated:
-            ok, detail = LayoutApplier._persist_to_settings_file(migrated)
-            if not ok:
-                raise RuntimeError(detail)
+    store = open_store(SETTINGS_GNOME)
+    with store.lock():
+        state = store.read()
+        original = next(store.candidates(state), None)
+        if original is not None:
+            migrated = migrate_dump(original, installed)
+            if original != migrated:
+                if state.get('transaction'):
+                    raise RuntimeError('Pending persistence recovery; defer identity migration')
+                store.publish(migrated, managed=True, staged=state.get('staged', False))
 
     settings.delay()
     for key, old, new in zip(keys, before, after):

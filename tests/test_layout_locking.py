@@ -19,6 +19,10 @@ DATA = "[org/gnome/shell]\nenabled-extensions=[]\n"
 
 @pytest.fixture
 def isolated(tmp_path, monkeypatch):
+    monkeypatch.setattr(module, "open_store", Mock())
+    monkeypatch.setattr(module.LayoutApplier, "_refresh_sync_monitor", Mock())
+    monkeypatch.setattr(module, "SETTINGS_GNOME", tmp_path / "settings.gnome")
+    monkeypatch.setattr(module, "_LAYOUT_HASH_FILE", tmp_path / "settings.sha256")
     monkeypatch.setattr(
         module, "_LAYOUT_MUTATION_LOCK_PATH", tmp_path / "mutation.lock", raising=False
     )

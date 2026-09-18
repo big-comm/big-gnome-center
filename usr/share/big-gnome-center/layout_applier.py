@@ -1,75 +1,24 @@
 # SPDX-License-Identifier: MIT
 """
-layout_applier.py — Apply desktop layouts via dconf (live session).
+Apply desktop layouts without resetting the live dconf root.
 
-Works together with ``comm-gnome-config``:
+comm-gnome-config owns the shared persistence protocol. Its monitor, final
+save and login loader use the same stable flock as this module. A durable
+transaction protects the last committed snapshot before any live teardown.
+Only a successful application commits the target generation. Incomplete
+applications quarantine automatic saves until a successful retry or login.
 
-  * ``startgnome-community`` — at login, does::
+settings.gnome remains a readable text export. Checksummed generations in
+settings.gnome.state.json distinguish committed data from partial exports.
+Login validates a recovery candidate before resetting dconf; live application
+only resets keys in layout-owned extension branches. No global live reset,
+unrelated extension teardown or automatic logout is permitted.
 
-        dconf reset -f /
-        dconf load / < ~/.config/dconf/settings.gnome
-        # Shell starts AFTER load → no race, clean state every login
+Keep the removable PID marker for compatibility with previous monitors.
+The marker alone is not a writer lock or evidence of successful completion.
 
-  * ``dconf-sync-gnome.service`` (running ``dconf-sync-monitor-gnome``)
-    — watches the live dconf and re-dumps it to ``settings.gnome``
-    whenever it changes, with a 2s debounce. On comm-gnome-config
-    ≥ 26.05.07 it honours the lock file at
-    ``$XDG_RUNTIME_DIR/dconf-sync-gnome.lock`` and skips dumps while
-    the lock is held — the mechanism we use to write settings.gnome
-    atomically here without the watcher clobbering it.
-
-Architectural reality: in runtime, gnome-shell is alive and listening
-on dconf change-signals. Mass mutation (``dconf reset -f /``) fires
-hundreds of Notify signals; any extension whose ``disable()`` left
-orphan handlers behind crashes with ``this._settings is null``,
-corrupting its state for the rest of the session (panel transparency
-loss, dock blur missing, etc.). We can't fix every extension's
-``disable()``, so we don't trigger those signals.
-
-Strategy:
-
-  * ``settings.gnome`` is the absolute source of truth — written
-    atomically with the layout text, with the lock held so the watcher
-    won't clobber it. Next login is guaranteed clean regardless of
-    runtime quirks.
-  * Live apply: disable extensions that leave the target layout, reset
-    orphan keys in layout-owned extension branches (whole branches for
-    leaving extensions, individual keys for extensions that stay), then
-    ``dconf load`` of the target. This makes the layout text behave like
-    a complete state instead of a merge patch.
-  * No global ``dconf reset -f /`` — that fires Notify on every key in
-    dconf and any extension whose ``disable()`` left orphan handlers
-    behind crashes with ``this._settings is null``. Scoping the reset
-    to extension storage and restricting it to keys actually leaving
-    keeps the signal storm small enough to not trip the orphan handlers.
-  * Per-extension disable is still ordered for leaving extensions to avoid
-    the cross-extension teardown problems documented in
-    ``_disable_extensions_in_order``.
-  * No ``reload_all`` after the load — the Shell's gsettings listener
-    on ``enabled-extensions`` already enables UUIDs as they appear.
-    Calling ``EnableExtension`` again races with that listener and
-    causes double-init.
-
-Per-machine fixup: dash-to-panel stores some keys as a JSON dict keyed
-by monitor id (``vendor-serial`` at runtime, ``unknown-unknown`` in VMs
-without EDID). The layout file ships with whatever ids it was generated
-under; we rewrite those keys in the text BEFORE the load so live dconf
-ends up with the local hardware ids.
-
-Flow::
-
-  1. read layout_file, rewrite DTP monitor-keyed values to local ids
-  2. read before = enabled-extensions
-  3. acquire lock file
-  4. stop sync-gnome-theme-to-qt.path
-  5. atomic write settings.gnome = layout text  (clean, no garbage)
-  6. DisableExtension via DBus for UUIDs leaving the layout
-  7. dconf reset for orphan extension keys
-  8. dconf load / < layout
-  9. start sync-gnome-theme-to-qt.path
- 10. release lock file
-
-DEVELOPER NOTE - DO NOT name any variable `_` in this file.
+Per-machine dash-to-panel monitor keys are rewritten before application.
+DEVELOPER NOTE: do not name a variable "_" in this file.
 """
 
 import fcntl
@@ -89,6 +38,7 @@ from helper_client import (
     LEGACY_HELPER_UUID,
     HelperClient,
 )
+from layout_persistence import open_store
 from runtime_settings import RuntimeSettings
 from settings_store import Settings
 from shell_reloader import ShellReloader
@@ -344,6 +294,15 @@ class LayoutApplier:
             ["systemctl", "--user", action, QT_THEME_WATCHER],
             timeout=10,
         )
+
+    @classmethod
+    def _refresh_sync_monitor(cls) -> None:
+        """Retire pre-upgrade writers before capturing or changing any settings."""
+        ok, detail = run_cmd(
+            ["systemctl", "--user", "try-restart", SYNC_SERVICE], timeout=15
+        )
+        if not ok:
+            raise OSError(f"cannot refresh dconf synchronization: {detail}")
 
     @staticmethod
     def _sync_lock_acquire() -> None:
@@ -699,26 +658,32 @@ class LayoutApplier:
         }
         return sorted(s for s in subdirs if s not in persist_stems)
 
-    @classmethod
-    def _restore_settings_backup(cls) -> bool:
-        """
-        Roll ``settings.gnome`` back to the ``.bak`` written by
-        ``_persist_to_settings_file`` — used when a clean-room switch fails
-        after the target layout was already persisted, so the next login
-        matches the (restored) live session instead of the failed target.
-        """
-        bak = SETTINGS_GNOME.parent / (SETTINGS_GNOME.name + ".bak")
-        try:
-            if not bak.exists() or bak.stat().st_size < cls._MIN_DUMP_BYTES:
-                return False
-            previous = bak.read_text(encoding="utf-8")
-        except OSError as exc:
-            log.warning("cannot read settings backup: %s", exc)
-            return False
-        ok, info = cls._persist_to_settings_file(previous)
-        if not ok:
-            log.warning("could not restore settings backup: %s", info)
-        return ok
+    @staticmethod
+    def _capture_persisted_settings() -> Dict[Path, Optional[str]]:
+        """Capture exact text/existence before writing; unreadable files fail closed."""
+        previous = {}
+        for path in (SETTINGS_GNOME, _LAYOUT_HASH_FILE):
+            try:
+                previous[path] = path.read_bytes().decode("utf-8")
+            except FileNotFoundError:
+                previous[path] = None
+        return previous
+
+    @staticmethod
+    def _restore_persisted_settings(previous: Dict[Path, Optional[str]]) -> Tuple[bool, str]:
+        """Restore settings before their marker, without rotating the shared .bak."""
+        for path, data in previous.items():
+            try:
+                if data is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    atomic_write_text(path, data)
+            except Exception as exc:
+                # Do not restore the old marker if the target file remains.
+                message = f"{path.name}: {exc}"
+                log.warning("settings.gnome recovery failed: %s", message)
+                return False, message
+        return True, ""
 
     @classmethod
     def _recover_legacy_helper_handoff(
@@ -768,7 +733,6 @@ class LayoutApplier:
         layouts_dir: Optional[Path] = None,
         icon_from: str = "",
         icon_to: str = "",
-        restore_persisted: bool = False,
     ) -> Tuple[bool, str]:
         """
         Clean-room switch (helper protocol v7).
@@ -833,8 +797,6 @@ class LayoutApplier:
                 raise RuntimeError(f"cannot capture dconf recovery values: {dump}")
             previous_values = cls._dconf_dump_values(dump)
         except Exception as exc:
-            if restore_persisted:
-                cls._restore_settings_backup()
             return False, str(exc)
 
         persist = [*_HELPER_PERSIST_UUIDS, HELPER_UUID]
@@ -846,12 +808,9 @@ class LayoutApplier:
             icon_to=icon_to,
         )
         if not ok:
-            # Teardown may have started before failure. Request helper recovery
-            # and restore persistence only when this operation wrote it.
+            # Teardown may have started before failure. Request helper recovery.
             log.warning("helper BeginSwitch failed: %s", msg)
             HelperClient.abort_switch()
-            if restore_persisted:
-                cls._restore_settings_backup()
             return False, msg
 
         # Record attempted writes too: a timed-out command may have committed.
@@ -876,8 +835,6 @@ class LayoutApplier:
             log.warning("clean-room dconf phase failed: %s — aborting", exc)
             recovered, recovery = cls._restore_dconf_values(previous_values, touched)
             HelperClient.abort_switch()
-            if restore_persisted:
-                cls._restore_settings_backup()
             if not recovered:
                 return False, f"{exc}; dconf recovery failed: {recovery}"
             return False, str(exc)
@@ -893,15 +850,13 @@ class LayoutApplier:
         if not ok:
             log.warning("helper CompleteSwitch failed: %s", steps)
             HelperClient.abort_switch()
-            if restore_persisted:
-                cls._restore_settings_backup()
             return False, steps
 
         # Converge the dconf switch keys with what is now live so the
         # comm-gnome-config watcher's next dump records the layout's lists.
         # The Shell's listener sees only already-true state — a near-no-op.
         disabled_list = cls._string_list(shell_values.get("disabled-extensions"))
-        run_cmd(
+        ok_disabled, disabled_error = run_cmd(
             [
                 "dconf",
                 "write",
@@ -910,7 +865,9 @@ class LayoutApplier:
             ],
             timeout=10,
         )
-        run_cmd(
+        if not ok_disabled:
+            return False, f"cannot confirm disabled extensions: {disabled_error}"
+        ok_enabled, enabled_error = run_cmd(
             [
                 "dconf",
                 "write",
@@ -919,6 +876,8 @@ class LayoutApplier:
             ],
             timeout=10,
         )
+        if not ok_enabled:
+            return False, f"cannot confirm enabled extensions: {enabled_error}"
 
         # Kiwi's patched focus policy may have been installed after its JS
         # module was loaded. A plain disable/enable reuses that cached module,
@@ -2284,60 +2243,19 @@ class LayoutApplier:
         layout_id: str = "",
     ) -> Tuple[bool, str]:
         """
-        Apply ``data`` (a full dconf dump) to live dconf, and atomically
-        write it to ``settings.gnome`` so the next login is clean.
+        Apply a layout under the shared writer lock and durable journal.
 
-        A stable advisory lock rejects overlapping calls before helper
-        preflight. It is separate from the removable watcher marker below.
+        Persist the target export before teardown, then commit its generation
+        only after successful completion. Failure restores the captured files
+        and keeps automatic saves quarantined. The next successful application
+        or pre-Shell login recovers normal persistence.
 
-        Flow:
-          1. acquire lock                       (watcher won't dump)
-          2. stop sync-gnome-theme-to-qt.path    (avoid re-fires
-             during the dconf load's burst of writes)
-          3. atomic write settings.gnome = data  (clean, no garbage)
-          4. disable leaving UUIDs via DBus       (ordered, see
-             ``_disable_extensions_in_order``)
-          5. settle so disable() callbacks drain
-          6. surgical reset of orphan extension keys (see
-             ``_reset_orphan_keys``)
-          7. dconf load settings, then extension switch keys
-          8. ReloadExtension on visually-stateful UUIDs (see
-             ``_reload_visual_extensions``) — fresh JS module init so
-             CSS/actor state matches the new dconf values
-          9. start sync-gnome-theme-to-qt.path
-         10. release lock
+        The Qt theme watcher is paused during mutation. dconf-sync remains
+        running: its writer lock and transaction guard reject intermediate
+        snapshots. Live resets stay scoped to owned extension settings.
 
-        Why no ``systemctl stop dconf-sync-gnome.service``: comm-gnome-config's
-        watcher honours the lock file we hold throughout this method
-        (``$XDG_RUNTIME_DIR/dconf-sync-gnome.lock``). With the lock held
-        it skips its dump-on-change, which is the only thing that could
-        clobber our atomic write of ``settings.gnome``. Stopping the
-        service was extra ceremony (≈200 ms of synchronous systemctl
-        round-trips) that the lock already prevents — so we drop it
-        entirely. Live dconf changes still flow through the watcher's
-        ``dconf watch /`` pipe; the watcher just logs them and short-
-        circuits the save under the lock.
-
-        Why no global ``dconf reset -f /`` in runtime: with gnome-shell
-        alive, the reset fires Notify on every key in dconf. Extensions
-        whose ``disable()`` left orphan signal handlers behind crash
-        with ``this._settings is null`` and stay broken for the rest of
-        the session. The surgical orphan-only reset above keeps the
-        Notify storm small (only branches actually leaving fire) and
-        scoped to extension storage (no risk to user data elsewhere).
-
-        Why no ``reload_all`` after the load: ``dconf load`` writes
-        ``enabled-extensions``, which fires the Shell's gsettings listener
-        and enables each UUID. Calling ``EnableExtension`` again races
-        with that listener and double-inits the extension.
-
-        ``persist=False`` skips the settings.gnome write — used by callers
-        that already wrote it themselves (e.g. snapshots).
-
-        ``progress_cb`` (if provided) is called with a short stage label
-        (str) before each visible phase so the caller can update its
-        loading overlay. Best-effort: any exception from the callback is
-        swallowed so it never breaks the apply.
+        persist=False changes live settings without replacing the committed
+        snapshot. progress_cb failures never interrupt an application.
         """
         if not data or not data.strip():
             return False, "empty dconf data"
@@ -2383,6 +2301,42 @@ class LayoutApplier:
         cls.last_apply_cleanroom = False
         cls.last_apply_staged = False
 
+        previous_files = None
+        transaction = None
+
+        def finish(result: Tuple[bool, str], *, exception=False) -> Tuple[bool, str]:
+            nonlocal previous_files, transaction
+            store, transaction = transaction, None
+            if store is not None:
+                try:
+                    if result[0]:
+                        if persist:
+                            store.publish(data, managed=True, staged=cls.last_apply_staged)
+                        else:
+                            store.complete_without_snapshot()
+                    else:
+                        store.abort()
+                except Exception as exc:
+                    result = False, f"{result[1]}; persistence transaction failed: {exc}"
+                    try:
+                        store.abort()
+                    except Exception:
+                        log.exception("could not mark persistence recovery required")
+                    # An incomplete journal remains guarded, including on disk-full.
+                if not result[0]:
+                    recovery_notice = (
+                        "automatic saving paused; reapply a layout or log in again"
+                    )
+                    log.warning(recovery_notice)
+                    if not exception:
+                        result = False, f"{result[1]}; {recovery_notice}"
+            previous, previous_files = previous_files, None
+            if not result[0] and previous is not None:
+                restored, error = cls._restore_persisted_settings(previous)
+                if not restored:
+                    return False, f"{result[1]}; settings.gnome recovery failed: {error}"
+            return result
+
         if active_helper_uuid == LEGACY_HELPER_UUID:
             shell_values = cls._section_key_values(data, "/org/gnome/shell")
             target = set(cls._string_list(shell_values.get("enabled-extensions")))
@@ -2400,12 +2354,24 @@ class LayoutApplier:
             except OSError as exc:
                 return False, f"cannot pause dconf synchronization: {exc}"
             try:
+                cls._refresh_sync_monitor()
+                try:
+                    previous_files = cls._capture_persisted_settings()
+                except (OSError, UnicodeError) as exc:
+                    return False, f"cannot capture settings.gnome recovery files: {exc}"
+                transaction = open_store(SETTINGS_GNOME)
+                transaction.begin()
                 ok_persist, info = cls._persist_to_settings_file(data)
                 if not ok_persist:
-                    return False, f"settings.gnome write failed: {info}"
-                cls.last_apply_staged = True
+                    return finish((False, f"settings.gnome write failed: {info}"))
                 cls._renew_settings_freshness()
-                return True, "layout staged for the next session"
+                cls.last_apply_staged = True
+                return finish((True, "layout staged for the next session"))
+            except Exception as exc:
+                failed, message = finish((False, str(exc)), exception=True)
+                if message != str(exc):
+                    raise RuntimeError(message) from exc
+                raise
             finally:
                 cls._sync_lock_release()
 
@@ -2427,13 +2393,21 @@ class LayoutApplier:
             return False, f"cannot pause dconf synchronization: {exc}"
         persisted = False
         try:
+            cls._refresh_sync_monitor()
             cls._qt_theme_watcher("stop")
 
+            if persist:
+                try:
+                    previous_files = cls._capture_persisted_settings()
+                except (OSError, UnicodeError) as exc:
+                    return False, f"cannot capture settings.gnome recovery files: {exc}"
+            transaction = open_store(SETTINGS_GNOME)
+            transaction.begin()
             if persist:
                 ok_persist, info = cls._persist_to_settings_file(data)
                 if not ok_persist:
                     log.warning("could not persist settings.gnome: %s", info)
-                    return False, f"settings.gnome write failed: {info}"
+                    return finish((False, f"settings.gnome write failed: {info}"))
                 persisted = True
 
             # Prefer the in-shell helper extension when present: it performs
@@ -2446,18 +2420,17 @@ class LayoutApplier:
             helper_version = HelperClient.helper_version()
             if helper_version >= _HELPER_CLEANROOM_VERSION:
                 progress("Applying layout…")
-                return cls._apply_via_helper_v7(
+                return finish(cls._apply_via_helper_v7(
                     data,
                     layout_label=layout_label,
                     layout_label_from=layout_label_from,
                     layouts_dir=layouts_dir,
                     icon_from=icon_from,
                     icon_to=icon_to,
-                    restore_persisted=persisted,
-                )
+                ))
             if helper_version > 0:
                 progress("Applying layout…")
-                return cls._apply_via_helper(data, layouts_dir=layouts_dir)
+                return finish(cls._apply_via_helper(data, layouts_dir=layouts_dir))
 
             # Disable LEAVING extensions (present in before but not in
             # target), with one exception: dash-to-panel is restarted when
@@ -2604,7 +2577,7 @@ class LayoutApplier:
             )
             if not ok:
                 log.warning("dconf load failed: %s", msg)
-                return False, f"dconf load failed: {msg}"
+                return finish((False, f"dconf load failed: {msg}"))
 
             if extension_switch_data:
                 ok, msg = run_cmd(
@@ -2614,7 +2587,7 @@ class LayoutApplier:
                 )
                 if not ok:
                     log.warning("dconf extension switch load failed: %s", msg)
-                    return False, f"dconf extension switch load failed: {msg}"
+                    return finish((False, f"dconf extension switch load failed: {msg}"))
 
             # Let Shell settle theme/panel extensions before starting the
             # next panel. GNOME Shell rebases later extensions during
@@ -2687,7 +2660,12 @@ class LayoutApplier:
             # already covers the residual case: settings.gnome is written
             # cleanly, so the next login renders transparency correctly.
 
-            return True, msg
+            return finish((True, msg))
+        except Exception as exc:
+            failed, message = finish((False, str(exc)), exception=True)
+            if message != str(exc):
+                raise RuntimeError(message) from exc
+            raise
         finally:
             # Renew the freshness window from apply completion (see
             # _renew_settings_freshness) so the watcher won't dump live
