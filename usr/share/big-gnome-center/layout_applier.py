@@ -72,11 +72,13 @@ Flow::
 DEVELOPER NOTE - DO NOT name any variable `_` in this file.
 """
 
+import fcntl
 import hashlib
 import json
 import logging
 import os
 import time
+from functools import wraps
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Set, Tuple
 
@@ -95,6 +97,7 @@ from utils import atomic_write_text, gnome_shell_version, run_cmd
 log = logging.getLogger("big-gnome-center")
 
 SETTINGS_GNOME = Path.home() / ".config" / "dconf" / "settings.gnome"
+_LAYOUT_MUTATION_LOCK_PATH = SETTINGS_GNOME.with_name("big-gnome-center-layout.lock")
 _LAYOUT_HASH_FILE = SETTINGS_GNOME.parent / (
     SETTINGS_GNOME.name + ".big-gnome-center.sha256"
 )
@@ -258,6 +261,27 @@ _EXTENSION_SETTINGS_SUBDIRS = {
 _NO_DISABLE = frozenset()
 
 
+def _serialized_layout_switch(method):
+    """Reject overlapping application writers before preflight or mutation."""
+    @wraps(method)
+    def guarded(*args, **kwargs):
+        try:
+            _LAYOUT_MUTATION_LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+            lock = _LAYOUT_MUTATION_LOCK_PATH.open("a", encoding="utf-8")
+        except OSError as exc:
+            return False, f"cannot open layout mutation lock: {exc}"
+        # Keep the inode stable. Closing releases flock even on exceptions.
+        with lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                return False, "a layout switch is already in progress"
+            except OSError as exc:
+                return False, f"cannot acquire layout mutation lock: {exc}"
+            return method(*args, **kwargs)
+    return guarded
+
+
 class LayoutApplier:
     """Aplica layout em sessão viva: write atômico em settings.gnome +
     best-effort dconf load. Coordena com o watcher do comm-gnome-config
@@ -328,12 +352,9 @@ class LayoutApplier:
         comm-gnome-config ≥ 26.05.07; older versions silently ignore
         the file (so this is a no-op for them — they'll dump the live
         dconf normally, picking up settings.gnome via the next change).
+        Publish the complete PID atomically; raise OSError on failure.
         """
-        try:
-            _SYNC_LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
-            _SYNC_LOCK_PATH.write_text(f"{os.getpid()}\n")
-        except OSError as exc:
-            log.debug("could not create sync lock: %s", exc)
+        atomic_write_text(_SYNC_LOCK_PATH, f"{os.getpid()}\n")
 
     @staticmethod
     def _sync_lock_release() -> None:
@@ -2176,6 +2197,7 @@ class LayoutApplier:
     # ── API publica ──────────────────────────────────────────────────────────
 
     @classmethod
+    @_serialized_layout_switch
     def load_dconf_safely(
         cls,
         data: str,
@@ -2192,6 +2214,9 @@ class LayoutApplier:
         """
         Apply ``data`` (a full dconf dump) to live dconf, and atomically
         write it to ``settings.gnome`` so the next login is clean.
+
+        A stable advisory lock rejects overlapping calls before helper
+        preflight. It is separate from the removable watcher marker below.
 
         Flow:
           1. acquire lock                       (watcher won't dump)
@@ -2298,7 +2323,10 @@ class LayoutApplier:
             if not persist:
                 return False, "legacy helper migration requires a new session"
 
-            cls._sync_lock_acquire()
+            try:
+                cls._sync_lock_acquire()
+            except OSError as exc:
+                return False, f"cannot pause dconf synchronization: {exc}"
             try:
                 ok_persist, info = cls._persist_to_settings_file(data)
                 if not ok_persist:
@@ -2321,7 +2349,10 @@ class LayoutApplier:
             except Exception as exc:
                 log.debug("progress_cb raised: %s", exc)
 
-        cls._sync_lock_acquire()
+        try:
+            cls._sync_lock_acquire()
+        except OSError as exc:
+            return False, f"cannot pause dconf synchronization: {exc}"
         persisted = False
         try:
             cls._qt_theme_watcher("stop")
@@ -2588,10 +2619,14 @@ class LayoutApplier:
             # Renew the freshness window from apply completion (see
             # _renew_settings_freshness) so the watcher won't dump live
             # residue over the clean layout file.
-            if persisted:
-                cls._renew_settings_freshness()
-            cls._qt_theme_watcher("start")
-            cls._sync_lock_release()
+            try:
+                if persisted:
+                    cls._renew_settings_freshness()
+            finally:
+                try:
+                    cls._qt_theme_watcher("start")
+                finally:
+                    cls._sync_lock_release()
 
     @classmethod
     def apply(

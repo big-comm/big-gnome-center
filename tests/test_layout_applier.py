@@ -36,9 +36,11 @@ def test_retired_extensions_are_not_preserved_across_layout_switches():
 
 
 @pytest.fixture(autouse=True)
-def required_helper_available():
+def required_helper_available(tmp_path):
     """Keep layout tests focused on the apply stage after helper preflight."""
     with (
+        patch("layout_applier._LAYOUT_MUTATION_LOCK_PATH", tmp_path / "mutation.lock"),
+        patch("layout_applier._SYNC_LOCK_PATH", tmp_path / "sync.lock"),
         patch("layout_applier.Settings", return_value=SimpleNamespace(
             get=lambda key, default=None: default,
             delete=lambda key: True,
