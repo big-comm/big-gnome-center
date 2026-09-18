@@ -411,26 +411,22 @@ def _info_from_dict(payload: dict) -> ExtensionInfo:
 
 
 def version_from_info(detail: ExtensionInfo, shell_version: str) -> Optional[int]:
-    """Return the newest version in an already-fetched EGO record."""
-    svm = detail.shell_version_map or {}
-    candidates = []
-    if shell_version and shell_version != SHELL_ALL and shell_version in svm:
-        candidates.append(svm[shell_version])
-    # Fallback: maior version disponível em qualquer entrada do mapa
-    for entry in svm.values():
-        if entry not in candidates:
-            candidates.append(entry)
-    for entry in candidates:
-        if not isinstance(entry, dict):
-            continue
-        version = entry.get("version")
-        if isinstance(version, int):
-            return version
+    """Return only the release explicitly mapped to the requested Shell."""
+    if not isinstance(shell_version, str) or not shell_version or shell_version == SHELL_ALL:
+        return None
+    svm = detail.shell_version_map
+    if not isinstance(svm, dict):
+        return None
+    entry = svm.get(shell_version)
+    if not isinstance(entry, dict):
+        return None
+    version = entry.get("version")
+    if isinstance(version, str) and version.isascii() and version.isdecimal():
         try:
-            return int(version)
-        except (TypeError, ValueError):
-            continue
-    return None
+            version = int(version)
+        except ValueError:
+            return None
+    return version if type(version) is int and version > 0 else None
 
 
 def latest_version(
@@ -444,6 +440,8 @@ def latest_version(
 
     O `shell_version_map` do EGO mapeia "47" → {"version": 12, "pk": ..., "version_tag": ...}.
     """
+    if not shell_version or shell_version == SHELL_ALL:
+        return None
     detail = info(uuid, shell_version=shell_version, use_cache=use_cache)
     if detail is None:
         return None

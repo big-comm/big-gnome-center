@@ -42,11 +42,13 @@ class UpdateCheckError(RuntimeError):
 
 
 def _shell_version_str() -> str:
-    """Versão do Shell em formato aceito pelo EGO ('47'), ou 'all' se desconhecido."""
-    major, _ = gnome_shell_version()
-    if major <= 0:
-        return ego_client.SHELL_ALL
-    return str(major)
+    """Return the compatibility target, never the unfiltered browsing token."""
+    major, minor = gnome_shell_version()
+    if major >= 40:
+        return str(major)
+    if major == 3 and minor > 0:
+        return f"{major}.{minor}"
+    return ""
 
 
 def check_all(
@@ -65,6 +67,9 @@ def check_all(
     total = len(user_exts)
     updates: Dict[str, UpdateInfo] = {}
     failed: List[str] = []
+
+    if not shell and user_exts:
+        raise UpdateCheckError([ext["uuid"] for ext in user_exts], updates)
 
     for index, ext in enumerate(user_exts):
         uuid = ext["uuid"]

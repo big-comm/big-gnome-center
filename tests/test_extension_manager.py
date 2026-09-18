@@ -19,7 +19,7 @@ class TestDownloadInstallation:
     def archive(uuid=UUID, extra=None):
         stream = io.BytesIO()
         with zipfile.ZipFile(stream, "w") as archive:
-            archive.writestr("metadata.json", json.dumps({"uuid": uuid}))
+            archive.writestr("metadata.json", json.dumps({"uuid": uuid, "shell-version": ["50"]}))
             archive.writestr("extension.js", "export default class Extension {}")
             if extra:
                 archive.writestr(*extra)
@@ -301,7 +301,7 @@ class TestSchemaCompile:
         assert ok is True
         assert msg == ""
         mock_run.assert_called_once_with(
-            ["glib-compile-schemas", str(schema_dir)],
+            ["glib-compile-schemas", "--strict", str(schema_dir)],
             timeout=20,
         )
 
@@ -354,12 +354,12 @@ class TestUpdate:
         mock_set.assert_called_once_with("uuid@x.com", True)
         mock_apply.assert_called_once_with("uuid@x.com", True)
 
-    def test_calls_install_and_reenables(self):
+    def test_calls_validated_download_and_reenables(self):
         with (
             patch("extension_manager.ExtMgr.is_enabled", return_value=True),
             patch(
-                "extension_manager.ExtMgr.install",
-                return_value=(True, "gnome-extensions"),
+                "extension_manager.ExtMgr._install_from_ego",
+                return_value=(True, "download-url"),
             ),
             patch(
                 "shell_reloader.ShellReloader.apply_extension_state",
@@ -368,13 +368,15 @@ class TestUpdate:
         ):
             ok, method = ExtMgr.update("uuid@x.com", ego_id=42)
             assert ok is True
-            assert method == "gnome-extensions"
+            assert method == "ego-download"
             mock_apply.assert_called_once_with("uuid@x.com", True)
 
     def test_no_reenable_when_disabled(self):
         with (
             patch("extension_manager.ExtMgr.is_enabled", return_value=False),
-            patch("extension_manager.ExtMgr.install", return_value=(True, "ego-download")),
+            patch(
+                "extension_manager.ExtMgr._install_from_ego", return_value=(True, "download-url")
+            ),
             patch("shell_reloader.ShellReloader.apply_extension_state") as mock_apply,
         ):
             ok, method = ExtMgr.update("uuid@x.com", ego_id=42)
@@ -385,7 +387,7 @@ class TestUpdate:
         with (
             patch("extension_manager.ExtMgr.is_enabled", return_value=True),
             patch(
-                "extension_manager.ExtMgr.install",
+                "extension_manager.ExtMgr._install_from_ego",
                 return_value=(False, "no method"),
             ),
         ):

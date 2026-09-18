@@ -342,9 +342,14 @@ class ExtMgr:
 
         try:
             major, minor = gnome_shell_version()
+            if major >= 40:
+                shell = str(major)
+            elif major == 3 and minor > 0:
+                shell = f"{major}.{minor}"
+            else:
+                return False, "cannot determine GNOME Shell compatibility version"
             url = f"https://extensions.gnome.org/download-extension/{uuid}.shell-extension.zip"
-            if major > 0:
-                url += f"?shell_version={major}"
+            url += f"?shell_version={shell}"
 
             req = urllib.request.Request(
                 url,
@@ -401,6 +406,13 @@ class ExtMgr:
                 metadata = json.loads((staged / "metadata.json").read_text(encoding="utf-8"))
                 if not isinstance(metadata, dict) or metadata.get("uuid") != uuid:
                     return False, "extension UUID does not match metadata"
+                supported = metadata.get("shell-version")
+                if (
+                    not isinstance(supported, list)
+                    or not all(isinstance(version, str) for version in supported)
+                    or shell not in supported
+                ):
+                    return False, f"extension is not compatible with GNOME Shell {shell}"
                 if not (staged / "extension.js").is_file():
                     return False, "extension.js is missing"
                 schema_ok, schema_msg = ExtMgr._compile_schemas(staged)
@@ -451,19 +463,14 @@ class ExtMgr:
             return True, ""
         if not shutil.which("glib-compile-schemas"):
             return False, "glib-compile-schemas not found"
-        return run_cmd(["glib-compile-schemas", str(schema_dir)], timeout=20)
+        return run_cmd(["glib-compile-schemas", "--strict", str(schema_dir)], timeout=20)
 
     @staticmethod
     def update(uuid: str, ego_id: int = 0) -> Tuple[bool, str]:
-        """
-        Atualiza uma extensão para a versão mais recente do EGO.
-
-        Reinstala por cima usando o mesmo fluxo de `install()`. Após o sucesso,
-        re-habilita a extensão se ela estava habilitada antes (assumimos que o
-        chamador chame em extensões já instaladas; do contrário use install).
-        """
+        """Install a validated EGO update and preserve the enabled state."""
         was_enabled = ExtMgr.is_enabled(uuid)
-        ok, method = ExtMgr.install(uuid, ego_id, "")
+        # Updates must not bypass ZIP compatibility checks through CLI fallbacks.
+        ok, method = ExtMgr._install_from_ego(uuid, ego_id)
         if not ok:
             return False, method
 
@@ -479,7 +486,7 @@ class ExtMgr:
             from shell_reloader import ShellReloader
 
             ShellReloader.apply_extension_state(uuid, True)
-        return True, method
+        return True, "ego-download"
 
     # ── Remover ───────────────────────────────────────────────────────────────
 
