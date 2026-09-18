@@ -768,6 +768,7 @@ class LayoutApplier:
         layouts_dir: Optional[Path] = None,
         icon_from: str = "",
         icon_to: str = "",
+        restore_persisted: bool = False,
     ) -> Tuple[bool, str]:
         """
         Clean-room switch (helper protocol v7).
@@ -785,9 +786,9 @@ class LayoutApplier:
              target set enabled in layout order (awaited), panel style
              recompute, checkmark, curtain down
 
-        Any failure after phase 1 triggers ``AbortSwitch`` (the helper
-        restores the pre-switch extension set) and rolls ``settings.gnome``
-        back to its ``.bak`` — live session and next login never diverge.
+        A reset/load failure attempts scoped dconf recovery before requesting
+        ``AbortSwitch``. Recovery is best-effort; helper timeouts, completion
+        failures and process death are not a full cross-component transaction.
         """
         info = HelperClient.ping_info()
         if info.get("busy"):
@@ -825,6 +826,17 @@ class LayoutApplier:
             ],
         ]
 
+        # Capture values before teardown; failed reads must not authorize resets.
+        try:
+            ok_dump, dump = run_cmd(["dconf", "dump", "/"], timeout=15)
+            if not ok_dump:
+                raise RuntimeError(f"cannot capture dconf recovery values: {dump}")
+            previous_values = cls._dconf_dump_values(dump)
+        except Exception as exc:
+            if restore_persisted:
+                cls._restore_settings_backup()
+            return False, str(exc)
+
         persist = [*_HELPER_PERSIST_UUIDS, HELPER_UUID]
         ok, msg = HelperClient.begin_switch(
             persist,
@@ -834,23 +846,27 @@ class LayoutApplier:
             icon_to=icon_to,
         )
         if not ok:
-            # The helper may have partially torn extensions down before
-            # failing (or timing out) — restore the pre-switch set and roll
-            # settings.gnome back so live and next-login never diverge.
+            # Teardown may have started before failure. Request helper recovery
+            # and restore persistence only when this operation wrote it.
             log.warning("helper BeginSwitch failed: %s", msg)
             HelperClient.abort_switch()
-            cls._restore_settings_backup()
+            if restore_persisted:
+                cls._restore_settings_backup()
             return False, msg
 
-        # Curtain up, managed extensions down: apply the ABSOLUTE state.
+        # Record attempted writes too: a timed-out command may have committed.
+        touched: Set[str] = set()
         try:
             for subdir in cls._managed_extension_subdirs(layouts_dir):
+                branch = f"/org/gnome/shell/extensions/{subdir}/"
+                touched.update(path for path in previous_values if path.startswith(branch))
                 ok_reset, msg_reset = run_cmd(
-                    ["dconf", "reset", "-f", f"/org/gnome/shell/extensions/{subdir}/"],
+                    ["dconf", "reset", "-f", branch],
                     timeout=15,
                 )
                 if not ok_reset:
-                    log.warning("dconf reset %s failed: %s", subdir, msg_reset)
+                    raise RuntimeError(f"dconf reset {subdir} failed: {msg_reset}")
+            touched.update(cls._dconf_dump_values(settings_data))
             ok_load, msg_load = run_cmd(
                 ["dconf", "load", "/"], stdin_text=settings_data, timeout=30
             )
@@ -858,8 +874,12 @@ class LayoutApplier:
                 raise RuntimeError(f"dconf load failed: {msg_load}")
         except Exception as exc:
             log.warning("clean-room dconf phase failed: %s — aborting", exc)
+            recovered, recovery = cls._restore_dconf_values(previous_values, touched)
             HelperClient.abort_switch()
-            cls._restore_settings_backup()
+            if restore_persisted:
+                cls._restore_settings_backup()
+            if not recovered:
+                return False, f"{exc}; dconf recovery failed: {recovery}"
             return False, str(exc)
 
         ok, steps = HelperClient.complete_switch(target_enabled)
@@ -873,7 +893,8 @@ class LayoutApplier:
         if not ok:
             log.warning("helper CompleteSwitch failed: %s", steps)
             HelperClient.abort_switch()
-            cls._restore_settings_backup()
+            if restore_persisted:
+                cls._restore_settings_backup()
             return False, steps
 
         # Converge the dconf switch keys with what is now live so the
@@ -1512,6 +1533,57 @@ class LayoutApplier:
         for key, color in targets.items():
             text = cls._replace_or_add_dconf_key(text, section, key, color)
         return text
+
+    @staticmethod
+    def _dconf_dump_values(text: str) -> Dict[str, str]:
+        """Keep serialized GVariant values, including typed empty arrays."""
+        values: Dict[str, str] = {}
+        section = None
+        for raw in text.splitlines():
+            line = raw.strip()
+            if not line or line.startswith(("#", ";")):
+                continue
+            if line.startswith("[") and line.endswith("]"):
+                section = line[1:-1].strip("/")
+                continue
+            key, separator, value = line.partition("=")
+            if section is not None and separator and key.strip():
+                path = "/" + "/".join(part for part in (section, key.strip()) if part)
+                values[path] = value
+        return values
+
+    @staticmethod
+    def _restore_dconf_values(previous: Dict[str, str], touched: Set[str]) -> Tuple[bool, str]:
+        """Restore only attempted writes; never reset a whole database/branch."""
+        errors = []
+        sections: Dict[str, List[str]] = {}
+        for path in sorted(touched):
+            if path in previous:
+                section, separator, key = path.rpartition("/")
+                section = section.lstrip("/")
+                sections.setdefault(section, []).append(f"{key}={previous[path]}")
+                continue
+            try:
+                ok, message = run_cmd(["dconf", "reset", path], timeout=10)
+            except Exception as exc:
+                ok, message = False, str(exc)
+            if not ok:
+                errors.append(f"{path}: {message}")
+
+        if sections:
+            text = "\n\n".join(
+                f"[{section or '/'}]\n" + "\n".join(lines)
+                for section, lines in sections.items()
+            ) + "\n"
+            try:
+                ok, message = run_cmd(["dconf", "load", "/"], stdin_text=text, timeout=30)
+            except Exception as exc:
+                ok, message = False, str(exc)
+            if not ok:
+                errors.append(f"restore values: {message}")
+        if errors:
+            log.warning("dconf recovery incomplete: %s", "; ".join(errors))
+        return not errors, "; ".join(errors)
 
     @staticmethod
     def _parse_dconf_dump_paths(text: str) -> Set[str]:
@@ -2381,6 +2453,7 @@ class LayoutApplier:
                     layouts_dir=layouts_dir,
                     icon_from=icon_from,
                     icon_to=icon_to,
+                    restore_persisted=persisted,
                 )
             if helper_version > 0:
                 progress("Applying layout…")
