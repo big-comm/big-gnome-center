@@ -1682,14 +1682,14 @@ disabled-extensions=['community-menu@communitybig.org']
     ):
         """Treat layout text as exact state, not a merge patch."""
         live = (
-            "[org/gnome/shell/extensions/leaving]\n"
+            "[org/gnome/shell/extensions/dash-to-dock]\n"
             "old=true\n"
             "\n"
-            "[org/gnome/shell/extensions/staying]\n"
+            "[org/gnome/shell/extensions/dash-to-panel]\n"
             "keep=true\n"
             "old=true\n"
         )
-        target = "[org/gnome/shell/extensions/staying]\nkeep=true\n"
+        target = "[org/gnome/shell/extensions/dash-to-panel]\nkeep=true\n"
         mock_run.side_effect = [
             (True, live),
             (True, ""),
@@ -1705,12 +1705,12 @@ disabled-extensions=['community-menu@communitybig.org']
             "dconf",
             "reset",
             "-f",
-            "/org/gnome/shell/extensions/leaving/",
+            "/org/gnome/shell/extensions/dash-to-dock/",
         ]
         assert mock_run.call_args_list[2].args[0] == [
             "dconf",
             "reset",
-            "/org/gnome/shell/extensions/staying/old",
+            "/org/gnome/shell/extensions/dash-to-panel/old",
         ]
 
 
@@ -1959,7 +1959,7 @@ class TestHelperIntegration:
         )
         (tmp_path / "classic.txt").write_text(data)
 
-        subdirs = LayoutApplier._managed_extension_subdirs(data, tmp_path)
+        subdirs = LayoutApplier._managed_extension_subdirs(tmp_path)
 
         assert "community-menu" in subdirs
         assert "arcmenu" in subdirs

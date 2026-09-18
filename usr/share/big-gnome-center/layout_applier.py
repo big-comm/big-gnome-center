@@ -33,7 +33,7 @@ Strategy:
     won't clobber it. Next login is guaranteed clean regardless of
     runtime quirks.
   * Live apply: disable extensions that leave the target layout, reset
-    orphan keys in ``/org/gnome/shell/extensions/`` (whole branches for
+    orphan keys in layout-owned extension branches (whole branches for
     leaving extensions, individual keys for extensions that stay), then
     ``dconf load`` of the target. This makes the layout text behave like
     a complete state instead of a merge patch.
@@ -233,15 +233,6 @@ _COLOR_SCHEME_KEY = (_INTERFACE_SECTION, "color-scheme")
 # otherwise stale live dconf is dumped back into authoritative settings.gnome.
 _LEGACY_MANAGED_EXTENSION_SUBDIRS = frozenset({"arcmenu", "blur-my-shell"})
 
-# Paths where we're allowed to reset orphan keys (keys present in live
-# dconf but absent from the target layout). Restricted to extension
-# storage: that's where layout differences cause visible damage
-# (e.g. one layout sets an extension key while the next expects its default;
-# without a targeted reset, stale state survives the switch). Other paths
-# (settings-daemon,
-# notification app history, third-party apps) are off-limits — resetting
-# them would lose unrelated user state.
-_ORPHAN_RESET_PREFIXES = ("/org/gnome/shell/extensions/",)
 _FRAGILE_LIVE_LEAVING = frozenset(
     {
         _ARCMENU_UUID,
@@ -517,7 +508,9 @@ class LayoutApplier:
         return True, ""
 
     @classmethod
-    def _apply_via_helper(cls, data: str) -> Tuple[bool, str]:
+    def _apply_via_helper(
+        cls, data: str, *, layouts_dir: Optional[Path] = None
+    ) -> Tuple[bool, str]:
         """
         Apply ``data`` through the in-shell helper extension.
 
@@ -540,7 +533,7 @@ class LayoutApplier:
         # position when switching to biggnome's centered dock). Clear the
         # extension keys not present in the target so each extension reads an
         # exact config when the helper enables/reloads it.
-        cls._reset_orphan_keys(data)
+        cls._reset_orphan_keys(data, layouts_dir=layouts_dir)
 
         shell_values = cls._section_key_values(data, "/org/gnome/shell")
         target_enabled = cls._string_list(shell_values.get("enabled-extensions"))
@@ -652,24 +645,18 @@ class LayoutApplier:
     @classmethod
     def _managed_extension_subdirs(
         cls,
-        data: str,
         layouts_dir: Optional[Path] = None,
     ) -> List[str]:
-        """
-        The extension settings subdirs the layouts collectively own — the
-        branches the clean-room switch may ``dconf reset -f`` while every
-        managed extension is down.
+        """Branches owned by bundled layouts and retained legacy migrations.
 
-        Computed as the union of ``[org/gnome/shell/extensions/<subdir>…]``
-        sections across every bundled layout file (plus the target text), so a
-        branch written by the PREVIOUS layout is reset even when the target
-        doesn't mention it. Restricting to layout-declared subdirs keeps user
-        data safe: personal extensions (and the persist indicators — gsconnect
-        pairing state lives in gsettings!) are never touched.
+        Snapshot contents do not confer ownership. Protected branches retain
+        user data even if a bundled profile happens to declare them.
         """
         prefix = "[org/gnome/shell/extensions/"
-        texts = [data]
-        if layouts_dir is not None and layouts_dir.is_dir():
+        texts = []
+        if layouts_dir is None:
+            layouts_dir = Path(__file__).with_name("layouts")
+        if layouts_dir.is_dir():
             for path in sorted(layouts_dir.glob("*.txt")):
                 try:
                     texts.append(path.read_text(encoding="utf-8"))
@@ -836,7 +823,7 @@ class LayoutApplier:
 
         # Curtain up, managed extensions down: apply the ABSOLUTE state.
         try:
-            for subdir in cls._managed_extension_subdirs(data, layouts_dir):
+            for subdir in cls._managed_extension_subdirs(layouts_dir):
                 ok_reset, msg_reset = run_cmd(
                     ["dconf", "reset", "-f", f"/org/gnome/shell/extensions/{subdir}/"],
                     timeout=15,
@@ -1545,17 +1532,18 @@ class LayoutApplier:
         target_text: str,
         *,
         skip_subdirs: Optional[Iterable[str]] = None,
+        layouts_dir: Optional[Path] = None,
     ) -> int:
         """
         Reset keys present in live dconf but absent from ``target_text``,
-        restricted to ``_ORPHAN_RESET_PREFIXES`` (extension storage only).
+        restricted to layout-owned extension branches.
 
         Why this exists: ``dconf load`` is purely additive — it sets keys in
         its input but never clears keys that are absent. A later layout can
         otherwise inherit stale extension state from the previous layout.
 
-        Restricting resets to ``/org/gnome/shell/extensions/`` avoids
-        losing unrelated application/user state. If an extension branch is
+        Personal extensions and protected persistent data are excluded.
+        If a managed extension branch is
         fully absent from the target layout, reset the whole branch. If
         the branch still exists, reset only the stale keys before loading
         the target text. ``dconf load`` is a merge operation; without the
@@ -1570,10 +1558,14 @@ class LayoutApplier:
         live_paths = cls._parse_dconf_dump_paths(dump)
         target_paths = cls._parse_dconf_dump_paths(target_text)
         skipped = {p for p in (skip_subdirs or ()) if p}
+        managed_prefixes = tuple(
+            f"/org/gnome/shell/extensions/{subdir}/"
+            for subdir in cls._managed_extension_subdirs(layouts_dir)
+        )
         orphans = {
             p
             for p in (live_paths - target_paths)
-            if any(p.startswith(pre) for pre in _ORPHAN_RESET_PREFIXES)
+            if p.startswith(managed_prefixes)
             and not any(p.startswith(skip) for skip in skipped)
         }
         if not orphans:
@@ -2361,7 +2353,7 @@ class LayoutApplier:
                 )
             if helper_version > 0:
                 progress("Applying layout…")
-                return cls._apply_via_helper(data)
+                return cls._apply_via_helper(data, layouts_dir=layouts_dir)
 
             # Disable LEAVING extensions (present in before but not in
             # target), with one exception: dash-to-panel is restarted when
@@ -2463,7 +2455,7 @@ class LayoutApplier:
 
             progress("Loading layout…")
             # Clear keys from the previous layout that the new layout
-            # doesn't cover (scoped to extension storage). Done after
+            # doesn't cover (scoped to layout-owned branches). Done after
             # disabling extensions so most Notify signals fire into
             # dead code, before the load so target wins everywhere.
             skip_orphan_subdirs = {
@@ -2479,7 +2471,9 @@ class LayoutApplier:
                     for subdir in (cls._extension_settings_subdir(uuid),)
                     if subdir
                 )
-            cls._reset_orphan_keys(data, skip_subdirs=skip_orphan_subdirs)
+            cls._reset_orphan_keys(
+                data, skip_subdirs=skip_orphan_subdirs, layouts_dir=layouts_dir
+            )
             settings_data, extension_switch_data = cls._split_shell_extension_switch_keys(data)
             post_dtp_enabled: List[str] = []
             if target_uses_dtp:
