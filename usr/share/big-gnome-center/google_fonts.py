@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 from constants import CACHE_DIR
-from utils import run_cmd
+from utils import atomic_write_text, run_cmd
 
 log = logging.getLogger("big-gnome-center")
 
@@ -255,10 +255,7 @@ def _read_cached_catalog(fresh_only: bool) -> List[FontFamily]:
 
 def _write_cached_catalog(entries: List[FontFamily]) -> None:
     try:
-        CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        tmp = CACHE_FILE.with_suffix(".tmp")
-        tmp.write_text(json.dumps(_catalog_to_json(entries), ensure_ascii=False), encoding="utf-8")
-        tmp.replace(CACHE_FILE)
+        atomic_write_text(CACHE_FILE, json.dumps(_catalog_to_json(entries), ensure_ascii=False))
     except Exception as exc:
         log.debug("google font catalog cache write failed: %s", exc)
 

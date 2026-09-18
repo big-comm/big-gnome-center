@@ -13,6 +13,7 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
 import datetime
+import logging
 import os
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -21,15 +22,25 @@ from constants import BACKUP_DIR
 from utils import atomic_write_text, run_cmd
 
 
+def _backup_retention() -> int:
+    """Invalid configuration keeps the default retention; zero still keeps one."""
+    value = os.environ.get(
+        "BIG_GNOME_CENTER_N_KEEP", os.environ.get("LAYOUT_SWITCHER_N_KEEP", "10")
+    )
+    try:
+        count = int(value)
+        if count >= 0:
+            return max(1, count)
+    except ValueError:
+        pass
+    logging.getLogger("big-gnome-center").warning("Invalid backup retention; using 10")
+    return 10
+
+
 class BackupManager:
     """Gerencia backups do dconf para restauração de layouts e configurações."""
 
-    N_KEEP = int(
-        os.environ.get(
-            "BIG_GNOME_CENTER_N_KEEP",
-            os.environ.get("LAYOUT_SWITCHER_N_KEEP", "10"),
-        )
-    )
+    N_KEEP = _backup_retention()
     MIN_BYTES = 20  # um dump dconf válido tem pelo menos este tamanho
 
     # ── Criar ─────────────────────────────────────────────────────────────────

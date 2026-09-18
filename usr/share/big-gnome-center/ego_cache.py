@@ -12,6 +12,7 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 import hashlib
 import json
 import logging
+import tempfile
 import time
 from pathlib import Path
 from typing import Optional
@@ -21,6 +22,7 @@ from constants import (
     EGO_THUMBS_DIR,
     EGO_THUMBS_MAX_BYTES,
 )
+from utils import atomic_write_text
 
 log = logging.getLogger("big-gnome-center")
 
@@ -63,10 +65,7 @@ def json_put(namespace: str, key: str, payload: dict) -> None:
     """Grava JSON atomicamente (tmp + rename). Silencia falhas."""
     try:
         path = _json_dir(namespace) / f"{_hash_key(key)}.json"
-        tmp = path.with_suffix(".tmp")
-        with tmp.open("w", encoding="utf-8") as fh:
-            json.dump(payload, fh, ensure_ascii=False)
-        tmp.replace(path)
+        atomic_write_text(path, json.dumps(payload, ensure_ascii=False))
     except Exception as exc:
         log.debug("ego_cache.json_put %s/%s failed: %s", namespace, key, exc)
 
@@ -118,16 +117,26 @@ def thumb_put(url: str, data: bytes) -> Optional[Path]:
     """
     if not data:
         return None
+    tmp = None
     try:
         path = thumb_path(url)
-        tmp = path.with_suffix(path.suffix + ".tmp")
-        tmp.write_bytes(data)
+        with tempfile.NamedTemporaryFile(
+            prefix=f".{path.name}.", suffix=".tmp", dir=path.parent, delete=False,
+        ) as stream:
+            tmp = Path(stream.name)
+            stream.write(data)
         tmp.replace(path)
         _evict_thumbs_if_needed()
         return path
     except Exception as exc:
         log.debug("ego_cache.thumb_put %s failed: %s", url, exc)
         return None
+    finally:
+        if tmp is not None:
+            try:
+                tmp.unlink(missing_ok=True)
+            except OSError as exc:
+                log.debug("ego_cache temporary cleanup failed: %s", exc)
 
 
 def _evict_thumbs_if_needed() -> None:
@@ -137,7 +146,10 @@ def _evict_thumbs_if_needed() -> None:
     """
     try:
         base = thumbs_dir()
-        files = [(p, p.stat()) for p in base.iterdir() if p.is_file()]
+        files = [
+            (p, p.stat()) for p in base.iterdir()
+            if not p.name.startswith(".") and p.is_file()
+        ]
     except Exception:
         return
     total = sum(st.st_size for _, st in files)
