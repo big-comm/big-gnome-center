@@ -10,9 +10,12 @@ def test_staged_apply_keeps_active_card_and_preferences():
     path = Path(__file__).resolve().parents[1] / "usr/share/big-gnome-center/ui/page_layouts.py"
     tree = ast.parse(path.read_text())
     page = next(node for node in tree.body if isinstance(node, ast.ClassDef))
-    method = next(node for node in page.body if isinstance(node, ast.FunctionDef) and node.name == "_done")
-    namespace = {"Optional": __import__("typing").Optional,
-                 "LayoutApplier": SimpleNamespace(last_apply_staged=True), "tr": lambda value: value}
+    method = next(node for node in page.body
+                  if isinstance(node, ast.FunctionDef) and node.name == "_done")
+    namespace = {
+        "Optional": __import__("typing").Optional, "Path": Path,
+        "LayoutApplier": SimpleNamespace(last_apply_staged=True), "tr": lambda value: value,
+    }
     exec(compile(ast.Module(body=[method], type_ignores=[]), str(path), "exec"), namespace)
     values = {"active_layout": "BigGnome"}
     statuses = []

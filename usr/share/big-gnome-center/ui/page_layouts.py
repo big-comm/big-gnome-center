@@ -21,8 +21,8 @@ from gi.repository import Adw, Gdk, GLib, Gtk
 
 from backup_manager import BackupManager
 from constants import DISABLED_LAYOUTS, ICONS_DIR, LAYOUTS, tr
-from layout_applier import LayoutApplier
 from helper_client import HelperClient
+from layout_applier import LayoutApplier
 from settings_store import Settings
 from snapshot_manager import SnapshotManager
 from ui.tooltip import Tooltip
@@ -248,13 +248,14 @@ class LayoutsPage(Gtk.Box):
             ok_bk, info = BackupManager.create()
             if not ok_bk:
                 self._toast(tr("Backup failed") + f": {info}")
+                return
             # Reapplying the active layout is a recovery action. Saving its
             # current broken state here would overwrite the last good snapshot
             # immediately before the original is restored.
             if not reapplying_active:
                 self._save_current_snapshot()
             use_snapshot = r == "resume"
-            self._apply(name, cfg, use_snapshot=use_snapshot)
+            self._apply(name, cfg, use_snapshot=use_snapshot, backup_path=Path(info))
 
         content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
         content.set_margin_top(30)
@@ -357,7 +358,10 @@ class LayoutsPage(Gtk.Box):
                 SnapshotManager.save(self._layout_id(lcfg))
                 return
 
-    def _apply(self, name: str, cfg: str, use_snapshot: bool = False) -> None:
+    def _apply(
+        self, name: str, cfg: str, use_snapshot: bool = False,
+        *, backup_path: Optional[Path] = None,
+    ) -> None:
         """Aplica layout. use_snapshot=True carrega a versao modificada."""
         self._set_status(f"{tr('Applying')} {name}…", "dim-label")
         root = self.get_root()
@@ -391,6 +395,7 @@ class LayoutsPage(Gtk.Box):
                             False,
                             tr("Snapshot not found"),
                             loading_token,
+                            backup_path,
                         )
                         return
                     # Snapshots são dumps locais — DTP monitor IDs já estão corretos.
@@ -419,6 +424,7 @@ class LayoutsPage(Gtk.Box):
                             False,
                             tr("Layout file not found"),
                             loading_token,
+                            backup_path,
                         )
                         return
                     ok, err = LayoutApplier.apply(
@@ -429,11 +435,11 @@ class LayoutsPage(Gtk.Box):
                         icon_from=str(from_icon) if from_icon else "",
                         icon_to=str(to_icon) if to_icon else "",
                     )
-                GLib.idle_add(self._done, name, ok, err, loading_token)
+                GLib.idle_add(self._done, name, ok, err, loading_token, backup_path)
             except Exception as exc:
                 log.exception("layout apply failed for %s", name)
                 msg = str(exc).strip() or exc.__class__.__name__
-                GLib.idle_add(self._done, name, False, msg, loading_token)
+                GLib.idle_add(self._done, name, False, msg, loading_token, backup_path)
 
         self._pool.submit(task)
 
@@ -443,6 +449,7 @@ class LayoutsPage(Gtk.Box):
         ok: bool,
         msg: str,
         loading_token: Optional[int] = None,
+        backup_path: Optional[Path] = None,
     ) -> None:
         root = self.get_root()
         if loading_token is not None and hasattr(root, "end_loading"):
@@ -486,17 +493,17 @@ class LayoutsPage(Gtk.Box):
                 self._toast(f"{tr('Operation failed')}: {save_error}")
                 return
             overlay = getattr(root, "_toast_overlay", None)
-            latest = BackupManager.latest()
 
             # Primary toast: undo (high priority — won't be dismissed by the
-            # restart toast below, and shows first).
-            if latest and overlay:
+            # restart toast below, and shows first). Use this operation's
+            # backup; another operation may have changed the latest pointer.
+            if backup_path and overlay:
                 undo_toast = Adw.Toast(title=f"{name} {tr('applied')}", timeout=15)
                 undo_toast.set_priority(Adw.ToastPriority.HIGH)
                 undo_toast.set_button_label(tr("Undo"))
                 undo_toast.connect(
                     "button-clicked",
-                    lambda _t: self._undo_layout(prev, latest),
+                    lambda _t: self._undo_layout(prev, backup_path),
                 )
                 overlay.add_toast(undo_toast)
             elif overlay:
