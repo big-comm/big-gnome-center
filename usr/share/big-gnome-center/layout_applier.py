@@ -38,7 +38,7 @@ from helper_client import (
     LEGACY_HELPER_UUID,
     HelperClient,
 )
-from layout_persistence import open_store
+from layout_persistence import SETTINGS_GNOME, open_store
 from runtime_settings import RuntimeSettings
 from settings_store import Settings
 from shell_reloader import ShellReloader
@@ -46,7 +46,6 @@ from utils import atomic_write_text, gnome_shell_version, run_cmd
 
 log = logging.getLogger("big-gnome-center")
 
-SETTINGS_GNOME = Path.home() / ".config" / "dconf" / "settings.gnome"
 _LAYOUT_MUTATION_LOCK_PATH = SETTINGS_GNOME.with_name("big-gnome-center-layout.lock")
 _LAYOUT_HASH_FILE = SETTINGS_GNOME.parent / (
     SETTINGS_GNOME.name + ".big-gnome-center.sha256"

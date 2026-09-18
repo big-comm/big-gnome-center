@@ -6,7 +6,8 @@ import os
 import shutil
 import subprocess
 import sys
-from unittest.mock import patch
+from contextlib import nullcontext
+from unittest.mock import Mock, patch
 
 import pytest
 from gi.repository import GLib
@@ -85,6 +86,14 @@ def test_dump_diagnostics_never_replace_saved_data(tmp_path, monkeypatch, has_da
     snapshots.mkdir()
     monkeypatch.setattr(backup_manager, "BACKUP_DIR", backups)
     monkeypatch.setattr(snapshot_manager, "SNAPSHOTS_DIR", snapshots)
+    store = Mock()
+    store.lock.side_effect = nullcontext
+    store.read.return_value = {}
+    store.marker = tmp_path / "sync.lock"
+    prefs = Mock(last_error="")
+    prefs.get.return_value = None
+    monkeypatch.setattr(snapshot_manager, "open_store", lambda path: store)
+    monkeypatch.setattr(snapshot_manager, "Settings", lambda: prefs)
     previous = backups / "backup_previous.dconf"
     previous.write_text(payload)
     latest = backups / "latest.dconf"

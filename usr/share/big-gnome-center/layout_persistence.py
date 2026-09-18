@@ -5,6 +5,7 @@ import importlib.util
 from pathlib import Path
 
 PROTOCOL_MODULE = Path('/usr/share/comm-gnome-config/dconf_persistence.py')
+SETTINGS_GNOME = Path.home() / '.config' / 'dconf' / 'settings.gnome'
 
 
 def open_store(path):

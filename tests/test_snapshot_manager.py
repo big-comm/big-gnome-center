@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: MIT
 """Tests for snapshot_manager.py — per-layout user snapshots."""
 
-from unittest.mock import patch
+from contextlib import nullcontext
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -20,6 +21,18 @@ class TestSnapshotManager:
         import snapshot_manager
 
         importlib.reload(snapshot_manager)
+        store = Mock()
+        store.lock.side_effect = nullcontext
+        store.read.return_value = {}
+        store.marker = tmp_path / "sync.lock"
+        prefs = Mock(last_error="")
+        prefs.get.return_value = None
+        for replacement in (
+            patch("snapshot_manager.open_store", return_value=store),
+            patch("snapshot_manager.Settings", return_value=prefs),
+        ):
+            replacement.start()
+            self._patches.append(replacement)
         self.SnapshotManager = snapshot_manager.SnapshotManager
         self.SNAPSHOTS_DIR = snapshot_manager.SNAPSHOTS_DIR
 

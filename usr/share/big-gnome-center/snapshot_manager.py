@@ -19,11 +19,16 @@ identico ao ``dconf dump /``.
 DEVELOPER NOTE - DO NOT name any variable `_` in this file.
 """
 
+import hashlib
 import logging
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from constants import CONFIG_DIR
+from gi.repository import GLib
+
+from constants import CONFIG_DIR, LAYOUTS
+from layout_persistence import SETTINGS_GNOME, open_store
+from settings_store import Settings
 from utils import atomic_write_text, run_cmd
 
 log = logging.getLogger("big-gnome-center")
@@ -38,9 +43,15 @@ class SnapshotManager:
     @staticmethod
     def _path_for(layout_id: str) -> Path:
         """Caminho do snapshot para um layout_id (ex.: 'biggnome')."""
-        # Nomes de layout ja sao seguros (stem de arquivo), mas aplicamos
-        # lower() e filtro defensivo para evitar qualquer surpresa.
-        safe = "".join(c for c in layout_id.lower() if c.isalnum() or c in "-_")
+        if not isinstance(layout_id, str) or not layout_id:
+            raise ValueError("invalid layout_id")
+        safe = "".join(
+            c for c in layout_id.lower() if c in "abcdefghijklmnopqrstuvwxyz0123456789-_"
+        )
+        # Preserve canonical filenames; never alias lossy or oversized IDs.
+        if safe != layout_id or not safe or len(safe) > 80:
+            digest = hashlib.sha256(layout_id.encode("utf-8")).hexdigest()
+            safe = f"{safe[:48] or 'layout'}.{digest}"
         return SNAPSHOTS_DIR / f"{safe}.dconf"
 
     # ── Save ─────────────────────────────────────────────────────────────────
@@ -53,27 +64,47 @@ class SnapshotManager:
         Retorna (True, caminho) em sucesso ou (False, mensagem_erro).
         Silencioso: falhas nao devem bloquear a troca de layout.
         """
-        if not layout_id:
-            return False, "empty layout_id"
-
         try:
-            SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
+            dest = cls._path_for(layout_id)
+            store = open_store(SETTINGS_GNOME)
+            # Same stable lock as layout application, autosave and login recovery.
+            with store.lock():
+                state = store.read()
+                if state.get("transaction") or state.get("staged") or store.marker.exists():
+                    return False, "snapshot paused: layout recovery or staging pending"
+                prefs = Settings()
+                if prefs.last_error:
+                    return False, f"cannot read snapshot preferences: {prefs.last_error}"
+                if prefs.get("last_apply_ok") is False or prefs.get("pending_layout"):
+                    return False, "snapshot paused: previous layout application incomplete"
+                ok, data = run_cmd(["dconf", "dump", "/"], timeout=15)
+                if not ok:
+                    return False, f"dconf dump failed: {data}"
+                if not data or len(data.encode("utf-8")) < MIN_SNAPSHOT_BYTES:
+                    return False, "dconf dump produced empty/tiny output"
+                # A stale page must not save another layout under its old ID.
+                keyfile = GLib.KeyFile()
+                keyfile.load_from_data(data, len(data.encode("utf-8")), GLib.KeyFileFlags.NONE)
+                group = "org/communitybig/layout-switcher/runtime"
+                if keyfile.has_group(group):
+                    keys = keyfile.get_keys(group)[0]
+                    if "active-layout" in keys:
+                        active = GLib.Variant.parse(
+                            None, keyfile.get_value(group, "active-layout"), None, None
+                        ).unpack()
+                        expected = next(
+                            (name for name, cfg, *rest in LAYOUTS if Path(cfg).stem == layout_id),
+                            None,
+                        )
+                        if expected and active and active != expected:
+                            return False, "snapshot paused: active layout changed"
+                atomic_write_text(dest, data)
+                log.debug("snapshot saved: %s (%d bytes)", dest, len(data.encode("utf-8")))
+                return True, str(dest)
+        except BlockingIOError:
+            return False, "snapshot paused: a layout operation is already in progress"
         except Exception as exc:
-            return False, f"cannot create snapshots dir: {exc}"
-
-        ok, data = run_cmd(["dconf", "dump", "/"], timeout=15)
-        if not ok:
-            return False, f"dconf dump failed: {data}"
-        if not data or len(data) < MIN_SNAPSHOT_BYTES:
-            return False, "dconf dump produced empty/tiny output"
-
-        dest = cls._path_for(layout_id)
-        try:
-            atomic_write_text(dest, data)
-            log.debug("snapshot saved: %s (%d bytes)", dest, len(data))
-            return True, str(dest)
-        except Exception as exc:
-            return False, f"write failed: {exc}"
+            return False, f"snapshot failed: {exc}"
 
     # ── Load ─────────────────────────────────────────────────────────────────
 
@@ -82,9 +113,9 @@ class SnapshotManager:
         """Retorna o Path do snapshot se existir e for valido; senao None."""
         if not layout_id:
             return None
-        p = cls._path_for(layout_id)
         try:
-            if p.exists() and p.stat().st_size >= MIN_SNAPSHOT_BYTES:
+            p = cls._path_for(layout_id)
+            if p.is_file() and p.stat().st_size >= MIN_SNAPSHOT_BYTES:
                 return p
         except Exception:
             pass
@@ -98,13 +129,11 @@ class SnapshotManager:
     @classmethod
     def read(cls, layout_id: str) -> Optional[str]:
         """Retorna o conteudo do snapshot ou None se ausente/invalido."""
-        p = cls.load(layout_id)
-        if not p:
-            return None
         try:
-            return p.read_text(encoding="utf-8")
+            data = cls._path_for(layout_id).read_text(encoding="utf-8")
+            return data if len(data.encode("utf-8")) >= MIN_SNAPSHOT_BYTES else None
         except Exception as exc:
-            log.debug("snapshot read failed: %s -> %s", p, exc)
+            log.debug("snapshot read failed: %s -> %s", layout_id, exc)
             return None
 
     # ── Delete / list ────────────────────────────────────────────────────────
@@ -115,7 +144,9 @@ class SnapshotManager:
         if not layout_id:
             return False
         try:
-            cls._path_for(layout_id).unlink(missing_ok=True)
+            path = cls._path_for(layout_id)
+            with open_store(SETTINGS_GNOME).lock():
+                path.unlink(missing_ok=True)
             return True
         except Exception as exc:
             log.debug("snapshot delete failed: %s", exc)
