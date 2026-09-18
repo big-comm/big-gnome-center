@@ -147,7 +147,7 @@ EGO_THUMBS_MAX_BYTES = 50 * 1024 * 1024  # 50 MiB
 UPDATE_CHECK_INTERVAL = 60 * 60 * 12  # 12h
 
 # ── Diretórios de extensões GNOME ─────────────────────────────────────────────
-EXT_USER_DIR = Path.home() / ".local" / "share" / "gnome-shell" / "extensions"
+EXT_USER_DIR = _xdg_home("XDG_DATA_HOME", ".local/share") / "gnome-shell" / "extensions"
 EXT_SYS_DIR = Path("/usr/share/gnome-shell/extensions")
 
 # ── D-Bus ─────────────────────────────────────────────────────────────────────

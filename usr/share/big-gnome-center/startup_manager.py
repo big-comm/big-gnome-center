@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import configparser
 import os
+import re
 import shutil
 import tempfile
 from dataclasses import dataclass
@@ -55,14 +56,17 @@ class StartupManager:
 
     @staticmethod
     def _default_user_dir() -> Path:
-        configured = os.environ.get("XDG_CONFIG_HOME", "").strip()
-        base = Path(configured).expanduser() if configured else Path.home() / ".config"
+        configured = Path(os.environ.get("XDG_CONFIG_HOME", ""))
+        base = configured if configured.is_absolute() else Path.home() / ".config"
         return base / "autostart"
 
     @staticmethod
     def _default_system_dirs() -> list[Path]:
-        configured = os.environ.get("XDG_CONFIG_DIRS", "/etc/xdg")
-        return [Path(value).expanduser() / "autostart" for value in configured.split(":") if value]
+        configured = os.environ.get("XDG_CONFIG_DIRS") or "/etc/xdg"
+        return list(dict.fromkeys(
+            Path(value) / "autostart"
+            for value in configured.split(":") if Path(value).is_absolute()
+        ))
 
     @staticmethod
     def _parser(path: Path) -> Optional[configparser.RawConfigParser]:
@@ -106,8 +110,18 @@ class StartupManager:
         for candidate in cls._localized_keys(key):
             value = section.get(candidate, "").strip()
             if value:
-                return value.replace("\\s", " ").replace("\\n", "\n").replace("\\\\", "\\")
+                return cls._decode_value(value)
         return ""
+
+    @staticmethod
+    def _decode_value(value: str) -> str:
+        escapes = {"s": " ", "n": "\n", "t": "\t", "r": "\r", "\\": "\\"}
+        return re.sub(r"\\([sntr\\])", lambda match: escapes[match[1]], value)
+
+    @staticmethod
+    def _encode_value(value: str) -> str:
+        escapes = {" ": r"\s", "\n": r"\n", "\t": r"\t", "\r": r"\r", "\\": r"\\"}
+        return "".join(escapes.get(character, character) for character in value)
 
     @staticmethod
     def _desktop_tokens(value: str) -> set[str]:
@@ -132,13 +146,13 @@ class StartupManager:
         if desktops.intersection(not_show_in):
             return False
 
-        try_exec = section.get("TryExec", "").strip()
+        try_exec = cls._decode_value(section.get("TryExec", "").strip())
         if try_exec:
-            executable = Path(try_exec).expanduser()
+            executable = Path(try_exec)
             if executable.is_absolute():
-                if not executable.exists():
+                if not executable.is_file() or not os.access(executable, os.X_OK):
                     return False
-            elif shutil.which(try_exec) is None:
+            elif "/" in try_exec or shutil.which(try_exec) is None:
                 return False
         return True
 
@@ -176,7 +190,7 @@ class StartupManager:
                     desktop_id=desktop_id,
                     name=name,
                     description=description,
-                    icon=section.get("Icon", "").strip(),
+                    icon=self._decode_value(section.get("Icon", "").strip()),
                     source=path,
                     user_owned=user_owned,
                 )
@@ -276,6 +290,7 @@ class StartupManager:
                 name = desktop_id.removesuffix(".desktop")
                 if parser is not None:
                     name = self._localized_value(parser["Desktop Entry"], "Name") or name
+                name = self._encode_value(name)
                 override = (
                     f"[Desktop Entry]\nType=Application\nName={name}\nHidden=true\n"
                 ).encode("utf-8")
