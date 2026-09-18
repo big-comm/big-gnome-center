@@ -8,9 +8,15 @@ installs those files for the current user under ~/.local/share/fonts.
 DEVELOPER NOTE - DO NOT name any variable `_` in this file.
 """
 
+import ctypes
+import errno
+import fcntl
 import json
 import logging
+import os
 import re
+import shutil
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -27,6 +33,7 @@ log = logging.getLogger("big-gnome-center")
 CSS2_URL = "https://fonts.googleapis.com/css2"
 CATALOG_URL = "https://fonts.google.com/metadata/fonts"
 USER_FONT_DIR = Path.home() / ".local" / "share" / "fonts" / "big-gnome-center" / "google-fonts"
+FONT_STAGING_DIR = USER_FONT_DIR.parents[2] / "big-gnome-center" / "font-staging"
 LEGACY_USER_FONT_DIR = (
     Path.home() / ".local" / "share" / "fonts" / "layout-switcher" / "google-fonts"
 )
@@ -336,6 +343,111 @@ def _filename_for(url: str, index: int) -> str:
     return f"{family_slug(stem)}{suffix}"
 
 
+def _rename_family(source: Path, destination: Path, *, exchange: bool) -> None:
+    """Publish a whole directory without a missing-family window (Linux)."""
+    libc = ctypes.CDLL(None, use_errno=True)
+    rename = getattr(libc, "renameat2", None)
+    if rename is None:
+        raise OSError(errno.ENOSYS, "Atomic font publication is unavailable")
+    rename.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
+                       ctypes.c_char_p, ctypes.c_uint]
+    rename.restype = ctypes.c_int
+    # AT_FDCWD; RENAME_EXCHANGE or RENAME_NOREPLACE. Never fall back to removal.
+    if rename(-100, os.fsencode(source), -100, os.fsencode(destination),
+              2 if exchange else 1):
+        code = ctypes.get_errno()
+        raise OSError(code, os.strerror(code), str(destination))
+
+
+def _sync_directory(path: Path) -> None:
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def _copy_font_file(source: str, destination: str) -> str:
+    result = shutil.copy2(source, destination)
+    with open(destination, "rb") as stream:
+        os.fsync(stream.fileno())
+    return result
+
+
+def _install_locked(family: str, dest: Path) -> Tuple[bool, str]:
+    css = _fetch_css(family)
+    urls = _font_urls_from_css(css)
+    if not urls:
+        return False, "not-found"
+    if dest.is_symlink() or (dest.exists() and not dest.is_dir()):
+        return False, "write-failed"
+
+    # Outside font discovery: fontconfig also scans hidden directories.
+    FONT_STAGING_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
+    stage = Path(tempfile.mkdtemp(prefix=f".{dest.name}-", dir=FONT_STAGING_DIR))
+    candidate = stage / "family"
+    keep_backup = False
+    try:
+        existing = dest.exists()
+        if existing:
+            # Preserve other files and styles, matching the previous installer.
+            shutil.copytree(dest, candidate, symlinks=True, copy_function=_copy_font_file)
+        else:
+            candidate.mkdir()
+        names = set()
+        for index, url in enumerate(urls, start=1):
+            name = _filename_for(url, index)
+            # Distinct subset URLs can share a basename.
+            while name in names:
+                name = f"{index}-{name}"
+            names.add(name)
+            data = _download_font(url)
+            if not data:
+                raise GoogleFontError("download-failed")
+            target = candidate / name
+            if target.is_symlink():
+                target.unlink()
+            with target.open("wb") as stream:
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            valid, output = run_cmd(["fc-scan", "--format", "%{family}", str(target)])
+            if not valid or not output.strip():
+                raise GoogleFontError("download-failed", output)
+        for directory, subdirs, files in os.walk(candidate, topdown=False):
+            _sync_directory(Path(directory))
+        _sync_directory(stage)
+        _sync_directory(stage.parent)
+        _rename_family(candidate, dest, exchange=existing)
+        try:
+            _sync_directory(dest.parent)
+            _sync_directory(stage)
+            cached, detail = run_cmd(["fc-cache", "-f", str(dest)], timeout=30)
+            if not cached:
+                raise GoogleFontError("write-failed", detail)
+        except (OSError, GoogleFontError):
+            try:
+                if existing:
+                    _rename_family(candidate, dest, exchange=True)
+                else:
+                    _rename_family(dest, candidate, exchange=False)
+                _sync_directory(dest.parent)
+                _sync_directory(stage)
+                run_cmd(["fc-cache", "-f", str(dest.parent)], timeout=30)
+            except OSError:
+                # Both directories are complete; retain the previous one for recovery.
+                keep_backup = True
+                log.exception("Font recovery retained at %s", stage)
+            raise
+        return True, str(dest)
+    finally:
+        if not keep_backup:
+            try:
+                shutil.rmtree(stage)
+            except OSError:
+                log.warning("Could not remove font staging directory %s", stage)
+
+
 def install_for_user(family: str) -> Tuple[bool, str]:
     """
     Install a Google Fonts family for the current user.
@@ -345,30 +457,16 @@ def install_for_user(family: str) -> Tuple[bool, str]:
     family = family.strip()
     if not family:
         return False, "empty"
+    slug = family_slug(family)
+    if slug in (".", ".."):
+        return False, "write-failed"
 
     try:
-        css = _fetch_css(family)
-        urls = _font_urls_from_css(css)
-        if not urls:
-            return False, "not-found"
-
-        dest = USER_FONT_DIR / family_slug(family)
-        dest.mkdir(parents=True, exist_ok=True)
-
-        written = 0
-        for index, url in enumerate(urls, start=1):
-            data = _download_font(url)
-            if not data:
-                continue
-            target = dest / _filename_for(url, index)
-            target.write_bytes(data)
-            written += 1
-
-        if written == 0:
-            return False, "download-failed"
-
-        run_cmd(["fc-cache", "-f", str(dest)], timeout=30)
-        return True, str(dest)
+        USER_FONT_DIR.mkdir(parents=True, exist_ok=True)
+        # Stable lock inode; shared by threads and processes, released on exit.
+        with (USER_FONT_DIR / f".{slug}.lock").open("a") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            return _install_locked(family, USER_FONT_DIR / slug)
     except GoogleFontError as exc:
         log.debug("google font install failed: %s (%s)", family, exc.detail or exc.code)
         return False, exc.code

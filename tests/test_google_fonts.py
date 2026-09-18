@@ -4,7 +4,41 @@
 import urllib.error
 from unittest.mock import patch
 
+import pytest
+
 import google_fonts
+
+
+@pytest.fixture(autouse=True)
+def isolated_font_staging(tmp_path, monkeypatch):
+    monkeypatch.setattr(google_fonts, "FONT_STAGING_DIR", tmp_path / "staging")
+
+
+@pytest.mark.parametrize("existing", [False, True])
+def test_failed_second_download_preserves_entire_family(tmp_path, existing):
+    root = tmp_path / "fonts"
+    dest = root / "roboto"
+    original = {"regular.ttf": b"old regular", "bold.ttf": b"old bold"}
+    if existing:
+        dest.mkdir(parents=True)
+        for name, data in original.items():
+            (dest / name).write_bytes(data)
+    css = " ".join(
+        f"url(https://fonts.gstatic.com/{name})" for name in original
+    )
+    with (
+        patch.object(google_fonts, "USER_FONT_DIR", root),
+        patch.object(google_fonts, "_fetch_css", return_value=css),
+        patch.object(google_fonts, "_download_font", side_effect=[
+            b"new regular", google_fonts.GoogleFontError("network")
+        ]),
+        patch.object(google_fonts, "run_cmd", return_value=(True, "Roboto")),
+    ):
+        assert google_fonts.install_for_user("Roboto") == (False, "network")
+    if existing:
+        assert {p.name: p.read_bytes() for p in dest.iterdir()} == original
+    else:
+        assert not dest.exists()
 
 
 class FakeResp:
@@ -43,7 +77,7 @@ def test_install_for_user_downloads_css_urls_and_refreshes_cache(tmp_path):
     with (
         patch("google_fonts.USER_FONT_DIR", tmp_path / "fonts"),
         patch("google_fonts.urllib.request.urlopen", side_effect=fake_urlopen),
-        patch("google_fonts.run_cmd", return_value=(True, "")) as mock_run,
+        patch("google_fonts.run_cmd", return_value=(True, "Roboto")) as mock_run,
     ):
         ok, info = google_fonts.install_for_user("Roboto")
 
