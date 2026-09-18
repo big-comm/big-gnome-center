@@ -17,6 +17,7 @@ DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 
 import json
 import logging
+import math
 import re
 import unicodedata
 import urllib.error
@@ -132,9 +133,36 @@ def _user_agent() -> str:
     return EGO_USER_AGENT.format(version=APP_VERSION)
 
 
+def _text(value: object) -> str:
+    return value if isinstance(value, str) else ""
+
+
+def _integer(value: object, default: int = 0, minimum: int = 0) -> int:
+    """Accept bounded whole numbers, including numeric strings, but not booleans."""
+    if type(value) not in (int, float, str):
+        return default
+    if isinstance(value, float) and (not math.isfinite(value) or not value.is_integer()):
+        return default
+    try:
+        number = int(value)
+    except ValueError:
+        return default
+    return number if minimum <= number <= 2**63 - 1 else default
+
+
+def _rating(value: object) -> float:
+    if type(value) not in (int, float, str):
+        return 0.0
+    try:
+        number = float(value)
+    except (ValueError, OverflowError):
+        return 0.0
+    return number if math.isfinite(number) and 0 <= number <= 5 else 0.0
+
+
 def _absolute_url(path_or_url: str) -> str:
     """Resolve URLs relativas (/static/...) contra o base do EGO."""
-    if not path_or_url:
+    if not isinstance(path_or_url, str) or not path_or_url:
         return ""
     if path_or_url.startswith("http://") or path_or_url.startswith("https://"):
         return path_or_url
@@ -179,8 +207,9 @@ def _http_json(url: str) -> Optional[dict]:
             raw = _read_capped(resp, _MAX_JSON_BYTES)
         if raw is None:
             return None
-        return json.loads(raw.decode("utf-8", errors="replace"))
-    except (urllib.error.URLError, OSError, json.JSONDecodeError) as exc:
+        payload = json.loads(raw.decode("utf-8", errors="replace"))
+        return payload if isinstance(payload, dict) else None
+    except (urllib.error.URLError, OSError, ValueError, RecursionError) as exc:
         log.debug("ego_client http %s failed: %s", url, exc)
         return None
 
@@ -200,22 +229,25 @@ def _http_bytes(url: str) -> Optional[bytes]:
 
 def _parse_summary(item: dict) -> Optional[ExtensionSummary]:
     """Tolerante a campos faltando — pula entradas que não têm uuid+name."""
-    uuid = item.get("uuid") or ""
-    name = item.get("name") or uuid
-    if not uuid:
+    if not isinstance(item, dict):
+        return None
+    uuid = _text(item.get("uuid"))
+    name = _text(item.get("name")) or uuid
+    if not uuid.strip():
         return None
     icon = item.get("icon") or ""
     return ExtensionSummary(
         uuid=uuid,
         name=name,
-        description=item.get("description", "") or "",
-        creator=item.get("creator", "") or "",
-        pk=int(item.get("pk", 0) or 0),
+        description=_text(item.get("description")),
+        creator=_text(item.get("creator")),
+        pk=_integer(item.get("pk")),
         icon_url=_absolute_url(icon),
-        downloads=int(item.get("downloads", 0) or 0),
-        rating=float(item.get("rating", 0) or 0),
-        rating_count=int(item.get("rating_count", 0) or 0),
-        shell_version_map=item.get("shell_version_map") or {},
+        downloads=_integer(item.get("downloads")),
+        rating=_rating(item.get("rating")),
+        rating_count=_integer(item.get("rating_count")),
+        shell_version_map=(item["shell_version_map"]
+                           if isinstance(item.get("shell_version_map"), dict) else {}),
     )
 
 
@@ -232,11 +264,10 @@ def _parse_comments(raw: object) -> List[CommentEntry]:
     for entry in raw:
         if not isinstance(entry, dict):
             continue
-        author = entry.get("username") or entry.get("author") or "anon"
-        rating_val = entry.get("rating")
-        rating = int(rating_val) if isinstance(rating_val, (int, float)) else 0
-        date = str(entry.get("date") or entry.get("created") or "")
-        text = (entry.get("comment") or entry.get("text") or "").strip()
+        author = _text(entry.get("username")) or _text(entry.get("author")) or "anon"
+        rating = int(_rating(entry.get("rating")))
+        date = _text(entry.get("date")) or _text(entry.get("created"))
+        text = (_text(entry.get("comment")) or _text(entry.get("text"))).strip()
         if text:
             out.append(CommentEntry(author=author, rating=rating, date=date, text=text))
     return out
@@ -310,34 +341,42 @@ def search(
     if use_cache:
         cached = ego_cache.json_get("search", cache_key, EGO_CACHE_TTL_SEARCH)
         if cached is not None:
-            return _result_from_dict(cached, query=query, sort=sort)
+            result = _result_from_dict(cached, query=query, sort=sort)
+            if result is not None:
+                return result
 
     url = f"{EGO_BASE_URL}/extension-query/?" + urllib.parse.urlencode(params)
     payload = _http_json(url)
     if payload is None:
         return None
 
-    ego_cache.json_put("search", cache_key, payload)
-    return _result_from_dict(payload, query=query, sort=sort)
+    result = _result_from_dict(payload, query=query, sort=sort)
+    if result is not None:
+        ego_cache.json_put("search", cache_key, payload)
+    return result
 
 
 def _result_from_dict(
     payload: dict,
     query: str = "",
     sort: str = SORT_RELEVANCE,
-) -> SearchResult:
-    raw_list = payload.get("extensions") or []
+) -> Optional[SearchResult]:
+    if not isinstance(payload, dict) or not isinstance(payload.get("extensions"), list):
+        return None
+    raw_list = payload["extensions"]
     items: List[ExtensionSummary] = []
     for item in raw_list:
         summary = _parse_summary(item)
         if summary is not None:
             items.append(summary)
+    if raw_list and not items:
+        return None
     ranked = _rank_by_relevance(items, query) if sort == SORT_RELEVANCE else items
     return SearchResult(
         extensions=ranked,
-        page=int(payload.get("page", 1) or 1),
-        num_pages=int(payload.get("numpages", 1) or 1),
-        total=int(payload.get("total", len(items)) or len(items)),
+        page=_integer(payload.get("page"), 1, 1),
+        num_pages=_integer(payload.get("numpages"), 1, 1),
+        total=_integer(payload.get("total"), len(items)),
     )
 
 
@@ -358,7 +397,9 @@ def info(
     if use_cache:
         cached = ego_cache.json_get("info", cache_key, EGO_CACHE_TTL_INFO)
         if cached is not None:
-            return _info_from_dict(cached)
+            detail = _info_from_dict(cached)
+            if detail is not None:
+                return detail
 
     params = {"uuid": uuid, "shell_version": shell}
     url = f"{EGO_BASE_URL}/extension-info/?" + urllib.parse.urlencode(params)
@@ -366,46 +407,42 @@ def info(
     if payload is None:
         return None
 
-    ego_cache.json_put("info", cache_key, payload)
-    return _info_from_dict(payload)
+    detail = _info_from_dict(payload)
+    if detail is not None:
+        ego_cache.json_put("info", cache_key, payload)
+    return detail
 
 
-def _info_from_dict(payload: dict) -> ExtensionInfo:
-    summary = _parse_summary(payload) or ExtensionSummary(
-        uuid=payload.get("uuid", ""),
-        name=payload.get("name", ""),
-        description="",
-        creator=payload.get("creator", ""),
-        pk=int(payload.get("pk", 0) or 0),
-        icon_url="",
-        downloads=0,
-        rating=0.0,
-        rating_count=0,
-    )
+def _info_from_dict(payload: dict) -> Optional[ExtensionInfo]:
+    summary = _parse_summary(payload)
+    if summary is None:
+        return None
     screenshot_url = _absolute_url(payload.get("screenshot") or "")
     screenshots = [ScreenshotRef(url=screenshot_url)] if screenshot_url else []
     extra = payload.get("screenshots") or []
     if isinstance(extra, list):
         for s in extra:
+            if not isinstance(s, (str, dict)):
+                continue
             url = _absolute_url(s if isinstance(s, str) else s.get("url", ""))
             if url and url != screenshot_url:
                 screenshots.append(ScreenshotRef(url=url))
     return ExtensionInfo(
         uuid=summary.uuid,
         name=summary.name,
-        description=summary.description or payload.get("description", "") or "",
+        description=summary.description,
         creator=summary.creator,
         pk=summary.pk,
-        url=_absolute_url(payload.get("link") or f"/extension/{summary.pk}/"),
+        url=_absolute_url(_text(payload.get("link")) or f"/extension/{summary.pk}/"),
         icon_url=summary.icon_url,
         screenshot_url=screenshot_url,
         screenshots=screenshots,
         downloads=summary.downloads,
         rating=summary.rating,
         rating_count=summary.rating_count,
-        shell_version_map=payload.get("shell_version_map") or summary.shell_version_map,
-        homepage=payload.get("url") or "",
-        license=payload.get("license") or "",
+        shell_version_map=summary.shell_version_map,
+        homepage=_text(payload.get("url")),
+        license=_text(payload.get("license")),
         comments=_parse_comments(payload.get("comments")),
     )
 

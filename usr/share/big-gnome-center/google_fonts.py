@@ -13,6 +13,7 @@ import errno
 import fcntl
 import json
 import logging
+import math
 import os
 import re
 import shutil
@@ -188,27 +189,45 @@ def _strip_xssi_prefix(text: str) -> str:
     return text
 
 
+def _catalog_entry(item: object, allow_name: bool = False) -> FontFamily | None:
+    """Require a usable family name; normalize optional category metadata."""
+    if not isinstance(item, dict):
+        return None
+    family = item.get("family") or (item.get("name") if allow_name else "")
+    if not isinstance(family, str) or not family.strip():
+        return None
+    category = item.get("category")
+    if not isinstance(category, str):
+        category = "sans-serif"
+    category = category.strip().lower().replace(" ", "-") or "sans-serif"
+    return FontFamily(family.strip(), category)
+
+
 def _parse_catalog_payload(raw: str) -> List[FontFamily]:
     payload = json.loads(_strip_xssi_prefix(raw))
+    if not isinstance(payload, dict):
+        return []
     items = payload.get("familyMetadataList") or payload.get("items") or []
     if not isinstance(items, list):
         return []
 
     entries = []
     for pos, item in enumerate(items):
-        if not isinstance(item, dict):
+        entry = _catalog_entry(item, allow_name=True)
+        if entry is None:
             continue
-        family = (item.get("family") or item.get("name") or "").strip()
-        if not family:
-            continue
-        category = (item.get("category") or "sans-serif").strip().lower().replace(" ", "-")
-        category = category or "sans-serif"
         rank = item.get("popularity", pos)
         try:
+            if type(rank) not in (int, float, str):
+                raise ValueError("invalid popularity rank")
+            if isinstance(rank, float) and (not math.isfinite(rank) or not rank.is_integer()):
+                raise ValueError("invalid popularity rank")
             rank_num = int(rank)
+            if rank_num < 0:
+                rank_num = pos
         except (TypeError, ValueError):
             rank_num = pos
-        entries.append((rank_num, pos, FontFamily(family, category)))
+        entries.append((rank_num, pos, entry))
 
     # If the metadata carries a popularity rank, lower ranks are more popular.
     # Otherwise this preserves endpoint order through ``pos``.
@@ -224,17 +243,16 @@ def _catalog_to_json(entries: List[FontFamily]) -> dict:
 
 
 def _catalog_from_json(payload: dict) -> List[FontFamily]:
+    if not isinstance(payload, dict):
+        return []
     items = payload.get("items") or []
     if not isinstance(items, list):
         return []
     entries = []
     for item in items:
-        if not isinstance(item, dict):
-            continue
-        family = (item.get("family") or "").strip()
-        if family:
-            category = (item.get("category") or "sans-serif").strip().lower().replace(" ", "-")
-            entries.append(FontFamily(family, category or "sans-serif"))
+        entry = _catalog_entry(item)
+        if entry is not None:
+            entries.append(entry)
     return entries
 
 
@@ -243,8 +261,16 @@ def _read_cached_catalog(fresh_only: bool) -> List[FontFamily]:
         if not CACHE_FILE.exists():
             return []
         payload = json.loads(CACHE_FILE.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            return []
         if fresh_only:
-            age = time.time() - float(payload.get("saved_at", 0) or 0)
+            saved_at = payload.get("saved_at", 0)
+            if type(saved_at) not in (int, float, str):
+                return []
+            saved_at = float(saved_at)
+            if not math.isfinite(saved_at) or saved_at < 0:
+                return []
+            age = time.time() - saved_at
             if age > CATALOG_CACHE_TTL:
                 return []
         return _catalog_from_json(payload)
@@ -273,7 +299,7 @@ def _fetch_catalog_from_network() -> List[FontFamily]:
         entries = _parse_catalog_payload(raw.decode("utf-8", errors="replace"))
     except GoogleFontError:
         raise
-    except (TimeoutError, OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
+    except (TimeoutError, OSError, urllib.error.URLError, ValueError, RecursionError) as exc:
         raise GoogleFontError("network", str(exc)) from exc
     if not entries:
         raise GoogleFontError("not-found")

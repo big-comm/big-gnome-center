@@ -55,7 +55,8 @@ def json_get(namespace: str, key: str, ttl_seconds: int) -> Optional[dict]:
         if age > ttl_seconds:
             return None
         with path.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
+            payload = json.load(fh)
+        return payload if isinstance(payload, dict) else None
     except Exception as exc:
         log.debug("ego_cache.json_get %s/%s failed: %s", namespace, key, exc)
         return None
