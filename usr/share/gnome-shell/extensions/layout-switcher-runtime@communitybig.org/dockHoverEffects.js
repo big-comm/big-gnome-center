@@ -90,8 +90,10 @@ export class DockHoverEffects {
     }
 
     releaseAll() {
-        for (const dash of [...this._records.keys()])
-            this._detach(dash, true);
+        for (const [dash, record] of [...this._records]) {
+            if (this._records.get(dash) === record)
+                this._detach(dash, true);
+        }
     }
 
     diagnostics() {
@@ -127,27 +129,36 @@ export class DockHoverEffects {
             states: new Map(),
         };
         this._records.set(dash, record);
-        record.destroyId = dash.connect('destroy', () => {
-            this._detach(dash, false, false);
-        });
-        record.sourceId = GLib.timeout_add(
-            GLib.PRIORITY_DEFAULT,
-            FRAME_INTERVAL_MS,
-            () => {
-                if (!this._records.has(dash))
-                    return GLib.SOURCE_REMOVE;
-                try {
-                    this._tick(dash, record);
-                } catch (error) {
-                    console.warn(
-                        `[layout-switcher] Dock magnification update failed: ${error}`,
-                    );
-                    this._detach(dash, true);
-                    return GLib.SOURCE_REMOVE;
-                }
-                return GLib.SOURCE_CONTINUE;
-            },
-        );
+        try {
+            record.destroyId = dash.connect('destroy', () => {
+                if (this._records.get(dash) === record)
+                    this._detach(dash, false, false);
+            });
+            record.sourceId = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                FRAME_INTERVAL_MS,
+                () => {
+                    if (this._records.get(dash) !== record)
+                        return GLib.SOURCE_REMOVE;
+                    try {
+                        this._tick(dash, record);
+                    } catch (error) {
+                        console.warn(
+                            `[layout-switcher] Dock magnification update failed: ${error}`,
+                        );
+                        if (this._records.get(dash) === record)
+                            this._detach(dash, true);
+                        return GLib.SOURCE_REMOVE;
+                    }
+                    return this._records.get(dash) === record
+                        ? GLib.SOURCE_CONTINUE : GLib.SOURCE_REMOVE;
+                },
+            );
+        } catch (error) {
+            if (this._records.get(dash) === record)
+                this._detach(dash, true);
+            throw error;
+        }
     }
 
     _detach(dash, reset, disconnect = true) {
@@ -155,15 +166,18 @@ export class DockHoverEffects {
         if (!record)
             return;
         this._records.delete(dash);
-        if (record.sourceId > 0) {
-            GLib.source_remove(record.sourceId);
-            record.sourceId = 0;
-        }
-        if (disconnect && record.destroyId > 0)
-            dash.disconnect(record.destroyId);
-        for (const [actor, state] of record.states)
-            this._destroyState(actor, state, reset);
+        const sourceId = record.sourceId;
+        const destroyId = record.destroyId;
+        record.sourceId = 0;
+        record.destroyId = 0;
+        if (sourceId > 0)
+            this._cleanup(() => GLib.source_remove(sourceId));
+        if (disconnect && destroyId > 0)
+            this._cleanup(() => dash.disconnect(destroyId));
+        const states = [...record.states];
         record.states.clear();
+        for (const [actor, state] of states)
+            this._destroyState(actor, state, reset);
         if (reset)
             this._resetCount++;
     }
@@ -179,8 +193,8 @@ export class DockHoverEffects {
         for (const [actor, state] of [...record.states]) {
             if (liveActors.has(actor))
                 continue;
-            this._destroyState(actor, state, true);
             record.states.delete(actor);
+            this._destroyState(actor, state, true);
         }
         if (actors.length === 0)
             return;
@@ -207,11 +221,14 @@ export class DockHoverEffects {
         const maximum = 1 + this._intensity / 100;
 
         for (const actor of actors) {
+            if (this._records.get(dash) !== record)
+                return;
             let state = record.states.get(actor);
             if (!state) {
                 state = this._createState(record, actor, maximum);
-                record.states.set(actor, state);
             }
+            if (this._records.get(dash) !== record || state.retired)
+                return;
             const [actorX, actorY] = actor.get_transformed_position();
             const [actorWidth, actorHeight] = actor.get_transformed_size();
             const center = horizontal
@@ -255,8 +272,6 @@ export class DockHoverEffects {
             reactive: false,
             opacity: 255,
         });
-        clone.hide();
-        Main.uiGroup.add_child(clone);
         const state = {
             clone,
             scale: 1,
@@ -266,12 +281,29 @@ export class DockHoverEffects {
             originalCreateIcon: null,
             iconChildAddedId: 0,
             destroyId: 0,
+            retired: false,
+            mappedIcon: null,
         };
-        this._enableHighResolutionSource(actor, state, maximum);
-        state.destroyId = actor.connect('destroy', () => {
-            record.states.delete(actor);
-            clone.destroy();
-        });
+        record.states.set(actor, state);
+        try {
+            clone.hide();
+            Main.uiGroup.add_child(clone);
+            if (!state.retired)
+                this._enableHighResolutionSource(actor, state, maximum);
+            if (!state.retired) {
+                state.destroyId = actor.connect('destroy', () => {
+                    if (record.states.get(actor) !== state)
+                        return;
+                    record.states.delete(actor);
+                    this._destroyState(actor, state, false);
+                });
+            }
+        } catch (error) {
+            if (record.states.get(actor) === state)
+                record.states.delete(actor);
+            this._destroyState(actor, state, true);
+            throw error;
+        }
         return state;
     }
 
@@ -296,13 +328,17 @@ export class DockHoverEffects {
     }
 
     _destroyState(actor, state, restore) {
-        if (state.destroyId > 0)
-            actor.disconnect(state.destroyId);
-        if (restore) {
-            this._restoreSource(actor, state);
-            this._disableHighResolutionSource(state);
-        }
-        state.clone?.destroy();
+        if (state.retired)
+            return;
+        state.retired = true;
+        const destroyId = state.destroyId;
+        state.destroyId = 0;
+        if (destroyId > 0)
+            this._cleanup(() => actor.disconnect(destroyId));
+        if (restore)
+            this._cleanup(() => this._restoreSource(actor, state));
+        this._disableHighResolutionSource(state, restore);
+        this._cleanup(() => state.clone?.destroy());
         state.clone = null;
     }
 
@@ -315,31 +351,60 @@ export class DockHoverEffects {
 
         state.baseIcon = baseIcon;
         state.originalCreateIcon = baseIcon.createIcon;
-        baseIcon.createIcon = size =>
-            state.originalCreateIcon.call(
-                baseIcon, Math.ceil(size * maximum));
-        state.iconChildAddedId = baseIcon._iconBin.connect('child-added', () =>
-            this._constrainHighResolutionIcon(baseIcon));
+        const original = state.originalCreateIcon;
+        state.createIcon = function (size, ...args) {
+            const requested = state.retired || state.baseIcon !== baseIcon
+                ? size : Math.ceil(size * maximum);
+            return original.call(this, requested, ...args);
+        };
+        baseIcon.createIcon = state.createIcon;
+        state.iconChildAddedId = baseIcon._iconBin.connect('child-added', () => {
+            if (!state.retired && state.baseIcon === baseIcon)
+                this._constrainHighResolutionIcon(state);
+        });
         baseIcon._createIconTexture(baseIcon.iconSize);
-        this._constrainHighResolutionIcon(baseIcon);
+        if (!state.retired)
+            this._constrainHighResolutionIcon(state);
     }
 
-    _disableHighResolutionSource(state) {
+    _disableHighResolutionSource(state, refresh = true) {
+        this._cancelIconMap(state);
         const {baseIcon} = state;
         if (!baseIcon)
             return;
-        if (state.iconChildAddedId > 0)
-            baseIcon._iconBin.disconnect(state.iconChildAddedId);
-        baseIcon.createIcon = state.originalCreateIcon;
-        if (baseIcon.get_stage())
-            baseIcon._createIconTexture(baseIcon.iconSize);
+        const id = state.iconChildAddedId;
+        const original = state.originalCreateIcon;
+        const owned = state.createIcon;
         state.baseIcon = null;
         state.originalCreateIcon = null;
+        state.createIcon = null;
         state.iconChildAddedId = 0;
+        if (id > 0)
+            this._cleanup(() => baseIcon._iconBin.disconnect(id));
+        this._cleanup(() => {
+            if (baseIcon.createIcon !== owned)
+                return;
+            baseIcon.createIcon = original;
+            if (refresh && baseIcon.get_stage())
+                baseIcon._createIconTexture(baseIcon.iconSize);
+        });
     }
 
-    _constrainHighResolutionIcon(baseIcon) {
+    _cancelIconMap(state) {
+        const pending = state.mappedIcon;
+        state.mappedIcon = null;
+        if (pending?.id)
+            this._cleanup(() => pending.child.disconnect(pending.id));
+    }
+
+    _constrainHighResolutionIcon(state) {
+        const {baseIcon} = state;
+        if (state.retired || !baseIcon)
+            return;
         const child = baseIcon._iconBin.child;
+        if (state.mappedIcon?.child === child)
+            return;
+        this._cancelIconMap(state);
         if (!child)
             return;
         const scaleFactor = St.ThemeContext.get_for_stage(global.stage)
@@ -349,19 +414,33 @@ export class DockHoverEffects {
             child.set_size(size, size);
             return;
         }
-        const mappedId = child.connect('notify::mapped', () => {
+        const pending = {child, id: 0};
+        state.mappedIcon = pending;
+        pending.id = child.connect('notify::mapped', () => {
+            if (state.retired || state.mappedIcon !== pending ||
+                state.baseIcon !== baseIcon || baseIcon._iconBin.child !== child)
+                return;
             if (!child.mapped)
                 return;
+            this._cancelIconMap(state);
             child.set_size(size, size);
-            child.disconnect(mappedId);
         });
     }
 
     _restoreSource(actor, state) {
         if (!state.sourceHidden)
             return;
-        actor.opacity = state.sourceOpacity;
         state.sourceHidden = false;
+        if (actor.opacity === 0)
+            actor.opacity = state.sourceOpacity;
+    }
+
+    _cleanup(callback) {
+        try {
+            callback();
+        } catch (error) {
+            console.warn(`[layout-switcher] Dock magnification cleanup failed: ${error}`);
+        }
     }
 
     _setPivot(actor, position) {
