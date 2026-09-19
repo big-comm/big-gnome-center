@@ -21,6 +21,7 @@ export class PanelController {
         this._panel = Main.panel;
         this._panelBox = Main.layoutManager.panelBox;
         this._originalStyle = this._panel.get_style();
+        this._ownedStyle = null;
         this._originalVisible = this._panelBox.visible;
         this._originalReactive = this._panel.reactive;
         this._originalTrackHover = this._panel.track_hover;
@@ -47,7 +48,22 @@ export class PanelController {
         this._fullscreenSurfaceRepairIdle = 0;
         this._repairingFullscreenSurface = false;
         this._fullscreenSurfaceRepairCount = 0;
+        this._fullscreenChildrenGeneration = 0;
 
+        this._initializing = true;
+        try {
+            this._enable();
+        } catch (error) {
+            this._destroyRequested = true;
+            throw error;
+        } finally {
+            this._initializing = false;
+            if (this._destroyRequested)
+                this.destroy();
+        }
+    }
+
+    _enable() {
         this._panel.reactive = true;
         this._panel.track_hover = true;
         this._revealZone = new St.Widget({
@@ -60,19 +76,19 @@ export class PanelController {
             trackFullscreen: true,
         });
         this._positionRevealZone();
-        this._autohide = new PanelAutohide(this._panelBox, this._revealZone, () => {
+        this._autohide = new PanelAutohide(this._panelBox, this._revealZone, this._guard(() => {
             this._pointerReveal = true;
             this._cancelHide();
             this._applyVisibility();
             this._queueHide();
-        });
+        }));
 
-        this._menuShortcuts = new PanelMenuShortcuts(this._panel, () => {
+        this._menuShortcuts = new PanelMenuShortcuts(this._panel, this._guard(() => {
             this._pointerReveal = true;
             this._cancelHide();
             this._applyVisibility(true);
             this._queueHide();
-        });
+        }));
 
         this._connect(this._settings, 'changed', () => this._apply());
         this._connect(global.display, 'notify::focus-window', () => {
@@ -121,9 +137,18 @@ export class PanelController {
     }
 
     destroy() {
+        if (this._destroyed)
+            return;
+        if (this._initializing) {
+            this._destroyRequested = true;
+            return;
+        }
+        this._destroyed = true;
         this._cancelHide();
-        this._menuShortcuts.destroy();
-        this._autohide.destroy();
+        this._cleanup(() => this._menuShortcuts?.destroy());
+        this._menuShortcuts = null;
+        this._cleanup(() => this._autohide?.destroy());
+        this._autohide = null;
         this._cancelOpacityApply();
         this._disconnectFullscreenWindowActor();
         this._disconnectFocusWindow();
@@ -134,25 +159,50 @@ export class PanelController {
                 // Shell teardown may dispose an object first.
             }
         }
-        Main.layoutManager.removeChrome(this._revealZone);
-        this._revealZone.destroy();
-        this._panel.set_style(this._originalStyle);
-        this._panel.reactive = this._originalReactive;
-        this._panel.track_hover = this._originalTrackHover;
-        if (this._panelActorData) {
-            this._panelActorData.affectsStruts = this._originalAffectsStruts;
-            this._panelActorData.trackFullscreen = this._originalTrackFullscreen;
-            Main.layoutManager._queueUpdateRegions();
+        if (this._revealZone) {
+            this._cleanup(() => Main.layoutManager.removeChrome(this._revealZone));
+            this._cleanup(() => this._revealZone.destroy());
         }
-        if (this._originalVisible)
-            this._panelBox.show();
-        else
-            this._panelBox.hide();
+        this._cleanup(() => {
+            if (this._ownedStyle !== null && this._panel.get_style() === this._ownedStyle)
+                this._panel.set_style(this._originalStyle);
+        });
+        this._cleanup(() => { this._panel.reactive = this._originalReactive; });
+        this._cleanup(() => { this._panel.track_hover = this._originalTrackHover; });
+        if (this._panelActorData) {
+            this._cleanup(() => { this._panelActorData.affectsStruts = this._originalAffectsStruts; });
+            this._cleanup(() => { this._panelActorData.trackFullscreen = this._originalTrackFullscreen; });
+            this._cleanup(() => Main.layoutManager._queueUpdateRegions());
+        }
+        this._cleanup(() => {
+            if (this._originalVisible)
+                this._panelBox.show();
+            else
+                this._panelBox.hide();
+        });
         this._settings = null;
         this._panel = null;
         this._panelBox = null;
         this._revealZone = null;
         this._dockProvider = null;
+        this._panelActorData = null;
+        this._ownedStyle = null;
+    }
+
+    _cleanup(callback) {
+        try {
+            callback();
+        } catch (error) {
+            console.warn(`[community-dock] Panel cleanup failed: ${error}`);
+        }
+    }
+
+    _guard(callback) {
+        return (...args) => {
+            if (!this._destroyed && !this._destroyRequested)
+                return callback(...args);
+            return undefined;
+        };
     }
 
     diagnostics() {
@@ -192,7 +242,7 @@ export class PanelController {
 
     _connect(object, signal, callback) {
         try {
-            this._signals.push([object, object.connect(signal, callback)]);
+            this._signals.push([object, object.connect(signal, this._guard(callback))]);
         } catch (error) {
             console.warn(`[community-dock] panel signal ${signal} unavailable: ${error}`);
         }
@@ -228,7 +278,10 @@ export class PanelController {
             try {
                 this._windowSignals.push([
                     window,
-                    window.connect(signal, () => this._onWindowGeometryChanged()),
+                    window.connect(signal, this._guard(() => {
+                        if (this._focusWindow === window)
+                            this._onWindowGeometryChanged();
+                    })),
                 ]);
             } catch (error) {
                 console.warn(`[community-dock] window signal ${signal} unavailable: ${error}`);
@@ -254,8 +307,10 @@ export class PanelController {
 
     _ensureFullscreenSurface() {
         const window = this._focusWindow;
-        if (!window?.fullscreen || !this._focusMonitor()?.inFullscreen)
+        if (!window?.fullscreen || !this._focusMonitor()?.inFullscreen) {
+            this._disconnectFullscreenWindowActor();
             return false;
+        }
         const actor = global.get_window_actors()
             .find(candidate => candidate.meta_window === window);
         this._watchFullscreenWindowActor(actor);
@@ -268,10 +323,12 @@ export class PanelController {
         const surface = actor?.get_children().find(child =>
             String(child.constructor?.name)
                 .includes('MetaSurfaceContainerActor'));
-        if (!surface || surface === this._fullscreenSurface)
+        if (surface === this._fullscreenSurface)
             return;
 
         this._disconnectFullscreenSurface();
+        if (!surface)
+            return;
         this._fullscreenSurface = surface;
         for (const signal of [
             'child-added',
@@ -282,11 +339,13 @@ export class PanelController {
             try {
                 this._fullscreenSurfaceSignals.push([
                     surface,
-                    surface.connect(signal, () => {
+                    surface.connect(signal, this._guard(() => {
+                        if (this._fullscreenWindowActor !== actor || this._fullscreenSurface !== surface)
+                            return;
                         if (signal === 'child-added' || signal === 'child-removed')
                             this._watchFullscreenSurfaceChildren(actor, surface);
                         this._queueFullscreenSurfaceRepair();
-                    }),
+                    })),
                 ]);
             } catch (error) {
                 console.warn(`[community-dock] surface signal ${signal} unavailable: ${error}`);
@@ -297,6 +356,7 @@ export class PanelController {
 
     _watchFullscreenSurfaceChildren(actor, surface) {
         this._disconnectFullscreenSurfaceChildren();
+        const generation = this._fullscreenChildrenGeneration;
         for (const child of surface.get_children()) {
             for (const signal of [
                 'notify::allocation',
@@ -309,8 +369,11 @@ export class PanelController {
                 try {
                     this._fullscreenSurfaceChildSignals.push([
                         child,
-                        child.connect(signal,
-                            () => this._queueFullscreenSurfaceRepair()),
+                        child.connect(signal, this._guard(() => {
+                            if (generation === this._fullscreenChildrenGeneration &&
+                                this._fullscreenWindowActor === actor && this._fullscreenSurface === surface)
+                                this._queueFullscreenSurfaceRepair();
+                        })),
                     ]);
                 } catch (error) {
                     console.warn(`[community-dock] surface child signal ${signal} unavailable: ${error}`);
@@ -320,15 +383,19 @@ export class PanelController {
     }
 
     _watchFullscreenWindowActor(actor) {
-        if (!actor || actor === this._fullscreenWindowActor)
+        if (actor === this._fullscreenWindowActor)
             return;
 
         this._disconnectFullscreenWindowActor();
+        if (!actor)
+            return;
         this._fullscreenWindowActor = actor;
-        const repair = () => {
+        const repair = this._guard(() => {
+            if (this._fullscreenWindowActor !== actor)
+                return;
             this._watchFullscreenSurface(actor);
             this._queueFullscreenSurfaceRepair();
-        };
+        });
         for (const signal of [
             'child-added',
             'child-removed',
@@ -376,6 +443,7 @@ export class PanelController {
     }
 
     _disconnectFullscreenSurfaceChildren() {
+        this._fullscreenChildrenGeneration++;
         for (const [object, id] of
             this._fullscreenSurfaceChildSignals.splice(0)) {
             try {
@@ -387,15 +455,23 @@ export class PanelController {
     }
 
     _queueFullscreenSurfaceRepair() {
-        if (this._fullscreenSurfaceRepairIdle)
+        if (this._destroyed || this._destroyRequested || this._fullscreenSurfaceRepairIdle)
             return;
-        this._fullscreenSurfaceRepairIdle = GLib.idle_add(
+        const actor = this._fullscreenWindowActor;
+        const surface = this._fullscreenSurface;
+        if (!actor || !surface)
+            return;
+        const id = this._fullscreenSurfaceRepairIdle = GLib.idle_add(
             GLib.PRIORITY_DEFAULT_IDLE,
             () => {
+                if (this._destroyed || this._destroyRequested ||
+                    this._fullscreenSurfaceRepairIdle !== id ||
+                    this._fullscreenWindowActor !== actor || this._fullscreenSurface !== surface)
+                    return GLib.SOURCE_REMOVE;
                 this._fullscreenSurfaceRepairIdle = 0;
                 this._repairFullscreenSurface(
-                    this._fullscreenWindowActor,
-                    this._fullscreenSurface,
+                    actor,
+                    surface,
                 );
                 return GLib.SOURCE_REMOVE;
             },
@@ -403,10 +479,10 @@ export class PanelController {
     }
 
     _cancelFullscreenSurfaceRepair() {
-        if (!this._fullscreenSurfaceRepairIdle)
-            return;
-        GLib.Source.remove(this._fullscreenSurfaceRepairIdle);
+        const id = this._fullscreenSurfaceRepairIdle;
         this._fullscreenSurfaceRepairIdle = 0;
+        if (id)
+            this._cleanup(() => GLib.Source.remove(id));
     }
 
     _fullscreenSurfaceReady(surface, monitor) {
@@ -469,16 +545,24 @@ export class PanelController {
     }
 
     _applyOpacity() {
+        if (this._destroyed || this._destroyRequested)
+            return;
         const opacity = Math.min(100, this._settings.get_uint('panel-opacity')) / 100;
         const base = this._originalStyle ? `${this._originalStyle}; ` : '';
-        this._panel.set_style(
-            `${base}background-color: rgba(0, 0, 0, ${opacity.toFixed(2)});`);
+        this._ownedStyle = `${base}background-color: rgba(0, 0, 0, ${opacity.toFixed(2)});`;
+        this._panel.set_style(this._ownedStyle);
     }
 
     _queueOpacityApply() {
+        if (this._destroyed || this._destroyRequested)
+            return;
         this._applyOpacity();
+        if (this._destroyed || this._destroyRequested)
+            return;
         this._cancelOpacityApply();
-        this._opacityIdle = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        const id = this._opacityIdle = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            if (this._destroyed || this._destroyRequested || this._opacityIdle !== id)
+                return GLib.SOURCE_REMOVE;
             this._opacityIdle = 0;
             if (this._settings)
                 this._applyOpacity();
@@ -487,14 +571,14 @@ export class PanelController {
     }
 
     _cancelOpacityApply() {
-        if (!this._opacityIdle)
-            return;
-        GLib.Source.remove(this._opacityIdle);
+        const id = this._opacityIdle;
         this._opacityIdle = 0;
+        if (id)
+            this._cleanup(() => GLib.Source.remove(id));
     }
 
     _applyVisibility(immediate = false) {
-        if (this._applying)
+        if (this._destroyed || this._destroyRequested || this._applying)
             return;
         this._applying = true;
         try {
@@ -565,8 +649,12 @@ export class PanelController {
     }
 
     _queueHide() {
+        if (this._destroyed || this._destroyRequested)
+            return;
         this._cancelHide();
-        this._hideTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+        const id = this._hideTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+            if (this._destroyed || this._destroyRequested || this._hideTimeout !== id)
+                return GLib.SOURCE_REMOVE;
             this._hideTimeout = 0;
             if (!this._autohide.pointerInside() && !this._panelInteractionActive()) {
                 this._pointerReveal = false;
@@ -579,10 +667,10 @@ export class PanelController {
     }
 
     _cancelHide() {
-        if (!this._hideTimeout)
-            return;
-        GLib.Source.remove(this._hideTimeout);
+        const id = this._hideTimeout;
         this._hideTimeout = 0;
+        if (id)
+            this._cleanup(() => GLib.Source.remove(id));
     }
 
     _panelInteractionActive() {
