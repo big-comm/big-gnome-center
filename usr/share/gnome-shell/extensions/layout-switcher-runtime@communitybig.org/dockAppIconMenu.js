@@ -99,10 +99,11 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
     }
 
     removeAll() {
-        super.removeAll();
-
         delete this._allWindowsMenuItem;
+        delete this._windowPreviewGeneration;
         delete this._quitMenuItem;
+
+        super.removeAll();
     }
 
     _rebuildMenu() {
@@ -118,14 +119,11 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
         if (Docking.DockSurfaceManager.settings.showWindowsPreview) {
             // Display the app windows menu items and the separator between windows
             // of the current desktop and other windows.
-            const windows = this.sourceActor.getInterestingWindows();
-
             this._allWindowsMenuItem = new PopupMenu.PopupSubMenuMenuItem(__('All Windows'), false);
             if (this._allWindowsMenuItem.menu?.actor)
                 this._allWindowsMenuItem.menu.actor.overlayScrollbars = true;
             this._allWindowsMenuItem.hide();
-            if (windows.length > 0)
-                this.addMenuItem(this._allWindowsMenuItem);
+            this.addMenuItem(this._allWindowsMenuItem);
         } else {
             const windows = this.sourceActor.getInterestingWindows();
 
@@ -297,6 +295,9 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
     // update menu content when application windows change. This is desirable as actions
     // acting on windows (closing) are performed while the menu is shown.
     update() {
+        if (!this.sourceActor || !this._quitMenuItem)
+            return;
+
         // update, show or hide the quit menu
         if (this.sourceActor.windowsCount > 0) {
             if (this.sourceActor.windowsCount === 1) {
@@ -312,7 +313,8 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
             this._quitMenuItem.actor.hide();
         }
 
-        if (Docking.DockSurfaceManager.settings.showWindowsPreview) {
+        if (Docking.DockSurfaceManager.settings.showWindowsPreview && this._allWindowsMenuItem) {
+            const allWindowsMenuItem = this._allWindowsMenuItem;
             const windows = this.sourceActor.getInterestingWindows();
 
             // update, show, or hide the allWindows menu
@@ -327,6 +329,8 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
                 oldWindows.indexOf(w) < 0);
             if (newWindows.length > 0) {
                 this._populateAllWindowMenu(windows);
+                if (this._allWindowsMenuItem !== allWindowsMenuItem)
+                    return;
 
                 // Try to set the width to that of the submenu.
                 // TODO: can't get the actual size, getting a bit less.
@@ -354,7 +358,17 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
     }
 
     _populateAllWindowMenu(windows) {
-        this._allWindowsMenuItem.menu.removeAll();
+        const allWindowsMenuItem = this._allWindowsMenuItem;
+        if (!allWindowsMenuItem)
+            return;
+
+        const generation = {};
+        this._windowPreviewGeneration = generation;
+        const isCurrent = () => this._allWindowsMenuItem === allWindowsMenuItem &&
+            this._windowPreviewGeneration === generation;
+        allWindowsMenuItem.menu.removeAll();
+        if (!isCurrent())
+            return;
 
         if (windows.length > 0) {
             const activeWorkspace = global.workspace_manager.get_active_workspace();
@@ -363,23 +377,24 @@ export const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu
             for (let i = 0; i < windows.length; i++) {
                 const window = windows[i];
                 if (!separatorShown && window.get_workspace() !== activeWorkspace) {
-                    this._allWindowsMenuItem.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+                    allWindowsMenuItem.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
                     separatorShown = true;
                 }
 
                 const item = new WindowPreview.WindowPreviewMenuItem(window,
                     St.Side.LEFT);
-                this._allWindowsMenuItem.menu.addMenuItem(item);
+                allWindowsMenuItem.menu.addMenuItem(item);
                 item.connect('activate', () => {
-                    this.emit('activate-window', window);
+                    if (isCurrent())
+                        this.emit('activate-window', window);
                 });
 
                 // This is to achieve a more graceful transition when the last
                 // window is closed.
                 item.connect('destroy', () => {
                     // It's still counting the item just going to be destroyed
-                    if (this._allWindowsMenuItem.menu._getMenuItems().length === 1)
-                        this._allWindowsMenuItem.setSensitive(false);
+                    if (isCurrent() && allWindowsMenuItem.menu._getMenuItems().length === 1)
+                        allWindowsMenuItem.setSensitive(false);
                 });
             }
         }
