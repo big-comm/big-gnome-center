@@ -3,17 +3,21 @@
 
 import argparse
 import configparser
+import ctypes
+import errno
 import hashlib
 import io
 import os
 import re
 import shutil
+import stat
 import tempfile
 from pathlib import Path
 
 from constants import ACCENT_COLORS
 
 BASES = ("bigicons-papient", "bigicons-papient-dark", "bigicons-papient-light")
+MAX_FILE_BYTES = 1024 * 1024
 PREFIX = "bgc-folders--"
 _GENERATED = re.compile(
     r"^bgc-folders--(bigicons-papient(?:-dark|-light)?)--([a-z]+)--[0-9a-f]{16}$"
@@ -28,10 +32,72 @@ def base_theme(name: str) -> str:
     return match[1] if match and match[2] in ACCENT_COLORS else name
 
 
+def _data_home() -> Path:
+    data = Path(os.environ.get("XDG_DATA_HOME", ""))
+    return data if data.is_absolute() else Path.home() / ".local/share"
+
+
 def icon_roots() -> list[Path]:
-    data = Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
-    dirs = os.environ.get("XDG_DATA_DIRS", "/usr/local/share:/usr/share").split(":")
-    return [Path.home() / ".icons", data / "icons", *[Path(d) / "icons" for d in dirs if d]]
+    dirs = (os.environ.get("XDG_DATA_DIRS") or "/usr/local/share:/usr/share").split(":")
+    return list(dict.fromkeys([
+        Path.home() / ".icons", _data_home() / "icons",
+        *[Path(d) / "icons" for d in dirs if Path(d).is_absolute()],
+    ]))
+
+
+def _read_regular(path, limit=MAX_FILE_BYTES, *, dir_fd=None, nofollow=False) -> bytes:
+    """Bound reads on the opened file; source theme aliases remain supported."""
+    flags = os.O_RDONLY | os.O_NONBLOCK | (os.O_NOFOLLOW if nofollow else 0)
+    fd = os.open(path, flags, dir_fd=dir_fd)
+    with os.fdopen(fd, "rb") as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_size > limit:
+            raise ValueError(f"Invalid or oversized icon theme file: {path}")
+        data = stream.read(limit + 1)
+        if len(data) > limit:
+            raise ValueError(f"Oversized icon theme file: {path}")
+        return data
+
+
+def _verify_overlay(target: Path, files: dict) -> None:
+    """Check expected content without following managed directory/file links."""
+    try:
+        root_fd = os.open(target, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            for relative, expected in files.items():
+                parent_fd = os.dup(root_fd)
+                try:
+                    for part in relative.parts[:-1]:
+                        child_fd = os.open(
+                            part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent_fd
+                        )
+                        os.close(parent_fd)
+                        parent_fd = child_fd
+                    actual = _read_regular(
+                        relative.name, len(expected), dir_fd=parent_fd, nofollow=True
+                    )
+                    if actual != expected:
+                        raise ValueError("Managed icon theme collision")
+                finally:
+                    os.close(parent_fd)
+        finally:
+            os.close(root_fd)
+    except (OSError, ValueError) as exc:
+        raise ValueError("Managed icon theme collision") from exc
+
+
+def _publish_directory(source: Path, target: Path) -> None:
+    """Atomically publish a complete directory without replacing a winner (Linux)."""
+    libc = ctypes.CDLL(None, use_errno=True)
+    rename = getattr(libc, "renameat2", None)
+    if rename is None:
+        raise OSError(errno.ENOSYS, "Atomic icon theme publication is unavailable")
+    rename.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
+                       ctypes.c_char_p, ctypes.c_uint]
+    rename.restype = ctypes.c_int
+    if rename(-100, os.fsencode(source), -100, os.fsencode(target), 1):
+        code = ctypes.get_errno()
+        raise OSError(code, os.strerror(code), str(target))
 
 
 def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> dict:
@@ -49,7 +115,7 @@ def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> d
         raise ValueError(f"Missing icon theme: {base}")
     cfg = configparser.ConfigParser(interpolation=None, strict=False)
     cfg.optionxform = str
-    cfg.read_string(index.read_text())
+    cfg.read_string(_read_regular(index).decode("utf-8"))
     candidates = {}
     tinted_names = set()
     sections = {}
@@ -80,9 +146,7 @@ def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> d
                     or icon.stem in ("desktop", "inode-directory")
                 ) or icon.stem.endswith("-symbolic"):
                     continue
-                if icon.stat().st_size > 1024 * 1024:
-                    raise ValueError(f"Oversized folder icon: {icon.name}")
-                data = icon.read_bytes()
+                data = _read_regular(icon)
                 if icon.suffix == ".svg":
                     tinted, count = _HIGHLIGHT.subn(
                         lambda m: m[1] + ACCENT_COLORS[accent] + m[2], data.decode()
@@ -124,13 +188,7 @@ def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> d
     output.mkdir(parents=True, exist_ok=True)
     target = output / name
     if target.exists() or target.is_symlink():
-        if target.is_symlink() or any(
-            (target / p).is_symlink()
-            or not (target / p).is_file()
-            or (target / p).read_bytes() != data
-            for p, data in files.items()
-        ):
-            raise ValueError("Managed icon theme collision")
+        _verify_overlay(target, files)
     else:
         temporary = Path(tempfile.mkdtemp(prefix=".bgc-folders-", dir=output))
         try:
@@ -138,7 +196,10 @@ def build_theme(current: str, accent: str, roots: list[Path], output: Path) -> d
                 dest = temporary / relative
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_bytes(data)
-            temporary.rename(target)
+            try:
+                _publish_directory(temporary, target)
+            except FileExistsError:
+                _verify_overlay(target, files)
         finally:
             if temporary.exists():
                 shutil.rmtree(temporary)
@@ -152,8 +213,7 @@ def main() -> None:
     parser.add_argument("--theme", required=True)
     parser.add_argument("--accent", required=True)
     args = parser.parse_args()
-    data = Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
-    print(json.dumps(build_theme(args.theme, args.accent, icon_roots(), data / "icons")))
+    print(json.dumps(build_theme(args.theme, args.accent, icon_roots(), _data_home() / "icons")))
 
 
 if __name__ == "__main__":
