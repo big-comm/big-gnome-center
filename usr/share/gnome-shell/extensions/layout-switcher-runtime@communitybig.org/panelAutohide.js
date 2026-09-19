@@ -23,12 +23,20 @@ export class PanelAutohide {
         this._barrierRelease = 0;
         this._targetVisible = false;
         this._dwell = 0;
-        this._enterId = zone.connect('enter-event', () => this._enter());
-        this._leaveId = zone.connect('leave-event', () => this._cancelDwell());
+        this._animationGeneration = 0;
+        this._enterId = 0;
+        this._leaveId = 0;
+        try {
+            this._enterId = zone.connect('enter-event', () => this._enter());
+            this._leaveId = zone.connect('leave-event', () => this._cancelDwell());
+        } catch (error) {
+            this.destroy();
+            throw error;
+        }
     }
 
     setEnabled(enabled) {
-        if (this._enabled === enabled)
+        if (this._destroyed || this._enabled === enabled)
             return;
         this._enabled = enabled;
         this._zone.reactive = enabled;
@@ -36,6 +44,8 @@ export class PanelAutohide {
     }
 
     reposition() {
+        if (this._destroyed)
+            return;
         this._cancelDwell();
         this._clearBarrier();
         const monitor = Main.layoutManager.primaryMonitor;
@@ -43,7 +53,16 @@ export class PanelAutohide {
         if (!this._enabled || this._targetVisible || !monitor ||
             !(global.backend.capabilities & Meta.BackendCapabilities.BARRIERS))
             return;
-        this._pressure = new Layout.PressureBarrier(100, 1000, Shell.ActionMode.NORMAL);
+        try {
+            this._createBarrier(monitor);
+        } catch (error) {
+            this._clearBarrier();
+            throw error;
+        }
+    }
+
+    _createBarrier(monitor) {
+        const pressure = this._pressure = new Layout.PressureBarrier(100, 1000, Shell.ActionMode.NORMAL);
         this._barrier = new Meta.Barrier({
             backend: global.backend,
             x1: monitor.x,
@@ -53,15 +72,20 @@ export class PanelAutohide {
             directions: Meta.BarrierDirection.POSITIVE_Y,
         });
         this._pressure.addBarrier(this._barrier);
-        this._pressure.connect('trigger', () => this._reveal());
+        pressure.connect('trigger', () => {
+            if (!this._destroyed && this._enabled && this._pressure === pressure)
+                this._reveal();
+        });
         this._zone.reactive = false;
     }
 
     _enter() {
-        if (!this._enabled || this._pressure || this._dwell)
+        if (this._destroyed || !this._enabled || this._pressure || this._dwell)
             return;
         // Backends without pointer barriers still require deliberate dwell.
-        this._dwell = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 250, () => {
+        const id = this._dwell = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 250, () => {
+            if (this._destroyed || this._dwell !== id)
+                return GLib.SOURCE_REMOVE;
             this._dwell = 0;
             if (this._enabled && this._zone.hover)
                 this._reveal();
@@ -70,27 +94,39 @@ export class PanelAutohide {
     }
 
     _cancelDwell() {
-        if (this._dwell)
-            GLib.Source.remove(this._dwell);
+        const id = this._dwell;
         this._dwell = 0;
+        if (id)
+            this._cleanup(() => GLib.Source.remove(id));
     }
 
     _clearBarrier() {
-        if (this._barrierRelease)
-            GLib.Source.remove(this._barrierRelease);
-        this._barrierRelease = 0;
-        this._pressure?.destroy();
-        this._barrier?.destroy();
+        this._cancelBarrierRelease();
+        const pressure = this._pressure;
+        const barrier = this._barrier;
         this._pressure = null;
         this._barrier = null;
+        this._cleanup(() => pressure?.destroy());
+        this._cleanup(() => barrier?.destroy());
+    }
+
+    _cancelBarrierRelease() {
+        const id = this._barrierRelease;
+        this._barrierRelease = 0;
+        if (id)
+            this._cleanup(() => GLib.Source.remove(id));
     }
 
     _syncBarrier() {
+        if (this._destroyed)
+            return;
         if (!this._targetVisible) {
             this.reposition();
         } else if (this._barrier && !this._barrierRelease) {
             // Release cross-monitor movement after the reveal settles.
-            this._barrierRelease = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+            const id = this._barrierRelease = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                if (this._destroyed || this._barrierRelease !== id)
+                    return GLib.SOURCE_REMOVE;
                 this._barrierRelease = 0;
                 this._clearBarrier();
                 return GLib.SOURCE_REMOVE;
@@ -99,6 +135,8 @@ export class PanelAutohide {
     }
 
     pointerInside() {
+        if (this._destroyed)
+            return false;
         const [x, y] = global.get_pointer();
         const monitor = Main.layoutManager.primaryMonitor;
         if (!monitor || !this._actor.visible)
@@ -119,12 +157,12 @@ export class PanelAutohide {
     }
 
     setVisible(visible, immediate = false) {
+        if (this._destroyed)
+            return;
         const actor = this._actor;
         this._targetVisible = visible;
-        if (!visible && this._barrierRelease) {
-            GLib.Source.remove(this._barrierRelease);
-            this._barrierRelease = 0;
-        }
+        if (!visible)
+            this._cancelBarrierRelease();
         // Keep overlays composited until their hide animation completes.
         if (visible || actor.visible)
             this._setComposited(true);
@@ -138,6 +176,7 @@ export class PanelAutohide {
         if (this._destination === destination && actor.get_transition('translation-y') &&
             !immediate)
             return;
+        const generation = ++this._animationGeneration;
         actor.remove_transition('translation-y');
         this._destination = destination;
         if (visible && !actor.visible)
@@ -157,6 +196,8 @@ export class PanelAutohide {
             duration: 200,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
+                if (this._destroyed || this._animationGeneration !== generation)
+                    return;
                 actor.visible = visible;
                 if (!visible)
                     this._setComposited(false);
@@ -167,12 +208,30 @@ export class PanelAutohide {
     }
 
     destroy() {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this._enabled = false;
+        this._animationGeneration++;
         this._cancelDwell();
         this._clearBarrier();
-        this._zone.disconnect(this._enterId);
-        this._zone.disconnect(this._leaveId);
-        this._actor.remove_transition('translation-y');
-        this._actor.translation_y = this._originalTranslation;
-        this._setComposited(false);
+        for (const id of [this._enterId, this._leaveId]) {
+            if (id)
+                this._cleanup(() => this._zone.disconnect(id));
+        }
+        this._enterId = this._leaveId = 0;
+        this._cleanup(() => { this._zone.reactive = false; });
+        this._cleanup(() => this._actor.remove_transition('translation-y'));
+        this._cleanup(() => { this._actor.translation_y = this._originalTranslation; });
+        this._cleanup(() => this._setComposited(false));
+        this._actor = this._zone = this._reveal = null;
+    }
+
+    _cleanup(callback) {
+        try {
+            callback();
+        } catch (error) {
+            console.warn(`[layout-switcher-runtime] Panel autohide cleanup failed: ${error}`);
+        }
     }
 }
