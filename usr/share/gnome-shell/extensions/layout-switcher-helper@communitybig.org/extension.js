@@ -66,6 +66,7 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
 import {GtkThemeFollower} from './gtkTheme.js';
 import {FolderAccentFollower, folderBaseTheme} from './folderAccent.js';
+import {SwitchTransaction} from './switchTransaction.js';
 
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
@@ -121,7 +122,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 81;
+const HELPER_BUILD = 82;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -167,6 +168,10 @@ const IFACE = `
       <arg type="s" direction="out" name="info"/>
     </method>
     <method name="BeginSwitch">
+      <arg type="s" direction="in" name="payload"/>
+      <arg type="s" direction="out" name="result"/>
+    </method>
+    <method name="ApplySwitch">
       <arg type="s" direction="in" name="payload"/>
       <arg type="s" direction="out" name="result"/>
     </method>
@@ -412,6 +417,11 @@ export default class LayoutSwitcherHelper extends Extension {
     // Stop every pending timer so no step of an in-flight switch fires into a
     // session-mode transition, and never leave the curtain up.
     _hardCancel() {
+        if (this._switchTransaction?.current) {
+            this._switchTransaction.cancel('helper disabled during layout switch')
+                .finally(() => this._hardCancel());
+            return;
+        }
         this._folderAccentFollower?.destroy();
         this._folderAccentFollower = null;
         this._gtkThemeFollower?.destroy();
@@ -462,6 +472,7 @@ export default class LayoutSwitcherHelper extends Extension {
             uuid: this._selfUuid(),
             version: HELPER_VERSION,
             build: HELPER_BUILD,
+            ownedSwitch: true,
             busy: Boolean(this._switching || this._applying),
             notificationPosition: this._notificationPosition ?? '',
         });
@@ -2260,25 +2271,168 @@ export default class LayoutSwitcherHelper extends Extension {
     // round-trip (the old "overview pulse" workaround, removed for flashing —
     // under the curtain it is invisible, so it returns here flash-free).
     async _panelRepaint() {
+        this._checkOwnedSwitch();
         try {
             Main.panel.add_style_class_name('ls-style-recompute');
             await this._sleep(60);
+            this._checkOwnedSwitch();
             Main.panel.remove_style_class_name('ls-style-recompute');
             await this._sleep(60);
+            this._checkOwnedSwitch();
         } catch (e) {
             logHelper(`panel recompute failed: ${e}`);
+        } finally {
+            Main.panel.remove_style_class_name('ls-style-recompute');
         }
+        this._checkOwnedSwitch();
         try {
             Main.overview.show();
             await this._sleep(300);
+            this._checkOwnedSwitch();
             Main.overview.hide();
             await this._sleep(250);
+            this._checkOwnedSwitch();
         } catch (e) {
             logHelper(`overview pulse failed: ${e}`);
+        } finally {
+            Main.overview.hide();
         }
+        this._checkOwnedSwitch();
     }
 
     // ── Rollback safety net ─────────────────────────────────────────────────
+
+    _checkOwnedSwitch() {
+        if (this._switchTransaction?.current)
+            this._switchTransaction.check();
+    }
+
+    _runSwitchCommand(argv, input = null) {
+        this._checkOwnedSwitch();
+        return new Promise((resolve, reject) => {
+            const process = Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDIN_PIPE |
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+            let expired = false;
+            const timer = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
+                expired = true;
+                process.force_exit();
+                return GLib.SOURCE_REMOVE;
+            });
+            process.communicate_utf8_async(input, null, (source, result) => {
+                if (!expired)
+                    GLib.Source.remove(timer);
+                try {
+                    const [, output, error] = source.communicate_utf8_finish(result);
+                    if (expired || !source.get_successful())
+                        throw new Error(`${argv.slice(0, 3).join(' ')}: ${expired ? 'timeout' : error}`);
+                    resolve(output);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    async _stopOwnedExtensions() {
+        const manager = Main.extensionManager;
+        const errors = [];
+        for (const uuid of this._orderedLive(manager).reverse()) {
+            this._checkOwnedSwitch();
+            if (uuid === this._selfUuid())
+                continue;
+            try {
+                const accepted = manager.disableExtension(uuid);
+                if (accepted === false ||
+                    !await this._waitState(manager, uuid, state => this._isDown(state)))
+                    throw new Error(`cannot stop ${uuid}`);
+            } catch (error) { errors.push(String(error)); }
+        }
+        if (errors.length)
+            throw new Error(errors.join('; '));
+    }
+
+    async _restoreOwnedExtensions(uuids, label) {
+        this._activeLayoutLabel = label;
+        this._pendingLayoutLabel = label;
+        const result = await this._completeSwitch(JSON.stringify({enabled: uuids}));
+        if (!result.ok)
+            throw new Error(result.error);
+        const manager = Main.extensionManager;
+        const missing = uuids.filter(uuid => manager.lookup(uuid)?.state !== STATE_ACTIVE);
+        if (missing.length)
+            throw new Error(`extensions not restored: ${missing.join(', ')}`);
+    }
+
+    ApplySwitchAsync(params, invocation) {
+        if (this._busy()) {
+            this._returnJson(invocation, {ok: false, error: 'layout switch already in progress'});
+            return;
+        }
+        let request;
+        try {
+            request = JSON.parse(params[0]);
+            if (!request?.enabled?.includes(this._selfUuid()) ||
+                request?.disabled?.includes(this._selfUuid()))
+                throw new Error('layout switch must retain its helper');
+        }
+        catch (error) {
+            this._returnJson(invocation, {ok: false, error: String(error)});
+            return;
+        }
+        this._switchTransaction ??= new SwitchTransaction({
+            run: (argv, input) => this._runSwitchCommand(argv, input),
+            live: () => this._orderedLive(Main.extensionManager),
+            label: () => this._activeLayoutLabel,
+            begin: value => this._beginSwitch(JSON.stringify(value)),
+            complete: value => this._completeSwitch(JSON.stringify(value)),
+            stop: () => this._stopOwnedExtensions(),
+            restore: (uuids, label) => this._restoreOwnedExtensions(uuids, label),
+            finish: async () => {
+                this._curtainCheckmark();
+                await this._sleep(CURTAIN_CHECK_MS);
+                this._checkOwnedSwitch();
+                this._curtainDown();
+            },
+            release: () => {
+                try {
+                    this._cancelRollbackTimer();
+                    this._destroyCurtain();
+                } finally {
+                    this._prevEnabled = null;
+                    this._previousLayoutLabel = null;
+                    this._pendingLayoutLabel = null;
+                    this._switching = false;
+                }
+            },
+            arm: (ms, callback) => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
+                callback();
+                return GLib.SOURCE_REMOVE;
+            }),
+            disarm: id => {
+                if (GLib.MainContext.default().find_source_by_id(id))
+                    GLib.Source.remove(id);
+            },
+            watch: callback => Gio.DBus.session.signal_subscribe('org.freedesktop.DBus',
+                'org.freedesktop.DBus', 'NameOwnerChanged', '/org/freedesktop/DBus', null,
+                Gio.DBusSignalFlags.NONE, (_bus, _sender, _path, _iface, _signal, value) => {
+                    const [name, oldOwner, owner] = value.deep_unpack();
+                    if (oldOwner && !owner)
+                        callback(name);
+                }),
+            unwatch: id => Gio.DBus.session.signal_unsubscribe(id),
+            equal: (left, right) => {
+                if (left === undefined || right === undefined)
+                    return left === right;
+                return GLib.Variant.parse(null, left, null, null)
+                    .equal(GLib.Variant.parse(null, right, null, null));
+            },
+            warn: error => logHelper(`switch cleanup: ${error}`),
+        });
+        this._switching = true;
+        this._switchTransaction.apply(request, invocation.get_sender())
+            .then(result => this._returnJson(invocation, result))
+            .catch(error => this._returnJson(invocation, {ok: false, error: String(error)}));
+    }
 
     _armRollbackTimer(seconds) {
         this._cancelRollbackTimer();
@@ -2373,6 +2527,7 @@ export default class LayoutSwitcherHelper extends Extension {
         this._curtainUp(req);
         // Let the curtain reach full opacity before the desktop mutates.
         await this._sleep(CURTAIN_FADE_MS + 30);
+        this._checkOwnedSwitch();
 
         // Release the tracked dock actor while it is still alive. The runtime
         // teardown disposes it, so deferring this cleanup until target enable
@@ -2409,7 +2564,8 @@ export default class LayoutSwitcherHelper extends Extension {
         // and arm the safety net BEFORE mutating anything — a fatal failure
         // anywhere in the teardown still auto-restores the previous set.
         this._prevEnabled = this._orderedLive(mgr);
-        this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
+        if (!this._switchTransaction?.current)
+            this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
 
         // Tear down EVERY live extension except ourselves — including the
         // persist indicators (req.persist is honoured by the CALLER keeping
@@ -2424,6 +2580,7 @@ export default class LayoutSwitcherHelper extends Extension {
         const teardown = this._prevEnabled.filter(u => u !== self).reverse();
         const disabled = [];
         for (const uuid of teardown) {
+            this._checkOwnedSwitch();
             try {
                 const accepted = mgr.disableExtension(uuid);
                 if (accepted === false) {
@@ -2431,15 +2588,23 @@ export default class LayoutSwitcherHelper extends Extension {
                     continue;
                 }
                 const settled = await this._waitState(mgr, uuid, s => this._isDown(s));
+                this._checkOwnedSwitch();
                 steps.push(settled ? `disable ${uuid}` : `disable ${uuid} TIMEOUT`);
                 disabled.push(uuid);
                 await this._yieldTransitionFrame();
+                this._checkOwnedSwitch();
             } catch (e) {
                 steps.push(`disable ${uuid} ERR ${e}`);
             }
         }
+        if (this._switchTransaction?.current) {
+            const live = teardown.filter(uuid => !this._isDown(mgr.lookup(uuid)?.state));
+            if (live.length)
+                throw new Error(`extensions not stopped: ${live.join(', ')}`);
+        }
         // Drain any idles the last disable() queued.
         await this._sleep(100);
+        this._checkOwnedSwitch();
 
         logHelper(`BeginSwitch done: ${steps.join(' | ')}`);
         return {ok: true, steps, disabled, error: ''};
@@ -2450,6 +2615,10 @@ export default class LayoutSwitcherHelper extends Extension {
     //   theme_reload: bool     call Main.loadTheme() before enabling (default true)
     // result (JSON): { ok, steps:[…], error }
     CompleteSwitchAsync(params, invocation) {
+        if (this._switchTransaction?.current) {
+            this._returnJson(invocation, {ok: false, error: 'owned layout switch in progress'});
+            return;
+        }
         const [payload] = params;
         if (!this._switching) {
             this._returnJson(invocation, {
@@ -2496,11 +2665,13 @@ export default class LayoutSwitcherHelper extends Extension {
                 logHelper(`loadTheme stack: ${e.stack ?? e}`);
             }
             await this._sleep(50);
+            this._checkOwnedSwitch();
         }
 
         // Build up the target set in layout order — a fresh enable() reading
         // the final dconf state, exactly like a login.
         for (const uuid of order) {
+            this._checkOwnedSwitch();
             const state = mgr.lookup(uuid)?.state;
             if (LIVE_STATES.has(state))
                 continue;
@@ -2511,12 +2682,14 @@ export default class LayoutSwitcherHelper extends Extension {
                     continue;
                 }
                 const settled = await this._waitState(mgr, uuid, s => this._isSettledUp(s));
+                this._checkOwnedSwitch();
                 const finalState = mgr.lookup(uuid)?.state;
                 if (finalState === STATE_ERROR)
                     steps.push(`enable ${uuid} ERROR`);
                 else
                     steps.push(settled ? `enable ${uuid}` : `enable ${uuid} TIMEOUT`);
                 await this._yieldTransitionFrame();
+                this._checkOwnedSwitch();
             } catch (e) {
                 steps.push(`enable ${uuid} ERR ${e}`);
             }
@@ -2525,13 +2698,16 @@ export default class LayoutSwitcherHelper extends Extension {
         // Reconcile: anything still live that the target does not want
         // (defensive — persist uuids are part of the target by contract).
         for (const uuid of this._orderedLive(mgr).reverse()) {
+            this._checkOwnedSwitch();
             if (target.has(uuid))
                 continue;
             try {
                 mgr.disableExtension(uuid);
                 await this._waitState(mgr, uuid, s => this._isDown(s));
+                this._checkOwnedSwitch();
                 steps.push(`reconcile-off ${uuid}`);
                 await this._yieldTransitionFrame();
+                this._checkOwnedSwitch();
             } catch (e) {
                 steps.push(`reconcile-off ${uuid} ERR ${e}`);
             }
@@ -2541,18 +2717,21 @@ export default class LayoutSwitcherHelper extends Extension {
         let dtpReady = true;
         if (targetPanelUuid) {
             dtpReady = await this._waitDashToPanelReady();
+            this._checkOwnedSwitch();
             steps.push(dtpReady ? 'dash-to-panel ready' : 'dash-to-panel readiness TIMEOUT');
         }
 
         const failedStructural = [...target].filter(uuid =>
-            STRUCTURAL_UUIDS.has(uuid) && mgr.lookup(uuid)?.state !== STATE_ACTIVE
+            (this._switchTransaction?.current || STRUCTURAL_UUIDS.has(uuid)) &&
+                mgr.lookup(uuid)?.state !== STATE_ACTIVE
         );
         if (!dtpReady && !failedStructural.includes(targetPanelUuid))
             failedStructural.push(targetPanelUuid);
         if (failedStructural.length) {
             const error = `layout components failed: ${failedStructural.join(', ')}`;
             steps.push(error);
-            this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
+            if (!this._switchTransaction?.current)
+                this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
             logHelper(`CompleteSwitch rejected: ${error}`);
             return {ok: false, steps, error};
         }
@@ -2566,9 +2745,11 @@ export default class LayoutSwitcherHelper extends Extension {
         this._syncNotificationPosition();
         if (target.has(APPINDICATOR_UUID)) {
             const refreshed = await this._refreshIconThemeConsumers();
+            this._checkOwnedSwitch();
             steps.push(`status icons refreshed ${refreshed}`);
         }
         await this._panelRepaint();
+        this._checkOwnedSwitch();
         steps.push('panel repaint');
         this._setupPanelSystemIndicator();
 
@@ -2578,8 +2759,11 @@ export default class LayoutSwitcherHelper extends Extension {
         } catch (error) {
             logHelper(`GTK3 theme follow failed: ${error}`);
         }
+        if (this._switchTransaction?.current)
+            return {ok: true, steps, error: ''};
         this._curtainCheckmark();
         await this._sleep(CURTAIN_CHECK_MS);
+        this._checkOwnedSwitch();
         this._curtainDown();
 
         this._prevEnabled = null;
@@ -2591,6 +2775,13 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     AbortSwitchAsync(params, invocation) {
+        if (this._switchTransaction?.current) {
+            this._switchTransaction.cancel('layout switch aborted')
+                .then(result => this._returnJson(invocation, {
+                    ok: result.recovered === true, error: result.error,
+                }));
+            return;
+        }
         if (!this._switching) {
             this._returnJson(invocation, {ok: true, restored: 0, error: ''});
             return;

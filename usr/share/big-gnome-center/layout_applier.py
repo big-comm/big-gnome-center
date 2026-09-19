@@ -749,9 +749,9 @@ class LayoutApplier:
              target set enabled in layout order (awaited), panel style
              recompute, checkmark, curtain down
 
-        A reset/load failure attempts scoped dconf recovery before requesting
-        ``AbortSwitch``. Recovery is best-effort; helper timeouts, completion
-        failures and process death are not a full cross-component transaction.
+        Helpers advertising ownedSwitch serialize all phases and recovery in
+        one ApplySwitch call, including caller loss and final membership writes.
+        Cached older helpers retain the two-phase, best-effort recovery path.
         """
         info = HelperClient.ping_info()
         if info.get("busy"):
@@ -788,6 +788,24 @@ class LayoutApplier:
                 if u not in {HELPER_UUID, LEGACY_HELPER_UUID}
             ],
         ]
+
+        if info.get("ownedSwitch") is True:
+            ok, message = HelperClient.apply_switch({
+                "settings": settings_data,
+                "branches": [
+                    f"/org/gnome/shell/extensions/{subdir}/"
+                    for subdir in cls._managed_extension_subdirs(layouts_dir)
+                ],
+                "enabled": target_enabled,
+                "disabled": cls._string_list(shell_values.get("disabled-extensions")),
+                "label": layout_label,
+                "label_from": layout_label_from,
+                "icon_from": icon_from,
+                "icon_to": icon_to,
+            })
+            if ok:
+                return cls._finish_cleanroom(data, target_enabled, message)
+            return ok, message
 
         # Capture values before teardown; failed reads must not authorize resets.
         try:
@@ -838,6 +856,7 @@ class LayoutApplier:
                 return False, f"{exc}; dconf recovery failed: {recovery}"
             return False, str(exc)
 
+        touched.update(f"/org/gnome/shell/{key}" for key in _SHELL_EXTENSION_SWITCH_KEYS)
         ok, steps = HelperClient.complete_switch(target_enabled)
         if not ok and source_helper_uuid == LEGACY_HELPER_UUID:
             log.info("legacy helper left during CompleteSwitch; finishing with new helper")
@@ -848,8 +867,7 @@ class LayoutApplier:
                 steps = f"{steps}; helper handoff failed: {recovery}"
         if not ok:
             log.warning("helper CompleteSwitch failed: %s", steps)
-            HelperClient.abort_switch()
-            return False, steps
+            return cls._recover_cleanroom_completion(previous_values, touched, steps)
 
         # Converge the dconf switch keys with what is now live so the
         # comm-gnome-config watcher's next dump records the layout's lists.
@@ -865,7 +883,9 @@ class LayoutApplier:
             timeout=10,
         )
         if not ok_disabled:
-            return False, f"cannot confirm disabled extensions: {disabled_error}"
+            return cls._recover_cleanroom_completion(
+                previous_values, touched, f"cannot confirm disabled extensions: {disabled_error}"
+            )
         ok_enabled, enabled_error = run_cmd(
             [
                 "dconf",
@@ -876,8 +896,41 @@ class LayoutApplier:
             timeout=10,
         )
         if not ok_enabled:
-            return False, f"cannot confirm enabled extensions: {enabled_error}"
+            return cls._recover_cleanroom_completion(
+                previous_values, touched, f"cannot confirm enabled extensions: {enabled_error}"
+            )
 
+        return cls._finish_cleanroom(data, target_enabled, steps)
+
+    @classmethod
+    def _recover_cleanroom_completion(cls, previous, touched, error) -> Tuple[bool, str]:
+        """Best-effort recovery for helpers without owned-switch support."""
+        errors = [str(error)]
+        restored, detail = cls._restore_dconf_values(previous, touched)
+        if not restored:
+            errors.append(f"dconf recovery failed: {detail}")
+        if not HelperClient.abort_switch():
+            errors.append("helper abort did not confirm recovery")
+        enabled = cls._string_list(previous.get("/org/gnome/shell/enabled-extensions"))
+        if HelperClient.active_uuid() == HELPER_UUID:
+            enabled = [HELPER_UUID, *[uuid for uuid in enabled
+                                     if uuid not in {HELPER_UUID, LEGACY_HELPER_UUID}]]
+        try:
+            ok, detail = HelperClient.apply_layout(enabled, reload=enabled, timeout_ms=120000)
+            if not ok:
+                errors.append(f"live recovery failed: {detail}")
+            states = ShellReloader.list_extensions_state()
+            missing = [uuid for uuid in enabled if states.get(uuid) != 1]
+            extra = [uuid for uuid, state in states.items()
+                     if state in _LIVE_EXTENSION_STATES and uuid not in enabled]
+            if missing or extra:
+                errors.append(f"live recovery incomplete: missing={missing}, extra={extra}")
+        except Exception as exc:
+            errors.append(f"live recovery failed: {exc}")
+        return False, "; ".join(errors)
+
+    @classmethod
+    def _finish_cleanroom(cls, data, target_enabled, steps) -> Tuple[bool, str]:
         # Kiwi's patched focus policy may have been installed after its JS
         # module was loaded. A plain disable/enable reuses that cached module,
         # leaving the old window-demands-attention handler connected. Force a

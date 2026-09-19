@@ -401,6 +401,31 @@ class HelperClient:
         return True, ", ".join(result.get("loaded", []))
 
     @classmethod
+    def apply_switch(cls, payload: dict, timeout_ms: int = 330000) -> Tuple[bool, str]:
+        """Let the helper own settings, activation and scoped recovery."""
+        from gi.repository import GLib
+
+        out = cls._call("ApplySwitch", GLib.Variant("(s)", (json.dumps(payload),)), timeout_ms)
+        if out is None:
+            # The helper remains responsible for recovery; never race it with
+            # external dconf writes after an ambiguous transport failure.
+            cls.abort_switch(timeout_ms=150000)
+            return False, "helper ApplySwitch reply unavailable; recovery requested"
+        try:
+            result = json.loads(out)
+            if not isinstance(result, dict) or not isinstance(result.get("ok"), bool):
+                raise ValueError("invalid result")
+            steps = result.get("steps", [])
+            if not isinstance(steps, list) or any(not isinstance(step, str) for step in steps):
+                raise ValueError("invalid steps")
+        except (ValueError, TypeError):
+            cls.abort_switch(timeout_ms=150000)
+            return False, "helper ApplySwitch invalid reply; recovery requested"
+        if not result["ok"]:
+            return False, str(result.get("error") or "layout switch failed")
+        return True, ", ".join(steps)
+
+    @classmethod
     def begin_switch(
         cls,
         persist: Iterable[str],

@@ -52,6 +52,8 @@ def session(monkeypatch):
         (module.HelperClient, "begin_switch", (True, "")),
         (module.HelperClient, "complete_switch", (True, "")),
         (module.HelperClient, "abort_switch", True),
+        (module.HelperClient, "active_uuid", HELPER_UUID),
+        (module.HelperClient, "apply_layout", (True, "recovered")),
         (module.LayoutApplier, "_restore_persisted_settings", (True, "")),
         (module.LayoutApplier, "_enabled_extensions", []),
         (module.LayoutApplier, "_managed_extension_subdirs", ["owned", "second"]),
@@ -226,6 +228,31 @@ def test_helper_failure_leaves_persistence_to_caller(session, monkeypatch, point
     ok, message = module.LayoutApplier._apply_via_helper_v7(TARGET)
     assert not ok
     mocks["_restore_persisted_settings"].assert_not_called()
+
+
+@pytest.mark.parametrize("point", ["complete", "disabled-extensions", "enabled-extensions"])
+def test_completion_failure_restores_owned_values_and_membership(session, monkeypatch, point):
+    state, events, mocks, run = session
+    if point == "complete":
+        mocks["complete_switch"].return_value = False, "completion failed"
+    else:
+        failed = False
+
+        def fail(argv, **kwargs):
+            nonlocal failed
+            result = run(argv, **kwargs)
+            if argv[:2] == ["dconf", "write"] and argv[2].endswith(point) and not failed:
+                failed = True
+                return False, "final write failed"
+            return result
+
+        monkeypatch.setattr(module, "run_cmd", fail)
+    ok, message = module.LayoutApplier._apply_via_helper_v7(TARGET)
+    assert not ok
+    assert "failed" in message
+    assert state == OLD
+    mocks["apply_layout"].assert_called_once()
+    assert mocks["apply_layout"].call_args.kwargs["reload"] == [HELPER_UUID, "before@example.org"]
 
 
 def test_serialized_variants_survive_recovery(session):
