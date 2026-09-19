@@ -11,7 +11,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 94;
+export const RUNTIME_BUILD = 95;
 
 export class RuntimeController {
     constructor(extension) {
@@ -43,6 +43,7 @@ export class RuntimeController {
         this._shellPopoverTheme.apply(startupProfile.layout);
         this._startupOverview.apply(
             this._skipStartupOverviewForProfile(startupProfile));
+        const settings = this._settings;
         this._settingsChangedIds = [
             'active-layout',
             'dock-hover-overrides',
@@ -58,7 +59,10 @@ export class RuntimeController {
             'skip-startup-overview-overrides',
         ].map(key => this._settings.connect(
             `changed::${key}`,
-            () => this._queueSync(),
+            () => {
+                if (this._settings === settings)
+                    this._queueSync();
+            },
         ));
         this._queueSync();
         console.info(`[layout-switcher-runtime] build ${RUNTIME_BUILD} ready`);
@@ -67,14 +71,16 @@ export class RuntimeController {
     disable() {
         this._enabled = false;
         this._syncGeneration = (this._syncGeneration ?? 0) + 1;
-        for (const id of this._settingsChangedIds ?? [])
-            this._settings?.disconnect(id);
+        const settings = this._settings;
+        const signalIds = this._settingsChangedIds ?? [];
+        const components = [
+            ['dock', this._dock, 'deactivate'],
+            ['taskbar', this._taskbar, 'deactivate'],
+            ['native panel', this._nativePanelOpacity, 'destroy'],
+            ['popover theme', this._shellPopoverTheme, 'destroy'],
+            ['startup overview', this._startupOverview, 'destroy'],
+        ];
         this._settingsChangedIds = [];
-        this._dock?.deactivate();
-        this._taskbar?.deactivate();
-        this._nativePanelOpacity?.destroy();
-        this._shellPopoverTheme?.destroy();
-        this._startupOverview?.destroy();
         this._activeProfile = null;
         this._dock = null;
         this._taskbar = null;
@@ -83,9 +89,25 @@ export class RuntimeController {
         this._startupOverview = null;
         this._settings = null;
         this._syncPromise = null;
+        for (const id of signalIds) {
+            try {
+                settings.disconnect(id);
+            } catch (error) {
+                console.warn(`[layout-switcher-runtime] signal cleanup failed: ${error}`);
+            }
+        }
+        for (const [name, component, method] of components) {
+            try {
+                component?.[method]();
+            } catch (error) {
+                console.warn(`[layout-switcher-runtime] ${name} cleanup failed: ${error}`);
+            }
+        }
     }
 
     _queueSync() {
+        if (!this._enabled || !this._settings)
+            return;
         const generation = (this._syncGeneration ?? 0) + 1;
         this._syncGeneration = generation;
         this._syncPromise = this._syncPromise
@@ -96,7 +118,7 @@ export class RuntimeController {
     }
 
     async _syncProfile(generation) {
-        if (!this._enabled || !this._settings)
+        if (!this._enabled || !this._settings || generation !== this._syncGeneration)
             return;
 
         const profile = profileForLayout(this._settings.get_string('active-layout'));
@@ -112,7 +134,7 @@ export class RuntimeController {
         const menuSide = this._menuSideForProfile(profile);
         const skipStartupOverview = this._skipStartupOverviewForProfile(profile);
         const dockProfileChanged = this._activeProfile?.layout !== profile.layout;
-        this._activeProfile = profile;
+        this._activeProfile = null;
         this._shellPopoverTheme.apply(profile.layout);
         this._startupOverview.apply(skipStartupOverview);
 
@@ -127,11 +149,15 @@ export class RuntimeController {
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             this._nativePanelOpacity.deactivate();
             this._dock.deactivate();
-            await this._taskbar.activate(
+            const taskbar = this._taskbar;
+            await taskbar.activate(
                 profile, indicator, hover, panelOpacity,
                 panelVisibility, panelHeight);
-            if (!this._enabled || generation !== this._syncGeneration)
-                this._taskbar.deactivate();
+            if (!this._enabled || generation !== this._syncGeneration) {
+                if (this._taskbar === taskbar)
+                    taskbar.deactivate();
+                return;
+            }
         } else if (profile.surface === RuntimeSurface.NATIVE) {
             this._dock.deactivate();
             this._taskbar.deactivate();
@@ -139,6 +165,7 @@ export class RuntimeController {
         } else {
             throw new Error(`Unsupported runtime surface: ${profile.surface}`);
         }
+        this._activeProfile = profile;
     }
 
     _indicatorForProfile(profile) {

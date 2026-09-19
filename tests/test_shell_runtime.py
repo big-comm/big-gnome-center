@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 94" in controller
+    assert "RUNTIME_BUILD = 95" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -422,11 +422,12 @@ def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
         "profile.surface === RuntimeSurface.NATIVE", branch_start
     )]
 
-    assert taskbar_branch.count("this._taskbar.deactivate()") == 1
+    assert taskbar_branch.count("taskbar.deactivate()") == 1
     assert "generation !== this._syncGeneration" in taskbar_branch
-    assert "await this._taskbar.activate(" in taskbar_branch
-    assert taskbar_branch.index("await this._taskbar.activate(") < taskbar_branch.index(
-        "this._taskbar.deactivate()"
+    assert "await taskbar.activate(" in taskbar_branch
+    assert "this._taskbar === taskbar" in taskbar_branch
+    assert taskbar_branch.index("await taskbar.activate(") < taskbar_branch.index(
+        "taskbar.deactivate()"
     )
     active_branch = runtime[runtime.index("if (this._active) {"):]
     assert active_branch.index("this._applyIndicator(indicator)") < active_branch.index("return;")
