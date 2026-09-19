@@ -126,8 +126,13 @@ const Tile = GObject.registerClass(class CommunityBigDeskUxTile extends St.Butto
         });
         if (app && !owner.selecting) {
             this._draggable = DND.makeDraggable(this, {restoreOnSuccess: true});
-            this._draggable.connect('drag-begin', () => owner.beginDrag());
-            this._draggable.connect('drag-end', () => owner.endDrag());
+            const drags = [];
+            this._draggable.connect('drag-begin', () => drags.push(owner.beginDrag()));
+            this._draggable.connect('drag-end', () => owner.endDrag(drags.shift() ?? null));
+            this.connect('destroy', () => {
+                for (const drag of drags)
+                    owner.endDrag(drag);
+            });
         }
         this.connect('destroy', () => {
             if (this.menu) {
@@ -238,6 +243,7 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
                 this._scroll.update_fade_effect(new Clutter.Margin({top: 12 * scale, bottom: 12 * scale}));
                 this.queueRender();
             } else {
+                this.endDrag();
                 this._cancelNavigation();
                 this._resetScrollbarVisibility();
                 this._resetScrollFeedback();
@@ -896,12 +902,23 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
     }
 
     beginDrag() {
+        this.endDrag(this._drag, false);
+        if (this._destroyed)
+            return null;
+        if (this._idle) {
+            GLib.source_remove(this._idle);
+            this._idle = 0;
+        }
+        const drag = {};
+        this._drag = drag;
         this._cancelNavigation();
         this._resetScrollFeedback();
         this.closeMenus();
         this._dragging = true;
         this._suppressActivation = true;
         this._monitor = {dragMotion: event => {
+            if (this._drag !== drag)
+                return DND.DragMotionResult.CONTINUE;
             this._dragPoint = [event.x, event.y];
             this._highlight?.remove_style_pseudo_class('drop');
             this._highlight = null;
@@ -909,6 +926,8 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         }};
         DND.addDragMonitor(this._monitor);
         this._scrollTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, () => {
+            if (this._drag !== drag)
+                return GLib.SOURCE_REMOVE;
             if (!this._dragPoint || !this._scroll.mapped)
                 return GLib.SOURCE_CONTINUE;
             const [x, y] = this._dragPoint;
@@ -923,9 +942,13 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
                 Math.min(adjustment.upper - adjustment.page_size, adjustment.value + step));
             return GLib.SOURCE_CONTINUE;
         });
+        return drag;
     }
 
-    endDrag() {
+    endDrag(drag = this._drag, render = true) {
+        if (!drag || this._drag !== drag)
+            return;
+        this._drag = null;
         if (this._monitor)
             DND.removeDragMonitor(this._monitor);
         this._monitor = null;
@@ -936,7 +959,8 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
         this._highlight?.remove_style_pseudo_class('drop');
         this._highlight = null;
         this._dragging = false;
-        this.queueRender();
+        if (render)
+            this.queueRender();
     }
 
     _canDrop(target, source) {

@@ -36,8 +36,8 @@ export const AppsBackend = class extends EventEmitter {
         this._categories = [];
         this._appsByCategory = {};
 
-        this._load();
         this.reloading = false;
+        this._reload();
 
         this._parentalControlsManager.connectObject('app-filter-changed', this._reload.bind(this), this);
         this._appSys.connectObject('installed-changed', this._reload.bind(this), this);
@@ -68,7 +68,7 @@ export const AppsBackend = class extends EventEmitter {
     }
 
     // Load data for a single menu category
-    _loadCategory(categoryId, dir) {
+    _loadCategory(categoryId, dir, appsByCategory) {
         let iter = dir.iter();
         let nextType;
         while ((nextType = iter.next()) != GMenu.TreeItemType.INVALID) {
@@ -82,22 +82,23 @@ export const AppsBackend = class extends EventEmitter {
                 }
                 let app = this._appSys.lookup_app(id);
                 if (app && app.get_app_info().should_show() && (this._parentalControlsManager.shouldShowApp(app.app_info)))
-                    this._appsByCategory[categoryId].push(app);
+                    appsByCategory[categoryId].push(app);
             } else if (nextType == GMenu.TreeItemType.DIRECTORY) {
                 let subdir = iter.get_directory();
                 if (!subdir.get_is_nodisplay())
-                    this._loadCategory(categoryId, subdir);
+                    this._loadCategory(categoryId, subdir, appsByCategory);
             }
         }
     }
 
     // Load data for all menu categories
     _load() {
-        this._menuTree = new GMenu.Tree({ menu_basename: 'applications.menu', flags: GMenu.TreeFlags.SORT_DISPLAY_NAME });
-        this._menuTree.load_sync();
-        this._menuTree.connectObject('changed', this._reload.bind(this), this);
+        const tree = new GMenu.Tree({ menu_basename: 'applications.menu', flags: GMenu.TreeFlags.SORT_DISPLAY_NAME });
+        tree.load_sync();
+        const categories = [];
+        const appsByCategory = {};
 
-        let root = this._menuTree.get_root_directory();
+        let root = tree.get_root_directory();
         let iter = root.iter();
         let nextType;
         while ((nextType = iter.next()) != GMenu.TreeItemType.INVALID) {
@@ -105,32 +106,36 @@ export const AppsBackend = class extends EventEmitter {
                 let dir = iter.get_directory();
                 if (!dir.get_is_nodisplay()) {
                     let categoryId = dir.get_menu_id();
-                    this._appsByCategory[categoryId] = [];
-                    this._loadCategory(categoryId, dir);
-                    if (this._appsByCategory[categoryId].length > 0) {
-                        this._categories.push(dir);
+                    appsByCategory[categoryId] = [];
+                    this._loadCategory(categoryId, dir, appsByCategory);
+                    if (appsByCategory[categoryId].length > 0) {
+                        categories.push(dir);
                     }
                 }
             }
         }
+        tree.connectObject('changed', this._reload.bind(this), this);
+        this._menuTree?.disconnectObject(this);
+        this._menuTree = tree;
+        this._categories = categories;
+        this._appsByCategory = appsByCategory;
     }
 
     // Reload data for all menu categories
     _reload() {
-        if (this.reloading) {
+        if (this.reloading || !this._appSys) {
             return
         }
         this.reloading = true;
 
-        this._menuTree?.disconnectObject(this);
-        this._menuTree = null;
-
-        this._categories = [];
-        this._appsByCategory = {};
-
-        this._load();
-
-        this.reloading = false;
+        try {
+            this._load();
+        } catch (error) {
+            console.warn(`Community Menu: failed to reload apps: ${error}`);
+            return;
+        } finally {
+            this.reloading = false;
+        }
         this.emit('reload');
     }
 
@@ -138,10 +143,18 @@ export const AppsBackend = class extends EventEmitter {
     _allApps() {
         let appsMap = new Map();
 
+        for (const info of this._appSys.get_installed()) {
+            const app = this._appSys.lookup_app(info.get_id());
+            if (app && info.should_show() && this._parentalControlsManager.shouldShowApp(info))
+                appsMap.set(app.get_id(), app);
+        }
+
         // Get all apps, deduplicated by app ID
         for (let directory in this._appsByCategory) {
             for (let app of this._appsByCategory[directory]) {
-                appsMap.set(app.get_id(), app);
+                const info = app.get_app_info();
+                if (info?.should_show() && this._parentalControlsManager.shouldShowApp(info))
+                    appsMap.set(app.get_id(), app);
             }
         }
         return [...appsMap.values()];
@@ -191,7 +204,7 @@ export const AppsBackend = class extends EventEmitter {
         }
 
         if (category_menu_id) {
-            let apps = this._appsByCategory[category_menu_id].slice();
+            let apps = (this._appsByCategory[category_menu_id] ?? []).slice();
             return this._sortApps(apps);
         }
 

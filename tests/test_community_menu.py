@@ -502,7 +502,8 @@ def test_classic_sidebar_uses_native_apps_and_session_actions():
     assert "new SessionButtons.PowerButton" in sections
     assert "appSystem.lookup_app(desktopId)" in sections
     assert "export const ApplicationButton" in session_buttons
-    assert "this._app.activate()" in session_buttons
+    assert "const app = this._app;" in session_buttons
+    assert "app.activate()" in session_buttons
     assert ".classic-sidebar" in stylesheet
     assert ".classic-sidebar-separator" in stylesheet
     assert "icon-size: 26px" in stylesheet

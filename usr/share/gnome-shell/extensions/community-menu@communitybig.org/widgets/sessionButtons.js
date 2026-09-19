@@ -51,7 +51,8 @@ export const SessionButton = GObject.registerClass({
 
     activate(event) {
         this.emit('activated');
-        super.activate(event);
+        if (!this.isDestroyed)
+            super.activate(event);
     }
 
     _onDestroy() {
@@ -72,8 +73,9 @@ export const ApplicationButton = GObject.registerClass({
     }
 
     activate(event) {
+        const app = this._app;
         super.activate(event);
-        this._app.activate();
+        app.activate();
     }
 
     _onDestroy() {
@@ -113,9 +115,11 @@ export const PowerMenuButton = GObject.registerClass({
 
         this._suspendItem = new PopupMenu.PopupImageMenuItem(_("Suspend"), 'media-playback-pause-symbolic');
         this._suspendItem.connect('activate', () => {
+            const actions = this._systemActions;
             this.powerMenu.itemActivated(BoxPointer.PopupAnimation.NONE);
-            this.emit('activated');
-            this._systemActions.activateSuspend();
+            if (!this.isDestroyed)
+                this.emit('activated');
+            actions.activateSuspend();
         });
         this.powerMenu.addMenuItem(this._suspendItem);
         this._systemActions.bind_property('can-suspend',
@@ -125,9 +129,11 @@ export const PowerMenuButton = GObject.registerClass({
 
         this._restartItem = new PopupMenu.PopupImageMenuItem(_("Restart…"), 'system-reboot-symbolic');
         this._restartItem.connect('activate', () => {
+            const actions = this._systemActions;
             this.powerMenu.itemActivated(BoxPointer.PopupAnimation.NONE);
-            this.emit('activated');
-            this._systemActions.activateRestart();
+            if (!this.isDestroyed)
+                this.emit('activated');
+            actions.activateRestart();
         });
         this.powerMenu.addMenuItem(this._restartItem);
         this._systemActions.bind_property('can-restart',
@@ -137,9 +143,11 @@ export const PowerMenuButton = GObject.registerClass({
 
         this._powerOffItem = new PopupMenu.PopupImageMenuItem(_("Power Off…"), 'system-shutdown-symbolic');
         this._powerOffItem.connect('activate', () => {
+            const actions = this._systemActions;
             this.powerMenu.itemActivated(BoxPointer.PopupAnimation.NONE);
-            this.emit('activated');
-            this._systemActions.activatePowerOff();
+            if (!this.isDestroyed)
+                this.emit('activated');
+            actions.activatePowerOff();
         });
         this.powerMenu.addMenuItem(this._powerOffItem);
         this._systemActions.bind_property('can-power-off',
@@ -200,8 +208,9 @@ export const PowerButton = GObject.registerClass({
     }
 
     activate(event) {
+        const actions = this._systemActions;
         super.activate(event);
-        this._systemActions.activatePowerOff();
+        actions.activatePowerOff();
     }
 });
 
@@ -219,8 +228,9 @@ export const RestartButton = GObject.registerClass({
     }
 
     activate(event) {
+        const actions = this._systemActions;
         super.activate(event);
-        this._systemActions.activateRestart();
+        actions.activateRestart();
     }
 });
 
@@ -237,8 +247,9 @@ export const SuspendButton = GObject.registerClass({
     }
 
     activate(event) {
+        const actions = this._systemActions;
         super.activate(event);
-        this._systemActions.activateSuspend();
+        actions.activateSuspend();
     }
 });
 
@@ -289,7 +300,8 @@ export const LockButton = GObject.registerClass({
     }
 
     activate(event) {
+        const actions = this._systemActions;
         super.activate(event);
-        this._systemActions.activateLockScreen();
+        actions.activateLockScreen();
     }
 });

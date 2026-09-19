@@ -25,6 +25,30 @@ import * as Utils from './utils.js';
 import * as Widgets from './widgets/widgets.js';
 import {getOrientationProp} from './utils.js';
 
+function captureActivation(item) {
+    const {id, clipboardText} = item.metaInfo;
+    const provider = item.provider;
+    const terms = [...item.resultsView.terms];
+    if (provider.activateResult) {
+        const activate = provider.activateResult.bind(provider);
+        return () => {
+            activate(id, terms);
+            if (clipboardText)
+                St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, clipboardText);
+        };
+    }
+    const app = item.app ?? (id.endsWith('.desktop')
+        ? Shell.AppSystem.get_default().lookup_app(id) : null);
+    if (app) {
+        const newWindow = app.can_open_new_window();
+        if (newWindow || app.state === Shell.AppState.STOPPED)
+            item.animateLaunch();
+        return () => newWindow ? app.open_new_window(-1) : app.activate();
+    }
+    const actions = SystemActions.getDefault();
+    return () => { if (!id.endsWith('.desktop')) actions.activateAction(id); };
+}
+
 const ListSearchResult = GObject.registerClass({
     Signals: {
         'activated': {},
@@ -110,33 +134,11 @@ const ListSearchResult = GObject.registerClass({
             this.resultsView.screenshotActivated();
             return;
         }
-
+        const activate = captureActivation(this);
         this.emit('activated');
-        super.activate(event);
-
-        if (this.provider.activateResult) {
-            this.provider.activateResult(this.metaInfo.id, this.resultsView.terms);
-            if (this.metaInfo.clipboardText)
-                St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, this.metaInfo.clipboardText);
-        } else if (this.metaInfo.id.endsWith('.desktop')) {
-            const app = Shell.AppSystem.get_default().lookup_app(this.metaInfo.id);
-            if (!app) {
-                return;
-            }
-
-            if (app.can_open_new_window()) {
-                this.animateLaunch();
-                app.open_new_window(-1);
-            } else {
-                if (app.state == Shell.AppState.STOPPED) {
-                    this.animateLaunch();
-                }
-                app.activate();
-            }
-        } else {
-            const systemActions = SystemActions.getDefault();
-            systemActions.activateAction(this.metaInfo.id);
-        }
+        if (!this.isDestroyed)
+            super.activate(event);
+        activate();
     }
 
     _highlightTerms() {
@@ -205,19 +207,10 @@ const AppSearchResult = GObject.registerClass({
             this.resultsView.screenshotActivated();
             return;
         }
-
-        super.activate(event);
-
-        if (this.provider.activateResult) {
-            this.provider.activateResult(this.metaInfo.id, this.resultsView.terms);
-            if (this.metaInfo.clipboardText)
-                St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, this.metaInfo.clipboardText);
-        } else if (this.app) {
-            super._launchApp();
-        } else {
-            const systemActions = SystemActions.getDefault();
-            systemActions.activateAction(this.metaInfo.id);
-        }
+        const activate = captureActivation(this);
+        if (!this.isDestroyed)
+            super.activate(event);
+        activate();
     }
 
     _highlightTerms() {
@@ -248,24 +241,28 @@ const SearchResultsBase = GObject.registerClass({
 
         this.add_child(this._resultDisplayBin);
 
-        this._resultDisplays = {};
+        this._resultDisplays = Object.create(null);
 
         this._cancellable = new Gio.Cancellable();
         this.connect('destroy', () => this._onDestroy());
     }
 
+    cancelSearch() {
+        this._request = null;
+        this._cancellable?.cancel();
+    }
+
+    _ownsSearch(request) {
+        return this._request === request && !request.cancellable.is_cancelled();
+    }
+
     _onDestroy() {
-        this._cancellable.cancel();
-        this._cancellable = null;
-
-        for (const resultId in this._resultDisplays) {
-            if (Object.hasOwn(this._resultDisplays, resultId)) {
-                this._resultDisplays[resultId].destroy();
-                delete this._resultDisplays[resultId];
-            }
-        }
+        this.cancelSearch();
+        const displays = this._resultDisplays;
         this._resultDisplays = null;
-
+        for (const display of Object.values(displays ?? {}))
+            display.destroy();
+        this._cancellable = null;
         this._terms = [];
     }
 
@@ -273,89 +270,97 @@ const SearchResultsBase = GObject.registerClass({
     }
 
     clear() {
-        this._cancellable.cancel();
-        for (const resultId in this._resultDisplays) {
-            if (Object.hasOwn(this._resultDisplays, resultId)) {
-                this._resultDisplays[resultId].destroy();
-                delete this._resultDisplays[resultId];
-            }
-        }
-        this._resultDisplays = {};
+        this.cancelSearch();
+        if (!this._resultDisplays)
+            return;
         this._clearResultDisplay();
+        const displays = this._resultDisplays;
+        this._resultDisplays = Object.create(null);
+        for (const display of Object.values(displays))
+            display.destroy();
         this.hide();
     }
 
     _setMoreCount(_count) {
     }
 
-    async _ensureResultActors(results) {
-        const metasNeeded = results.filter(
-            resultId => this._resultDisplays[resultId] === undefined
-        );
-
-        if (metasNeeded.length === 0)
+    async _ensureResultActors(results, request) {
+        const metasNeeded = results.filter(id => !Object.hasOwn(this._resultDisplays, id));
+        if (!metasNeeded.length)
             return;
-
-        this._cancellable.cancel();
-        const cancellable = new Gio.Cancellable();
-        this._cancellable = cancellable;
-
-        const metas = await this.provider.getResultMetas(metasNeeded, cancellable);
-
-        if (cancellable.is_cancelled()) {
-            if (metas.length > 0)
-                throw new Error(`Search provider ${this.provider.id} returned results after the request was canceled`);
-        }
-
-        if (metas.length !== metasNeeded.length)
-            throw new Error(`Wrong number of result metas returned by search provider ${this.provider.id}: expected ${metasNeeded.length} but got ${metas.length}`);
-
-
-        if (metas.some(meta => !meta.name || !meta.id))
-            throw new Error(`Invalid result meta returned from search provider ${this.provider.id}`);
-
-        metasNeeded.forEach((resultId, i) => {
-            const meta = metas[i];
+        const metas = await this.provider.getResultMetas(metasNeeded, request.cancellable);
+        if (!this._ownsSearch(request))
+            return;
+        if (metas.length !== metasNeeded.length ||
+            metas.some((meta, i) => !meta.name || meta.id !== metasNeeded[i]))
+            throw new Error(`Invalid result metas from search provider ${this.provider.id}`);
+        for (const meta of metas) {
+            if (!this._ownsSearch(request))
+                return;
             const display = this._createResultDisplay(meta);
-            display.connect('activated', () => {
-                this.emit('activated');
+            if (!this._ownsSearch(request)) {
+                display.destroy();
+                return;
+            }
+            display.connect('activated', () => this.emit('activated'));
+            display.connect('destroy', () => {
+                if (this._resultsView?._defaultResult === display)
+                    this._resultsView._defaultResult = null;
             });
-            this._resultDisplays[resultId] = display;
-        });
+            this._resultDisplays[meta.id] = display;
+        }
     }
 
     async updateSearch(providerResults, terms, callback) {
+        this.cancelSearch();
+        if (!this._resultDisplays)
+            return;
+        const request = {cancellable: new Gio.Cancellable()};
+        this._request = request;
+        this._cancellable = request.cancellable;
         this._terms = terms;
-        if (providerResults.length === 0) {
-            this._clearResultDisplay();
-            this.hide();
-            callback();
-        } else {
+        try {
             const maxResults = this._getMaxDisplayedResults();
-            const results = maxResults > -1
+            const results = [...new Set(maxResults > -1
                 ? this.provider.filterResults(providerResults, maxResults)
-                : providerResults;
-
-            const moreCount = Math.max(providerResults.length - results.length, 0);
-
-            try {
-                await this._ensureResultActors(results);
-
-                // To avoid CSS transitions causing flickering when
-                // the first search result stays the same, we hide the
-                // content while filling in the results.
-                this.hide();
-                this._clearResultDisplay();
-                results.forEach(
-                    resultId => this._addItem(this._resultDisplays[resultId]));
-                this._setMoreCount(this.provider.canLaunchSearch ? moreCount : 0);
-                this.show();
-                callback();
-            } catch (e) {
-                this._clearResultDisplay();
-                callback();
+                : providerResults)];
+            this._clearResultDisplay();
+            if (!this._ownsSearch(request))
+                return;
+            const retained = new Set(results);
+            for (const id of Object.keys(this._resultDisplays)) {
+                if (!this._ownsSearch(request))
+                    return;
+                if (!retained.has(id)) {
+                    const display = this._resultDisplays[id];
+                    delete this._resultDisplays[id];
+                    display.destroy();
+                }
             }
+            if (!this._ownsSearch(request))
+                return;
+            await this._ensureResultActors(results, request);
+            if (!this._ownsSearch(request))
+                return;
+            this.hide();
+            this._clearResultDisplay();
+            for (const id of results) {
+                if (!this._ownsSearch(request))
+                    return;
+                this._addItem(this._resultDisplays[id]);
+            }
+            if (!this._ownsSearch(request))
+                return;
+            this._setMoreCount(this.provider.canLaunchSearch
+                ? Math.max(providerResults.length - results.length, 0) : 0);
+            if (results.length)
+                this.show();
+        } catch (error) {
+            if (!this._ownsSearch(request))
+                return;
+            this.clear();
         }
+        callback();
     }
 });
 
@@ -394,7 +399,7 @@ const ListSearchResults = GObject.registerClass({
 
     async updateSearch(providerResults, terms, callback) {
         this.providerInfo.setTerms(terms);
-        super.updateSearch(providerResults, terms, callback);
+        return super.updateSearch(providerResults, terms, callback);
     }
 
     _setMoreCount(count) {
@@ -666,8 +671,11 @@ export const SearchResults = GObject.registerClass({
         this._providers.splice(index, 1);
 
         const display = this._providerDisplays.get(provider);
-        display?.destroy();
         this._providerDisplays.delete(provider);
+        provider.searchInProgress = false;
+        this._setSelected(this._defaultResult, false);
+        this._defaultResult = null;
+        display?.destroy();
     }
 
     _clearSearchTimeout() {
@@ -681,6 +689,8 @@ export const SearchResults = GObject.registerClass({
         provider.searchInProgress = true;
 
         const terms = this._terms;
+        const cancellable = this._cancellable;
+        const display = this._providerDisplays.get(provider);
 
         let results;
         try {
@@ -688,18 +698,19 @@ export const SearchResults = GObject.registerClass({
                 results = await provider.getSubsearchResultSet(
                     previousResults,
                     terms,
-                    this._cancellable);
+                    cancellable);
             } else {
                 results = await provider.getInitialResultSet(
                     terms,
-                    this._cancellable);
+                    cancellable);
             }
         } catch (e) {
             logError(e);
         }
 
         // Discard results if search is stale
-        if (this._cancellable?.is_cancelled() || terms !== this._terms)
+        if (cancellable.is_cancelled() || this._cancellable !== cancellable ||
+            terms !== this._terms || !display || this._providerDisplays?.get(provider) !== display)
             return;
 
         if (results === undefined)
@@ -762,6 +773,7 @@ export const SearchResults = GObject.registerClass({
             this._reset();
             return;
         }
+        this._providerDisplays.forEach(display => display.cancelSearch());
 
         let isSubSearch = false;
         if (this._terms.length > 0)
@@ -799,6 +811,8 @@ export const SearchResults = GObject.registerClass({
     }
 
     _clearDisplay() {
+        this._setSelected(this._defaultResult, false);
+        this._defaultResult = null;
         this._providers.forEach(provider => {
             this._providerDisplays.get(provider)?.clear();
         });
@@ -861,12 +875,16 @@ export const SearchResults = GObject.registerClass({
 
     _updateResults(provider, results) {
         const terms = this._terms;
+        const cancellable = this._cancellable;
         const display = this._providerDisplays.get(provider);
         if (!display) {
             provider.searchInProgress = false;
             return;
         }
         display.updateSearch(results, terms, () => {
+            if (this._cancellable !== cancellable || cancellable.is_cancelled() ||
+                this._providerDisplays?.get(provider) !== display)
+                return;
             provider.searchInProgress = false;
 
             this._maybeSetInitialSelection();
@@ -977,16 +995,19 @@ const ProviderInfo = GObject.registerClass({
     animateLaunch() {
         let appSys = Shell.AppSystem.get_default();
         let app = appSys.lookup_app(this.provider.appInfo.get_id());
-        if (app.state == Shell.AppState.STOPPED)
+        if (app?.state == Shell.AppState.STOPPED)
             IconGrid.zoomOutActor(this);
     }
 
     activate(event) {
         if (this.provider.canLaunchSearch) {
+            const launch = this.provider.launchSearch.bind(this.provider);
+            const terms = [...this._terms];
             this.animateLaunch();
-            this.provider.launchSearch(this._terms);
             this.emit('activated');
-            super.activate(event);
+            if (!this.isDestroyed)
+                super.activate(event);
+            launch(terms);
         }
     }
 

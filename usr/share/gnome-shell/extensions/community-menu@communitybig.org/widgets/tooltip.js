@@ -9,11 +9,11 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import * as Constants from '../constants.js';
 import * as Utils from '../utils.js';
-import {getOrientationProp} from '../utils.js';
 
 export const Tooltip = class {
     constructor(sourceActor, title, description) {
         this.sourceActor = sourceActor;
+        this._generation = 0;
         this.location = Constants.TooltipLocation.BOTTOM;
         this.label = new St.Label({ 
             style_class: 'dash-label community-menu-tooltip',
@@ -50,12 +50,17 @@ export const Tooltip = class {
     }
 
     _onHover() {
+        if (!this.actor || !this.sourceActor)
+            return;
         if(!Utils.isBlockHover() && this.sourceActor.hover){
             if (this.tooltipShowingID)
                 return;
+            const generation = ++this._generation;
             this.tooltipShowingID = GLib.timeout_add(0, Constants.TOOLTIP_TIMEOUT, () => {
-                this.show();
+                if (this._generation !== generation || !this.actor)
+                    return GLib.SOURCE_REMOVE;
                 this.tooltipShowingID = null;
+                this.show();
                 return GLib.SOURCE_REMOVE;
             });
         } else if (!this.sourceActor.hover || Utils.isBlockHover()) {
@@ -64,6 +69,19 @@ export const Tooltip = class {
     }
 
     show() {
+        if (!this.actor || !this.sourceActor)
+            return;
+        if (this.tooltipShowingID) {
+            GLib.source_remove(this.tooltipShowingID);
+            this.tooltipShowingID = null;
+        }
+        const monitor = Main.layoutManager.findMonitorForActor(this.sourceActor);
+        if (!monitor) {
+            this.hide();
+            return;
+        }
+        ++this._generation;
+        this.actor.remove_all_transitions();
         this.actor.opacity = 0;
         this.actor.show();
 
@@ -94,7 +112,6 @@ export const Tooltip = class {
         }
 
         // keep the label inside the screen          
-        let monitor = Main.layoutManager.findMonitorForActor(this.sourceActor);
         if (x - monitor.x < gap)
             x += monitor.x - x + gap;
         else if (x + labelWidth > monitor.x + monitor.width - gap)
@@ -113,30 +130,42 @@ export const Tooltip = class {
     }
 
     hide() {
+        const generation = ++this._generation;
         if(this.tooltipShowingID){
             GLib.source_remove(this.tooltipShowingID);
             this.tooltipShowingID = null;
         }
-        this.actor.ease({
+        const actor = this.actor;
+        if (!actor)
+            return;
+        actor.remove_all_transitions();
+        actor.ease({
             opacity: 0,
             duration: Dash.DASH_ITEM_LABEL_HIDE_TIME,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onComplete: () => this.actor.hide()
+            onComplete: () => {
+                if (this.actor === actor && this._generation === generation)
+                    actor.hide();
+            }
         });
     }
 
     destroy() {
+        ++this._generation;
         if (this.tooltipShowingID) {
             GLib.source_remove(this.tooltipShowingID);
             this.tooltipShowingID = null;
         }
 
-        if (this.actor) {
-            this.sourceActor?.disconnectObject(this.actor);
-            global.stage.remove_child(this.actor);
-            this.actor.destroy();
-        }
+        const actor = this.actor;
         this.actor = null;
         this.label = null;
+        if (actor) {
+            this.sourceActor?.disconnectObject(actor);
+            actor.remove_all_transitions();
+            actor.get_parent()?.remove_child(actor);
+            actor.destroy();
+        }
+        this.sourceActor = null;
     }
 };

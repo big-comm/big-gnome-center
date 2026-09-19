@@ -91,7 +91,8 @@ export const AppMenuItem = GObject.registerClass({
     activate(event) {
         this._launchApp(event);
         this.emit('activated');
-        super.activate(event);
+        if (!this.isDestroyed)
+            super.activate(event);
     }
 
     // Update the app icon in the menu
