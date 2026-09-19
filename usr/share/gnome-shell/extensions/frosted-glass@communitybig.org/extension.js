@@ -22,8 +22,14 @@ const MATERIAL_OPACITY_EXPONENT = 1.8;
 
 export default class FrostedGlassExtension extends Extension {
     enable() {
+        if (this._settings || this._disabling)
+            return;
         this._generation = (this._generation ?? 0) + 1;
         const generation = this._generation;
+        const queueRefresh = () => {
+            if (generation === this._generation)
+                this._queueRefresh();
+        };
         this._settings = this.getSettings();
         this._interfaceSettings = new Gio.Settings({
             schema_id: 'org.gnome.desktop.interface',
@@ -32,19 +38,19 @@ export default class FrostedGlassExtension extends Extension {
             schema_id: 'org.gnome.shell.extensions.community-menu',
         });
         this._connections = new ConnectionManager();
-        this._power = new PowerMonitor(() => this._queueRefresh());
+        this._power = new PowerMonitor(queueRefresh);
         this._overview = new OverviewController(() => this._config());
         this._surfaces = null;
 
-        this._connections.connect(this._settings, 'changed', () => this._queueRefresh());
+        this._connections.connect(this._settings, 'changed', queueRefresh);
         this._connections.connect(this._interfaceSettings,
-            'changed::color-scheme', () => this._queueRefresh());
+            'changed::color-scheme', queueRefresh);
         this._connections.connect(this._communityMenuSettings,
-            'changed::layout', () => this._queueRefresh());
+            'changed::layout', queueRefresh);
         this._connections.connect(global.settings,
-            'changed::enabled-extensions', () => this._queueRefresh());
+            'changed::enabled-extensions', queueRefresh);
         this._connections.connect(global.settings,
-            'changed::disabled-extensions', () => this._queueRefresh());
+            'changed::disabled-extensions', queueRefresh);
         this._overview.enable();
         if (FULL_BACKEND_AVAILABLE)
             void this._enableFullBackend(generation);
@@ -52,18 +58,16 @@ export default class FrostedGlassExtension extends Extension {
     }
 
     disable() {
+        if (this._disabling)
+            return;
+        this._disabling = true;
         this._generation = (this._generation ?? 0) + 1;
-        if (this._refreshId) {
-            GLib.source_remove(this._refreshId);
-            this._refreshId = 0;
-        }
-        this._connections?.disconnectAll();
-        this._windowStyles?.destroy();
-        this._surfaces?.destroy();
-        this._overview?.destroy();
-        this._power?.destroy();
-        this._restoreNativeParameters();
-
+        const refreshId = this._refreshId;
+        this._refreshId = 0;
+        const connections = this._connections;
+        const surfaces = this._surfaces;
+        const overview = this._overview;
+        const power = this._power;
         this._connections = null;
         this._surfaces = null;
         this._overview = null;
@@ -71,11 +75,36 @@ export default class FrostedGlassExtension extends Extension {
         this._interfaceSettings = null;
         this._communityMenuSettings = null;
         this._settings = null;
+        const cleanup = (name, action) => {
+            try {
+                action();
+            } catch (error) {
+                console.warn(`Frosted Glass: ${name} cleanup failed: ${error}`);
+            }
+        };
+        try {
+            cleanup('refresh', () => {
+                if (refreshId)
+                    GLib.source_remove(refreshId);
+            });
+            cleanup('connections', () => connections?.disconnectAll());
+            // Keep this shared writer: it serializes disable and re-enable requests.
+            cleanup('window styles', () => this._windowStyles?.destroy());
+            cleanup('surfaces', () => surfaces?.destroy());
+            cleanup('overview', () => overview?.destroy());
+            cleanup('power', () => power?.destroy());
+            cleanup('native parameters', () => this._restoreNativeParameters());
+        } finally {
+            this._disabling = false;
+        }
     }
 
     async _enableFullBackend(generation) {
+        let surfaces = null;
         try {
             const {prepareRoundedBackend} = await import('./roundedBackend.js');
+            if (!this._settings || this._generation !== generation)
+                return;
             await prepareRoundedBackend();
             if (!this._settings || this._generation !== generation)
                 return;
@@ -83,12 +112,19 @@ export default class FrostedGlassExtension extends Extension {
             if (!this._settings || this._generation !== generation)
                 return;
 
-            this._surfaces = new ShellSurfaces(() => this._config());
-            this._surfaces.enable();
+            surfaces = new ShellSurfaces(() => this._config());
+            this._surfaces = surfaces;
+            surfaces.enable();
             this._applyNativeParameters();
         } catch (error) {
-            this._surfaces?.destroy();
-            this._surfaces = null;
+            if (surfaces && this._surfaces === surfaces && this._generation === generation) {
+                this._surfaces = null;
+                try {
+                    surfaces.destroy();
+                } catch (cleanupError) {
+                    console.warn(`Frosted Glass: backend cleanup failed: ${cleanupError}`);
+                }
+            }
             console.error(`Frosted Glass: cannot load GNOME 51 backend: ${error}`);
         }
     }
@@ -140,9 +176,12 @@ export default class FrostedGlassExtension extends Extension {
     }
 
     _queueRefresh() {
-        if (this._refreshId)
+        if (!this._settings || this._disabling || this._refreshId)
             return;
-        this._refreshId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        const generation = this._generation;
+        const id = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            if (!this._settings || this._generation !== generation || this._refreshId !== id)
+                return GLib.SOURCE_REMOVE;
             this._refreshId = 0;
             this._applyNativeParameters();
             this._syncWindowStyles();
@@ -150,6 +189,7 @@ export default class FrostedGlassExtension extends Extension {
             this._overview?.refresh();
             return GLib.SOURCE_REMOVE;
         });
+        this._refreshId = id;
     }
 
     _applyNativeParameters() {
