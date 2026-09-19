@@ -35,17 +35,18 @@ const displayConfigWrapper = Gio.DBusProxy.makeProxyWrapper(
 
 let useCache = false
 let cache = {}
-let monitorIdToIndex = {}
-let monitorIndexToId = {}
+let monitorIdToIndex = Object.create(null)
+let monitorIndexToId = Object.create(null)
+let monitorRequest = 0
 
 export var displayConfigProxy = null
 export var availableMonitors = []
 
-export async function init(settings) {
+export async function init(settings, isCurrent) {
   useCache = true
   cache = {}
 
-  await setMonitorsInfo(settings)
+  await setMonitorsInfo(settings, isCurrent)
 }
 
 export function clearCache(setting) {
@@ -211,43 +212,29 @@ export function getPrimaryIndex(dtpPrimaryId) {
   return availableMonitors.findIndex((am) => am.primary)
 }
 
-export function setMonitorsInfo(settings) {
+export function setMonitorsInfo(settings, isCurrent = () => true) {
+  const request = ++monitorRequest
   return new Promise((resolve, reject) => {
     try {
-      let monitorInfos = []
       let saveMonitorState = (proxy) => {
         proxy.GetCurrentStateRemote((displayInfo, e) => {
+          if (request !== monitorRequest || !isCurrent()) return resolve(false)
           if (e) return reject(`Error getting display state: ${e}`)
-
-          let ids = {}
-
-          //https://gitlab.gnome.org/GNOME/mutter/-/blob/main/data/dbus-interfaces/org.gnome.Mutter.DisplayConfig.xml#L347
-          displayInfo[2].forEach((logicalMonitor, i) => {
-            let [connector, vendor, product, serial] = logicalMonitor[5][0]
-            let id = i
-            let primary = logicalMonitor[4]
-
-            // if by any chance 2 monitors have the same id, use the connector string
-            // instead, which should be unique but varies between x11 and wayland :(
-            // worst case scenario, resort to using the dumbass index
-            if (vendor && serial) id = `${vendor}-${serial}`
-
-            if (ids[id]) id = connector && !ids[connector] ? connector : i
-
-            monitorInfos.push({
-              id,
-              product,
-              primary,
+          try {
+            const monitors = parseMonitors(displayInfo)
+            const byId = Object.create(null), byIndex = Object.create(null)
+            monitors.forEach((monitor, index) => {
+              byId[monitor.id] = index
+              byIndex[index] = monitor.id
             })
-
-            monitorIdToIndex[id] = i
-            monitorIndexToId[i] = id
-            ids[id] = 1
-          })
-
-          _saveMonitors(settings, monitorInfos)
-
-          resolve()
+            monitorIdToIndex = byId
+            monitorIndexToId = byIndex
+            availableMonitors = Object.freeze(monitors)
+            _saveMonitors(settings, monitors)
+            resolve(true)
+          } catch (error) {
+            reject(error)
+          }
         })
       }
 
@@ -269,6 +256,37 @@ export function setMonitorsInfo(settings) {
   })
 }
 
+function parseMonitors(reply) {
+  if (!Array.isArray(reply) || !Array.isArray(reply[1]) || !Array.isArray(reply[2]))
+    throw new Error('Invalid DisplayConfig reply')
+  const ids = new Set(), connectors = new Set()
+  let primaryCount = 0
+  const monitors = reply[2].map((logical, index) => {
+    if (!Array.isArray(logical) || logical.length < 6 ||
+        !Number.isFinite(logical[0]) || !Number.isFinite(logical[1]) ||
+        !Number.isFinite(logical[2]) || logical[2] <= 0 ||
+        !Number.isInteger(logical[3]) || logical[3] < 0 || logical[3] > 7 ||
+        typeof logical[4] !== 'boolean' || !Array.isArray(logical[5]) || !logical[5].length)
+      throw new Error('Invalid logical monitor')
+    for (const spec of logical[5]) {
+      if (!Array.isArray(spec) || spec.length !== 4 || spec.some(value => typeof value !== 'string') ||
+          !spec[0] || connectors.has(spec[0]))
+        throw new Error('Invalid or duplicate monitor identity')
+      connectors.add(spec[0])
+    }
+    const [connector, vendor, product, serial] = logical[5][0]
+    let id = vendor && serial ? `${vendor}-${serial}` : String(index)
+    if (ids.has(id)) id = connector
+    if (ids.has(id)) throw new Error('Ambiguous monitor identity')
+    ids.add(id)
+    if (logical[4]) primaryCount++
+    return Object.freeze({id, product, primary: logical[4]})
+  })
+  if (monitors.length && primaryCount !== 1)
+    throw new Error('Invalid primary monitor')
+  return monitors
+}
+
 function _saveMonitors(settings, monitorInfos) {
   let keyPrimary = 'primary-monitor'
   let dtpPrimaryMonitor = settings.get_string(keyPrimary)
@@ -277,7 +295,6 @@ function _saveMonitors(settings, monitorInfos) {
   if (dtpPrimaryMonitor.match(/^\d{1,2}$/) && monitorInfos[dtpPrimaryMonitor])
     settings.set_string(keyPrimary, monitorInfos[dtpPrimaryMonitor].id)
 
-  availableMonitors = Object.freeze(monitorInfos)
 }
 
 // this is for backward compatibility, to remove in a few versions

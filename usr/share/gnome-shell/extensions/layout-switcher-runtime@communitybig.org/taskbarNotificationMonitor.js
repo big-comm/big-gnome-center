@@ -18,6 +18,7 @@ import Shell from 'gi://Shell';
 import {EventEmitter} from 'resource:///org/gnome/shell/misc/signals.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
+import {MAX_REMOTE_ENTRIES, parseLauncherUpdate} from './launcherEntry.js';
 
 const UNITY_BUS_NAME = 'com.canonical.Unity';
 const UNITY_LAUNCHER_INTERFACE = 'com.canonical.Unity.LauncherEntry';
@@ -41,8 +42,27 @@ export class TaskbarNotificationMonitor extends EventEmitter {
         this._updateCount = 0;
         this._lastUpdateApp = '';
         this._destroyed = false;
+        this._remoteMaps = new Map();
+        this._remoteCount = 0;
+        this._nameOwnerId = 0;
+        this._settings = new Gio.Settings({schema_id: 'org.gnome.desktop.notifications'});
+        this._dndMode = !this._settings.get_boolean('show-banners');
+        this._settingsId = 0;
 
         try {
+            this._settingsId = this._settings.connect('changed::show-banners', () => {
+                if (this._destroyed) return;
+                this._dndMode = !this._settings.get_boolean('show-banners');
+                for (const appId of Object.keys(this._state))
+                    this._recomputeTrayState(appId);
+            });
+            this._nameOwnerId = Gio.DBus.session.signal_subscribe(
+                'org.freedesktop.DBus', 'org.freedesktop.DBus', 'NameOwnerChanged',
+                '/org/freedesktop/DBus', null, Gio.DBusSignalFlags.NONE,
+                (_connection, _sender, _path, _iface, _signal, parameters) => {
+                    const [name, before, after] = parameters.deep_unpack();
+                    if (name === before && !after) this._removeSender(before);
+                });
             this._launcherEntryId = Gio.DBus.session.signal_subscribe(
                 null,
                 UNITY_LAUNCHER_INTERFACE,
@@ -83,7 +103,7 @@ export class TaskbarNotificationMonitor extends EventEmitter {
     }
 
     getState(app) {
-        return this._state?.[app?.id];
+        return this._state?.[app?.id] ?? this._defaultState();
     }
 
     diagnostics() {
@@ -115,6 +135,13 @@ export class TaskbarNotificationMonitor extends EventEmitter {
         if (this._destroyed)
             return;
         this._destroyed = true;
+        this._disconnect(this._settings, this._settingsId);
+        this._settingsId = 0;
+        this._settings = null;
+        if (this._nameOwnerId) Gio.DBus.session.signal_unsubscribe(this._nameOwnerId);
+        this._nameOwnerId = 0;
+        this._remoteMaps.clear();
+        this._remoteCount = 0;
 
         for (const source of [...this._sourceRecords.keys()])
             this._untrackSource(source, false);
@@ -141,57 +168,95 @@ export class TaskbarNotificationMonitor extends EventEmitter {
 
     _handleFocusApp() {
         const app = this._tracker?.focus_app;
-        if (!app || !this._state[app.id])
+        if (this._destroyed || !app || !this._state[app.id])
             return;
         this._updateState(app.id, this._defaultState(), true);
     }
 
     _handleLauncherUpdate(senderName, parameters) {
-        if (!senderName || !parameters)
+        if (this._destroyed || !parameters)
             return;
+        let parsed;
+        try { parsed = parseLauncherUpdate(senderName, ...parameters.deep_unpack()); } catch { return; }
+        if (!parsed) return;
+        const appId = this._normalizeAppId(parsed.appId);
+        let records = this._remoteMaps.get(senderName);
+        if (!records?.has(appId) && this._remoteCount >= MAX_REMOTE_ENTRIES) return;
+        if (!records) this._remoteMaps.set(senderName, records = new Map());
+        if (!records.has(appId)) this._remoteCount++;
+        const state = {...records.get(appId), ...parsed.updates};
+        records.set(appId, state);
+        this._remoteMaps.delete(senderName);
+        this._remoteMaps.set(senderName, records);
+        this._recomputeRemote(appId);
+    }
 
-        const [appUri, properties] = parameters.deep_unpack();
-        const appId = appUri.replace(/(^\w+:|^)\/\//, '');
-        const updates = {};
-        for (const property in properties)
-            updates[property] = properties[property].unpack();
-        this._updateState(appId, updates);
+    _removeSender(sender) {
+        if (this._destroyed) return;
+        const records = this._remoteMaps.get(sender);
+        if (!records) return;
+        this._remoteMaps.delete(sender);
+        this._remoteCount -= records.size;
+        for (const appId of records.keys()) this._recomputeRemote(appId);
+    }
+
+    _recomputeRemote(appId) {
+        let remote = {};
+        for (const records of this._remoteMaps.values())
+            if (records.has(appId)) remote = records.get(appId);
+        this._updateState(appId, {count: 0, 'count-visible': false, urgent: false,
+            progress: 0, 'progress-visible': false, updating: false, ...remote}, true);
     }
 
     _trackSource(source) {
-        if (!source || this._sourceRecords.has(source))
+        if (this._destroyed || !source || this._sourceRecords.has(source))
             return;
 
         const appId = this._sourceAppId(source);
         if (!appId)
             return;
 
-        const signalId = source.connect(
-            'notify::count',
-            () => this._recomputeTrayState(appId),
-        );
-        this._sourceRecords.set(source, {appId, signalId});
-        this._recomputeTrayState(appId);
+        const record = {appId, signals: [], notifications: []};
+        const refresh = () => {
+            if (this._destroyed || this._sourceRecords.get(source) !== record) return;
+            for (const [object, id] of record.notifications.splice(0)) this._disconnect(object, id);
+            for (const notification of source.notifications ?? []) {
+                for (const signal of ['notify::urgency', 'notify::acknowledged', 'notify::resident'])
+                    record.notifications.push([notification, notification.connect(signal, () => {
+                        if (!this._destroyed && this._sourceRecords.get(source) === record)
+                            this._recomputeTrayState(appId);
+                    })]);
+            }
+            this._recomputeTrayState(appId);
+        };
+        this._sourceRecords.set(source, record);
+        for (const signal of ['notify::count', 'notification-added'])
+            record.signals.push(source.connect(signal, refresh));
+        refresh();
     }
 
     _untrackSource(source, updateState = true) {
         const record = this._sourceRecords.get(source);
         if (!record)
             return;
-        this._disconnect(source, record.signalId);
         this._sourceRecords.delete(source);
+        for (const id of record.signals) this._disconnect(source, id);
+        for (const [object, id] of record.notifications) this._disconnect(object, id);
         if (updateState)
             this._recomputeTrayState(record.appId);
     }
 
     _recomputeTrayState(appId) {
+        if (this._destroyed) return;
         let trayCount = 0;
         let trayUrgent = false;
         for (const [source, record] of this._sourceRecords) {
-            if (record.appId !== appId)
+            if (this._dndMode || record.appId !== appId)
                 continue;
-            trayCount += Number(source.count) || 0;
-            trayUrgent ||= (source.notifications ?? []).some(notification =>
+            const notifications = (source.notifications ?? []).filter(notification =>
+                !notification.resident || !notification.acknowledged);
+            trayCount += notifications.length;
+            trayUrgent ||= notifications.some(notification =>
                 notification.urgency > MessageTray.Urgency.NORMAL ||
                 source.constructor.name === 'WindowAttentionSource');
         }
@@ -206,6 +271,7 @@ export class TaskbarNotificationMonitor extends EventEmitter {
     }
 
     _updateState(rawAppId, updates, ignoreMapping = false) {
+        if (this._destroyed) return;
         const appId = this._normalizeAppId(rawAppId, !ignoreMapping);
         if (!appId)
             return;
@@ -225,10 +291,14 @@ export class TaskbarNotificationMonitor extends EventEmitter {
         }
 
         state.urgent = Boolean(
-            state.unityUrgent || (state.trayUrgent && state.trayCount));
+            !this._dndMode && (state.unityUrgent || (state.trayUrgent && state.trayCount)));
         state.total = (state['count-visible'] ? Number(state.count) || 0 : 0) +
             (Number(state.trayCount) || 0);
 
+        if (!state.total && !state.urgent && !state['progress-visible'] && !state.updating &&
+            ![...this._sourceRecords.values()].some(record => record.appId === appId) &&
+            ![...this._remoteMaps.values()].some(records => records.has(appId)))
+            delete this._state[appId];
         if (previous === JSON.stringify(state))
             return;
         this._updateCount++;

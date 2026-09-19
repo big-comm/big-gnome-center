@@ -89,14 +89,18 @@ export class TaskbarMonitorHost {
                 async () => {
                     const owner = this._owner;
                     const refreshGeneration = ++this._refreshGeneration;
-                    if (!owner || !Main.layoutManager.primaryMonitor)
+                    const isCurrent = () => this._owner === owner &&
+                        refreshGeneration === this._refreshGeneration;
+                    if (!owner)
                         return;
                     try {
-                        await PanelSettings.setMonitorsInfo(SETTINGS);
+                        if (!await PanelSettings.setMonitorsInfo(SETTINGS, isCurrent))
+                            return;
                     } catch (error) {
                         console.warn(
                             `[layout-switcher-runtime] monitor map refresh failed: ${error}`,
                         );
+                        return;
                     }
                     if (this._owner === owner &&
                         refreshGeneration === this._refreshGeneration) {

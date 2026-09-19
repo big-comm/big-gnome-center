@@ -47,14 +47,6 @@ const HEADER_COLOR_OFFSET = -12
 const FADE_SIZE = 36
 const PEEK_INDEX_PROP = '_dtpPeekInitialIndex'
 
-let headerHeight = 0
-let alphaBg = 0
-let isLeftButtons = false
-let isTopHeader = true
-let isManualStyling = false
-let scaleFactor = 1
-let animationTime = 0
-let aspectRatio = {}
 
 export const PreviewMenu = GObject.registerClass(
   {
@@ -66,6 +58,7 @@ export const PreviewMenu = GObject.registerClass(
 
       let geom = panel.geom
       this.panel = panel
+      this._previewStyle = {aspectRatio: {}}
       this.currentAppIcon = null
       this._focusedPreview = null
       this._peekedWindow = null
@@ -191,12 +184,12 @@ export const PreviewMenu = GObject.registerClass(
           this.set_height(this.clipHeight)
           this.show()
 
-          setStyle(
+          setStyle(this._previewStyle,
             this.menu,
             'background: ' +
               Utils.getrgbaColor(
                 this.panel.dynamicTransparency.backgroundColorRgb,
-                alphaBg,
+                this._previewStyle.alphaBg,
               ),
           )
         }
@@ -342,7 +335,7 @@ export const PreviewMenu = GObject.registerClass(
         (appIcon.window
           ? [appIcon.window]
           : appIcon.getAppIconInterestingWindows())
-      windows.sort(Taskbar.sortWindowsCompareFunction)
+      windows = [...windows].sort(Taskbar.sortWindowsCompareFunction)
 
       let currentPreviews = this._box.get_children()
       let l = Math.max(windows.length, currentPreviews.length)
@@ -363,7 +356,7 @@ export const PreviewMenu = GObject.registerClass(
     _addAndRemoveWindows(windows) {
       let currentPreviews = this._box.get_children()
 
-      windows.sort(Taskbar.sortWindowsCompareFunction)
+      windows = [...windows].sort(Taskbar.sortWindowsCompareFunction)
 
       for (let i = 0, l = windows.length; i < l; ++i) {
         let currentIndex = Utils.findIndex(
@@ -457,28 +450,28 @@ export const PreviewMenu = GObject.registerClass(
     }
 
     _refreshGlobals() {
-      isLeftButtons =
+      this._previewStyle.isLeftButtons =
         Meta.prefs_get_button_layout().left_buttons.indexOf(
           Meta.ButtonFunction.CLOSE,
         ) >= 0
-      isTopHeader =
+      this._previewStyle.isTopHeader =
         SETTINGS.get_string('window-preview-title-position') == 'TOP'
-      isManualStyling = SETTINGS.get_boolean('window-preview-manual-styling')
-      scaleFactor = Utils.getScaleFactor()
-      headerHeight = SETTINGS.get_boolean('window-preview-show-title')
-        ? HEADER_HEIGHT * scaleFactor
+      this._previewStyle.isManualStyling = SETTINGS.get_boolean('window-preview-manual-styling')
+      this._previewStyle.scaleFactor = Utils.getScaleFactor()
+      this._previewStyle.headerHeight = SETTINGS.get_boolean('window-preview-show-title')
+        ? HEADER_HEIGHT * this._previewStyle.scaleFactor
         : 0
-      animationTime = SETTINGS.get_int('window-preview-animation-time') * 0.001
-      aspectRatio.x = {
+      this._previewStyle.animationTime = SETTINGS.get_int('window-preview-animation-time') * 0.001
+      this._previewStyle.aspectRatio.x = {
         size: SETTINGS.get_int('window-preview-aspect-ratio-x'),
         fixed: SETTINGS.get_boolean('window-preview-fixed-x'),
       }
-      aspectRatio.y = {
+      this._previewStyle.aspectRatio.y = {
         size: SETTINGS.get_int('window-preview-aspect-ratio-y'),
         fixed: SETTINGS.get_boolean('window-preview-fixed-y'),
       }
 
-      alphaBg = SETTINGS.get_boolean('preview-use-custom-opacity')
+      this._previewStyle.alphaBg = SETTINGS.get_boolean('preview-use-custom-opacity')
         ? SETTINGS.get_int('preview-custom-opacity') * 0.01
         : this.panel.dynamicTransparency.alpha
     }
@@ -491,7 +484,7 @@ export const PreviewMenu = GObject.registerClass(
       let previewSize =
         (SETTINGS.get_int('window-preview-size') +
           SETTINGS.get_int('window-preview-padding') * 2) *
-        scaleFactor
+        this._previewStyle.scaleFactor
 
       if (this.panel.geom.vertical) {
         w = previewSize
@@ -499,7 +492,7 @@ export const PreviewMenu = GObject.registerClass(
         y = this.panel.monitor.y
       } else {
         w = this.panel.monitor.width
-        this.clipHeight = previewSize + headerHeight
+        this.clipHeight = previewSize + this._previewStyle.headerHeight
         x = this.panel.monitor.x
       }
 
@@ -528,7 +521,7 @@ export const PreviewMenu = GObject.registerClass(
           (panelSize -
             panelBoxTheme.get_padding(St.Side.TOP) +
             previewSize +
-            headerHeight)
+            this._previewStyle.headerHeight)
       }
 
       Utils.setClip(this, x, y, w, this.clipHeight)
@@ -541,7 +534,7 @@ export const PreviewMenu = GObject.registerClass(
       )
       let sourceAllocation = Utils.getTransformedAllocation(this.currentAppIcon)
       let [previewsWidth, previewsHeight] = this._getPreviewsSize()
-      let appIconMargin = SETTINGS.get_int('appicon-margin') / scaleFactor
+      let appIconMargin = SETTINGS.get_int('appicon-margin') / this._previewStyle.scaleFactor
       let x = 0,
         y = 0
 
@@ -576,7 +569,7 @@ export const PreviewMenu = GObject.registerClass(
       } else {
         Utils.animate(
           this.menu,
-          getTweenOpts({
+          getTweenOpts(this._previewStyle, {
             x: x,
             y: y,
             width: previewsWidth,
@@ -623,7 +616,7 @@ export const PreviewMenu = GObject.registerClass(
         y = 0
       let startBg = Utils.getrgbaColor(
         this.panel.dynamicTransparency.backgroundColorRgb,
-        Math.min(alphaBg + 0.1, 1),
+        Math.min(this._previewStyle.alphaBg + 0.1, 1),
       )
       let endBg = Utils.getrgbaColor(
         this.panel.dynamicTransparency.backgroundColorRgb,
@@ -696,7 +689,7 @@ export const PreviewMenu = GObject.registerClass(
         ? this._translationDirection
         : this._translationOffset
 
-      Utils.animate(this.menu, getTweenOpts(tweenOpts))
+      Utils.animate(this.menu, getTweenOpts(this._previewStyle, tweenOpts))
     }
 
     _peek(window) {
@@ -762,9 +755,15 @@ export const PreviewMenu = GObject.registerClass(
         workspace = Utils.getCurrentWorkspace()
       }
 
-      Main.wm._shouldAnimate = () => false
-      workspace.activate(global.display.get_current_time_roundtrip())
-      Main.wm._shouldAnimate = shouldAnimate
+      if (!workspace) return
+      const ownedHook = () => false
+      Main.wm._shouldAnimate = ownedHook
+      try {
+        workspace.activate(global.display.get_current_time_roundtrip())
+      } finally {
+        if (Main.wm._shouldAnimate === ownedHook)
+          Main.wm._shouldAnimate = shouldAnimate
+      }
     }
 
     _focusMetaWindow(dimOpacity, window, immediate, ignoreFocus) {
@@ -772,6 +771,7 @@ export const PreviewMenu = GObject.registerClass(
       let windowWorkspace = isAppSpread
         ? Utils.getCurrentWorkspace()
         : window.get_workspace()
+      if (!windowWorkspace) return
       let windows = isAppSpread
         ? Utils.getAllMetaWindows()
         : windowWorkspace.list_windows()
@@ -804,7 +804,7 @@ export const PreviewMenu = GObject.registerClass(
       windowActor = windowActor || metaWindow.get_compositor_private()
 
       if (windowActor && !metaWindow.minimized) {
-        let tweenOpts = getTweenOpts({ opacity })
+        let tweenOpts = getTweenOpts(this._previewStyle, { opacity })
 
         if (immediate && !metaWindow.is_on_all_workspaces()) {
           tweenOpts.time = 0
@@ -854,7 +854,8 @@ export const Preview = GObject.registerClass(
       this._needsCloseButton = true
       this.cloneWidth = this.cloneHeight = 0
       this._previewMenu = previewMenu
-      this._padding = SETTINGS.get_int('window-preview-padding') * scaleFactor
+      this._previewStyle = previewMenu._previewStyle
+      this._padding = SETTINGS.get_int('window-preview-padding') * this._previewStyle.scaleFactor
       this._previewDimensions = this._getPreviewDimensions()
       this.animatingOut = false
 
@@ -878,8 +879,8 @@ export const Preview = GObject.registerClass(
         opacity: 0,
         x_expand: true,
         y_expand: true,
-        x_align: Clutter.ActorAlign[isLeftButtons ? 'START' : 'END'],
-        y_align: Clutter.ActorAlign[isTopHeader ? 'START' : 'END'],
+        x_align: Clutter.ActorAlign[this._previewStyle.isLeftButtons ? 'START' : 'END'],
+        y_align: Clutter.ActorAlign[this._previewStyle.isTopHeader ? 'START' : 'END'],
       })
 
       this._closeButtonBin.add_child(closeButton)
@@ -888,22 +889,22 @@ export const Preview = GObject.registerClass(
         layout_manager: new Clutter.BinLayout(),
         x_expand: true,
         y_expand: true,
-        style: 'padding: ' + this._padding / scaleFactor + 'px;',
+        style: 'padding: ' + this._padding / this._previewStyle.scaleFactor + 'px;',
       })
 
       this._previewBin.set_size(previewBinWidth, previewBinHeight)
 
       box.add_child(this._previewBin)
 
-      if (headerHeight) {
+      if (this._previewStyle.headerHeight) {
         let headerBox = new St.Widget({
           style_class: 'preview-header-box',
           layout_manager: new Clutter.BoxLayout(),
           x_expand: true,
-          y_align: Clutter.ActorAlign[isTopHeader ? 'START' : 'END'],
+          y_align: Clutter.ActorAlign[this._previewStyle.isTopHeader ? 'START' : 'END'],
         })
 
-        setStyle(headerBox, this._getBackgroundColor(HEADER_COLOR_OFFSET, 1))
+        setStyle(this._previewStyle, headerBox, this._getBackgroundColor(HEADER_COLOR_OFFSET, 1))
         this._workspaceIndicator = new St.Label({
           y_align: Clutter.ActorAlign.CENTER,
         })
@@ -915,19 +916,19 @@ export const Preview = GObject.registerClass(
         this._iconBin = new St.Widget({
           layout_manager: new Clutter.BinLayout(),
         })
-        this._iconBin.set_size(headerHeight, headerHeight)
+        this._iconBin.set_size(this._previewStyle.headerHeight, this._previewStyle.headerHeight)
 
         headerBox.add_child(this._iconBin)
         headerBox.insert_child_at_index(
           this._workspaceIndicator,
-          isLeftButtons ? 0 : 1,
+          this._previewStyle.isLeftButtons ? 0 : 1,
         )
         headerBox.insert_child_at_index(
           this._windowTitle,
-          isLeftButtons ? 1 : 2,
+          this._previewStyle.isLeftButtons ? 1 : 2,
         )
 
-        box.insert_child_at_index(headerBox, isTopHeader ? 0 : 1)
+        box.insert_child_at_index(headerBox, this._previewStyle.isTopHeader ? 0 : 1)
       }
 
       this.add_child(box)
@@ -944,7 +945,7 @@ export const Preview = GObject.registerClass(
     adjustOnStage() {
       let closeButton = this._closeButtonBin.get_first_child()
       let closeButtonHeight = closeButton.height
-      let maxCloseButtonSize = MAX_CLOSE_BUTTON_SIZE * scaleFactor
+      let maxCloseButtonSize = MAX_CLOSE_BUTTON_SIZE * this._previewStyle.scaleFactor
       let closeButtonBorderRadius = ''
 
       if (closeButtonHeight > maxCloseButtonSize) {
@@ -952,28 +953,28 @@ export const Preview = GObject.registerClass(
         closeButton.set_size(closeButtonHeight, closeButtonHeight)
       }
 
-      if (!headerHeight) {
+      if (!this._previewStyle.headerHeight) {
         closeButtonBorderRadius = 'border-radius: '
 
-        if (isTopHeader) {
-          closeButtonBorderRadius += isLeftButtons ? '0 0 4px 0;' : '0 0 0 4px;'
+        if (this._previewStyle.isTopHeader) {
+          closeButtonBorderRadius += this._previewStyle.isLeftButtons ? '0 0 4px 0;' : '0 0 0 4px;'
         } else {
-          closeButtonBorderRadius += isLeftButtons ? '0 4px 0 0;' : '4px 0 0 0;'
+          closeButtonBorderRadius += this._previewStyle.isLeftButtons ? '0 4px 0 0;' : '4px 0 0 0;'
         }
       }
 
-      setStyle(
+      setStyle(this._previewStyle,
         this._closeButtonBin,
         'padding: ' +
-          (headerHeight
+          (this._previewStyle.headerHeight
             ? Math.round(
-                ((headerHeight - closeButtonHeight) * 0.5) / scaleFactor,
+                ((this._previewStyle.headerHeight - closeButtonHeight) * 0.5) / this._previewStyle.scaleFactor,
               )
             : 4) +
           'px;' +
           this._getBackgroundColor(
             HEADER_COLOR_OFFSET,
-            headerHeight ? 1 : 0.6,
+            this._previewStyle.headerHeight ? 1 : 0.6,
           ) +
           closeButtonBorderRadius,
       )
@@ -984,11 +985,14 @@ export const Preview = GObject.registerClass(
         let _assignWindowClone = () => {
           if (window.get_compositor_private()) {
             let cloneBin = this._getWindowCloneBin(window)
-
-            this._resizeClone(cloneBin, window)
+            if (!cloneBin) return
+            if (!this._resizeClone(cloneBin, window)) {
+              cloneBin.destroy()
+              return
+            }
             this._addClone(cloneBin, animateSize)
             this._previewMenu.updatePosition()
-          } else if (!this._waitWindowId) {
+          } else if (window.get_workspace() && !this._waitWindowId) {
             this._waitWindowId = GLib.idle_add(
               GLib.PRIORITY_DEFAULT_IDLE,
               () => {
@@ -1019,7 +1023,7 @@ export const Preview = GObject.registerClass(
 
     animateOut() {
       if (!this.animatingOut) {
-        let tweenOpts = getTweenOpts({
+        let tweenOpts = getTweenOpts(this._previewStyle, {
           opacity: 0,
           width: 0,
           height: 0,
@@ -1038,14 +1042,14 @@ export const Preview = GObject.registerClass(
 
       binWidth = Math.max(binWidth, this.cloneWidth + this._padding * 2)
       binHeight =
-        Math.max(binHeight, this.cloneHeight + this._padding * 2) + headerHeight
+        Math.max(binHeight, this.cloneHeight + this._padding * 2) + this._previewStyle.headerHeight
 
       return [binWidth, binHeight]
     }
 
     setFocus(focused) {
       this._hideOrShowCloseButton(!focused)
-      setStyle(
+      setStyle(this._previewStyle,
         this,
         this._getBackgroundColor(FOCUSED_COLOR_OFFSET, focused ? '-' : 0),
       )
@@ -1057,6 +1061,7 @@ export const Preview = GObject.registerClass(
     }
 
     activate() {
+      if (!this.window?.get_compositor_private()) return
       this._previewMenu.endPeekHere()
       this._previewMenu.close()
       Main.activateWindow(this.window)
@@ -1114,7 +1119,7 @@ export const Preview = GObject.registerClass(
         Utils.stopAnimations(this)
         Utils.animate(
           this,
-          getTweenOpts({
+          getTweenOpts(this._previewStyle, {
             opacity: 255,
             width: this.cloneWidth,
             height: this.cloneHeight,
@@ -1180,12 +1185,12 @@ export const Preview = GObject.registerClass(
     }
 
     _updateHeader() {
-      if (headerHeight) {
+      if (this._previewStyle.headerHeight) {
         let iconTextureSize = SETTINGS.get_boolean(
           'window-preview-use-custom-icon-size',
         )
           ? SETTINGS.get_int('window-preview-custom-icon-size')
-          : (headerHeight / scaleFactor) * 0.6
+          : (this._previewStyle.headerHeight / this._previewStyle.scaleFactor) * 0.6
         let icon = this._previewMenu
           .getCurrentAppIcon()
           .app.create_icon_texture(iconTextureSize)
@@ -1210,8 +1215,8 @@ export const Preview = GObject.registerClass(
           workspaceIndex = (this.window.get_workspace().index() + 1).toString()
           workspaceStyle =
             'margin: 0 4px 0 ' +
-            (isLeftButtons
-              ? Math.round((headerHeight - icon.width) * 0.5) + 'px'
+            (this._previewStyle.isLeftButtons
+              ? Math.round((this._previewStyle.headerHeight - icon.width) * 0.5) + 'px'
               : '0') +
             '; padding: 0 4px;' +
             'border: 2px solid ' +
@@ -1221,12 +1226,12 @@ export const Preview = GObject.registerClass(
         }
 
         this._workspaceIndicator.text = workspaceIndex
-        setStyle(this._workspaceIndicator, workspaceStyle)
+        setStyle(this._previewStyle, this._workspaceIndicator, workspaceStyle)
 
         this._titleWindowChangeId = this.window.connect('notify::title', () =>
           this._updateWindowTitle(),
         )
-        setStyle(
+        setStyle(this._previewStyle,
           this._windowTitle,
           'max-width: 0px; padding-right: 4px;' + commonTitleStyles,
         )
@@ -1242,7 +1247,7 @@ export const Preview = GObject.registerClass(
       if (this._needsCloseButton) {
         Utils.animate(
           this._closeButtonBin,
-          getTweenOpts({ opacity: hide ? 0 : 255 }),
+          getTweenOpts(this._previewStyle, { opacity: hide ? 0 : 255 }),
         )
       }
     }
@@ -1260,7 +1265,7 @@ export const Preview = GObject.registerClass(
       alpha = Math.abs(alpha)
 
       if (isNaN(alpha)) {
-        alpha = alphaBg
+        alpha = this._previewStyle.alphaBg
       }
 
       return Utils.getrgbaColor(
@@ -1272,13 +1277,13 @@ export const Preview = GObject.registerClass(
 
     _addClone(newCloneBin, animateSize) {
       let currentClones = this._previewBin.get_children()
-      let newCloneOpts = getTweenOpts({ opacity: 255 })
+      let newCloneOpts = getTweenOpts(this._previewStyle, { opacity: 255 })
 
       this._previewBin.add_child(newCloneBin)
 
       if (currentClones.length) {
         let currentCloneBin = currentClones.pop()
-        let currentCloneOpts = getTweenOpts({
+        let currentCloneOpts = getTweenOpts(this._previewStyle, {
           opacity: 0,
           onComplete: () => currentCloneBin.destroy(),
         })
@@ -1310,9 +1315,12 @@ export const Preview = GObject.registerClass(
     }
 
     _getWindowCloneBin(window) {
+      const source = window?.get_compositor_private()
+      if (!source) return null
       let frameRect = window.get_frame_rect()
       let bufferRect = window.get_buffer_rect()
-      let clone = new Clutter.Clone({ source: window.get_compositor_private() })
+      if (!validRect(frameRect) || !validRect(bufferRect)) return null
+      let clone = new Clutter.Clone({ source })
       let cloneBin = new St.Widget({
         opacity: 0,
         layout_manager:
@@ -1331,8 +1339,8 @@ export const Preview = GObject.registerClass(
       let [fixedWidth, fixedHeight] = this._previewDimensions
 
       return [
-        aspectRatio.x.fixed ? fixedWidth + this._padding * 2 : -1,
-        aspectRatio.y.fixed ? fixedHeight + this._padding * 2 : -1,
+        this._previewStyle.aspectRatio.x.fixed ? fixedWidth + this._padding * 2 : -1,
+        this._previewStyle.aspectRatio.y.fixed ? fixedHeight + this._padding * 2 : -1,
       ]
     }
 
@@ -1340,6 +1348,8 @@ export const Preview = GObject.registerClass(
       let frameRect =
         cloneBin.layout_manager.frameRect || window.get_frame_rect()
       let [fixedWidth, fixedHeight] = this._previewDimensions
+      if (!validRect(frameRect) || ![fixedWidth, fixedHeight].every(value => Number.isFinite(value) && value > 0))
+        return false
       let ratio = Math.min(
         fixedWidth / frameRect.width,
         fixedHeight / frameRect.height,
@@ -1355,31 +1365,32 @@ export const Preview = GObject.registerClass(
       let clonePaddingTop = clonePaddingTB * 0.5
       let clonePaddingLeft = clonePaddingLR * 0.5
 
-      this.cloneWidth = cloneWidth + clonePaddingLR * scaleFactor
-      this.cloneHeight = cloneHeight + clonePaddingTB * scaleFactor
+      this.cloneWidth = cloneWidth + clonePaddingLR * this._previewStyle.scaleFactor
+      this.cloneHeight = cloneHeight + clonePaddingTB * this._previewStyle.scaleFactor
 
       cloneBin.set_style(
         'padding: ' + clonePaddingTop + 'px ' + clonePaddingLeft + 'px;',
       )
       cloneBin.layout_manager.ratio = ratio
       cloneBin.layout_manager.padding = [
-        clonePaddingLeft * scaleFactor,
-        clonePaddingTop * scaleFactor,
+        clonePaddingLeft * this._previewStyle.scaleFactor,
+        clonePaddingTop * this._previewStyle.scaleFactor,
       ]
 
       cloneBin.get_first_child().set_size(cloneWidth, cloneHeight)
+      return true
     }
 
     _getPreviewDimensions() {
-      let size = SETTINGS.get_int('window-preview-size') * scaleFactor
+      let size = SETTINGS.get_int('window-preview-size') * this._previewStyle.scaleFactor
       let w, h
 
       if (this._previewMenu.panel.geom.vertical) {
         w = size
-        h = (w * aspectRatio.y.size) / aspectRatio.x.size
+        h = (w * this._previewStyle.aspectRatio.y.size) / this._previewStyle.aspectRatio.x.size
       } else {
         h = size
-        w = (h * aspectRatio.x.size) / aspectRatio.y.size
+        w = (h * this._previewStyle.aspectRatio.x.size) / this._previewStyle.aspectRatio.y.size
       }
 
       return [w, h]
@@ -1416,15 +1427,20 @@ export const WindowCloneLayout = GObject.registerClass(
   },
 )
 
-export function setStyle(actor, style) {
-  if (!isManualStyling) {
+function validRect(rect) {
+  return rect && ['x', 'y', 'width', 'height'].every(key => Number.isFinite(rect[key])) &&
+    rect.width > 0 && rect.height > 0
+}
+
+export function setStyle(context, actor, style) {
+  if (!context.isManualStyling) {
     actor.set_style(style)
   }
 }
 
-export function getTweenOpts(opts) {
+export function getTweenOpts(context, opts) {
   let defaults = {
-    time: animationTime,
+    time: context.animationTime,
     transition: 'easeInOutQuad',
   }
 

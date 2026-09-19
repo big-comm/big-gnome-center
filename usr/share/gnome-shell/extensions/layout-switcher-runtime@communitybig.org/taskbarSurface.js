@@ -61,7 +61,8 @@ export class TaskbarSurfaceManager {
             this.indicatorRenderer = new TaskbarIndicatorRenderer(Context.SETTINGS);
             this._global = new EventEmitter();
             global.dashToPanel = this._global;
-            await PanelSettings.init(Context.SETTINGS);
+            await PanelSettings.init(Context.SETTINGS,
+                () => generation === this._generation && Context.DTP_EXTENSION === this);
             if (generation !== this._generation)
                 return;
 

@@ -3,6 +3,7 @@
 
 import {Gio} from './dependencies/gi.js';
 import {DBusMenuUtils} from './imports.js';
+import {MAX_REMOTE_ENTRIES, parseLauncherUpdate} from '../launcherEntry.js';
 
 const DBusMenu = await DBusMenuUtils.haveDBusMenu();
 
@@ -10,6 +11,8 @@ export class LauncherEntryRemoteModel {
     constructor() {
         this._entrySourceStacks = new Map();
         this._remoteMaps = new Map();
+        this._remoteCount = 0;
+        this._destroyed = false;
 
         this._launcher_entry_dbus_signal_id =
             Gio.DBus.session.signal_subscribe(null, // sender
@@ -28,13 +31,19 @@ export class LauncherEntryRemoteModel {
                 '/org/freedesktop/DBus', // path
                 null,                    // arg0
                 Gio.DBusSignalFlags.NONE,
-                (connection, _senderName, _objectPath, _interfaceName, _signalName, parameters) =>
-                    this._onDBusNameChange(...parameters.deep_unpack().slice(1)));
+                (connection, _senderName, _objectPath, _interfaceName, _signalName, parameters) => {
+                    const [name, before, after] = parameters.deep_unpack();
+                    if (name === before && !after)
+                        this._onDBusNameChange(before, after);
+                });
 
         this._acquireUnityDBus();
     }
 
     destroy() {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
         if (this._launcher_entry_dbus_signal_id)
             Gio.DBus.session.signal_unsubscribe(this._launcher_entry_dbus_signal_id);
 
@@ -44,6 +53,12 @@ export class LauncherEntryRemoteModel {
 
 
         this._releaseUnityDBus();
+        for (const remoteMap of this._remoteMaps.values())
+            for (const remote of remoteMap.values())
+                this._clearQuicklist(remote);
+        this._remoteMaps.clear();
+        this._entrySourceStacks.clear();
+        this._remoteCount = 0;
     }
 
     _lookupStackById(appId) {
@@ -77,7 +92,7 @@ export class LauncherEntryRemoteModel {
     }
 
     _onDBusNameChange(before, after) {
-        if (!before || !this._remoteMaps.size)
+        if (this._destroyed || !before || !this._remoteMaps.size)
             return;
 
         const remoteMap = this._remoteMaps.get(before);
@@ -89,54 +104,62 @@ export class LauncherEntryRemoteModel {
             this._remoteMaps.set(after, remoteMap);
         } else {
             for (const [appId, remote] of remoteMap) {
+                this._remoteCount--;
+                this._clearQuicklist(remote);
                 const sourceStack = this._entrySourceStacks.get(appId);
                 const changed = sourceStack.remove(remote);
                 if (changed)
                     sourceStack.target._emitChangedEvents(changed);
+                if (!sourceStack._stack.length && !sourceStack.target._connections.size)
+                    this._entrySourceStacks.delete(appId);
             }
         }
     }
 
     _onUpdate(senderName, appUri, properties) {
-        if (!senderName)
+        if (this._destroyed)
             return;
-
-
-        const appId = appUri.replace(/(^\w+:|^)\/\//, '');
-        if (!appId)
+        const parsed = parseLauncherUpdate(senderName, appUri, properties);
+        if (!parsed)
             return;
-
-
+        const {appId, updates} = parsed;
         let remoteMap = this._remoteMaps.get(senderName);
+        if (!remoteMap?.has(appId) && this._remoteCount >= MAX_REMOTE_ENTRIES)
+            return;
         if (!remoteMap)
             this._remoteMaps.set(senderName, remoteMap = new Map());
 
         let remote = remoteMap.get(appId);
-        if (!remote)
+        if (!remote) {
             remoteMap.set(appId, remote = Object.assign({}, launcherEntryDefaults));
+            this._remoteCount++;
+        }
 
-        for (const name in properties) {
-            if (name === 'quicklist' && DBusMenu) {
-                const quicklistPath = properties[name].unpack();
+        const sourceStack = this._lookupStackById(appId);
+        for (const [name, value] of Object.entries(updates)) {
+            if (name === 'quicklist') {
+                const quicklistPath = value;
+                if (!DBusMenu || quicklistPath === '/') {
+                    this._clearQuicklist(remote);
+                    continue;
+                }
                 if (quicklistPath &&
                     (!remote._quicklistMenuClient ||
                      remote._quicklistMenuClient.dbus_object !== quicklistPath)) {
-                    remote.quicklist = null;
-                    let menuClient = remote._quicklistMenuClient;
-                    if (menuClient) {
-                        menuClient.disconnect(menuClient._rootChangedHandlerId);
-                        menuClient.dbus_object = quicklistPath;
-                    } else {
-                        // This property should not be enumerable
-                        Object.defineProperty(remote, '_quicklistMenuClient', {
-                            writable: true,
-                            value: menuClient = new DBusMenu.Client({
-                                dbus_name: senderName,
-                                dbus_object: quicklistPath,
-                            }),
-                        });
-                    }
+                    this._clearQuicklist(remote);
+                    const menuClient = new DBusMenu.Client({
+                        dbus_name: senderName,
+                        dbus_object: quicklistPath,
+                    });
+                    Object.defineProperty(remote, '_quicklistMenuClient', {
+                        writable: true,
+                        enumerable: false,
+                        value: menuClient,
+                    });
                     const handler = () => {
+                        if (this._destroyed || this._remoteMaps.get(senderName)?.get(appId) !== remote ||
+                            remote._quicklistMenuClient !== menuClient)
+                            return;
                         const root = menuClient.get_root();
                         if (remote.quicklist !== root) {
                             remote.quicklist = root;
@@ -148,14 +171,24 @@ export class LauncherEntryRemoteModel {
                     };
                     menuClient._rootChangedHandlerId =
                         menuClient.connect(DBusMenu.CLIENT_SIGNAL_ROOT_CHANGED, handler);
+                    handler();
                 }
             } else {
-                remote[name] = properties[name].unpack();
+                remote[name] = value;
             }
         }
 
-        const sourceStack = this._lookupStackById(appId);
         sourceStack.target._emitChangedEvents(sourceStack.update(remote));
+    }
+
+    _clearQuicklist(remote) {
+        const client = remote._quicklistMenuClient;
+        remote.quicklist = null;
+        if (client) {
+            remote._quicklistMenuClient = null;
+            client.disconnect(client._rootChangedHandlerId);
+            client.run_dispose?.();
+        }
     }
 }
 
@@ -279,7 +312,7 @@ const PropertySourceStack = class DashToDockPropertySourceStack {
 
     _assignFrom(source) {
         const changedProperties = [];
-        for (const name in source) {
+        for (const name of Object.keys(launcherEntryDefaults)) {
             if (this.target[name] !== source[name]) {
                 this.target[name] = source[name];
                 changedProperties.push(name);

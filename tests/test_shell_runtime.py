@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 105" in controller
+    assert "RUNTIME_BUILD = 106" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -674,7 +674,7 @@ def test_taskbar_monitor_topology_is_owned_outside_panel_manager():
     assert "changed::primary-monitor" in host
     assert "changed::multi-monitors" in host
     assert "monitors-changed" in host
-    assert "PanelSettings.setMonitorsInfo(SETTINGS)" in host
+    assert "PanelSettings.setMonitorsInfo(SETTINGS, isCurrent)" in host
     assert "manager.disable(true)" in host
     assert "manager.enable(true)" in host
     assert "changed::primary-monitor" not in manager
@@ -970,7 +970,7 @@ def test_runtime_owns_dock_notification_monitor_and_badge_count():
     assert "Signals:" in monitor
     assert "Main.messageTray.getSources()" in monitor
     assert "show-icons-notifications-counter" in monitor
-    assert "notify::acknowledged" in monitor
+    assert "['acknowledged', 'resident']" in monitor
     assert "getBadgeCount(" in monitor
     assert "this._notificationsMonitor = this._extension.notificationsMonitor" in manager
     assert "this._extension.notificationsMonitor ??" not in manager

@@ -18,6 +18,7 @@ export const DockNotificationMonitor = GObject.registerClass({
         super._init();
 
         this._dockSettings = dockSettings;
+        this._destroyed = false;
         this._settings = new Gio.Settings({
             schema_id: DESKTOP_NOTIFICATIONS_SCHEMA,
         });
@@ -58,6 +59,10 @@ export const DockNotificationMonitor = GObject.registerClass({
     }
 
     destroy() {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this._enabled = false;
         this._disconnect(this._notificationConnections);
         this._disconnect(this._sourceConnections);
         this._disconnect(this._settingsConnections);
@@ -72,6 +77,8 @@ export const DockNotificationMonitor = GObject.registerClass({
     }
 
     _updateEnabledState() {
+        if (this._destroyed)
+            return;
         this._dndMode = !this._settings.get_boolean('show-banners');
         const enabled = this._isCounterEnabled();
         const stateChanged = enabled !== this._enabled;
@@ -82,6 +89,8 @@ export const DockNotificationMonitor = GObject.registerClass({
     }
 
     _rebuild() {
+        if (this._destroyed)
+            return;
         this._disconnect(this._notificationConnections);
         this._disconnect(this._sourceConnections);
         this._appNotifications = Object.create(null);
@@ -95,6 +104,8 @@ export const DockNotificationMonitor = GObject.registerClass({
             for (const source of Main.messageTray.getSources()) {
                 this._connect(this._sourceConnections, source,
                     'notification-added', () => this._rebuild());
+                this._connect(this._sourceConnections, source,
+                    'notify::count', () => this._rebuild());
                 for (const notification of source.notifications)
                     this._recordNotification(notification);
             }
@@ -109,23 +120,27 @@ export const DockNotificationMonitor = GObject.registerClass({
         if (!appId)
             return;
 
-        if (notification.resident) {
-            if (notification.acknowledged)
-                return;
+        for (const property of ['acknowledged', 'resident'])
             this._connect(this._notificationConnections, notification,
-                'notify::acknowledged', () => this._rebuild());
-        }
+                `notify::${property}`, () => this._rebuild());
 
         this._connect(this._notificationConnections, notification,
             'destroy', () => this._rebuild());
+        if (notification.resident && notification.acknowledged)
+            return;
         this._appNotifications[appId] =
             (this._appNotifications[appId] ?? 0) + 1;
     }
 
     _connect(bucket, object, signal, callback) {
-        if (!object)
+        if (this._destroyed || !object)
             return;
-        bucket.push([object, object.connect(signal, callback)]);
+        const record = [object, 0];
+        record[1] = object.connect(signal, (...args) => {
+            if (!this._destroyed && bucket.includes(record))
+                callback(...args);
+        });
+        bucket.push(record);
     }
 
     _disconnect(bucket) {
