@@ -42,22 +42,25 @@ export class TaskbarSurfaceManager {
     }
 
     async enable(panelHeight) {
+        if (this._enabling || this._destroying)
+            throw new Error('Taskbar surface lifecycle operation already pending');
         if (this._manager)
             return;
 
         const generation = ++this._generation;
-        Context.initializeRuntimeContext(this._host, this);
-        this.statusFullscreen = new TaskbarStatusFullscreenIntegration(
-            Context.SETTINGS);
-        this.panelHost = new TaskbarPanelHost(
-            this.statusAreaHost, this.statusFullscreen);
-        this.appActions = new TaskbarAppActions(Context.SETTINGS);
-        this.interactions = new TaskbarInteractions();
-        this.indicatorRenderer = new TaskbarIndicatorRenderer(Context.SETTINGS);
-        this._global = new EventEmitter();
-        global.dashToPanel = this._global;
-
+        this._enabling = true;
         try {
+            Context.initializeRuntimeContext(this._host, this);
+            this._ownsResources = true;
+            this.statusFullscreen = new TaskbarStatusFullscreenIntegration(
+                Context.SETTINGS);
+            this.panelHost = new TaskbarPanelHost(
+                this.statusAreaHost, this.statusFullscreen);
+            this.appActions = new TaskbarAppActions(Context.SETTINGS);
+            this.interactions = new TaskbarInteractions();
+            this.indicatorRenderer = new TaskbarIndicatorRenderer(Context.SETTINGS);
+            this._global = new EventEmitter();
+            global.dashToPanel = this._global;
             await PanelSettings.init(Context.SETTINGS);
             if (generation !== this._generation)
                 return;
@@ -66,43 +69,52 @@ export class TaskbarSurfaceManager {
             this.setPanelHeight(panelHeight);
             this.enableGlobalStyles();
 
-            if (!await this._settleUbuntuDock(generation))
+            if (!await this._settleUbuntuDock(generation) || generation !== this._generation)
                 return;
             this._createManager();
         } catch (error) {
-            this.destroy();
+            if (generation === this._generation && Context.DTP_EXTENSION === this)
+                this.destroy();
             throw error;
+        } finally {
+            if (generation === this._generation)
+                this._enabling = false;
         }
     }
 
     destroy() {
+        if (this._destroying || (!this._ownsResources && Context.DTP_EXTENSION !== this))
+            return;
+        this._destroying = true;
+        this._ownsResources = false;
+        this._enabling = false;
         this._generation++;
-        this._cancelUbuntuDockDelay();
-
         const manager = this._manager;
         this._manager = null;
-        this.monitorHost.destroy(manager);
-        try {
-            manager?.disable();
-        } catch (error) {
-            console.warn(
-                `[layout-switcher-runtime] Taskbar manager cleanup failed: ${error}`,
-            );
-        } finally {
-            this.serviceHost.destroy(manager);
-            this.shellHooks.destroy(manager);
-            this.panelHost?.releaseAll();
-            this.statusFullscreen?.destroy();
-            this.statusAreaHost.restore();
+        const cleanup = (name, action) => {
+            try {
+                action();
+            } catch (error) {
+                console.warn(`[layout-switcher-runtime] Taskbar ${name} cleanup failed: ${error}`);
+            }
+        };
+        cleanup('delay', () => this._cancelUbuntuDockDelay());
+        cleanup('monitors', () => this.monitorHost.destroy(manager));
+        cleanup('manager', () => { manager?.disable(); });
+        cleanup('services', () => this.serviceHost.destroy(manager));
+        cleanup('hooks', () => this.shellHooks.destroy(manager));
+        cleanup('panels', () => this.panelHost?.releaseAll());
+        cleanup('fullscreen', () => this.statusFullscreen?.destroy());
+        cleanup('status area', () => this.statusAreaHost.restore());
+        if (Context.DTP_EXTENSION === this) {
+            cleanup('cache', () => PanelSettings.clearCache());
+            cleanup('styles', () => this.disableGlobalStyles());
         }
-
-        PanelSettings.clearCache();
-        this.disableGlobalStyles();
-        this.appActions?.destroy();
+        cleanup('app actions', () => this.appActions?.destroy());
+        cleanup('interactions', () => this.interactions?.destroy());
+        cleanup('indicators', () => this.indicatorRenderer?.destroy());
         this.appActions = null;
-        this.interactions?.destroy();
         this.interactions = null;
-        this.indicatorRenderer?.destroy();
         this.indicatorRenderer = null;
         this.panelHost = null;
         this.statusFullscreen = null;
@@ -111,6 +123,7 @@ export class TaskbarSurfaceManager {
             delete global.dashToPanel;
         this._global = null;
         Context.clearRuntimeContext(this);
+        this._destroying = false;
     }
 
     panels() {
@@ -186,26 +199,33 @@ export class TaskbarSurfaceManager {
         );
         return await new Promise(resolve => {
             this._ubuntuDockDelayResolve = resolve;
-            this._ubuntuDockDelayId = GLib.timeout_add(
+            const id = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 UBUNTU_DOCK_SETTLE_MS,
                 () => {
+                    if (this._ubuntuDockDelayId !== id)
+                        return GLib.SOURCE_REMOVE;
                     this._ubuntuDockDelayId = 0;
                     this._ubuntuDockDelayResolve = null;
                     resolve(generation === this._generation);
                     return GLib.SOURCE_REMOVE;
                 },
             );
+            this._ubuntuDockDelayId = id;
         });
     }
 
     _cancelUbuntuDockDelay() {
-        if (this._ubuntuDockDelayId) {
-            GLib.Source.remove(this._ubuntuDockDelayId);
-            this._ubuntuDockDelayId = 0;
-        }
-        this._ubuntuDockDelayResolve?.(false);
+        const id = this._ubuntuDockDelayId;
+        const resolve = this._ubuntuDockDelayResolve;
+        this._ubuntuDockDelayId = 0;
         this._ubuntuDockDelayResolve = null;
+        try {
+            if (id)
+                GLib.Source.remove(id);
+        } finally {
+            resolve?.(false);
+        }
     }
 
     _createManager() {

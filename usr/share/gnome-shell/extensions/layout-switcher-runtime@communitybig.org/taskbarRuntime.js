@@ -25,6 +25,8 @@ export class TaskbarRuntime {
     }
 
     async activate(profile, indicator, hover, opacity, visibility, panelHeight) {
+        if (this._activating || this._deactivating)
+            throw new Error('Taskbar lifecycle operation already pending');
         const generation = ++this._activationGeneration;
         this._profile = profile;
         this._indicator = indicator;
@@ -41,20 +43,20 @@ export class TaskbarRuntime {
             return;
         }
 
-        this._applyIndicator(indicator);
-        this._applyHover(hover);
-        this._applyOpacity(opacity);
-        this._visibilityModes.apply(visibility);
-        this._host.loadStylesheet();
         this._activating = true;
         try {
+            this._applyIndicator(indicator);
+            this._applyHover(hover);
+            this._applyOpacity(opacity);
+            this._visibilityModes.apply(visibility);
+            this._host.loadStylesheet();
             await this._surface.enable(panelHeight);
             if (generation !== this._activationGeneration)
                 return;
             this._active = true;
         } catch (error) {
-            this._surface.destroy();
-            this._host.unloadStylesheet();
+            if (generation === this._activationGeneration)
+                this.deactivate();
             throw error;
         } finally {
             if (generation === this._activationGeneration)
@@ -63,19 +65,35 @@ export class TaskbarRuntime {
     }
 
     deactivate() {
+        if (this._deactivating)
+            return;
         this._activationGeneration++;
-        if (this._active || this._activating) {
-            this._surface.destroy();
-            this._active = false;
-            this._activating = false;
-            this._host.unloadStylesheet();
-        }
+        const needsCleanup = this._active || this._activating;
+        this._active = false;
+        this._activating = false;
         this._profile = null;
         this._indicator = null;
         this._hover = null;
         this._opacity = null;
         this._visibility = null;
         this._panelHeight = null;
+        if (!needsCleanup)
+            return;
+        this._deactivating = true;
+        try {
+            try {
+                this._surface.destroy();
+            } catch (error) {
+                console.warn(`[layout-switcher-runtime] Taskbar surface cleanup failed: ${error}`);
+            }
+            try {
+                this._host.unloadStylesheet();
+            } catch (error) {
+                console.warn(`[layout-switcher-runtime] Taskbar stylesheet cleanup failed: ${error}`);
+            }
+        } finally {
+            this._deactivating = false;
+        }
     }
 
     diagnostics() {

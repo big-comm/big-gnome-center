@@ -12,3 +12,12 @@ def test_runtime_controller_lifecycle():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "53 runtime controller lifecycle scenarios passed" in result.stdout
+
+
+def test_taskbar_lifecycle():
+    script = Path(__file__).with_name("taskbar_lifecycle.mjs")
+    result = subprocess.run(
+        ["node", str(script)], capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "41 taskbar lifecycle scenarios passed" in result.stdout
