@@ -485,6 +485,8 @@ export const DockedDash = GObject.registerClass({
     }
 
     _onDestroy() {
+        this._destroyed = true;
+        this._cancelDockDwell();
         // The dash, intellihide and themeManager have global signals as well internally
         this.dash.destroy();
         this._intellihide.destroy();
@@ -915,6 +917,9 @@ export const DockedDash = GObject.registerClass({
      * Dwelling system based on the GNOME Shell 3.14 messageTray code.
      */
     _setupDockDwellIfNeeded() {
+        this._cancelDockDwell();
+        if (this._destroyed)
+            return;
         // If we don't have extended barrier features, then we need
         // to support the old tray dwelling mechanism.
         if (this._autohideIsEnabled &&
@@ -929,6 +934,8 @@ export const DockedDash = GObject.registerClass({
     }
 
     _checkDockDwell(x, y) {
+        if (this._destroyed)
+            return;
         const workArea = Main.layoutManager.getWorkAreaForMonitor(this._monitor.index);
         let shouldDwell;
         // Check for the correct screen edge, extending the sensitive area to the whole workarea,
@@ -958,10 +965,15 @@ export const DockedDash = GObject.registerClass({
                 const focusWindow = global.display.focus_window;
                 this._dockDwellUserTime = focusWindow ? focusWindow.user_time : 0;
 
-                this._dockDwellTimeoutId = GLib.timeout_add(
+                const timeoutId = GLib.timeout_add(
                     GLib.PRIORITY_DEFAULT,
                     DockSurfaceManager.settings.showDelay * 1000,
-                    this._dockDwellTimeout.bind(this));
+                    () => {
+                        if (this._destroyed || this._dockDwellTimeoutId !== timeoutId)
+                            return GLib.SOURCE_REMOVE;
+                        return this._dockDwellTimeout();
+                    });
+                this._dockDwellTimeoutId = timeoutId;
                 GLib.Source.set_name_by_id(this._dockDwellTimeoutId,
                     '[dash-to-dock] this._dockDwellTimeout');
             }
@@ -973,14 +985,16 @@ export const DockedDash = GObject.registerClass({
     }
 
     _cancelDockDwell() {
-        if (this._dockDwellTimeoutId !== 0) {
-            GLib.source_remove(this._dockDwellTimeoutId);
-            this._dockDwellTimeoutId = 0;
-        }
+        const timeoutId = this._dockDwellTimeoutId;
+        this._dockDwellTimeoutId = 0;
+        if (timeoutId)
+            GLib.source_remove(timeoutId);
     }
 
     _dockDwellTimeout() {
         this._dockDwellTimeoutId = 0;
+        if (this._destroyed)
+            return GLib.SOURCE_REMOVE;
 
         if (!DockSurfaceManager.settings.autohideInFullscreen &&
             this._monitor.inFullscreen)

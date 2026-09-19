@@ -25,9 +25,9 @@ def test_community_dock_is_a_private_resource_host():
 
 
 def test_community_dock_tracks_accepted_core_baseline():
-    # Includes balanced compositing holds for every visibility mode.
+    # Includes balanced compositing holds and retired edge-dwell timers.
     assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
-        "7960efa6c942b6a778a9f5709ac3a523daedf95b1aade329723714c73fedd9dc"
+        "6687d84149c63b21b0413f1086a795b67a4e7061f83488bec8fd7e47db5bd9d6"
     )
 
 
