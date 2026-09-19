@@ -221,7 +221,8 @@ def test_community_dock_owns_native_panel_runtime():
 
     assert "this._host.createPanelController = () => new PanelController(" in dock_runtime
     assert "() => this._manager?._allDocks ?? []" in dock_runtime
-    assert "this._panelController?.destroy()" in dock_runtime
+    assert "const panel = this._panelController" in dock_runtime
+    assert "this._cleanup('panel', () => panel?.destroy())" in dock_runtime
     assert "Main.layoutManager.panelBox" in controller
     assert "panel-opacity" in controller
     assert "panel-visibility" in controller

@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 96" in controller
+    assert "RUNTIME_BUILD = 97" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -847,12 +847,11 @@ def test_dock_lifecycle_is_owned_by_the_unified_runtime():
 
     assert "new DockSurfaceManager(this._host)" in dock
     assert "this._manager = manager" in dock
-    assert "manager ?? DockSurfaceManager.getDefault()" in dock
-    assert "partialManager?.destroy()" in dock
-    assert "this._panelController?.destroy()" in dock
-    assert "this._indicatorController?.destroy()" in dock
+    assert "partialManager?.extension === this._host" in dock
+    assert "panel?.destroy()" in dock
+    assert "indicators?.destroy()" in dock
     assert "manager?.destroy()" in dock
-    assert dock.index("this._panelController?.destroy()") < dock.index(
+    assert dock.index("panel?.destroy()") < dock.index(
         "manager?.destroy()"
     )
     assert "CommunityDockRuntime" not in dock

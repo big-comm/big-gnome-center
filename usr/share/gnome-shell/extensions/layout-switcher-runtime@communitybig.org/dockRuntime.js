@@ -58,6 +58,10 @@ export class DockRuntime {
 
     activate(profile, indicator, hover, magnificationIntensity, opacity, iconSize, visibility,
         menuSide, skipStartupOverview) {
+        if (this._activating || this._deactivating)
+            throw new Error('Dock lifecycle operation already pending');
+        if (!this._active && DockSurfaceManager.getDefault())
+            throw new Error('Dock manager already owned');
         this._profile = profile;
         this._indicator = indicator;
         this._hover = hover;
@@ -79,47 +83,80 @@ export class DockRuntime {
             return;
         }
 
-        this._applyProfile(profile);
-        this._applyIndicator(indicator);
-        this._applyHover(hover, magnificationIntensity);
-        this._applyOpacity(opacity);
-        this._applyIconSize(iconSize);
-        this._host.visibilityModes.apply(visibility);
-        this._applyMenuSide(menuSide);
-        this._host.notificationsMonitor = new DockNotificationMonitor(
-            this._host.getSettings(DOCK_SCHEMA),
-        );
-        this._host.loadStylesheet();
+        this._activating = true;
+        this._needsCleanup = true;
         try {
+            this._applyProfile(profile);
+            this._applyIndicator(indicator);
+            this._applyHover(hover, magnificationIntensity);
+            this._applyOpacity(opacity);
+            this._applyIconSize(iconSize);
+            this._host.visibilityModes.apply(visibility);
+            this._applyMenuSide(menuSide);
+            this._host.notificationsMonitor = new DockNotificationMonitor(
+                this._host.getSettings(DOCK_SCHEMA),
+            );
+            this._stylesheetAttempted = true;
+            this._host.loadStylesheet();
             this._enableSurfaces();
             this._active = true;
         } catch (error) {
-            this._host.unloadStylesheet();
-            this._destroyNotificationsMonitor();
+            this._activating = false;
+            this.deactivate();
             throw error;
+        } finally {
+            this._activating = false;
+            if (this._deactivateRequested) {
+                this._deactivateRequested = false;
+                this.deactivate();
+            }
         }
     }
 
     deactivate() {
-        if (this._active) {
-            this._disableSurfaces();
-            this._active = false;
-            this._host.unloadStylesheet();
+        if (this._deactivating)
+            return;
+        // Finish synchronous construction before releasing its resources.
+        if (this._activating) {
+            this._deactivateRequested = true;
+            return;
         }
-        this._destroyNotificationsMonitor();
-        delete this._host.runningIndicators;
-        this._profile = null;
-        this._indicator = null;
-        this._hover = null;
-        this._magnificationIntensity = null;
-        this._opacity = null;
-        this._iconSize = null;
-        this._visibility = null;
-        this._menuSide = null;
-        this._skipStartupOverview = null;
-        delete this._host.layout;
-        delete this._host.menuSide;
-        delete this._host.skipStartupOverview;
+        if (!this._needsCleanup)
+            return;
+        this._needsCleanup = false;
+        this._active = false;
+        this._deactivating = true;
+        try {
+            this._disableSurfaces();
+            if (this._stylesheetAttempted) {
+                this._stylesheetAttempted = false;
+                this._cleanup('stylesheet', () => this._host.unloadStylesheet());
+            }
+            this._cleanup('notifications', () => this._destroyNotificationsMonitor());
+        } finally {
+            delete this._host.runningIndicators;
+            this._profile = null;
+            this._indicator = null;
+            this._hover = null;
+            this._magnificationIntensity = null;
+            this._opacity = null;
+            this._iconSize = null;
+            this._visibility = null;
+            this._menuSide = null;
+            this._skipStartupOverview = null;
+            delete this._host.layout;
+            delete this._host.menuSide;
+            delete this._host.skipStartupOverview;
+            this._deactivating = false;
+        }
+    }
+
+    _cleanup(resource, callback) {
+        try {
+            callback();
+        } catch (error) {
+            console.warn(`[layout-switcher-runtime] Dock ${resource} cleanup failed: ${error}`);
+        }
     }
 
     diagnostics() {
@@ -159,41 +196,34 @@ export class DockRuntime {
         if (this._manager)
             return;
 
-        let manager = null;
+        const previousManager = DockSurfaceManager.getDefault();
         try {
-            manager = new DockSurfaceManager(this._host);
+            const manager = new DockSurfaceManager(this._host);
             this._manager = manager;
             this._indicatorController =
                 this._host.createIndicatorController(manager);
             this._panelController = this._host.createPanelController();
             this._managerGeneration++;
         } catch (error) {
-            const partialManager = manager ?? DockSurfaceManager.getDefault();
-            this._panelController?.destroy();
-            this._panelController = null;
-            this._indicatorController?.destroy();
-            this._indicatorController = null;
-            try {
-                partialManager?.destroy();
-            } catch (cleanupError) {
-                console.warn(
-                    `[layout-switcher] partial Dock cleanup failed: ${cleanupError}`,
-                );
-            }
-            this._manager = null;
+            // The constructor publishes itself before all setup completes.
+            const partialManager = DockSurfaceManager.getDefault();
+            if (!previousManager && partialManager?.extension === this._host)
+                this._manager = partialManager;
             throw error;
         }
     }
 
     _disableSurfaces() {
         const manager = this._manager;
-        this._host.hoverEffects.releaseAll();
-        this._panelController?.destroy();
-        this._panelController = null;
-        this._indicatorController?.destroy();
-        this._indicatorController = null;
-        manager?.destroy();
+        const panel = this._panelController;
+        const indicators = this._indicatorController;
         this._manager = null;
+        this._panelController = null;
+        this._indicatorController = null;
+        this._cleanup('hover', () => this._host.hoverEffects.releaseAll());
+        this._cleanup('panel', () => panel?.destroy());
+        this._cleanup('indicators', () => indicators?.destroy());
+        this._cleanup('manager', () => manager?.destroy());
     }
 
     _actorDiagnostics(dock) {
@@ -284,7 +314,8 @@ export class DockRuntime {
     }
 
     _destroyNotificationsMonitor() {
-        this._host.notificationsMonitor?.destroy();
+        const monitor = this._host.notificationsMonitor;
         delete this._host.notificationsMonitor;
+        monitor?.destroy();
     }
 }
