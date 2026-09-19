@@ -3,24 +3,30 @@
 export class PanelMenuShortcuts {
     constructor(panel, reveal) {
         this._panel = panel;
+        this._reveal = reveal;
         this._descriptor = Object.getOwnPropertyDescriptor(panel, '_toggleMenu');
         const original = panel._toggleMenu;
+        const owner = this;
         this._toggle = function (indicator) {
-            if (indicator?.reactive && indicator.menu &&
-                (indicator === panel.statusArea.dateMenu ||
-                 indicator === panel.statusArea.quickSettings))
-                reveal();
+            const activePanel = owner._panel;
+            if (activePanel && indicator?.reactive && indicator.menu &&
+                (indicator === activePanel.statusArea.dateMenu ||
+                 indicator === activePanel.statusArea.quickSettings))
+                owner._reveal();
             return original.call(this, indicator);
         };
         panel._toggleMenu = this._toggle;
     }
 
     destroy() {
-        if (this._panel._toggleMenu !== this._toggle)
+        const panel = this._panel;
+        this._panel = null;
+        this._reveal = null;
+        if (!panel || panel._toggleMenu !== this._toggle)
             return;
         if (this._descriptor)
-            Object.defineProperty(this._panel, '_toggleMenu', this._descriptor);
+            Object.defineProperty(panel, '_toggleMenu', this._descriptor);
         else
-            delete this._panel._toggleMenu;
+            delete panel._toggleMenu;
     }
 }
