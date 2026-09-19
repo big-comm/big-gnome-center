@@ -175,7 +175,7 @@ for (const file of ['nativePanelOpacityIntegration.js', 'dockPanelController.js'
     const source = read(runtime, file);
     assert.ok(source.includes('new PanelMenuShortcuts('));
     assert.ok(source.includes('this._applyVisibility(true);'));
-    assert.ok(source.includes('this._menuShortcuts.destroy();'));
+    assert.ok(source.includes('this._menuShortcuts.destroy()'));
 }
 const statusSource = read(runtime, 'taskbarStatusArea.js');
 const hook = statusSource.slice(statusSource.indexOf('        panel._toggleMenu = indicator => {'),

@@ -15,6 +15,7 @@ const VALID_VISIBILITY = new Set([
 
 export class NativePanelOpacityIntegration {
     constructor() {
+        this._generation = 0;
         this._panel = null;
         this._panelBox = null;
         this._originalStyle = null;
@@ -46,6 +47,8 @@ export class NativePanelOpacityIntegration {
     }
 
     activate(opacity, visibility) {
+        if (this._destroyed || this._activating || this._deactivating)
+            return;
         if (!Number.isInteger(opacity) || !VALID_VISIBILITY.has(visibility)) {
             this.deactivate();
             return;
@@ -54,33 +57,50 @@ export class NativePanelOpacityIntegration {
         const panel = Main.panel;
         if (this._panel && this._panel !== panel)
             this.deactivate();
-        if (!this._panel)
-            this._enable(panel);
-
-        const visibilityChanged = this._visibility !== visibility;
-        this._opacity = Math.max(0, Math.min(100, opacity));
-        this._visibility = visibility;
-        if (visibilityChanged) {
-            this._cancelHide();
-            this._pointerReveal = false;
+        this._activating = true;
+        try {
+            if (!this._panel)
+                this._enable(panel);
+            if (this._deactivateRequested)
+                return;
+            const visibilityChanged = this._visibility !== visibility;
+            this._opacity = Math.max(0, Math.min(100, opacity));
+            this._visibility = visibility;
+            if (visibilityChanged) {
+                this._cancelHide();
+                this._pointerReveal = false;
+            }
+            this._applyStyle();
+            if (!this._deactivateRequested)
+                this._applyVisibility();
+        } catch (error) {
+            this._deactivateRequested = true;
+            throw error;
+        } finally {
+            this._activating = false;
+            if (this._deactivateRequested) {
+                this._deactivateRequested = false;
+                this.deactivate();
+            }
         }
-        this._applyStyle();
-        this._applyVisibility();
     }
 
     _enable(panel) {
-        this._panel = panel;
-        this._panelBox = Main.layoutManager.panelBox;
+        // Capture restoration state before publishing ownership or mutating actors.
+        const panelBox = Main.layoutManager.panelBox;
         this._originalStyle = panel.get_style();
-        this._originalVisible = this._panelBox.visible;
+        this._originalVisible = panelBox.visible;
         this._originalReactive = panel.reactive;
         this._originalTrackHover = panel.track_hover;
-        const trackedIndex = Main.layoutManager._findActor(this._panelBox);
+        const trackedIndex = Main.layoutManager._findActor(panelBox);
         this._panelActorData = trackedIndex >= 0
             ? Main.layoutManager._trackedActors[trackedIndex]
             : null;
         this._originalAffectsStruts = this._panelActorData?.affectsStruts;
         this._originalTrackFullscreen = this._panelActorData?.trackFullscreen;
+        this._generation++;
+        this._panel = panel;
+        this._panelBox = panelBox;
         this._inOverview = Boolean(
             Main.overview.visible || Main.overview.visibleTarget);
         this._captureBackground();
@@ -97,22 +117,22 @@ export class NativePanelOpacityIntegration {
             trackFullscreen: true,
         });
         this._positionRevealZone();
-        this._autohide = new PanelAutohide(this._panelBox, this._revealZone, () => {
+        this._autohide = new PanelAutohide(this._panelBox, this._revealZone, this._guard(() => {
             this._pointerReveal = true;
             this._cancelHide();
             this._applyVisibility();
             this._queueHide();
-        });
+        }));
 
-        this._menuShortcuts = new PanelMenuShortcuts(panel, () => {
+        this._menuShortcuts = new PanelMenuShortcuts(panel, this._guard(() => {
             this._pointerReveal = true;
             this._cancelHide();
             this._applyVisibility(true);
             this._queueHide();
-        });
+        }));
 
         this._styleChangedId = panel.connect(
-            'notify::style', () => this._onStyleChanged());
+            'notify::style', this._guard(() => this._onStyleChanged()));
         this._connect(global.display, 'notify::focus-window', () => {
             this._watchFocusWindow();
             this._applyVisibility();
@@ -159,10 +179,20 @@ export class NativePanelOpacityIntegration {
 
     _connect(object, signal, callback) {
         try {
-            this._signals.push([object, object.connect(signal, callback)]);
+            this._signals.push([object, object.connect(signal, this._guard(callback))]);
         } catch (error) {
             console.warn(`[layout-switcher-runtime] native panel signal ${signal} unavailable: ${error}`);
         }
+    }
+
+    _guard(callback) {
+        const generation = this._generation;
+        return (...args) => {
+            if (this._panel && generation === this._generation &&
+                !this._destroyed && !this._deactivating && !this._deactivateRequested)
+                return callback(...args);
+            return undefined;
+        };
     }
 
     _disconnectFocusWindow() {
@@ -191,7 +221,10 @@ export class NativePanelOpacityIntegration {
             try {
                 this._windowSignals.push([
                     window,
-                    window.connect(signal, () => this._applyVisibility()),
+                    window.connect(signal, this._guard(() => {
+                        if (this._focusWindow === window)
+                            this._applyVisibility();
+                    })),
                 ]);
             } catch (error) {
                 console.warn(`[layout-switcher-runtime] native panel window signal ${signal} unavailable: ${error}`);
@@ -292,8 +325,14 @@ export class NativePanelOpacityIntegration {
     }
 
     _queueHide() {
+        if (!this._panel || this._deactivating || this._deactivateRequested)
+            return;
         this._cancelHide();
-        this._hideTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+        const generation = this._generation;
+        const id = this._hideTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+            if (generation !== this._generation || this._hideTimeout !== id ||
+                !this._panel || this._deactivating)
+                return GLib.SOURCE_REMOVE;
             this._hideTimeout = 0;
             if (!this._autohide.pointerInside() && !this._panelInteractionActive()) {
                 this._pointerReveal = false;
@@ -306,10 +345,10 @@ export class NativePanelOpacityIntegration {
     }
 
     _cancelHide() {
-        if (!this._hideTimeout)
-            return;
-        GLib.Source.remove(this._hideTimeout);
+        const id = this._hideTimeout;
         this._hideTimeout = 0;
+        if (id)
+            this._cleanup(() => GLib.Source.remove(id));
     }
 
     _panelInteractionActive() {
@@ -359,13 +398,23 @@ export class NativePanelOpacityIntegration {
     }
 
     deactivate() {
+        if (this._deactivating)
+            return;
+        if (this._activating) {
+            this._deactivateRequested = true;
+            return;
+        }
         if (!this._panel)
             return;
+        this._deactivating = true;
+        this._generation++;
 
         this._cancelHide();
-        this._menuShortcuts.destroy();
+        if (this._menuShortcuts)
+            this._cleanup(() => this._menuShortcuts.destroy());
         this._menuShortcuts = null;
-        this._autohide.destroy();
+        if (this._autohide)
+            this._cleanup(() => this._autohide.destroy());
         this._autohide = null;
         this._disconnectFocusWindow();
         for (const [object, id] of this._signals.splice(0)) {
@@ -376,29 +425,33 @@ export class NativePanelOpacityIntegration {
             }
         }
         if (this._styleChangedId)
-            this._panel.disconnect(this._styleChangedId);
+            this._cleanup(() => this._panel.disconnect(this._styleChangedId));
         this._styleChangedId = 0;
         if (this._revealZone) {
-            Main.layoutManager.removeChrome(this._revealZone);
-            this._revealZone.destroy();
+            this._cleanup(() => Main.layoutManager.removeChrome(this._revealZone));
+            this._cleanup(() => this._revealZone.destroy());
         }
-        if (this._panel.get_style() === this._ownedStyle) {
-            this._panel.set_style(this._originalStyle);
-        } else {
-            this._restoreConflicts++;
-            this._lastConflict = 'native panel inline style changed externally';
-        }
-        this._panel.reactive = this._originalReactive;
-        this._panel.track_hover = this._originalTrackHover;
+        this._cleanup(() => {
+            if (this._panel.get_style() === this._ownedStyle) {
+                this._panel.set_style(this._originalStyle);
+            } else if (this._ownedStyle !== null) {
+                this._restoreConflicts++;
+                this._lastConflict = 'native panel inline style changed externally';
+            }
+        });
+        this._cleanup(() => { this._panel.reactive = this._originalReactive; });
+        this._cleanup(() => { this._panel.track_hover = this._originalTrackHover; });
         if (this._panelActorData) {
-            this._panelActorData.affectsStruts = this._originalAffectsStruts;
-            this._panelActorData.trackFullscreen = this._originalTrackFullscreen;
-            Main.layoutManager._queueUpdateRegions();
+            this._cleanup(() => { this._panelActorData.affectsStruts = this._originalAffectsStruts; });
+            this._cleanup(() => { this._panelActorData.trackFullscreen = this._originalTrackFullscreen; });
+            this._cleanup(() => Main.layoutManager._queueUpdateRegions());
         }
-        if (this._originalVisible)
-            this._panelBox.show();
-        else
-            this._panelBox.hide();
+        this._cleanup(() => {
+            if (this._originalVisible)
+                this._panelBox.show();
+            else
+                this._panelBox.hide();
+        });
 
         this._panel = null;
         this._panelBox = null;
@@ -417,10 +470,20 @@ export class NativePanelOpacityIntegration {
         this._overlayMode = null;
         this._pointerReveal = false;
         this._inOverview = false;
+        this._deactivating = false;
     }
 
     destroy() {
+        this._destroyed = true;
         this.deactivate();
+    }
+
+    _cleanup(callback) {
+        try {
+            callback();
+        } catch (error) {
+            console.warn(`[layout-switcher-runtime] Native panel cleanup failed: ${error}`);
+        }
     }
 
     diagnostics() {

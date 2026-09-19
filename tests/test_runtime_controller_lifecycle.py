@@ -66,3 +66,12 @@ def test_panel_shortcuts_lifecycle():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "13 panel shortcut lifecycle scenarios passed" in result.stdout
+
+
+def test_native_panel_lifecycle():
+    script = Path(__file__).with_name("native_panel_lifecycle.mjs")
+    result = subprocess.run(
+        ["node", str(script)], capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "30 native panel lifecycle scenarios passed" in result.stdout
