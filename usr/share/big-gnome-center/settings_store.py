@@ -126,53 +126,75 @@ class GSettingsMonitor:
         # lazy import → Settings class stays testable without gi
         import gi
 
-        gi.require_version("Gtk", "4.0")
+        gi.require_version("Gio", "2.0")
         from gi.repository import Gio
 
         self._Gio = Gio
-        # Lista de (Gio.Settings, key, handler_id) para desconexão posterior
+        # Settings, key, handler ID and callback lifetime state.
         self._watchers: List[Tuple] = []
 
     def watch(self, schema: str, key: str, callback: Callable) -> bool:
         """
-        Registra um callback para quando schema::key mudar externamente.
-        O callback é chamado sem argumentos na UI thread (via GLib signals).
-        Retorna True se o schema existe e o watch foi registrado com sucesso.
+        Watch one key on the creating thread's main context (normally the UI).
+        Callbacks receive no arguments. Return False for invalid registrations.
         """
-        try:
-            Gio = self._Gio
-            src = Gio.SettingsSchemaSource.get_default()
-            if src and src.lookup(schema, True) is None:
-                return False
-            gs = Gio.Settings.new(schema)
-            handler = gs.connect(f"changed::{key}", lambda s, k: callback())
-            self._watchers.append((gs, key, handler))
-            return True
-        except Exception:
+        if not isinstance(key, str) or not key or "\0" in key:
             return False
+        return self._watch(schema, key, callback)
 
     def watch_any(self, schema: str, callback: Callable) -> bool:
         """
-        Registra callback para qualquer mudança no schema inteiro.
-        Útil para schemas com muitas chaves.
+        Watch all keys on the creating thread's main context.
         """
+        return self._watch(schema, None, callback)
+
+    def _watch(self, schema: str, key, callback: Callable) -> bool:
+        gs, handler = None, None
+        state = {"active": False}
         try:
+            if (
+                not isinstance(schema, str) or not schema or "\0" in schema
+                or not callable(callback)
+            ):
+                return False
             Gio = self._Gio
             src = Gio.SettingsSchemaSource.get_default()
-            if src and src.lookup(schema, True) is None:
+            if src is None:
                 return False
-            gs = Gio.Settings.new(schema)
-            handler = gs.connect("changed", lambda s, k: callback())
-            self._watchers.append((gs, "any", handler))
+            definition = src.lookup(schema, True)
+            if definition is None or definition.get_path() is None:
+                return False
+            if key is not None and not definition.has_key(key):
+                return False
+            keys = [key] if key is not None else definition.list_keys()
+            gs = Gio.Settings.new_full(definition, None, None)
+
+            def changed(settings, changed_key):
+                if state["active"]:
+                    callback()
+
+            handler = gs.connect(f"changed::{key}" if key is not None else "changed", changed)
+            # Gio only promises notifications for keys read after connecting.
+            for watched_key in keys:
+                gs.get_value(watched_key)
+            self._watchers.append((gs, key, handler, state))
+            state["active"] = True
             return True
         except Exception:
+            if gs is not None and handler is not None:
+                try:
+                    gs.disconnect(handler)
+                except Exception:
+                    pass
             return False
 
     def disconnect_all(self) -> None:
         """Desconecta todos os watchers registrados. Chamar ao destruir a janela."""
-        for gs, key, handler in self._watchers:
+        watchers, self._watchers = self._watchers, []
+        for gs, key, handler, state in watchers:
+            state["active"] = False
+        for gs, key, handler, state in watchers:
             try:
                 gs.disconnect(handler)
             except Exception:
                 pass
-        self._watchers.clear()
