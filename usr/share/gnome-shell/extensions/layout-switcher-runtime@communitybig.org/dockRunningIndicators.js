@@ -20,21 +20,30 @@ export class DockRunningIndicators {
         this._dockSettings = dockSettings;
         this._dockManager = dockManager;
         this._style = this._normalizeStyle(style);
-        this._signals = [
-            [dockSettings, dockSettings.connect(
-                'changed::running-indicator-style', () => this._apply())],
-            [dockManager, dockManager.connect('docks-ready', () => this._apply())],
-        ];
-        this._apply();
+        this._signals = [];
+        try {
+            this._signals.push([dockSettings, dockSettings.connect(
+                'changed::running-indicator-style', () => this._apply())]);
+            this._signals.push([dockManager, dockManager.connect(
+                'docks-ready', () => this._apply())]);
+            this._apply();
+        } catch (error) {
+            this.destroy();
+            throw error;
+        }
     }
 
     applyIconStyle(icon) {
+        if (this._destroyed)
+            return;
         for (const styleClass of STYLE_CLASSES.values())
             icon.remove_style_class_name(styleClass);
         icon.add_style_class_name(this._styleClass());
     }
 
     applyAppearance(dot, focused, position) {
+        if (this._destroyed)
+            return;
         const geometry = this._geometry();
         let [width, height] = focused ? geometry.active : geometry.inactive;
         if (position === St.Side.LEFT || position === St.Side.RIGHT)
@@ -60,6 +69,8 @@ export class DockRunningIndicators {
     }
 
     setStyle(style) {
+        if (this._destroyed)
+            return;
         this._style = this._normalizeStyle(style);
         this._apply();
     }
@@ -69,25 +80,50 @@ export class DockRunningIndicators {
     }
 
     destroy() {
-        for (const dock of this._dockManager?._allDocks ?? [])
-            this._clearClasses(dock);
-        for (const [object, id] of this._signals.splice(0))
-            object.disconnect(id);
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        const docks = [...this._dockManager?._allDocks ?? []];
+        const signals = this._signals.splice(0);
         this._dockSettings = null;
         this._dockManager = null;
+        for (const [object, id] of signals) {
+            try {
+                object.disconnect(id);
+            } catch (error) {
+                console.warn(`[layout-switcher-runtime] Indicator signal cleanup failed: ${error}`);
+            }
+        }
+        for (const dock of docks) {
+            try {
+                this._clearClasses(dock);
+            } catch (error) {
+                console.warn(`[layout-switcher-runtime] Indicator style cleanup failed: ${error}`);
+            }
+        }
     }
 
     _apply() {
-        if (this._dockSettings.get_enum('running-indicator-style') !== 0) {
-            this._dockSettings.set_enum('running-indicator-style', 0);
+        if (this._destroyed)
+            return;
+        const settings = this._dockSettings;
+        if (settings.get_enum('running-indicator-style') !== 0) {
+            settings.set_enum('running-indicator-style', 0);
             return;
         }
 
-        for (const dock of this._dockManager._allDocks) {
+        for (const dock of [...this._dockManager._allDocks]) {
+            if (this._destroyed)
+                return;
             this._clearClasses(dock);
+            if (this._destroyed)
+                return;
             dock.add_style_class_name(this._styleClass());
-            for (const icon of dock?.dash?._appIcons ?? [])
+            for (const icon of dock?.dash?._appIcons ?? []) {
+                if (this._destroyed)
+                    return;
                 icon._syncCommunityIndicatorStyle();
+            }
         }
     }
 

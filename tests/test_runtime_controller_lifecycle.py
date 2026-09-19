@@ -39,3 +39,12 @@ def test_dock_dwell_lifecycle():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "17 dock dwell lifecycle scenarios passed" in result.stdout
+
+
+def test_dock_indicators_lifecycle():
+    script = Path(__file__).with_name("dock_indicators_lifecycle.mjs")
+    result = subprocess.run(
+        ["node", str(script)], capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "20 dock indicator lifecycle scenarios passed" in result.stdout
