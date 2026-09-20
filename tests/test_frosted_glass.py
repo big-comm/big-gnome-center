@@ -245,8 +245,8 @@ def test_dock_material_overrides_and_restores_inline_background():
     surface = (EXTENSION / "shellBlurSurface.js").read_text()
 
     assert "DOCK_TRANSPARENT_STYLE" in surface
-    assert "this.actor.get_style?.()" in surface
-    assert "this.actor?.set_style?.(this._targetStyle)" in surface
+    assert "actor.get_style?.()" in surface
+    assert "actor.set_style(record.original)" in surface
     assert "this._effect.brightness = config.brightness" in surface
     assert "232, 234, 240" not in surface
 
@@ -260,8 +260,8 @@ def test_dash_to_panel_material_overrides_and_restores_inline_background():
     assert "'background-gradient-start: transparent'" in surface
     assert "'background-gradient-end: transparent'" in surface
     assert "this._kind === 'dash-to-panel'" in surface
-    assert "this.actor?.set_style?.(this._targetStyle)" in surface
-    assert "this._panelContent.set_style?.(this._panelContentStyle)" in surface
+    assert "actor.set_style(record.original)" in surface
+    assert "this._applyTransparentStyle(this._panelContent," in surface
     assert "this.actor?.panel ?? null" in surface
     assert "this._panelContent, 'style-changed'" in surface
     assert "targets.set(panelInfo, 'dash-to-panel')" in discovery
@@ -349,8 +349,8 @@ def test_quick_settings_neutralizes_content_and_pointer_borders():
     assert "findStyledAncestor(this.actor, 'popup-menu-boxpointer')" in surface
     assert "-arrow-border-width: 0px" in surface
     assert "this._pointerBorder.hide()" in surface
-    assert "this._pointerBorder.visible = this._pointerBorderVisible" in surface
-    assert "this._boxPointer.set_style?.(this._pointerStyle)" in surface
+    assert "border.actor.visible = border.original" in surface
+    assert "this._applyTransparentStyle(this._boxPointer, QUICK_SETTINGS_POINTER_STYLE)" in surface
     assert "box-shadow: 0 8px 24px" not in stylesheet
 
 
@@ -566,7 +566,7 @@ def test_dynamic_blur_texture_is_replaced_by_outer_corner_mask():
     effect = (EXTENSION / "roundedCorners.js").read_text()
 
     assert "this._overlay.add_effect_with_name(EFFECT_NAME" in surface
-    assert "this._overlay, () => this._effect" in surface
+    assert "this._overlay === overlay" in surface
     assert "this._overlay.add_effect_with_name(\n                CORNER_EFFECT_NAME" in surface
     assert "snippet.set_replace(body)" in effect
 

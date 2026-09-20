@@ -118,11 +118,11 @@ export class ShellBlurSurface {
         this._monitorIndex = -1;
         this._destroyed = false;
         this._lastConfig = null;
+        this._pendingUpdate = false;
         this._materialApplied = false;
-        this._targetStyle = null;
-        this._panelContentStyle = null;
-        this._pointerStyle = null;
-        this._pointerBorderVisible = null;
+        this._styles = new Map();
+        this._classes = new Map();
+        this._borderVisibility = null;
         this._dockSlider = this._kind === 'dash-to-dock'
             ? findDockSlider(this.actor)
             : null;
@@ -134,12 +134,21 @@ export class ShellBlurSurface {
             : null;
         this._pointerBorder = this._boxPointer?._border ?? null;
 
+        try {
+            this._connectTargets();
+        } catch (error) {
+            this.destroy();
+            throw error;
+        }
+    }
+
+    _connectTargets() {
         this._connectGeometryHierarchy();
         if (this._kind === 'panel') {
             this._connect(this.actor, 'style-changed', () => {
                 if (this._materialApplied && !this._destroyed)
                     this._applyTransparentStyle(
-                        this.actor, PANEL_TRANSPARENT_STYLE, '_targetStyle');
+                        this.actor, PANEL_TRANSPARENT_STYLE);
             });
         }
         if (this._kind === 'dash-to-panel') {
@@ -161,16 +170,15 @@ export class ShellBlurSurface {
             return;
         this._lastConfig = config;
         if (!this._isReady()) {
+            this._pendingUpdate = true;
             if (this._overlay)
                 this._overlay.visible = false;
             return;
         }
+        this._pendingUpdate = false;
         this._cornerRadius = this._resolveCornerRadius();
         const borderless = this._isBorderlessSurface();
-        if (config.lightMode)
-            this.actor?.add_style_class_name?.(LIGHT_STYLE_CLASS);
-        else
-            this.actor?.remove_style_class_name?.(LIGHT_STYLE_CLASS);
+        this._setClass(this.actor, LIGHT_STYLE_CLASS, config.lightMode);
         const monitor = Main.layoutManager.findMonitorForActor(this.actor) ??
             Main.layoutManager.primaryMonitor;
         const monitorChanged = config.mode === 'static' && monitor &&
@@ -213,37 +221,82 @@ export class ShellBlurSurface {
                 // Actor may already be disposed.
             }
         }
-        try {
-            if (!actorDestroyed)
-                this._restoreTargetStyle();
-        } catch (error) {
-            // A third-party target may have been detached during teardown.
-        }
+        this._restoreTargetStyle(actorDestroyed ? this.actor : null);
         this._removeOverlay();
         this._lastConfig = null;
         this.actor = null;
     }
 
-    _restoreTargetStyle() {
-        this.actor?.remove_style_class_name?.(STYLE_CLASS);
-        this.actor?.remove_style_class_name?.(LIGHT_STYLE_CLASS);
-        if (this._kind === 'panel' ||
-            this._kind === 'dash-to-panel' ||
-            this._kind === 'dash-to-dock' ||
-            POINTER_KINDS.has(this._kind))
-            this.actor?.set_style?.(this._targetStyle);
-        if (this._kind === 'dash-to-panel' && this._panelContent)
-            this._panelContent.set_style?.(this._panelContentStyle);
-        if (this._boxPointer)
-            this._boxPointer.set_style?.(this._pointerStyle);
-        if (this._pointerBorder && this._pointerBorderVisible !== null)
-            this._pointerBorder.visible = this._pointerBorderVisible;
+    _restoreTargetStyle(disposed = null) {
+        for (const [actor, record] of this._styles) {
+            if (actor === disposed)
+                continue;
+            try {
+                if (normalizeStyle(actor.get_style()) === normalizeStyle(record.applied))
+                    actor.set_style(record.original);
+            } catch (error) {
+                console.debug(`Frosted Glass: cannot restore surface style: ${error}`);
+            }
+        }
+        this._styles.clear();
+        for (const [actor, classes] of this._classes) {
+            if (actor === disposed)
+                continue;
+            for (const [name, record] of classes) {
+                try {
+                    if (actor.has_style_class_name(name) === record.applied) {
+                        if (record.original)
+                            actor.add_style_class_name(name);
+                        else
+                            actor.remove_style_class_name(name);
+                    }
+                } catch (error) {
+                    console.debug(`Frosted Glass: cannot restore surface class: ${error}`);
+                }
+            }
+        }
+        this._classes.clear();
+        const border = this._borderVisibility;
+        this._borderVisibility = null;
+        try {
+            if (border && border.actor !== disposed && border.actor.visible === false)
+                border.actor.visible = border.original;
+        } catch (error) {
+            console.debug(`Frosted Glass: cannot restore pointer border: ${error}`);
+        }
+        this._materialApplied = false;
+    }
+
+    _setClass(actor, name, enabled) {
+        if (!actor)
+            return;
+        try {
+            const current = actor.has_style_class_name(name);
+            if (current === enabled)
+                return;
+            let classes = this._classes.get(actor);
+            if (!classes) {
+                classes = new Map();
+                this._classes.set(actor, classes);
+            }
+            const previous = classes.get(name);
+            classes.set(name, {
+                original: previous && current === previous.applied ? previous.original : current,
+                applied: enabled,
+            });
+            if (enabled)
+                actor.add_style_class_name(name);
+            else
+                actor.remove_style_class_name(name);
+        } catch (error) {
+            console.debug(`Frosted Glass: cannot apply surface class: ${error}`);
+        }
     }
 
     _applyTargetStyle() {
         if (!this._materialApplied) {
-            this.actor?.add_style_class_name?.(STYLE_CLASS);
             this._materialApplied = true;
+            this._setClass(this.actor, STYLE_CLASS, true);
         }
         const transparentStyle = this._kind === 'panel'
             ? PANEL_TRANSPARENT_STYLE
@@ -252,43 +305,19 @@ export class ShellBlurSurface {
             : this._kind === 'dash-to-dock'
                 ? DOCK_TRANSPARENT_STYLE
                 : null;
-        if (transparentStyle && this.actor) {
-            try {
-                const style = this.actor.get_style?.() ?? null;
-                if (normalizeStyle(style) !== normalizeStyle(transparentStyle))
-                    this._targetStyle = style;
-                this.actor.set_style?.(transparentStyle);
-            } catch (error) {
-                // Panel extensions may replace their background at runtime.
-            }
-        }
+        if (transparentStyle)
+            this._applyTransparentStyle(this.actor, transparentStyle);
         if (this._kind === 'dash-to-panel')
             this._applyDashToPanelStyles();
-        if (POINTER_KINDS.has(this._kind) && this.actor) {
-            try {
-                const style = this.actor.get_style?.() ?? null;
-                if (normalizeStyle(style) !== normalizeStyle(QUICK_SETTINGS_TRANSPARENT_STYLE))
-                    this._targetStyle = style;
-                this.actor.set_style?.(QUICK_SETTINGS_TRANSPARENT_STYLE);
-            } catch (error) {
-                // Quick Settings may replace its content during a theme update.
-            }
-        }
-        if (this._boxPointer) {
-            try {
-                const style = this._boxPointer.get_style?.() ?? null;
-                if (normalizeStyle(style) !== normalizeStyle(QUICK_SETTINGS_POINTER_STYLE))
-                    this._pointerStyle = style;
-                this._boxPointer.set_style?.(QUICK_SETTINGS_POINTER_STYLE);
-            } catch (error) {
-                // BoxPointer can be replaced while the menu is closing.
-            }
-        }
+        if (POINTER_KINDS.has(this._kind))
+            this._applyTransparentStyle(this.actor, QUICK_SETTINGS_TRANSPARENT_STYLE);
+        this._applyTransparentStyle(this._boxPointer, QUICK_SETTINGS_POINTER_STYLE);
         if (this._pointerBorder) {
             try {
-                if (this._pointerBorderVisible === null)
-                    this._pointerBorderVisible = this._pointerBorder.visible;
-                this._pointerBorder.hide();
+                if (this._pointerBorder.visible) {
+                    this._borderVisibility = {actor: this._pointerBorder, original: true};
+                    this._pointerBorder.hide();
+                }
             } catch (error) {
                 // BoxPointer can be replaced while the menu is closing.
             }
@@ -296,22 +325,22 @@ export class ShellBlurSurface {
     }
 
     _applyDashToPanelStyles() {
-        if (this._destroyed || this._kind !== 'dash-to-panel')
+        if (this._destroyed || !this._materialApplied || this._kind !== 'dash-to-panel')
             return;
         this._applyTransparentStyle(
-            this.actor, DASH_TO_PANEL_TRANSPARENT_STYLE, '_targetStyle');
+            this.actor, DASH_TO_PANEL_TRANSPARENT_STYLE);
         this._applyTransparentStyle(this._panelContent,
-            DASH_TO_PANEL_CONTENT_TRANSPARENT_STYLE, '_panelContentStyle');
+            DASH_TO_PANEL_CONTENT_TRANSPARENT_STYLE);
     }
 
-    _applyTransparentStyle(actor, transparentStyle, storageProperty) {
+    _applyTransparentStyle(actor, transparentStyle) {
         if (!actor)
             return;
         try {
             const style = actor.get_style?.() ?? null;
             if (normalizeStyle(style) === normalizeStyle(transparentStyle))
                 return;
-            this[storageProperty] = style;
+            this._styles.set(actor, {original: style, applied: transparentStyle});
             actor.set_style?.(transparentStyle);
         } catch (error) {
             // Extension actors may be replaced while their layout is rebuilt.
@@ -370,6 +399,25 @@ export class ShellBlurSurface {
 
     _rebuild(mode, monitor) {
         this._removeOverlay();
+        try {
+            this._buildOverlay(mode, monitor);
+        } catch (error) {
+            this._removeOverlay();
+            throw error;
+        }
+    }
+
+    _newOverlayChild(property) {
+        const actor = new St.Widget({reactive: false});
+        this[property] = actor;
+        actor.connect('destroy', () => {
+            if (this[property] === actor)
+                this[property] = null;
+        });
+        return actor;
+    }
+
+    _buildOverlay(mode, monitor) {
         this._mode = mode;
         this._monitorIndex = monitor?.index ?? -1;
         this._overlay = new St.Widget({
@@ -377,13 +425,10 @@ export class ShellBlurSurface {
             reactive: false,
             clip_to_allocation: true,
         });
-        this._overlay.connect('destroy', () => {
-            this._overlay = null;
-            this._wallpaper = null;
-            this._tint = null;
-            this._effect = null;
-            this._cornerEffect = null;
-            this._paintSignal = null;
+        const overlay = this._overlay;
+        overlay.connect('destroy', () => {
+            if (this._overlay === overlay)
+                this._removeOverlay(overlay);
         });
         Main.uiGroup.add_child(this._overlay);
 
@@ -394,7 +439,7 @@ export class ShellBlurSurface {
         }
 
         if (mode === 'static' && monitor) {
-            this._wallpaper = new St.Widget({reactive: false});
+            this._newOverlayChild('_wallpaper');
             this._effect = new Shell.BlurEffect({mode: Shell.BlurMode.ACTOR});
             this._wallpaper.add_effect_with_name(EFFECT_NAME, this._effect);
             this._overlay.add_child(this._wallpaper);
@@ -406,17 +451,18 @@ export class ShellBlurSurface {
         } else {
             this._effect = createBackgroundEffect();
             this._paintSignal = attachBlurRepaint(
-                this._overlay, () => this._effect);
+                this._overlay, () => !this._destroyed && this._overlay === overlay
+                    ? this._effect : null);
             this._overlay.add_effect_with_name(EFFECT_NAME, this._effect);
         }
 
-        this._tint = new St.Widget({reactive: false});
+        this._newOverlayChild('_tint');
         this._overlay.add_child(this._tint);
         this._ensureStacking();
     }
 
     _syncGeometry() {
-        if (!this._overlay || !this.actor)
+        if (this._destroyed || !this._overlay || !this.actor)
             return false;
         try {
             const [stageX, stageY] = this.actor.get_transformed_position();
@@ -498,7 +544,9 @@ export class ShellBlurSurface {
     }
 
     _geometryChanged() {
-        if (!this._overlay && this._lastConfig && this._isReady())
+        if (this._destroyed)
+            return;
+        if ((!this._overlay || this._pendingUpdate) && this._lastConfig && this._isReady())
             this.update(this._lastConfig);
         else
             this._syncGeometry();
@@ -515,32 +563,49 @@ export class ShellBlurSurface {
         }
     }
 
-    _removeOverlay() {
-        try {
-            this._manager?.destroy?.();
-        } catch (error) {
-            console.debug(`Frosted Glass: cannot destroy ${this._kind} wallpaper: ${error}`);
-        }
+    _removeOverlay(destroying = null) {
+        const overlay = this._overlay;
+        const manager = this._manager;
+        const children = [this._tint, this._wallpaper].filter(Boolean);
+        const effects = [this._paintSignal, this._cornerEffect,
+            this._wallpaper ? null : this._effect].filter(Boolean);
         this._manager = null;
-        try {
-            if (this._overlay?.get_parent() === Main.uiGroup)
-                Main.uiGroup.remove_child(this._overlay);
-            this._overlay?.destroy();
-        } catch (error) {
-            // Overlay may already be disposed with the Shell hierarchy.
-        }
         this._overlay = null;
         this._wallpaper = null;
         this._tint = null;
         this._effect = null;
         this._cornerEffect = null;
         this._paintSignal = null;
+        this._mode = null;
+        this._monitorIndex = -1;
+        const cleanup = action => {
+            try {
+                action();
+            } catch (error) {
+                console.debug(`Frosted Glass: cannot release ${this._kind} resource: ${error}`);
+            }
+        };
+        cleanup(() => manager?.destroy());
+        if (overlay !== destroying) {
+            for (const effect of effects)
+                cleanup(() => overlay?.remove_effect(effect));
+            for (const child of children)
+                cleanup(() => child.destroy());
+            cleanup(() => {
+                if (overlay?.get_parent() === Main.uiGroup)
+                    Main.uiGroup.remove_child(overlay);
+            });
+            cleanup(() => overlay?.destroy());
+        }
     }
 
     _connect(object, signal, callback) {
         try {
             this._watchLifetime(object);
-            this._signals.push([object, object.connect(signal, callback)]);
+            this._signals.push([object, object.connect(signal, (...args) => {
+                if (!this._destroyed)
+                    callback(...args);
+            })]);
         } catch (error) {
             // Optional notify signals differ between actor implementations.
         }
@@ -553,8 +618,17 @@ export class ShellBlurSurface {
                     // Disconnect while the emitter is still alive, not after disposal.
                     const owned = this._signals.filter(([target]) => target === object);
                     this._signals = this._signals.filter(([target]) => target !== object);
-                    for (const [, id] of owned)
-                        object.disconnect(id);
+                    for (const [, id] of owned) {
+                        try {
+                            object.disconnect(id);
+                        } catch (error) {
+                            console.debug(`Frosted Glass: cannot disconnect retired actor: ${error}`);
+                        }
+                    }
+                    this._styles.delete(object);
+                    this._classes.delete(object);
+                    if (this._borderVisibility?.actor === object)
+                        this._borderVisibility = null;
                     for (const key of ['_panelContent', '_boxPointer', '_pointerBorder', '_dockSlider']) {
                         if (this[key] === object)
                             this[key] = null;

@@ -96,7 +96,9 @@ export class ShellSurfaces {
     constructor(getConfig) {
         this._getConfig = getConfig;
         this._records = new Map();
-        this._quickSubmenus = new Set();
+        this._quickSubmenus = new Map();
+        this._destroyed = false;
+        this._enabled = false;
         this._scanId = 0;
         this._refreshId = 0;
         this._modalDialogSignal = 0;
@@ -104,9 +106,22 @@ export class ShellSurfaces {
     }
 
     enable() {
+        if (this._enabled || this._destroyed)
+            return;
+        this._enabled = true;
+        try {
+            this._enable();
+        } catch (error) {
+            this.destroy();
+            throw error;
+        }
+    }
+
+    _enable() {
         this.refresh();
         const modalGroup = Main.layoutManager.modalDialogGroup;
         if (modalGroup) {
+            this._modalDialogObject = modalGroup;
             this._modalDialogSignal = modalGroup.connect('child-added', () =>
                 this._queueRefresh());
         }
@@ -124,12 +139,16 @@ export class ShellSurfaces {
             }
         }
         this._scanId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => {
+            if (this._destroyed)
+                return GLib.SOURCE_REMOVE;
             this.refresh();
             return GLib.SOURCE_CONTINUE;
         });
     }
 
     refresh() {
+        if (this._destroyed)
+            return;
         const config = this._getConfig();
         const quickSubmenus = new Set();
         const targets = config.enabled
@@ -140,54 +159,76 @@ export class ShellSurfaces {
 
         for (const [actor, record] of this._records) {
             if (!targets.has(actor)) {
-                record.destroy();
                 this._records.delete(actor);
+                this._destroySurface(record);
             }
         }
 
         for (const [actor, kind] of targets) {
             let surface = this._records.get(actor);
-            if (!surface) {
-                const container = actor.get_parent?.();
-                if (!container)
-                    continue;
-                surface = new ShellBlurSurface(actor, {
-                    kind,
-                    container,
-                    cornerRadius: CORNER_RADII[kind] ?? 18,
-                    themeCornerRadius: THEME_RADIUS_KINDS.has(kind),
-                    geometryProvider: () => relativeGeometry(actor, container),
-                });
-                this._records.set(actor, surface);
-            }
-            surface.update(kind === 'layout-menu'
-                ? {
-                    ...config,
-                    lightMode: config.appLightMode,
-                    brightness: config.appLightMode ? 1.0 : 0.9,
+            try {
+                if (!surface) {
+                    const container = actor.get_parent?.();
+                    if (!container)
+                        continue;
+                    surface = new ShellBlurSurface(actor, {
+                        kind,
+                        container,
+                        cornerRadius: CORNER_RADII[kind] ?? 18,
+                        themeCornerRadius: THEME_RADIUS_KINDS.has(kind),
+                        geometryProvider: () => relativeGeometry(actor, container),
+                    });
+                    this._records.set(actor, surface);
                 }
-                : config);
+                surface.update(kind === 'layout-menu'
+                    ? {
+                        ...config,
+                        lightMode: config.appLightMode,
+                        brightness: config.appLightMode ? 1.0 : 0.9,
+                    }
+                    : config);
+            } catch (error) {
+                this._records.delete(actor);
+                this._destroySurface(surface);
+                console.warn(`Frosted Glass: cannot update ${kind} surface: ${error}`);
+            }
+        }
+    }
+
+    _destroySurface(surface) {
+        try {
+            surface?.destroy();
+        } catch (error) {
+            console.warn(`Frosted Glass: cannot release surface: ${error}`);
         }
     }
 
     destroy() {
-        if (this._refreshId) {
-            GLib.source_remove(this._refreshId);
-            this._refreshId = 0;
-        }
-        if (this._scanId) {
-            GLib.source_remove(this._scanId);
-            this._scanId = 0;
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this._enabled = false;
+        for (const property of ['_refreshId', '_scanId']) {
+            const id = this[property];
+            this[property] = 0;
+            if (id) {
+                try {
+                    GLib.source_remove(id);
+                } catch (error) {
+                    console.debug(`Frosted Glass: cannot remove source: ${error}`);
+                }
+            }
         }
         if (this._modalDialogSignal) {
             try {
-                Main.layoutManager.modalDialogGroup.disconnect(
+                this._modalDialogObject.disconnect(
                     this._modalDialogSignal);
             } catch (error) {
                 // Shell teardown may dispose the group first.
             }
             this._modalDialogSignal = 0;
         }
+        this._modalDialogObject = null;
         for (const [object, id] of this._messageTraySignals.splice(0)) {
             try {
                 object.disconnect(id);
@@ -195,16 +236,19 @@ export class ShellSurfaces {
                 // Message tray may be disposed during Shell teardown.
             }
         }
-        for (const surface of this._records.values())
-            surface.destroy();
+        const surfaces = [...this._records.values()];
         this._records.clear();
+        for (const surface of surfaces)
+            this._destroySurface(surface);
         this._syncQuickSubmenus(new Set(), false);
     }
 
     _queueRefresh() {
-        if (this._refreshId)
+        if (this._destroyed || this._refreshId)
             return;
         this._refreshId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            if (this._destroyed)
+                return GLib.SOURCE_REMOVE;
             this._refreshId = 0;
             this.refresh();
             return GLib.SOURCE_REMOVE;
@@ -295,34 +339,48 @@ export class ShellSurfaces {
     }
 
     _syncQuickSubmenus(nextActors, lightMode) {
-        for (const actor of this._quickSubmenus) {
+        for (const [actor, classes] of this._quickSubmenus) {
             if (!nextActors.has(actor)) {
-                try {
-                    actor.remove_style_class_name?.(QUICK_SUBMENU_CLASS);
-                    actor.remove_style_class_name?.(LIGHT_STYLE_CLASS);
-                } catch (error) {
-                    // Submenu may be disposed during a Shell rebuild.
+                this._quickSubmenus.delete(actor);
+                for (const [name, record] of classes) {
+                    try {
+                        if (actor.has_style_class_name(name) === record.applied) {
+                            if (record.original)
+                                actor.add_style_class_name(name);
+                            else
+                                actor.remove_style_class_name(name);
+                        }
+                    } catch (error) {
+                        // Submenu may be disposed during a Shell rebuild.
+                    }
                 }
             }
         }
         for (const actor of nextActors) {
-            if (!this._quickSubmenus.has(actor)) {
+            let classes = this._quickSubmenus.get(actor);
+            if (!classes) {
+                classes = new Map();
+                this._quickSubmenus.set(actor, classes);
+            }
+            for (const [name, enabled] of [[QUICK_SUBMENU_CLASS, true], [LIGHT_STYLE_CLASS, lightMode]]) {
                 try {
-                    actor.add_style_class_name?.(QUICK_SUBMENU_CLASS);
+                    const current = actor.has_style_class_name(name);
+                    if (current === enabled)
+                        continue;
+                    const previous = classes.get(name);
+                    classes.set(name, {
+                        original: previous && current === previous.applied ? previous.original : current,
+                        applied: enabled,
+                    });
+                    if (enabled)
+                        actor.add_style_class_name(name);
+                    else
+                        actor.remove_style_class_name(name);
                 } catch (error) {
                     // Submenu may be disposed during a Shell rebuild.
                 }
             }
-            try {
-                if (lightMode)
-                    actor.add_style_class_name?.(LIGHT_STYLE_CLASS);
-                else
-                    actor.remove_style_class_name?.(LIGHT_STYLE_CLASS);
-            } catch (error) {
-                // Submenu may be disposed during a Shell rebuild.
-            }
         }
-        this._quickSubmenus = nextActors;
     }
 
     _discoverDateMenu(targets) {
