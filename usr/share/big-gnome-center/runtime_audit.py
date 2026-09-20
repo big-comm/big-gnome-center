@@ -1229,7 +1229,9 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     (
                         dock.get("hoverState", {}).get("connectedDocks")
                         == len(dock_actors)
-                        and dock.get("hoverState", {}).get("pollSources")
+                        and dock.get("hoverState", {}).get(
+                            "pointerWatches", dock.get("hoverState", {}).get("pollSources")
+                        )
                         == len(dock_actors)
                         and dock.get("hoverState", {}).get("renderer")
                         == "ui-group-clone"
@@ -1243,6 +1245,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     if expected.get("hover") == "magnify"
                     else (
                         dock.get("hoverState", {}).get("connectedDocks") == 0
+                        and dock.get("hoverState", {}).get("pointerWatches", 0) == 0
                         and dock.get("hoverState", {}).get("pollSources") == 0
                         and dock.get("hoverState", {}).get("scaledActors") == 0
                         and dock.get("hoverState", {}).get("cloneActors") == 0

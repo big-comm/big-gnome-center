@@ -12,7 +12,8 @@ const code = fs.readFileSync(new URL('dockHoverEffects.js', root), 'utf8')
 
 function harness(scaleFactor = 1) {
     const events = [], failures = new Map(), hooks = new Map(), timers = new Map();
-    const emitters = [], clones = [], chrome = new Set();
+    const emitters = [], clones = [], chrome = new Set(), watches = new Set();
+    let pointer = [24, 24];
     let id = 0;
     const step = name => {
         events.push(name); hooks.get(name)?.();
@@ -28,7 +29,7 @@ function harness(scaleFactor = 1) {
             this.signals.set(++id, {signal, callback}); this.history.push(callback); return id;
         }
         disconnect(key) { step(`${this.name}.disconnect`); this.signals.delete(key); }
-        emit(signal) { for (const s of [...this.signals.values()]) if (s.signal === signal) s.callback(); }
+        emit(signal, ...args) { for (const s of [...this.signals.values()]) if (s.signal === signal) s.callback(this, ...args); }
         set_size(w, h) { step(`${this.name}.size`); this.size = [w, h]; }
         set_position() { step(`${this.name}.position`); }
         set_pivot_point() {}
@@ -41,9 +42,16 @@ function harness(scaleFactor = 1) {
         remove_style_class_name() {}
         add_style_class_name() {}
     }
+    const stage = new Actor('stage');
+    const tracker = {
+        connect(signal, callback) { const key = ++id; watches.add({key, callback}); return key; },
+        disconnect(key) { for (const watch of watches) if (watch.key === key) watches.delete(watch); },
+        get_pointer() { return pointer; },
+    };
     const Effects = vm.runInNewContext(`${code}\nDockHoverEffects`, {
-        console: {warn() {}}, global: {stage: {}, get_pointer: () => [24, 24]},
-        Clutter: {Clone: class extends Actor {
+        console: {warn() {}}, global: {stage, get_pointer: () => pointer,
+            backend: {get_cursor_tracker: () => tracker}},
+        Clutter: {EVENT_PROPAGATE: false, EventType: {MOTION: 1, ENTER: 2, LEAVE: 3}, Clone: class extends Actor {
             constructor() { super('clone'); step('clone.new'); clones.push(this); }
         }},
         Main: {uiGroup: {add_child(actor) { step('chrome.add'); chrome.add(actor); }}},
@@ -63,7 +71,8 @@ function harness(scaleFactor = 1) {
         const icon = {iconSize: 48, _iconBin: bin, createIcon: original, get_stage: () => true,
             _createIconTexture(size) { step('texture'); this.createIcon(size); }};
         actor.icon = icon;
-        dash._position = 1; dash.iconSize = 48; dash._box = {get_children: () => [{child: actor}]};
+        dash._position = 1; dash.iconSize = 48; dash._box = new Actor('box');
+        dash._box.get_children = () => [{child: actor}];
         return {dash, actor, bin, icon, original, requests};
     }
     function attach(d = dock()) {
@@ -72,12 +81,14 @@ function harness(scaleFactor = 1) {
         fx._tick(d.dash, record);
         return {...d, record, state: record.states.get(d.actor)};
     }
-    return {fx, dock, attach, child, events, failures, hooks, timers, emitters, clones, chrome};
+    return {fx, dock, attach, child, Actor, events, failures, hooks, timers, emitters, clones, chrome,
+        stage, watches, pointer: (x, y) => { pointer = [x, y]; }};
 }
 function clean(h) {
     assert.equal(h.fx._records.size, 0);
     assert.equal(h.timers.size, 0);
     assert.equal(h.chrome.size, 0);
+    assert.equal(h.watches.size, 0);
     assert.ok(h.clones.every(c => c.destroyed));
     assert.ok(h.emitters.every(e => e.signals.size === 0));
 }
@@ -154,7 +165,10 @@ test('tick failure cannot detach a replacement record', () => {
 });
 test('retired tick cannot publish a new icon state', () => {
     const h = harness(), d = h.attach();
-    h.fx._isDockShown = () => { h.fx.releaseAll(); h.fx.applyStyle(d.dash); return true; };
+    h.fx._isDockShown = () => {
+        h.fx._isDockShown = () => true;
+        h.fx.releaseAll(); h.fx.applyStyle(d.dash); return true;
+    };
     h.fx._tick(d.dash, d.record);
     assert.equal(d.record.states.size, 0);
     assert.equal(h.chrome.size, 0);
@@ -233,6 +247,110 @@ test('release cannot detach a dock replaced during another cleanup', () => {
     h.fx.releaseAll();
     assert.ok(h.fx._records.has(second.dash));
     assert.notEqual(h.fx._records.get(second.dash), second.record);
+    h.fx.releaseAll(); clean(h);
+});
+function settle(h) {
+    let frames = 0;
+    while (h.timers.size && frames++ < 100) {
+        for (const [id, timer] of [...h.timers])
+            if (!timer.callback()) h.timers.delete(id);
+    }
+    assert.equal(h.timers.size, 0, 'animation did not settle');
+    return frames;
+}
+test('idle away performs one update then stops', () => {
+    const h = harness(); h.pointer(1000, 1000); h.attach();
+    assert.equal(settle(h), 1);
+    const count = h.fx.diagnostics().updateCount;
+    for (let i = 0; i < 30; i++) for (const watch of h.watches) watch.callback();
+    assert.equal(h.timers.size, 0); assert.equal(h.fx.diagnostics().updateCount, count);
+    h.fx.releaseAll(); clean(h);
+});
+test('stationary magnification settles and leaving restores opacity', () => {
+    const h = harness(), d = h.attach();
+    assert.ok(settle(h) > 1);
+    assert.equal(d.state.scale, 1.4); assert.equal(d.actor.opacity, 0);
+    h.pointer(1000, 1000); for (const watch of h.watches) watch.callback();
+    settle(h);
+    assert.equal(d.state.scale, 1); assert.equal(d.actor.opacity, 220);
+    assert.equal(d.state.clone.visible, false);
+    h.fx.releaseAll(); clean(h);
+});
+for (const position of [0, 1, 2, 3]) {
+    test(`proximity outside dock wakes magnification: side=${position}`, () => {
+        const h = harness(), d = h.dock(); d.dash._position = position;
+        h.pointer(1000, 1000); h.attach(d); settle(h);
+        h.pointer(position < 2 ? 24 : -10, position < 2 ? -10 : 24);
+        for (const watch of h.watches) watch.callback();
+        assert.equal(h.timers.size, 1); settle(h);
+        assert.ok(h.fx._records.get(d.dash).states.get(d.actor).scale > 1);
+        h.fx.releaseAll(); clean(h);
+    });
+}
+test('stage motion wakes immediately without waiting for pointer watch', () => {
+    const h = harness(); h.pointer(1000, 1000); h.attach(); settle(h);
+    h.pointer(24, 24); h.stage.emit('captured-event', {type: () => 1});
+    assert.equal(h.timers.size, 1); settle(h);
+    h.fx.releaseAll(); clean(h);
+});
+test('hidden dock stops and shown notification wakes with stationary pointer', () => {
+    const h = harness(), d = h.attach(); settle(h);
+    h.fx._isDockShown = () => false; h.fx.refresh(d.dash);
+    assert.equal(d.actor.opacity, 220); assert.equal(d.state.clone.visible, false);
+    for (const watch of h.watches) watch.callback();
+    assert.equal(h.timers.size, 0);
+    h.fx._isDockShown = () => true; h.fx.refresh(d.dash); settle(h);
+    assert.equal(d.state.scale, 1.4);
+    h.fx.releaseAll(); clean(h);
+});
+test('unmap restores source and remap wakes animation', () => {
+    const h = harness(), d = h.attach(); settle(h);
+    d.dash.get_paint_visibility = () => false; d.dash.emit('notify::mapped');
+    assert.equal(h.timers.size, 0); assert.equal(d.actor.opacity, 220);
+    d.dash.get_paint_visibility = () => true; d.dash.emit('notify::mapped'); settle(h);
+    assert.equal(d.state.scale, 1.4);
+    h.fx.releaseAll(); clean(h);
+});
+test('icon removal retires clones while pointer is stationary', () => {
+    const h = harness(), d = h.attach(); settle(h);
+    d.dash._box.get_children = () => []; d.dash._box.emit('child-removed'); settle(h);
+    assert.equal(d.record.states.size, 0); assert.equal(h.chrome.size, 0);
+    assert.equal(d.actor.opacity, 220);
+    d.dash._box.get_children = () => [{child: d.actor}];
+    d.dash._box.emit('child-added'); settle(h);
+    assert.equal(d.record.states.size, 1);
+    h.fx.releaseAll(); clean(h);
+});
+for (const signal of ['notify::allocation', 'notify::translation-x', 'notify::translation-y']) {
+    test(`icon geometry wakes settled clones: ${signal}`, () => {
+        const h = harness(), d = h.attach(); settle(h);
+        d.actor.get_transformed_position = () => [300, 300]; d.actor.emit(signal); settle(h);
+        assert.equal(d.state.scale, 1); assert.equal(d.actor.opacity, 220);
+        h.fx.releaseAll(); clean(h);
+    });
+}
+test('cancelled frame cannot clear new frame on the same dock', () => {
+    const h = harness(), d = h.attach(), old = h.timers.get(d.record.sourceId).callback;
+    h.fx._isDockShown = () => false; h.fx.refresh(d.dash);
+    h.fx._isDockShown = () => true; h.fx.refresh(d.dash);
+    const id = d.record.sourceId;
+    assert.equal(old(), false); assert.equal(d.record.sourceId, id); settle(h);
+    h.fx.releaseAll(); clean(h);
+});
+test('scroll adjustment wakes stationary magnification', () => {
+    const h = harness(), d = h.dock();
+    d.dash._scrollView = {hadjustment: new h.Actor('adjustment')};
+    const attached = h.attach(d); settle(h);
+    d.actor.get_transformed_position = () => [300, 0];
+    d.dash._scrollView.hadjustment.emit('notify::value'); settle(h);
+    assert.equal(attached.state.scale, 1);
+    h.fx.releaseAll(); clean(h);
+});
+test('hidden pointer movement does not repeatedly touch clone actors', () => {
+    const h = harness(), d = h.attach(); settle(h);
+    h.fx._isDockShown = () => false; h.fx.refresh(d.dash); h.events.length = 0;
+    for (let i = 0; i < 30; i++) for (const watch of h.watches) watch.callback();
+    assert.deepEqual(h.events, []);
     h.fx.releaseAll(); clean(h);
 });
 console.log(`${count} dock hover lifecycle scenarios passed`);

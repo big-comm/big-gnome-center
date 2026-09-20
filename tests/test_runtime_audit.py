@@ -3,6 +3,8 @@
 
 from pathlib import Path
 
+import pytest
+
 import runtime_audit
 from runtime_audit import (
     COMMUNITY_DOCK_UUID,
@@ -608,7 +610,8 @@ def test_audit_rejects_magnification_lifecycle_drift(tmp_path):
     assert "dock-hover-lifecycle" in failures
 
 
-def test_audit_accepts_clone_magnification_lifecycle(tmp_path):
+@pytest.mark.parametrize("native_tracking", [False, True])
+def test_audit_accepts_clone_magnification_lifecycle(tmp_path, native_tracking):
     _payload(tmp_path)
     snapshot = _snapshot()
     diagnostics = dict(snapshot.runtime_diagnostics)
@@ -637,6 +640,10 @@ def test_audit_accepts_clone_magnification_lifecycle(tmp_path):
             "hiddenSources": 3,
         },
     )
+    if native_tracking:
+        runtime["dock"]["hoverState"].update(
+            pointerWatches=1, pollSources=0, animationSources=0,
+        )
     diagnostics["runtime"] = runtime
 
     failures = _failures(

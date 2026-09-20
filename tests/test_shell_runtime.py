@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 107" in controller
+    assert "RUNTIME_BUILD = 108" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -1054,6 +1054,7 @@ def test_runtime_owns_dock_hover_effects():
     assert "releaseAll()" in runtime
     assert "hoverEffects.animate(actor, this._position, this.iconSize)" in dash
     assert "hoverEffects.applyStyle(this)" in dash
+    assert dash.index("this._syncHoverEffectStyle();") > dash.index("this._showAppsIcon =")
     assert "hoverEffects?.labelClearance(" in app_icons
     assert "magnificationClearance" in app_icons
     assert stylesheet.count("#dash.community-dock-hover-magnify") >= 6

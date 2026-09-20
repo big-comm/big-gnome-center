@@ -155,7 +155,6 @@ export const DockDash = GObject.registerClass({
         this._signalsHandler = new Utils.GlobalSignalsHandler(this);
         this._communitySettings = Docking.DockSurfaceManager.extension.getSettings(
             COMMUNITY_SETTINGS_SCHEMA);
-        this._syncHoverEffectStyle();
 
         this._separator = null;
 
@@ -307,6 +306,7 @@ export const DockDash = GObject.registerClass({
         ]);
 
         this.connect('destroy', this._onDestroy.bind(this));
+        this._syncHoverEffectStyle();
     }
 
     vfunc_get_preferred_height(forWidth) {

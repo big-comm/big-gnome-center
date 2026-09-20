@@ -92,7 +92,7 @@ def test_dock_hover_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "30 dock hover lifecycle scenarios passed" in result.stdout
+    assert "46 dock hover lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_menu_lifecycle():

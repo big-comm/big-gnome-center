@@ -876,6 +876,7 @@ export const DockedDash = GObject.registerClass({
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
                 this._dockState = State.SHOWN;
+                DockSurfaceManager.extension.hoverEffects?.refresh(this.dash);
                 // Remove barrier so that mouse pointer is released and can
                 // monitors on other side of dock.
                 // NOTE: Delay needed to keep mouse from moving past dock and
@@ -896,6 +897,7 @@ export const DockedDash = GObject.registerClass({
 
     _animateOut(time, delay) {
         this._dockState = State.HIDING;
+        DockSurfaceManager.extension.hoverEffects?.refresh(this.dash);
 
         this._slider.ease_property('slide-x', 0, {
             duration: time * 1000,

@@ -25,9 +25,9 @@ def test_community_dock_is_a_private_resource_host():
 
 
 def test_community_dock_tracks_accepted_core_baseline():
-    # Includes balanced compositing holds, retired timers and owned settings disposal.
+    # Includes owned settings disposal and magnification visibility notifications.
     assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
-        "900e45d25510c2f8af17cfe6287cb9e2d7f3d2ee436dc5f13e7a3ca5179b20d5"
+        "3b315181acdfd7cdf67f17e61c3b9d7a5303d72b4f822c1357136c123c9800c9"
     )
 
 

@@ -106,7 +106,9 @@ export class DockHoverEffects {
             intensity: this._intensity,
             maxScale: 1 + this._intensity / 100,
             connectedDocks: records.length,
-            pollSources: records.filter(record => record.sourceId > 0).length,
+            pointerWatches: records.filter(record => record.pointerId > 0).length,
+            pollSources: 0,
+            animationSources: records.filter(record => record.sourceId > 0).length,
             trackedActors: states.length,
             cloneActors: states.filter(state => state.clone).length,
             highResolutionSources: states.filter(state => state.baseIcon).length,
@@ -124,8 +126,12 @@ export class DockHoverEffects {
             return;
 
         const record = {
+            dash,
             sourceId: 0,
             destroyId: 0,
+            signals: [],
+            pointerId: 0,
+            pointerTracker: global.backend.get_cursor_tracker(),
             states: new Map(),
         };
         this._records.set(dash, record);
@@ -134,31 +140,89 @@ export class DockHoverEffects {
                 if (this._records.get(dash) === record)
                     this._detach(dash, false, false);
             });
-            record.sourceId = GLib.timeout_add(
-                GLib.PRIORITY_DEFAULT,
-                FRAME_INTERVAL_MS,
-                () => {
-                    if (this._records.get(dash) !== record)
-                        return GLib.SOURCE_REMOVE;
-                    try {
-                        this._tick(dash, record);
-                    } catch (error) {
-                        console.warn(
-                            `[layout-switcher] Dock magnification update failed: ${error}`,
-                        );
-                        if (this._records.get(dash) === record)
-                            this._detach(dash, true);
-                        return GLib.SOURCE_REMOVE;
-                    }
-                    return this._records.get(dash) === record
-                        ? GLib.SOURCE_CONTINUE : GLib.SOURCE_REMOVE;
-                },
-            );
+            const wake = () => this._wake(dash, record);
+            record.pointerId = record.pointerTracker.connect('position-invalidated', () => {
+                if (this._records.get(dash) !== record)
+                    return;
+                // Reading rearms native position invalidation for the next motion.
+                record.pointerTracker.get_pointer();
+                wake();
+            });
+            record.pointerTracker.get_pointer();
+            const connect = (object, signal, callback) => {
+                record.signals.push([object, object.connect(signal, callback)]);
+            };
+            connect(global.stage, 'captured-event', (_stage, event) => {
+                if (this._records.get(dash) !== record)
+                    return Clutter.EVENT_PROPAGATE;
+                if ([Clutter.EventType.MOTION, Clutter.EventType.ENTER,
+                    Clutter.EventType.LEAVE].includes(event.type())) wake();
+                return Clutter.EVENT_PROPAGATE;
+            });
+            for (const signal of ['notify::mapped', 'notify::allocation'])
+                connect(dash, signal, () => this._wake(dash, record, true));
+            for (const signal of ['child-added', 'child-removed'])
+                connect(dash._box, signal, () => this._wake(dash, record, true));
+            if (dash.showAppsButton)
+                connect(dash.showAppsButton, 'notify::visible', () => this._wake(dash, record, true));
+            for (const adjustment of [
+                dash._scrollView?.hadjustment ?? dash._scrollView?.hscroll?.adjustment,
+                dash._scrollView?.vadjustment ?? dash._scrollView?.vscroll?.adjustment,
+            ].filter(Boolean))
+                connect(adjustment, 'notify::value', () => this._wake(dash, record, true));
+            this._wake(dash, record, true);
         } catch (error) {
             if (this._records.get(dash) === record)
                 this._detach(dash, true);
             throw error;
         }
+    }
+
+    refresh(dash) {
+        const record = this._records.get(dash);
+        if (record) this._wake(dash, record, true);
+    }
+
+    _wake(dash, record, force = false) {
+        if (this._records.get(dash) !== record)
+            return;
+        if (!this._isDockShown(dash) || !dash.get_paint_visibility()) {
+            this._suspend(record);
+            const id = record.sourceId;
+            record.sourceId = 0;
+            record.frame = null;
+            if (id) this._cleanup(() => GLib.source_remove(id));
+            return;
+        }
+        if (this._records.get(dash) !== record || record.sourceId ||
+            (!force && !this._pointerNear(dash) &&
+                ![...record.states.values()].some(state => state.scale !== 1)))
+            return;
+        const frame = record.frame = {};
+        record.sourceId = GLib.timeout_add(
+            GLib.PRIORITY_DEFAULT,
+            FRAME_INTERVAL_MS,
+            () => {
+                if (this._records.get(dash) !== record || record.frame !== frame)
+                    return GLib.SOURCE_REMOVE;
+                let moving;
+                try {
+                    moving = this._tick(dash, record);
+                } catch (error) {
+                    console.warn(`[layout-switcher] Dock magnification update failed: ${error}`);
+                    if (this._records.get(dash) === record)
+                        this._detach(dash, true);
+                    return GLib.SOURCE_REMOVE;
+                }
+                if (this._records.get(dash) !== record || record.frame !== frame)
+                    return GLib.SOURCE_REMOVE;
+                if (!moving) {
+                    record.sourceId = 0;
+                    record.frame = null;
+                }
+                return moving ? GLib.SOURCE_CONTINUE : GLib.SOURCE_REMOVE;
+            },
+        );
     }
 
     _detach(dash, reset, disconnect = true) {
@@ -169,11 +233,17 @@ export class DockHoverEffects {
         const sourceId = record.sourceId;
         const destroyId = record.destroyId;
         record.sourceId = 0;
+        record.frame = null;
         record.destroyId = 0;
         if (sourceId > 0)
             this._cleanup(() => GLib.source_remove(sourceId));
         if (disconnect && destroyId > 0)
             this._cleanup(() => dash.disconnect(destroyId));
+        for (const [object, id] of record.signals.splice(0))
+            this._cleanup(() => object.disconnect(id));
+        const pointerId = record.pointerId;
+        record.pointerId = 0;
+        if (pointerId) this._cleanup(() => record.pointerTracker.disconnect(pointerId));
         const states = [...record.states];
         record.states.clear();
         for (const [actor, state] of states)
@@ -187,6 +257,7 @@ export class DockHoverEffects {
             this._suspend(record);
             return;
         }
+        record.suspended = false;
 
         const actors = this._iconActors(dash);
         const liveActors = new Set(actors);
@@ -200,25 +271,14 @@ export class DockHoverEffects {
             return;
 
         const [pointerX, pointerY] = global.get_pointer();
-        const [dashX, dashY] = dash.get_transformed_position();
-        const [dashWidth, dashHeight] = dash.get_transformed_size();
         const horizontal = dash._position === St.Side.TOP ||
             dash._position === St.Side.BOTTOM;
         const iconSize = Math.max(1, dash.iconSize ?? 1);
         const reach = iconSize * 2.6;
-        const crossMargin = iconSize * 0.8;
         const pointerAxis = horizontal ? pointerX : pointerY;
-        const withinCrossAxis = horizontal
-            ? pointerY >= dashY - crossMargin &&
-                pointerY <= dashY + dashHeight + crossMargin
-            : pointerX >= dashX - crossMargin &&
-                pointerX <= dashX + dashWidth + crossMargin;
-        const withinMainAxis = horizontal
-            ? pointerX >= dashX - reach && pointerX <= dashX + dashWidth + reach
-            : pointerY >= dashY - reach && pointerY <= dashY + dashHeight + reach;
-        const active = dash.get_paint_visibility() &&
-            withinCrossAxis && withinMainAxis;
+        const active = dash.get_paint_visibility() && this._pointerNear(dash);
         const maximum = 1 + this._intensity / 100;
+        let moving = false;
 
         for (const actor of actors) {
             if (this._records.get(dash) !== record)
@@ -240,15 +300,31 @@ export class DockHoverEffects {
             const target = 1 + (maximum - 1) * smooth;
             const next = state.scale + (target - state.scale) * LERP_FACTOR;
             state.scale = Math.abs(next - target) < 0.001 ? target : next;
+            moving ||= state.scale !== target;
             this._updateClone(
                 state, actor, dash._position,
                 actorX, actorY, actorWidth, actorHeight,
             );
         }
         this._updateCount++;
+        return moving;
+    }
+
+    _pointerNear(dash) {
+        const [x, y] = global.get_pointer();
+        const [dx, dy] = dash.get_transformed_position();
+        const [width, height] = dash.get_transformed_size();
+        const horizontal = dash._position === St.Side.TOP || dash._position === St.Side.BOTTOM;
+        const size = Math.max(1, dash.iconSize ?? 1);
+        const mx = size * (horizontal ? 2.6 : 0.8);
+        const my = size * (horizontal ? 0.8 : 2.6);
+        return x >= dx - mx && x <= dx + width + mx && y >= dy - my && y <= dy + height + my;
     }
 
     _suspend(record) {
+        if (record.suspended)
+            return;
+        record.suspended = true;
         for (const [actor, state] of record.states) {
             state.scale = 1;
             state.clone?.hide();
@@ -282,6 +358,7 @@ export class DockHoverEffects {
             iconChildAddedId: 0,
             destroyId: 0,
             retired: false,
+            signals: [],
             mappedIcon: null,
         };
         record.states.set(actor, state);
@@ -297,6 +374,12 @@ export class DockHoverEffects {
                     record.states.delete(actor);
                     this._destroyState(actor, state, false);
                 });
+                for (const signal of ['notify::allocation', 'notify::mapped',
+                    'notify::translation-x', 'notify::translation-y']) {
+                    state.signals.push(actor.connect(signal, () => {
+                        if (!state.retired) this.refresh(record.dash);
+                    }));
+                }
             }
         } catch (error) {
             if (record.states.get(actor) === state)
@@ -335,6 +418,8 @@ export class DockHoverEffects {
         state.destroyId = 0;
         if (destroyId > 0)
             this._cleanup(() => actor.disconnect(destroyId));
+        for (const id of state.signals.splice(0))
+            this._cleanup(() => actor.disconnect(id));
         if (restore)
             this._cleanup(() => this._restoreSource(actor, state));
         this._disableHighResolutionSource(state, restore);
