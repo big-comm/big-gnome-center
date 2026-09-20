@@ -1213,7 +1213,10 @@ class DominantColorExtractor {
         if (!pixBuf)
             return null;
 
-        let pixels = pixBuf.get_pixels();
+        const pixels = pixBuf.get_pixels();
+        const channels = pixBuf.get_n_channels();
+        const rowstride = pixBuf.get_rowstride();
+        const hasAlpha = pixBuf.get_has_alpha();
 
         let total  = 0,
             rTotal = 0,
@@ -1239,27 +1242,30 @@ class DominantColorExtractor {
         if (width >= 2 * DOMINANT_COLOR_ICON_SIZE)
             resampleX = Math.floor(width / DOMINANT_COLOR_ICON_SIZE);
 
-        if (resampleX !== 1 || resampleY !== 1)
-            pixels = this._resamplePixels(pixels, resampleX, resampleY);
+        // Address actual pixels; row padding is not image data.
+        for (let y = 0; y < height; y += resampleY) {
+            for (let x = 0; x < width; x += resampleX) {
+                const offset = y * rowstride + x * channels;
+                const r = pixels[offset],
+                    g = pixels[offset + 1],
+                    b = pixels[offset + 2],
+                    a = hasAlpha ? pixels[offset + 3] : 255;
+                if (a === 0)
+                    continue;
 
-        // computing the limit outside the for (where it would be repeated at each iteration)
-        // for performance reasons
-        const limit = pixels.length;
-        for (let offset = 0; offset < limit; offset += 4) {
-            const r = pixels[offset],
-                g = pixels[offset + 1],
-                b = pixels[offset + 2],
-                a = pixels[offset + 3];
+                const saturation = Math.max(r, g, b) - Math.min(r, g, b);
+                const relevance = a * (0.1 * 255 + 0.9 * saturation);
 
-            const saturation = Math.max(r, g, b) - Math.min(r, g, b);
-            const relevance  = 0.1 * 255 * 255 + 0.9 * a * saturation;
-
-            rTotal += r * relevance;
-            gTotal += g * relevance;
-            bTotal += b * relevance;
-
-            total += relevance;
+                rTotal += r * relevance;
+                gTotal += g * relevance;
+                bTotal += b * relevance;
+                total += relevance;
+            }
         }
+
+        // No visible samples: let callers use their theme fallback.
+        if (total === 0)
+            return null;
 
         total *= 255;
 
@@ -1297,31 +1303,4 @@ class DominantColorExtractor {
         return backgroundColor;
     }
 
-    /**
-     * Downscale large icons before scanning for the backlight color to
-     * improve performance.
-     *
-     * @param pixBuf
-     * @param pixels
-     * @param resampleX
-     * @param resampleY
-     *
-     * @returns [];
-     */
-    _resamplePixels(pixels, resampleX, resampleY) {
-        const resampledPixels = [];
-        // computing the limit outside the for (where it would be repeated at each iteration)
-        // for performance reasons
-        const limit = pixels.length / (resampleX * resampleY) / 4;
-        for (let i = 0; i < limit; i++) {
-            const pixel = i * resampleX * resampleY;
-
-            resampledPixels.push(pixels[pixel * 4]);
-            resampledPixels.push(pixels[pixel * 4 + 1]);
-            resampledPixels.push(pixels[pixel * 4 + 2]);
-            resampledPixels.push(pixels[pixel * 4 + 3]);
-        }
-
-        return resampledPixels;
-    }
 }

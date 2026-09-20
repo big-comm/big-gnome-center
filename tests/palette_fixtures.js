@@ -16,7 +16,8 @@ export function paletteFixtures() {
         fixtures.push({name, width, height, channels, rowstride, pixels, expected});
     }
     for (const channels of [3, 4]) {
-        for (const [width, height] of [[1, 1], [3, 5], [127, 7], [129, 131], [256, 192]]) {
+        for (const [width, height] of [[1, 1], [3, 5], [127, 7], [128, 128],
+            [129, 131], [255, 257], [256, 192], [1025, 3]]) {
             for (const padding of [0, 13]) {
                 add(`${channels} channels ${width}x${height} padding ${padding}`,
                     width, height, channels, padding, () => green, '#50e650');

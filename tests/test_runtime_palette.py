@@ -7,12 +7,13 @@ from pathlib import Path
 import pytest
 
 
-def test_runtime_palette():
+@pytest.mark.parametrize("implementation", ["taskbar", "dock"])
+def test_runtime_palette(implementation):
     node = shutil.which("node")
     if not node:
         pytest.skip("Node.js is required")
     subprocess.run(
-        [node, str(Path(__file__).with_name("runtime_palette.mjs"))],
+        [node, str(Path(__file__).with_name("runtime_palette.mjs")), implementation],
         check=True,
         timeout=30,
     )
