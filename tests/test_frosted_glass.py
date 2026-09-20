@@ -477,7 +477,7 @@ def test_rounded_mask_matches_mutter_pixel_coverage():
     assert "notify::scale-factor" in effect
     assert "uniform sampler2D tex" in shader
     assert "texture2D(tex, uv)" in shader
-    assert "min(coverage, color.a)" in shader
+    assert "color.a * coverage" in shader
     assert "snippet.set_replace(body)" in effect
 
 

@@ -60,5 +60,5 @@ void main(void) {
         : 1.0;
     cogl_color_out = vec4(
         color.rgb * coverage,
-        min(coverage, color.a));
+        color.a * coverage);
 }
