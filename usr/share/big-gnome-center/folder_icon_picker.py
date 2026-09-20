@@ -14,6 +14,8 @@ from gi.repository import Adw, Gio, GLib, Gtk, Pango
 from constants import APP_ID, tr
 from folder_icons import ATTRIBUTES, available_icons, read_metadata, save_icon, selected_icon
 
+GRID_BATCH_SIZE = 20
+
 
 class FolderIconWindow(Adw.ApplicationWindow):
     def __init__(self, app, folder):
@@ -25,6 +27,21 @@ class FolderIconWindow(Adw.ApplicationWindow):
         self._selected = None
         self._metadata = dict.fromkeys(ATTRIBUTES)
         self._ready = False
+        self.choices = []
+        self._closed = False
+        self._loading = False
+        self._generation = 0
+        self._wanted = None
+        self._metadata_folder = None
+        self._requested_folder = None
+        self._save_error = None
+        self._load_cancel = None
+        self._build_source = 0
+        self._request_lock = threading.Lock()
+        self._request = None
+        self._worker_running = False
+        self._completion_sources = set()
+        self._reload_after_save = False
         self._theme = Gtk.Settings.get_default()
         self._theme_signal = self._theme.connect("notify::gtk-icon-theme-name", self._reload)
         self.connect("close-request", self._close_requested)
@@ -84,21 +101,124 @@ class FolderIconWindow(Adw.ApplicationWindow):
         self.apply.connect("clicked", lambda button: self._save(self._selected))
         actions.append(self.apply)
         body.append(actions)
-        try:
-            self._metadata = read_metadata(folder)
-            self._ready = True
-        except Exception as error:
-            self._show_message(str(error), error=True)
         self._reload()
 
     def _reload(self, *args):
-        self.choices = available_icons(self._theme.get_property("gtk-icon-theme-name"))
-        wanted = self._selected or selected_icon(self._metadata, self.choices)
+        if self._closed:
+            return
+        if self._busy:
+            self._reload_after_save = True
+            return
+        self._generation += 1
+        if self._load_cancel:
+            self._load_cancel.cancel()
+        self._load_cancel = Gio.Cancellable()
+        if self._build_source:
+            GLib.source_remove(self._build_source)
+            self._build_source = 0
+        self._wanted = self._selected or self._wanted
         self._selected = None
-        while child := self.grid.get_first_child():
-            self.grid.remove(child)
-        target = None
-        for icon in self.choices:
+        self._loading = True
+        folder_uri = self.folder.get_uri()
+        if folder_uri != self._requested_folder:
+            self._wanted = None
+        self._requested_folder = folder_uri
+        metadata = self._metadata.copy() if self._metadata_folder == folder_uri else None
+        self._ready = metadata is not None
+        self._update_actions()
+        self._show_message(tr("Loading…"))
+        request = (self._generation, self.folder, folder_uri,
+                   self._theme.get_property("gtk-icon-theme-name"),
+                   metadata, self._wanted, self._load_cancel)
+        with self._request_lock:
+            for source in self._completion_sources:
+                GLib.source_remove(source)
+            self._completion_sources.clear()
+            self._request = request
+            start = not self._worker_running
+            self._worker_running = True
+        if start:
+            try:
+                threading.Thread(target=self._load_worker, daemon=True).start()
+            except Exception as error:
+                with self._request_lock:
+                    self._worker_running = False
+                    self._request = None
+                self._loaded(None, str(error))
+
+    def _load_worker(self):
+        # One worker and one replaceable request bound rapid theme changes.
+        while True:
+            with self._request_lock:
+                request, self._request = self._request, None
+                if self._closed or request is None:
+                    self._worker_running = False
+                    return
+            generation, folder, uri, theme, metadata, wanted, cancel = request
+            result, error = None, None
+            try:
+                if metadata is None:
+                    metadata = read_metadata(folder, cancel)
+                if cancel.is_cancelled():
+                    continue
+                choices = available_icons(theme, cancellable=cancel)
+                if cancel.is_cancelled():
+                    continue
+                recognized = selected_icon(metadata, choices)
+                if wanted not in {icon.name for icon in choices}:
+                    wanted = recognized
+                result = (uri, metadata, choices, wanted, recognized)
+            except Exception as caught:
+                error = str(caught)
+            self._queue_loaded(generation, cancel, result, error)
+
+    def _queue_loaded(self, generation, cancel, result, error):
+        def deliver():
+            with self._request_lock:
+                self._completion_sources.discard(source)
+            if not self._closed and generation == self._generation:
+                self._loaded(result, error)
+            return GLib.SOURCE_REMOVE
+
+        with self._request_lock:
+            if self._closed or cancel.is_cancelled():
+                return
+            source = GLib.idle_add(deliver)
+            self._completion_sources.add(source)
+
+    def _loaded(self, result, error):
+        if error:
+            self._loading = False
+            self._ready = False
+            self._show_message(error, error=True)
+            self._update_actions()
+            return
+        (self._metadata_folder, self._metadata, self.choices,
+         self._wanted, self._recognized) = result
+        self._ready = True
+        self._build_index = 0
+        self._clearing = True
+        self._build_source = GLib.idle_add(self._build_batch, self._generation)
+
+    def _build_batch(self, generation):
+        if self._closed or generation != self._generation:
+            return GLib.SOURCE_REMOVE
+        for _ in range(GRID_BATCH_SIZE):
+            if self._clearing:
+                child = self.grid.get_first_child()
+                if child:
+                    self.grid.remove(child)
+                    continue
+                self._clearing = False
+            if self._build_index >= len(self.choices):
+                self._build_source = 0
+                self._loading = False
+                self._wanted = None
+                self._update_actions()
+                self._update_message()
+                return GLib.SOURCE_REMOVE
+            icon = self.choices[self._build_index]
+            self._build_index += 1
             tile = Gtk.Box(
                 orientation=Gtk.Orientation.VERTICAL,
                 spacing=6,
@@ -125,18 +245,16 @@ class FolderIconWindow(Adw.ApplicationWindow):
             child.search_text = (icon.label + " " + " ".join(icon.aliases)).casefold()
             child.update_property([Gtk.AccessibleProperty.LABEL], [icon.label])
             self.grid.append(child)
-            if icon.name == wanted:
-                target = child
-        if target:
-            self.grid.select_child(target)
-        else:
-            self.grid.unselect_all()
-        self._update_actions()
-        if not self._ready:
-            return
-        if not self.choices:
+            if icon.name == self._wanted and self._matches(child):
+                self.grid.select_child(child)
+        return GLib.SOURCE_CONTINUE
+
+    def _update_message(self):
+        if self._save_error:
+            self._show_message(self._save_error, error=True)
+        elif not self.choices:
             self._show_message(tr("Select the BigIcons Papient icon theme to choose a design."))
-        elif any(self._metadata.values()) and not selected_icon(self._metadata, self.choices):
+        elif any(self._metadata.values()) and self._recognized is None:
             self._show_message(
                 tr("Your custom image is kept until you apply a design or restore the default.")
             )
@@ -159,7 +277,7 @@ class FolderIconWindow(Adw.ApplicationWindow):
             self._update_actions()
 
     def _update_actions(self):
-        enabled = self._ready and not self._busy
+        enabled = self._ready and not self._busy and not self._loading and not self._closed
         self.apply.set_sensitive(enabled and self._selected is not None and bool(self.choices))
         self.restore.set_sensitive(enabled and any(self._metadata.values()))
         self.grid.set_sensitive(enabled)
@@ -172,28 +290,39 @@ class FolderIconWindow(Adw.ApplicationWindow):
         self.message.set_visible(True)
 
     def _save(self, name):
-        if self._busy or not self._ready:
+        if self._closed or self._busy or self._loading or not self._ready:
             return
         if name is not None and name not in {icon.name for icon in self.choices}:
             return
         self._busy = True
+        self._save_error = None
         self._update_actions()
+        folder, metadata = self.folder, self._metadata.copy()
 
         def work():
             error_text = None
             try:
-                save_icon(self.folder, name, self._metadata)
+                save_icon(folder, name, metadata)
             except Exception as error:
                 error_text = str(error)
             GLib.idle_add(self._saved, error_text)
 
-        threading.Thread(target=work, daemon=True).start()
+        try:
+            threading.Thread(target=work, daemon=True).start()
+        except Exception as error:
+            self._saved(str(error))
 
     def _saved(self, error):
+        if self._closed:
+            return GLib.SOURCE_REMOVE
         self._busy = False
         if error:
+            self._save_error = error
             self._show_message(error, error=True)
             self._update_actions()
+            if self._reload_after_save:
+                self._reload_after_save = False
+                self._reload()
         else:
             self.close()
         return GLib.SOURCE_REMOVE
@@ -204,6 +333,18 @@ class FolderIconWindow(Adw.ApplicationWindow):
         return self._busy
 
     def _destroyed(self, window):
+        with self._request_lock:
+            self._closed = True
+            self._request = None
+            for source in self._completion_sources:
+                GLib.source_remove(source)
+            self._completion_sources.clear()
+        self._generation += 1
+        if self._load_cancel:
+            self._load_cancel.cancel()
+        if self._build_source:
+            GLib.source_remove(self._build_source)
+            self._build_source = 0
         if self._theme_signal:
             self._theme.disconnect(self._theme_signal)
             self._theme_signal = 0

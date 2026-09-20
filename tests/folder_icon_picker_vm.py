@@ -2,12 +2,13 @@
 
 import importlib.util
 import json
+import os
 import sys
 import tempfile
 import time
 from pathlib import Path
 
-sys.path.insert(0, "/usr/share/big-gnome-center")
+sys.path.insert(0, os.environ.get("BGC_MODULE_DIRECTORY", "/usr/share/big-gnome-center"))
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -33,6 +34,16 @@ def check(condition, label):
     print("PASS", label, flush=True)
 
 
+def open_window():
+    window = FolderIconWindow(app, folder)
+    window.present()
+    deadline = time.monotonic() + 10
+    while window._loading and time.monotonic() < deadline:
+        pump(0.02)
+    check(window._ready and not window._loading, "asynchronous picker load completed")
+    return window
+
+
 directory = Path(tempfile.mkdtemp(prefix=".bgc-folder-picker-test-", dir=Path.home()))
 folder_path = directory / "Projetos com espaços e acentuação"
 folder_path.mkdir()
@@ -46,9 +57,7 @@ settings = Gtk.Settings.get_default()
 settings.set_property("gtk-icon-theme-name", BASES[1])
 original = read_metadata(folder)
 check(not any(original.values()), "clean folder")
-window = FolderIconWindow(app, folder)
-window.present()
-pump()
+window = open_window()
 check(len(window.choices) > 50, "GTK catalog contains custom designs")
 check(not window.apply.get_sensitive(), "no implicit selection on opening")
 check(not window.restore.get_sensitive(), "default folder does not need restoration")
@@ -58,9 +67,7 @@ check(read_metadata(folder) == original, "cancel does not write metadata")
 
 source = Path("/usr/share/icons") / BASES[1] / "scalable/places/folder-git.svg"
 folder.set_attribute_string(CUSTOM_URI, source.as_uri(), Gio.FileQueryInfoFlags.NONE, None)
-window = FolderIconWindow(app, folder)
-window.present()
-pump()
+window = open_window()
 check(window._selected == "folder-git", "legacy SVG recognized")
 check(window.apply.get_sensitive(), "legacy conversion can be applied")
 window.apply.emit("clicked")
@@ -76,9 +83,7 @@ icon_theme.add_search_path(str(output))
 for accent in ("orange", "green", "blue"):
     result = build_theme(BASES[1], accent, [Path("/usr/share/icons")], output)
     settings.set_property("gtk-icon-theme-name", result["theme"])
-    window = FolderIconWindow(app, folder)
-    window.present()
-    pump()
+    window = open_window()
     check(window._selected == "folder-git", accent + " retains design selection")
     paintable = icon_theme.lookup_icon("folder-git", None, 64, 1, Gtk.TextDirection.NONE, 0)
     resolved = Path(paintable.get_file().get_path())
@@ -94,23 +99,17 @@ settings.set_property("gtk-icon-theme-name", BASES[1])
 personal = directory / "folder-git.svg"
 personal.write_text(source.read_text())
 folder.set_attribute_string(CUSTOM_URI, personal.as_uri(), Gio.FileQueryInfoFlags.NONE, None)
-window = FolderIconWindow(app, folder)
-window.present()
-pump()
+window = open_window()
 check(window._selected is None, "personal SVG is not treated as installed icon")
 window.close()
 pump()
 check(read_metadata(folder)[CUSTOM_URI] == personal.as_uri(), "cancel preserves personal SVG")
-window = FolderIconWindow(app, folder)
-window.present()
-pump()
+window = open_window()
 window.restore.emit("clicked")
 pump(0.8)
 check(not any(read_metadata(folder).values()), "Restore Default clears both GVfs overrides")
 
-window = FolderIconWindow(app, folder)
-window.present()
-pump()
+window = open_window()
 child = window.grid.get_first_child()
 while child:
     if child.icon_name == "folder-git":

@@ -1,13 +1,18 @@
 # SPDX-License-Identifier: MIT
 """Papient folder choices and native Nautilus metadata."""
 
+import logging
+import os
+import stat
 from dataclasses import dataclass
 from pathlib import Path
 
 from gi.repository import Gio
 
 from constants import tr
-from folder_accent import _HIGHLIGHT, BASES, base_theme, icon_roots
+from folder_accent import _HIGHLIGHT, BASES, MAX_FILE_BYTES, base_theme, icon_roots
+
+log = logging.getLogger(__name__)
 
 CUSTOM_URI = "metadata::custom-icon"
 CUSTOM_NAME = "metadata::custom-icon-name"
@@ -115,7 +120,9 @@ class FolderIcon:
     aliases: tuple[str, ...]
 
 
-def available_icons(theme: str, roots: list[Path] | None = None) -> list[FolderIcon]:
+def available_icons(
+    theme: str, roots: list[Path] | None = None, *, cancellable=None
+) -> list[FolderIcon]:
     """List scalable accent-aware artwork; collapse symlink aliases."""
     base = base_theme(theme)
     if base not in BASES:
@@ -123,8 +130,25 @@ def available_icons(theme: str, roots: list[Path] | None = None) -> list[FolderI
     by_source: dict[Path, list[str]] = {}
     seen = set()
     for root in icon_roots() if roots is None else roots:
+        if cancellable and cancellable.is_cancelled():
+            return []
         places = root / base / "scalable/places"
-        for path in sorted(places.glob("folder*.svg")):
+        try:
+            with os.scandir(places) as entries:
+                paths = []
+                for entry in entries:
+                    if cancellable and cancellable.is_cancelled():
+                        return []
+                    if entry.name.startswith("folder") and entry.name.endswith(".svg"):
+                        paths.append(Path(entry.path))
+        except FileNotFoundError:
+            continue
+        except OSError as error:
+            log.warning("Cannot enumerate folder icons in %s: %s", places, error)
+            continue
+        for path in sorted(paths):
+            if cancellable and cancellable.is_cancelled():
+                return []
             name = path.stem
             if name in seen:
                 continue
@@ -132,13 +156,21 @@ def available_icons(theme: str, roots: list[Path] | None = None) -> list[FolderI
             if name.endswith(("-open", "_open", "-drag-accept", "-symbolic")):
                 continue
             try:
-                if path.stat().st_size > 1024 * 1024:
-                    continue
-                if not _HIGHLIGHT.search(path.read_text()):
+                # Nonblocking open avoids hanging on a FIFO masquerading as SVG.
+                with os.fdopen(os.open(path, os.O_RDONLY | os.O_NONBLOCK), "rb") as stream:
+                    info = os.fstat(stream.fileno())
+                    if not stat.S_ISREG(info.st_mode):
+                        raise ValueError("not a regular file")
+                    if info.st_size > MAX_FILE_BYTES:
+                        raise ValueError("SVG exceeds byte limit")
+                    data = stream.read(MAX_FILE_BYTES + 1)
+                if len(data) > MAX_FILE_BYTES:
+                    raise ValueError("SVG exceeds byte limit")
+                if not _HIGHLIGHT.search(data.decode("utf-8")):
                     continue
                 by_source.setdefault(path.resolve(), []).append(name)
-            except (OSError, UnicodeError, RuntimeError):
-                continue
+            except (OSError, UnicodeError, RuntimeError, ValueError) as error:
+                log.warning("Skipping folder icon %s: %s", path, error)
     choices = []
     for source, names in by_source.items():
         name = source.stem if source.stem in names else names[0]
@@ -148,11 +180,11 @@ def available_icons(theme: str, roots: list[Path] | None = None) -> list[FolderI
     return sorted(choices, key=lambda icon: (icon.name != "folder", icon.label.casefold()))
 
 
-def read_metadata(folder: Gio.File) -> dict[str, str | None]:
+def read_metadata(folder: Gio.File, cancellable=None) -> dict[str, str | None]:
     if not folder.is_native():
         raise ValueError(tr("Choose a local folder."))
     info = folder.query_info(
-        "standard::type," + ",".join(ATTRIBUTES), Gio.FileQueryInfoFlags.NONE, None
+        "standard::type," + ",".join(ATTRIBUTES), Gio.FileQueryInfoFlags.NONE, cancellable
     )
     if info.get_file_type() != Gio.FileType.DIRECTORY:
         raise ValueError(tr("Choose a local folder."))
@@ -210,16 +242,36 @@ def save_icon(folder: Gio.File, name: str | None, expected: dict[str, str | None
     if previous != expected:
         raise ValueError(tr("The folder icon changed. Close this window and try again."))
     changes = ((CUSTOM_NAME, name), (CUSTOM_URI, None))
-    applied = []
+    state = previous.copy()
+    attempted = []
     try:
         for key, value in changes:
             if previous[key] != value:
+                if read_metadata(folder) != state:
+                    raise ValueError(
+                        tr("The folder icon changed. Close this window and try again.")
+                    )
+                attempted.append((key, value))
                 _write_attribute(folder, key, value)
-                applied.append(key)
+                state[key] = value
+                if read_metadata(folder) != state:
+                    raise OSError(tr("Could not save the folder icon."))
+        if read_metadata(folder) != state:
+            raise OSError(tr("Could not save the folder icon."))
     except Exception as error:
-        try:
-            for key in reversed(applied):
+        rollback_errors = []
+        for key, value in reversed(attempted):
+            try:
+                current = read_metadata(folder)
+                if current[key] == previous[key]:
+                    continue
+                if current[key] != value:
+                    raise ValueError("Metadata changed during recovery")
                 _write_attribute(folder, key, previous[key])
-        except Exception as rollback_error:
-            raise OSError(tr("Could not restore the previous folder icon.")) from rollback_error
+                if read_metadata(folder)[key] != previous[key]:
+                    raise OSError("Metadata recovery verification failed")
+            except Exception as rollback_error:
+                rollback_errors.append(rollback_error)
+        if rollback_errors:
+            raise OSError(tr("Could not restore the previous folder icon.")) from rollback_errors[0]
         raise error
