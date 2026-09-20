@@ -1945,3 +1945,11 @@ msgstr ""
 #: usr/share/big-gnome-center/helper_client.py:300
 msgid "The required layout helper did not start."
 msgstr ""
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "Posição do dock"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "Embaixo"

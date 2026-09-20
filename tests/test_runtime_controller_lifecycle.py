@@ -11,7 +11,7 @@ def test_runtime_controller_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "53 runtime controller lifecycle scenarios passed" in result.stdout
+    assert "61 runtime controller lifecycle scenarios passed" in result.stdout
 
 
 def test_taskbar_lifecycle():

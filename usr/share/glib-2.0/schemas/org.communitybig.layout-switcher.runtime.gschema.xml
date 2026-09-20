@@ -13,6 +13,10 @@
       <default>{}</default>
       <summary>Dock opacity overrides by layout</summary>
     </key>
+    <key name="dock-position-overrides" type="a{ss}">
+      <default>{}</default>
+      <summary>Dock position overrides by layout</summary>
+    </key>
     <key name="dock-visibility-overrides" type="a{ss}">
       <default>{}</default>
       <summary>Dock visibility overrides by layout</summary>

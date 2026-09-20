@@ -13,6 +13,7 @@ from panel_dock_settings import (
     COMMUNITY_DOCK_UUID,
     COMMUNITY_PANEL_UUID,
     DOCK_MAGNIFICATION_RANGE,
+    DOCK_POSITIONS,
     DOCK_SIZE_RANGE,
     PANEL_HEIGHT_RANGE,
     PanelDockSettings,
@@ -69,6 +70,10 @@ class PanelDockPage(Gtk.Box):
             title=tr("Dock"),
             description=tr("Configure the Community Dock appearance and visibility."),
         )
+        self._dock_positions = ()
+        self._dock_position = Adw.ComboRow(title=tr("Dock position"))
+        self._dock_position.connect("notify::selected", self._on_dock_position_changed)
+        self._dock_group.add(self._dock_position)
         (
             self._dock_opacity,
             self._dock_opacity_scale,
@@ -538,8 +543,13 @@ class PanelDockPage(Gtk.Box):
         self._panel_opacity.set_visible(panel_available)
         self._dock_opacity.set_visible(not community_panel_active)
         self._dock_size.set_visible(dock_available and not community_panel_active)
+        position_available = (
+            runtime_active and dock_available and active_layout in DOCK_POSITIONS
+        )
+        self._dock_position.set_visible(position_available)
         self._menu_side_row.set_visible(
             runtime_active and dock_available and active_layout == "BigGnome"
+            and self._settings.dock_position() == "bottom"
         )
         self._hover_row.set_visible(hover_available and active_layout != "Classic")
         self._hover_buttons["magnify"].set_visible(magnification_available)
@@ -585,6 +595,15 @@ class PanelDockPage(Gtk.Box):
             return
 
         self._syncing = True
+        if position_available:
+            self._dock_positions = DOCK_POSITIONS[active_layout]
+            labels = {"bottom": tr("Bottom"), "left": tr("Left"), "right": tr("Right")}
+            self._dock_position.set_model(
+                Gtk.StringList.new([labels[value] for value in self._dock_positions])
+            )
+            self._dock_position.set_selected(
+                self._dock_positions.index(self._settings.dock_position())
+            )
         if dock_available:
             self._set_opacity(
                 self._dock_opacity_scale,
@@ -675,6 +694,18 @@ class PanelDockPage(Gtk.Box):
         self._magnification_label.set_label(f"{value}%")
         if not self._syncing and self._settings:
             self._settings.set_dock_magnification(value)
+
+    def _on_dock_position_changed(self, row: Adw.ComboRow, param) -> None:
+        if self._syncing or not self._settings:
+            return
+        selected = row.get_selected()
+        if selected >= len(self._dock_positions):
+            return
+        position = self._dock_positions[selected]
+        self._settings.set_dock_position(position)
+        self._menu_side_row.set_visible(
+            self._settings.active_layout == "BigGnome" and position == "bottom"
+        )
 
     def _on_dock_visibility_changed(self, row: Adw.ComboRow, param) -> None:
         if self._syncing or not self._settings:

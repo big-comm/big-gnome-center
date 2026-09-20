@@ -2168,3 +2168,11 @@ msgstr "Seguir a cor de realce do sistema"
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "Combinar o cursor com a cor de realce e a aparência clara ou escura do sistema."
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "Posição do dock"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "Embaixo"

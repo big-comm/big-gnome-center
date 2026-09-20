@@ -15,6 +15,10 @@ VISIBILITY_MODES = ("always-visible", "always-hidden", "intelligent")
 INDICATOR_STYLES = ("dot", "hybrid", "desk-ux")
 DOCK_HOVER_EFFECTS = ("default", "lift", "magnify")
 DOCK_MENU_SIDES = ("left", "right")
+DOCK_POSITIONS = {
+    "BigGnome": ("bottom", "left", "right"),
+    "G-Unity": ("left", "right"),
+}
 DOCK_SIZE_RANGE = (28, 64)
 DOCK_MAGNIFICATION_RANGE = (20, 60)
 PANEL_HEIGHT_RANGE = (32, 56)
@@ -109,6 +113,7 @@ class PanelDockSettings:
             setting: self.runtime.default(self.active_layout, setting)
             for setting in (
                 "dock-opacity",
+                "dock-position",
                 "dock-visibility",
                 "panel-opacity",
                 "panel-visibility",
@@ -125,6 +130,8 @@ class PanelDockSettings:
         self._restoring = True
         try:
             if self.dock_active:
+                if self.runtime_active and self.active_layout in DOCK_POSITIONS:
+                    self.set_dock_position(defaults["dock-position"])
                 self.set_dock_opacity(defaults["dock-opacity"])
                 self.set_dock_visibility(defaults["dock-visibility"])
                 self.set_dock_size(defaults["dock-size"])
@@ -227,6 +234,19 @@ class PanelDockSettings:
         if self._runtime_owns_dock():
             return
         self.dock.set_int("dash-max-icon-size", size)
+
+    def dock_position(self) -> str:
+        positions = DOCK_POSITIONS.get(self.active_layout, ())
+        default = self.runtime.default(self.active_layout, "dock-position", "bottom")
+        value = self.runtime.get(self.active_layout, "dock-position", default)
+        return value if value in positions else default
+
+    def set_dock_position(self, position: str) -> None:
+        if not self._runtime_owns_dock() or position not in DOCK_POSITIONS.get(
+            self.active_layout, ()
+        ):
+            raise ValueError("unsupported dock position for this layout")
+        self._remember("dock-position", position)
 
     def dock_menu_side(self) -> str:
         side = self.runtime.get(self.active_layout, "dock-menu-side", "right")

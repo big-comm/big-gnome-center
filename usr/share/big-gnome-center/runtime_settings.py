@@ -5,6 +5,7 @@ RUNTIME_SCHEMA = "org.communitybig.layout-switcher.runtime"
 
 LAYOUT_DEFAULTS = {
     "BigGnome": {
+        "dock-position": "bottom",
         "dock-opacity": 77,
         "dock-visibility": "intelligent",
         "panel-opacity": 65,
@@ -17,6 +18,7 @@ LAYOUT_DEFAULTS = {
         "skip-startup-overview": False,
     },
     "G-Unity": {
+        "dock-position": "left",
         "dock-opacity": 70,
         "dock-visibility": "always-visible",
         "panel-opacity": 70,
@@ -59,6 +61,7 @@ LAYOUT_DEFAULTS = {
 }
 
 _OVERRIDE_KEYS = {
+    "dock-position": ("dock-position-overrides", "a{ss}"),
     "dock-opacity": ("dock-opacity-overrides", "a{su}"),
     "dock-visibility": ("dock-visibility-overrides", "a{ss}"),
     "panel-opacity": ("panel-opacity-overrides", "a{su}"),
@@ -84,6 +87,9 @@ class RuntimeSettings:
             schema = Gio.SettingsSchemaSource.get_default().lookup(RUNTIME_SCHEMA, True)
             if schema is None:
                 raise RuntimeError(f"missing settings schema: {RUNTIME_SCHEMA}")
+            missing = [key for key, _ in _OVERRIDE_KEYS.values() if not schema.has_key(key)]
+            if missing:
+                raise RuntimeError(f"outdated runtime settings schema: {', '.join(missing)}")
             backend = Gio.Settings.new_full(schema, None, None)
         self._settings = backend
 

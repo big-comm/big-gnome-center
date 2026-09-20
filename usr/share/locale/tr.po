@@ -2167,3 +2167,11 @@ msgstr "Sistem vurgu rengini izle"
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "İmleci sistem vurgu rengine ve açık ya da koyu görünüme uydurun."
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "Rıhtım konumu"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "Alt"

@@ -125,6 +125,7 @@ class FakeRuntimeBackend:
             "dock-size-overrides": {},
             "panel-height-overrides": {},
             "dock-hover-overrides": {},
+            "dock-position-overrides": {},
             "dock-magnification-overrides": {},
             "dock-menu-side-overrides": {},
             "skip-startup-overview-overrides": {},
@@ -548,6 +549,59 @@ def test_dock_hover_effect_is_validated_and_mirrored_per_layout():
 
     assert settings.dock_hover_effect() == "lift"
     assert settings.runtime.values[("G-Unity", "dock-hover")] == "lift"
+
+
+@pytest.mark.parametrize("layout,position", [
+    ("BigGnome", "bottom"), ("BigGnome", "left"), ("BigGnome", "right"),
+    ("G-Unity", "left"), ("G-Unity", "right"),
+])
+def test_dock_position_is_owned_per_layout(layout, position):
+    settings = settings_fixture()
+    settings.runtime_active = True
+    settings.active_layout = layout
+    settings.set_dock_position(position)
+    assert settings.dock_position() == position
+    assert settings.runtime.values[(layout, "dock-position")] == position
+    assert not settings.dock.calls
+
+
+@pytest.mark.parametrize("layout,position", [
+    ("BigGnome", "top"), ("G-Unity", "bottom"), ("Hybrid", "right"),
+])
+def test_dock_position_rejects_unsupported_edges(layout, position):
+    settings = settings_fixture()
+    settings.runtime_active = True
+    settings.active_layout = layout
+    with pytest.raises(ValueError):
+        settings.set_dock_position(position)
+    assert (layout, "dock-position") not in settings.runtime.values
+
+
+def test_original_position_reset_preserves_other_layout():
+    backend = FakeRuntimeBackend()
+    runtime = RuntimeSettings(backend)
+    runtime.set("BigGnome", "dock-position", "left")
+    runtime.set("G-Unity", "dock-position", "right")
+    assert "'BigGnome'" not in runtime.serialized_overrides_without_layout(
+        "BigGnome"
+    )["dock-position-overrides"]
+    runtime.reset_layout("BigGnome")
+    assert runtime.get("BigGnome", "dock-position") == "bottom"
+    assert runtime.get("G-Unity", "dock-position") == "right"
+
+
+def test_old_runtime_schema_fails_before_native_key_access(monkeypatch):
+    from unittest.mock import Mock
+
+    from gi.repository import Gio
+
+    schema = Mock()
+    schema.has_key.side_effect = lambda key: key != "dock-position-overrides"
+    source = Mock()
+    source.lookup.return_value = schema
+    monkeypatch.setattr(Gio.SettingsSchemaSource, "get_default", lambda: source)
+    with pytest.raises(RuntimeError, match="outdated runtime settings schema"):
+        RuntimeSettings()
 
 
 def test_dock_magnification_is_clamped_and_owned_per_dock_layout():

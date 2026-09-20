@@ -2167,3 +2167,11 @@ msgstr "Дотримуватися акцентного кольору сист�
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "Узгоджувати курсор з акцентним кольором системи та світлим або темним оформленням."
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "Розташування дока"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "Знизу"

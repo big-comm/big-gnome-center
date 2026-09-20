@@ -2168,3 +2168,11 @@ msgstr "Prati naglašenu boju sustava"
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "Uskladite pokazivač s naglašenom bojom sustava i svijetlim ili tamnim izgledom."
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "Položaj docka"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "Dolje"

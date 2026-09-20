@@ -11,7 +11,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 109;
+export const RUNTIME_BUILD = 110;
 
 export class RuntimeController {
     constructor(extension) {
@@ -37,6 +37,7 @@ export class RuntimeController {
         this._enabled = true;
         this._syncPromise = Promise.resolve();
         this._settings = new Gio.Settings({settings_schema: schema});
+        this._positionSupported = schema.has_key('dock-position-overrides');
         const startupProfile = profileForLayout(
             this._settings.get_string('active-layout'));
         this._shellPopoverTheme.enable();
@@ -47,6 +48,7 @@ export class RuntimeController {
         this._settingsChangedIds = [
             'active-layout',
             'dock-hover-overrides',
+            'dock-position-overrides',
             'dock-magnification-overrides',
             'dock-menu-side-overrides',
             'dock-opacity-overrides',
@@ -57,7 +59,7 @@ export class RuntimeController {
             'panel-opacity-overrides',
             'panel-visibility-overrides',
             'skip-startup-overview-overrides',
-        ].map(key => this._settings.connect(
+        ].filter(key => schema.has_key(key)).map(key => this._settings.connect(
             `changed::${key}`,
             () => {
                 if (this._settings === settings)
@@ -126,7 +128,7 @@ export class RuntimeController {
         if (!this._enabled || !this._settings || generation !== this._syncGeneration)
             return;
 
-        const profile = profileForLayout(this._settings.get_string('active-layout'));
+        const profile = this._profileForLayout(this._settings.get_string('active-layout'));
         const indicator = this._indicatorForProfile(profile);
         const hover = this._hoverForProfile(profile);
         const magnificationIntensity = this._magnificationForProfile(profile);
@@ -138,7 +140,8 @@ export class RuntimeController {
         const panelHeight = this._panelHeightForProfile(profile);
         const menuSide = this._menuSideForProfile(profile);
         const skipStartupOverview = this._skipStartupOverviewForProfile(profile);
-        const dockProfileChanged = this._activeProfile?.layout !== profile.layout;
+        const dockProfileChanged = this._activeProfile?.layout !== profile.layout ||
+            this._activeProfile?.edge !== profile.edge;
         this._activeProfile = null;
         this._shellPopoverTheme.apply(profile.layout);
         this._startupOverview.apply(skipStartupOverview);
@@ -171,6 +174,17 @@ export class RuntimeController {
             throw new Error(`Unsupported runtime surface: ${profile.surface}`);
         }
         this._activeProfile = profile;
+    }
+
+    _profileForLayout(layout) {
+        const profile = profileForLayout(layout);
+        if (profile.surface !== RuntimeSurface.DOCK || !this._positionSupported)
+            return profile;
+        const positions = profile.layout === 'BigGnome'
+            ? ['bottom', 'left', 'right'] : ['left', 'right'];
+        const edge = this._settings.get_value('dock-position-overrides')
+            .deep_unpack()[profile.layout];
+        return positions.includes(edge) ? {...profile, edge} : profile;
     }
 
     _indicatorForProfile(profile) {
@@ -258,7 +272,7 @@ export class RuntimeController {
     }
 
     _menuSideForProfile(profile) {
-        if (profile.layout !== 'BigGnome')
+        if (profile.layout !== 'BigGnome' || profile.edge !== 'bottom')
             return null;
         const overrides = this._settings
             .get_value('dock-menu-side-overrides')
@@ -291,7 +305,7 @@ export class RuntimeController {
 
     diagnostics() {
         const profile = this._activeProfile ??
-            profileForLayout(this._settings?.get_string('active-layout') ?? '');
+            this._profileForLayout(this._settings?.get_string('active-layout') ?? '');
         return {
             build: RUNTIME_BUILD,
             enabled: Boolean(this._enabled),

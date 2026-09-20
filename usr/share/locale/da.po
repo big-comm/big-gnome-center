@@ -2165,3 +2165,11 @@ msgstr "Følg systemets accentfarve"
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "Tilpas markøren til systemets accentfarve og lyse eller mørke udseende."
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "Dockens placering"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "Nederst"

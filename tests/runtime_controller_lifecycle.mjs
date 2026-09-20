@@ -18,18 +18,19 @@ const deferred = () => {
     return {promise, resolve, reject};
 };
 
-function harness(layout = 'BigGnome') {
+function harness(layout = 'BigGnome', positionSupported = true) {
     const errors = [], warnings = [], components = [], settings = [];
     class Settings {
         constructor() {
             this.layout = layout;
+            this.overrides = {};
             this.signals = new Map();
             this.history = [];
             this.disconnected = [];
             settings.push(this);
         }
         get_string() { return this.layout; }
-        get_value() { return {deep_unpack: () => ({})}; }
+        get_value(key) { return {deep_unpack: () => this.overrides[key] ?? {}}; }
         connect(key, callback) {
             const id = this.history.push(callback);
             this.signals.set(id, callback);
@@ -66,7 +67,9 @@ function harness(layout = 'BigGnome') {
         destroy() { this.deactivate(); }
     };
     const Controller = vm.runInNewContext(`${profiles}\n${source}\nRuntimeController`, {
-        Gio: {Settings, SettingsSchemaSource: {get_default: () => ({lookup: () => ({})})}},
+        Gio: {Settings, SettingsSchemaSource: {get_default: () => ({lookup: () => ({
+            has_key: key => key !== 'dock-position-overrides' || positionSupported,
+        })})}},
         DockRuntime: component('dock'), TaskbarRuntime: component('taskbar'),
         NativePanelOpacityIntegration: component('native'),
         ShellPopoverThemeIntegration: component('popover'),
@@ -241,4 +244,46 @@ await test('cleanup cannot erase a replacement registered reentrantly', async ()
     c.disable();
 });
 
+await test('dock edge changes rebuild once and preserve per-layout positions', async () => {
+    const {controller: c, errors} = harness();
+    await c._syncPromise;
+    const dock = c._dock, before = dock.cleanups;
+    c._settings.overrides['dock-position-overrides'] = {BigGnome:'right', 'G-Unity':'left'};
+    c._queueSync(); await c._syncPromise;
+    assert.equal(c._activeProfile.edge, 'right');
+    assert.equal(dock.cleanups, before + 1);
+    assert.equal(c._menuSideForProfile(c._activeProfile), null);
+    c._queueSync(); await c._syncPromise;
+    assert.equal(dock.cleanups, before + 1);
+    c._settings.layout = 'G-Unity'; c._queueSync(); await c._syncPromise;
+    assert.equal(c._activeProfile.edge, 'left');
+    c._settings.layout = 'BigGnome'; c._queueSync(); await c._syncPromise;
+    assert.equal(c._activeProfile.edge, 'right');
+    c._settings.overrides['dock-position-overrides'] = {};
+    c._queueSync(); await c._syncPromise;
+    assert.equal(c._activeProfile.edge, 'bottom');
+    assert.equal(c._menuSideForProfile(c._activeProfile), 'right');
+    assert.deepEqual(errors, []); c.disable();
+});
+for (const [layout, value, edge] of [
+    ['BigGnome','left','left'], ['BigGnome','top','bottom'],
+    ['G-Unity','right','right'], ['G-Unity','bottom','left'],
+    ['Hybrid','right','bottom'], ['Minimal','right','top'],
+]) {
+    await test(`position validation ${layout} ${value}`, async () => {
+        const {controller: c, errors} = harness(layout);
+        c._settings.overrides['dock-position-overrides'] = {[layout]:value};
+        await c._syncPromise;
+        assert.equal(c._activeProfile.edge, edge);
+        assert.deepEqual(errors, []); c.disable();
+    });
+}
+await test('cached older schema preserves working default dock', async () => {
+    const {controller:c,errors}=harness('BigGnome',false);
+    await c._syncPromise;
+    assert.equal(c._activeProfile.edge,'bottom');
+    assert.equal(c._positionSupported,false);
+    assert.deepEqual(errors,[]);
+    c.disable();
+});
 console.log(`${checks} runtime controller lifecycle scenarios passed`);

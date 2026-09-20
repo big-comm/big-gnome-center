@@ -2159,3 +2159,11 @@ msgstr "시스템 강조 색상 따르기"
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "커서 색상을 시스템 강조 색상 및 라이트 또는 다크 모양에 맞춥니다."
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "독 위치"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "아래쪽"

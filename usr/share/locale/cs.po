@@ -2162,3 +2162,11 @@ msgstr "Používat akcentní barvu systému"
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "Přizpůsobit kurzor akcentní barvě systému a světlému nebo tmavému vzhledu."
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "Umístění doku"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "Dole"

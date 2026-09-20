@@ -2148,3 +2148,11 @@ msgstr "跟随系统强调色"
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
 msgstr "使光标与系统强调色及浅色或深色外观相匹配。"
+
+#. Dock placement on the monitor.
+msgid "Dock position"
+msgstr "程序坞位置"
+
+#. Dock placement on the monitor.
+msgid "Bottom"
+msgstr "底部"
