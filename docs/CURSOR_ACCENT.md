@@ -24,3 +24,23 @@ settings never force a fallback or overwrite the user's selection.
 Runtime validation uses private D-Bus sessions and temporary XDG configuration
 directories. This tests the separate watcher process without changing the
 visible desktop. Visual review remains separate from these checks.
+
+## Maia on GNOME 51: deferred
+
+Observed on 2026-09-16:
+
+- GNOME 50.4 VM: Manjaro `gsettings-desktop-schemas 50.1-1` accepts `maia`;
+  the user confirmed successful application.
+- GNOME 51.0 VM: Arch `gsettings-desktop-schemas 51.0-1` accepts only the nine
+  upstream accents. Applying `maia` fails with an out-of-range error before
+  cursor matching runs.
+
+Maia is a downstream Manjaro addition. The failure is independent of the
+cursor-follow setting. User decision: wait for Manjaro's GNOME 51 packages
+and recheck Maia support; its availability is not yet confirmed. Keep Maia
+visible and retain the existing cursor palette mapping. Do not port the
+downstream patches or modify VM packages for this issue now.
+
+The proposed unsupported-color filtering was withdrawn. No changes from that
+attempt were installed in either VM. After the Manjaro update, verify the
+installed accent range, Maia application, and cursor following again.
