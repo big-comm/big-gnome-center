@@ -823,7 +823,10 @@ export const DominantColorExtractor = class {
     let pixBuf = this._getIconPixBuf()
     if (pixBuf == null) return null
 
-    let pixels = pixBuf.get_pixels()
+    const pixels = pixBuf.get_pixels()
+    const channels = pixBuf.get_n_channels()
+    const rowstride = pixBuf.get_rowstride()
+    const hasAlpha = pixBuf.get_has_alpha()
 
     let total = 0,
       rTotal = 0,
@@ -849,27 +852,28 @@ export const DominantColorExtractor = class {
     if (width >= 2 * DOMINANT_COLOR_ICON_SIZE)
       resample_x = Math.floor(width / DOMINANT_COLOR_ICON_SIZE)
 
-    if (resample_x !== 1 || resample_y !== 1)
-      pixels = this._resamplePixels(pixels, resample_x, resample_y)
+    // Address actual pixels; row padding is not image data.
+    for (let y = 0; y < height; y += resample_y) {
+      for (let x = 0; x < width; x += resample_x) {
+        const offset = y * rowstride + x * channels
+        const r = pixels[offset],
+          g = pixels[offset + 1],
+          b = pixels[offset + 2],
+          a = hasAlpha ? pixels[offset + 3] : 255
+        if (a === 0) continue
 
-    // computing the limit outside the for (where it would be repeated at each iteration)
-    // for performance reasons
-    let limit = pixels.length
-    for (let offset = 0; offset < limit; offset += 4) {
-      let r = pixels[offset],
-        g = pixels[offset + 1],
-        b = pixels[offset + 2],
-        a = pixels[offset + 3]
+        const saturation = Math.max(r, g, b) - Math.min(r, g, b)
+        const relevance = a * (0.1 * 255 + 0.9 * saturation)
 
-      let saturation = Math.max(r, g, b) - Math.min(r, g, b)
-      let relevance = 0.1 * 255 * 255 + 0.9 * a * saturation
-
-      rTotal += r * relevance
-      gTotal += g * relevance
-      bTotal += b * relevance
-
-      total += relevance
+        rTotal += r * relevance
+        gTotal += g * relevance
+        bTotal += b * relevance
+        total += relevance
+      }
     }
+
+    // No visible samples: let callers use their theme fallback.
+    if (total === 0) return null
 
     total = total * 255
 
@@ -903,34 +907,6 @@ export const DominantColorExtractor = class {
     iconCacheMap.set(this._app.get_id(), backgroundColor)
 
     return backgroundColor
-  }
-
-  /**
-   * Downsample large icons before scanning for the backlight color to
-   * improve performance.
-   *
-   * @param pixBuf
-   * @param pixels
-   * @param resampleX
-   * @param resampleY
-   *
-   * @return [];
-   */
-  _resamplePixels(pixels, resampleX, resampleY) {
-    let resampledPixels = []
-    // computing the limit outside the for (where it would be repeated at each iteration)
-    // for performance reasons
-    let limit = pixels.length / (resampleX * resampleY) / 4
-    for (let i = 0; i < limit; i++) {
-      let pixel = i * resampleX * resampleY
-
-      resampledPixels.push(pixels[pixel * 4])
-      resampledPixels.push(pixels[pixel * 4 + 1])
-      resampledPixels.push(pixels[pixel * 4 + 2])
-      resampledPixels.push(pixels[pixel * 4 + 3])
-    }
-
-    return resampledPixels
   }
 }
 
