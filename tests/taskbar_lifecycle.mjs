@@ -87,7 +87,7 @@ function harness() {
             disable() { record('manager.disable'); }
         }},
         ComponentHost: class {
-            getSettings() { return {}; }
+            getSettings() { return {run_dispose() { record('settings.dispose'); }}; }
             loadStylesheet() { record('stylesheet.load'); }
             unloadStylesheet() { record('stylesheet.unload'); }
         },
@@ -254,4 +254,50 @@ await test('active profile update keeps its surface', async () => {
     assert.ok(h.events.includes('size'));
     runtime.deactivate();
 });
+for (const reject of [false, true]) {
+    await test(`settings disposal waits for pending initialization: reject=${reject}`, async () => {
+        const h = harness(), runtime = new h.Runtime({});
+        const pending = h.PanelSettings.pending = deferred();
+        const activation = activate(runtime);
+        await Promise.resolve();
+        runtime.destroy();
+        assert.ok(!h.events.includes('settings.dispose'));
+        if (reject) pending.reject(new Error('late rejection'));
+        else pending.resolve();
+        await activation.catch(() => {});
+        assert.equal(h.events.at(-1), 'settings.dispose');
+        runtime.destroy();
+        assert.equal(h.events.filter(e => e === 'settings.dispose').length, 1);
+        await assert.rejects(activate(runtime), /destroyed/);
+    });
+}
+await test('settings remain live across ordinary deactivate/reactivate', async () => {
+    const h = harness(), runtime = new h.Runtime({});
+    const settings = runtime._settings;
+    for (let i = 0; i < 20; i++) {
+        await activate(runtime); runtime.deactivate();
+        assert.equal(runtime._settings, settings);
+    }
+    assert.ok(!h.events.includes('settings.dispose'));
+    runtime.destroy();
+    assert.equal(h.events.at(-1), 'settings.dispose');
+});
+for (const reverse of [false, true]) {
+    await test(`destroy waits for both retired activations: reverse=${reverse}`, async () => {
+        const h = harness(), runtime = new h.Runtime({});
+        const first = h.PanelSettings.pending = deferred();
+        const firstWork = activate(runtime);
+        runtime.deactivate();
+        const second = h.PanelSettings.pending = deferred();
+        const secondWork = activate(runtime);
+        runtime.destroy();
+        const ordered = reverse ? [[second, secondWork], [first, firstWork]]
+            : [[first, firstWork], [second, secondWork]];
+        ordered[0][0].resolve(); await ordered[0][1];
+        assert.ok(!h.events.includes('settings.dispose'));
+        ordered[1][0].resolve(); await ordered[1][1];
+        assert.equal(h.events.filter(event => event === 'settings.dispose').length, 1);
+        assert.equal(h.Context.DTP_EXTENSION, null);
+    });
+}
 console.log(`${checks} taskbar lifecycle scenarios passed`);

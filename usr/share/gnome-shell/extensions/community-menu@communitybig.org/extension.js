@@ -94,6 +94,8 @@ export default class CommunityMenuExtension extends Extension {
         this._interfaceSettings?.disconnectObject(this);
         this._mutterSettings?.disconnectObject(this);
         this._clearPanelColorClass();
+        this._interfaceSettings?.run_dispose?.();
+        this._mutterSettings?.run_dispose?.();
         this._interfaceSettings = null;
         this._mutterSettings = null;
         this._savedOverlayKey = null;
@@ -110,6 +112,7 @@ export default class CommunityMenuExtension extends Extension {
         Utils.clearCommandsCache();
 
         EXTENSION_PATH = null;
+        SETTINGS?.run_dispose?.();
         SETTINGS = null;
     }
 
@@ -119,7 +122,11 @@ export default class CommunityMenuExtension extends Extension {
             'org.communitybig.layout-switcher.runtime', true);
         if (schema?.has_key('active-layout')) {
             const runtime = new Gio.Settings({settings_schema: schema});
-            desktop = runtime.get_string('active-layout') || desktop;
+            try {
+                desktop = runtime.get_string('active-layout') || desktop;
+            } finally {
+                runtime.run_dispose?.();
+            }
         }
         const current = SETTINGS.get_enum('layout');
         const target = Constants.resolveMenuLayout(current, desktop);

@@ -105,6 +105,21 @@ def test_desk_ux_search_scope():
                    check=True, capture_output=True, text=True)
 
 
+def test_menu_settings_ownership(tmp_path):
+    if not shutil.which("gjs") or not shutil.which("glib-compile-schemas"):
+        pytest.skip("gjs and glib-compile-schemas are required")
+    shutil.copy2(SCHEMA_FILE, tmp_path / SCHEMA_FILE.name)
+    subprocess.run(["glib-compile-schemas", "--strict", str(tmp_path)], check=True)
+    result = subprocess.run(
+        ["gjs", "-m", str(ROOT / "tests/community_menu_settings_lifetime.js")],
+        env={**os.environ, "GSETTINGS_BACKEND": "memory",
+             "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
+        check=True, capture_output=True, text=True, timeout=60,
+    )
+    assert '"passed":true' in result.stdout
+    assert "disposed" not in result.stderr.lower()
+
+
 def test_independent_menu_pins(tmp_path):
     if not shutil.which("gjs") or not shutil.which("glib-compile-schemas"):
         pytest.skip("gjs and glib-compile-schemas are required")

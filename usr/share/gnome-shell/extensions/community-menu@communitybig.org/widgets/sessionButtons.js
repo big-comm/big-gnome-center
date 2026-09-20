@@ -281,6 +281,7 @@ export const LogoutButton = GObject.registerClass({
 
     _onDestroy() {
         this._lockdown?.disconnectObject(this);
+        this._lockdown?.run_dispose?.();
         Main.sessionMode.disconnectObject(this);
         this._lockdown = null;
         super._onDestroy();

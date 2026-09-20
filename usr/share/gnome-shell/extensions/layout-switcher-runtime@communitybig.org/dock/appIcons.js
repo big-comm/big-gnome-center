@@ -245,6 +245,9 @@ export const DockAbstractAppIcon = GObject.registerClass({
 
     _onDestroy() {
         super._onDestroy();
+        this._signalsHandler?.destroy();
+        this._communityIndicatorSettings?.run_dispose?.();
+        this._communityIndicatorSettings = null;
 
         // This is necessary due to an upstream bug
         // https://bugzilla.gnome.org/show_bug.cgi?id=757556

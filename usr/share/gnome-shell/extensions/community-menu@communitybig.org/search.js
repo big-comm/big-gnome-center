@@ -622,6 +622,7 @@ export const SearchResults = GObject.registerClass({
         this._providers = null;
 
         this._highlighter = null;
+        this._searchSettings.run_dispose?.();
         this._searchSettings = null;
         this._parentalControlsManager = null;
     }

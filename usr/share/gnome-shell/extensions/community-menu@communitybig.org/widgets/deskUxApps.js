@@ -262,6 +262,9 @@ class CommunityBigDeskUxApps extends St.BoxLayout {
             this._store.destroy();
             this._pins.destroy();
             this._folderColors.destroy();
+            this._privacy.disconnectObject(this);
+            this._privacy.run_dispose?.();
+            this._privacy = null;
         });
     }
 

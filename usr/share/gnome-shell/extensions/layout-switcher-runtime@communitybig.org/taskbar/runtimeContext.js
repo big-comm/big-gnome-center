@@ -40,6 +40,8 @@ export function clearRuntimeContext(owner) {
   if (DTP_EXTENSION !== owner) return
 
   DTP_EXTENSION = null
+  for (const settings of [SETTINGS, DESKTOPSETTINGS, TERMINALSETTINGS, NOTIFICATIONSSETTINGS])
+    settings?.run_dispose?.()
   SETTINGS = null
   DESKTOPSETTINGS = null
   TERMINALSETTINGS = null

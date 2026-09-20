@@ -68,6 +68,7 @@ export const DockNotificationMonitor = GObject.registerClass({
         this._disconnect(this._settingsConnections);
         this._appNotifications = null;
         this._dockSettings = null;
+        this._settings?.run_dispose?.();
         this._settings = null;
     }
 

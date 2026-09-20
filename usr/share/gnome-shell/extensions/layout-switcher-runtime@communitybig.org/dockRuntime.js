@@ -26,6 +26,7 @@ export class DockRuntime {
             name: 'Big Gnome Center Dock',
             version: 1,
         }, 'dock');
+        this._settings = this._host.getSettings(DOCK_SCHEMA);
         this._actorFactory = new DockActorFactory();
         this._host.createDockActor = params => this._actorFactory.create(params);
         this._host.appActions = new DockAppActions();
@@ -37,14 +38,14 @@ export class DockRuntime {
         );
         this._host.notificationBadges = new DockNotificationBadges();
         this._host.placement = new DockPlacement(
-            this._host.getSettings(DOCK_SCHEMA),
+            this._settings,
         );
         this._host.visibilityModes = new DockVisibilityModes(
-            this._host.getSettings(DOCK_SCHEMA),
+            this._settings,
         );
         this._host.createIndicatorController = manager => {
             this._host.runningIndicators = new DockRunningIndicators(
-                this._host.getSettings(DOCK_SCHEMA),
+                this._settings,
                 manager,
                 this._indicator,
             );
@@ -58,6 +59,8 @@ export class DockRuntime {
 
     activate(profile, indicator, hover, magnificationIntensity, opacity, iconSize, visibility,
         menuSide, skipStartupOverview) {
+        if (this._destroyed)
+            throw new Error('Dock runtime is destroyed');
         if (this._activating || this._deactivating)
             throw new Error('Dock lifecycle operation already pending');
         if (!this._active && DockSurfaceManager.getDefault())
@@ -94,7 +97,7 @@ export class DockRuntime {
             this._host.visibilityModes.apply(visibility);
             this._applyMenuSide(menuSide);
             this._host.notificationsMonitor = new DockNotificationMonitor(
-                this._host.getSettings(DOCK_SCHEMA),
+                this._settings,
             );
             this._stylesheetAttempted = true;
             this._host.loadStylesheet();
@@ -110,7 +113,22 @@ export class DockRuntime {
                 this._deactivateRequested = false;
                 this.deactivate();
             }
+            if (this._destroyed)
+                this._disposeSettings();
         }
+    }
+
+    destroy() {
+        this._destroyed = true;
+        this.deactivate();
+        if (!this._activating && !this._deactivating)
+            this._disposeSettings();
+    }
+
+    _disposeSettings() {
+        const settings = this._settings;
+        this._settings = null;
+        this._cleanup('settings', () => settings?.run_dispose?.());
     }
 
     deactivate() {
@@ -148,6 +166,8 @@ export class DockRuntime {
             delete this._host.menuSide;
             delete this._host.skipStartupOverview;
             this._deactivating = false;
+            if (this._destroyed)
+                this._disposeSettings();
         }
     }
 
@@ -276,7 +296,7 @@ export class DockRuntime {
         const style = ['dot', 'hybrid', 'desk-ux'].includes(indicator)
             ? indicator
             : 'dot';
-        this._host.getSettings(DOCK_SCHEMA).set_enum('running-indicator-style', 0);
+        this._settings.set_enum('running-indicator-style', 0);
         this._host.runningIndicators?.setStyle(style);
     }
 
@@ -290,7 +310,7 @@ export class DockRuntime {
     _applyOpacity(opacity) {
         if (!Number.isInteger(opacity))
             return;
-        const settings = this._host.getSettings(DOCK_SCHEMA);
+        const settings = this._settings;
         settings.set_boolean('custom-background-color', true);
         settings.set_enum('transparency-mode', 1);
         settings.set_double('background-opacity', opacity / 100);
@@ -298,7 +318,7 @@ export class DockRuntime {
 
     _applyIconSize(iconSize) {
         if (Number.isInteger(iconSize))
-            this._host.getSettings(DOCK_SCHEMA)
+            this._settings
                 .set_int('dash-max-icon-size', iconSize);
     }
 

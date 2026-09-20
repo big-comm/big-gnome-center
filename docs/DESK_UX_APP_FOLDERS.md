@@ -73,6 +73,13 @@ logout, session restart, or visual validation of the patched button was performe
 
 ## Data and safeguards
 
+Settings consumers disconnect signals and explicitly dispose exclusively owned
+GSettings objects after pending edits finish. Injected settings remain borrowed.
+Temporary folder settings are disposed after commit or rollback; persisted
+membership, pins and colors survive disposal. No global settings cache is used.
+This reduces exposure to the reproduced GJS/dconf finalization deadlock without
+changing the native storage model or patching system libraries.
+
 `org.gnome.desktop.app-folders:folder-children` and relocatable
 `org.gnome.desktop.app-folders.folder` settings are the sole folder store.
 No duplicate database, overview actor reparenting, or private AppDisplay mutation.

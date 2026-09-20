@@ -2375,6 +2375,8 @@ export class DockSurfaceManager {
         this._iconTheme = null;
         this._remoteModel?.destroy();
         this._appIconsDecorator?.destroy();
+        this._settings?.run_dispose?.();
+        this._appSwitcherSettings?.run_dispose?.();
         this._settings = null;
         this._appSwitcherSettings = null;
         this._oldDash = null;

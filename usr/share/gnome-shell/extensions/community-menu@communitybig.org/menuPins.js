@@ -4,11 +4,16 @@ import {createMenuSettings} from './settings.js';
 
 export class MenuPins {
     constructor(changed = () => {}, settings = null, legacy = null) {
+        this._ownsSettings = settings === null;
         this._settings = settings ?? createMenuSettings('org.gnome.shell.extensions.community-menu.pins');
         // An explicit empty list is final; never repopulate it from the dock.
         if (this._settings.get_user_value('apps') === null && this.writable) {
             const shell = legacy ?? new Gio.Settings({schema_id: 'org.gnome.shell'});
-            this._write(shell.get_strv('favorite-apps'));
+            try {
+                this._write(shell.get_strv('favorite-apps'));
+            } finally {
+                if (legacy === null) shell.run_dispose?.();
+            }
         }
         this._signals = [
             this._settings.connect('changed::apps', changed),
@@ -52,8 +57,11 @@ export class MenuPins {
     }
 
     destroy() {
+        if (this._destroyed) return;
+        this._destroyed = true;
         for (const signal of this._signals)
             this._settings.disconnect(signal);
         this._signals = [];
+        if (this._ownsSettings) this._settings.run_dispose?.();
     }
 }

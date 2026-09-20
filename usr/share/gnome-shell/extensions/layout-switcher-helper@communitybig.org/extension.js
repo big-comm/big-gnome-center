@@ -122,7 +122,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 82;
+const HELPER_BUILD = 83;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -448,6 +448,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 this._ifaceSettings.disconnect(this._accentSignal);
             this._schemeSignal = 0;
             this._accentSignal = 0;
+            this._ifaceSettings.run_dispose?.();
             this._ifaceSettings = null;
         }
         this._cancelled = true;
@@ -804,10 +805,14 @@ export default class LayoutSwitcherHelper extends Extension {
                 const settings = new Gio.Settings({
                     schema_id: 'org.gnome.shell.extensions.community-menu',
                 });
-                const layout = settings.get_enum('layout');
-                return layout === CLASSIC_MENU_LAYOUT ||
-                    layout === DESK_UX_MENU_LAYOUT ||
-                    layout === HYBRID_MENU_LAYOUT;
+                try {
+                    const layout = settings.get_enum('layout');
+                    return layout === CLASSIC_MENU_LAYOUT ||
+                        layout === DESK_UX_MENU_LAYOUT ||
+                        layout === HYBRID_MENU_LAYOUT;
+                } finally {
+                    settings.run_dispose?.();
+                }
             } catch (e) {
                 logHelper(`community layout read failed: ${e}`);
             }
@@ -1309,15 +1314,7 @@ export default class LayoutSwitcherHelper extends Extension {
         const saved = this._readAppSettings().active_layout;
         if (saved)
             return saved;
-        try {
-            const runtimeSettings = new Gio.Settings({
-                schema_id: 'org.communitybig.layout-switcher.runtime',
-            });
-            return runtimeSettings.get_string('active-layout');
-        } catch (e) {
-            logHelper(`runtime layout read failed: ${e}`);
-            return '';
-        }
+        return this._runtimeLayout();
     }
 
     _savedNotificationPosition() {
@@ -1788,7 +1785,7 @@ export default class LayoutSwitcherHelper extends Extension {
             await this._waitState(mgr, uuid, state => this._isDown(state));
         }
 
-        const shellSettings = new Gio.Settings({schema_id: 'org.gnome.shell'});
+        const shellSettings = this._shellSettings ??= new Gio.Settings({schema_id: 'org.gnome.shell'});
         const enabled = shellSettings.get_strv('enabled-extensions')
             .filter(uuid => !legacy.includes(uuid));
         const disabled = shellSettings.get_strv('disabled-extensions')
@@ -1886,7 +1883,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 }
                 {
                     if (schema) {
-                        const dtpSettings = new Gio.Settings({settings_schema: schema});
+                        const dtpSettings = this._panelSettings ??= new Gio.Settings({settings_schema: schema});
                         // focused label sits on the blue highlight → white;
                         // unfocused/minimized sit on the light bar → black.
                         const lightColors = {

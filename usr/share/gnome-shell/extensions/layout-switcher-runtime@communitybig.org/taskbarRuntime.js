@@ -17,14 +17,17 @@ export class TaskbarRuntime {
             version: 75,
             url: 'https://github.com/big-comm/big-gnome-center',
         });
+        this._settings = this._host.getSettings(PANEL_SCHEMA);
         this._surface = new TaskbarSurfaceManager(this._host);
         this._visibilityModes = new TaskbarVisibilityModes(
-            this._host.getSettings(PANEL_SCHEMA));
+            this._settings);
         this._activationGeneration = 0;
         this._activating = false;
     }
 
     async activate(profile, indicator, hover, opacity, visibility, panelHeight) {
+        if (this._destroyed)
+            throw new Error('Taskbar runtime is destroyed');
         if (this._activating || this._deactivating)
             throw new Error('Taskbar lifecycle operation already pending');
         const generation = ++this._activationGeneration;
@@ -44,6 +47,7 @@ export class TaskbarRuntime {
         }
 
         this._activating = true;
+        this._pendingActivations = (this._pendingActivations ?? 0) + 1;
         try {
             this._applyIndicator(indicator);
             this._applyHover(hover);
@@ -59,8 +63,28 @@ export class TaskbarRuntime {
                 this.deactivate();
             throw error;
         } finally {
+            this._pendingActivations--;
             if (generation === this._activationGeneration)
                 this._activating = false;
+            if (this._destroyed && !this._pendingActivations)
+                this._disposeSettings();
+        }
+    }
+
+    destroy() {
+        this._destroyed = true;
+        this.deactivate();
+        if (!this._pendingActivations && !this._deactivating)
+            this._disposeSettings();
+    }
+
+    _disposeSettings() {
+        const settings = this._settings;
+        this._settings = null;
+        try {
+            settings?.run_dispose?.();
+        } catch (error) {
+            console.warn(`[layout-switcher-runtime] Taskbar settings disposal failed: ${error}`);
         }
     }
 
@@ -93,12 +117,14 @@ export class TaskbarRuntime {
             }
         } finally {
             this._deactivating = false;
+            if (this._destroyed && !this._pendingActivations)
+                this._disposeSettings();
         }
     }
 
     diagnostics() {
         const panels = this._surface.panels();
-        const settings = this._host.getSettings(PANEL_SCHEMA);
+        const settings = this._settings;
         return {
             active: Boolean(this._active && panels.length),
             profile: this._profile?.layout ?? '',
@@ -183,7 +209,7 @@ export class TaskbarRuntime {
     }
 
     _applyIndicator(indicator) {
-        const settings = this._host.getSettings(PANEL_SCHEMA);
+        const settings = this._settings;
         if (indicator === 'none') {
             settings.set_string('dot-style-focused', 'DOTS');
             settings.set_string('dot-style-unfocused', 'DOTS');
@@ -202,7 +228,7 @@ export class TaskbarRuntime {
     }
 
     _applyHover(hover) {
-        const settings = this._host.getSettings(PANEL_SCHEMA);
+        const settings = this._settings;
         const lift = hover === 'lift';
         settings.set_boolean('animate-appicon-hover', lift);
         if (!lift)
@@ -227,7 +253,7 @@ export class TaskbarRuntime {
     _applyOpacity(opacity) {
         if (!Number.isInteger(opacity))
             return;
-        const settings = this._host.getSettings(PANEL_SCHEMA);
+        const settings = this._settings;
         settings.set_boolean('trans-use-custom-opacity', true);
         settings.set_boolean('trans-use-dynamic-opacity', false);
         settings.set_double('trans-panel-opacity', opacity / 100);

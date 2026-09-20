@@ -47,7 +47,7 @@ function harness() {
         console: {warn: message => warnings.push(message)},
         DockSurfaceManager: Manager,
         ComponentHost: class {
-            getSettings() { return {}; }
+            getSettings() { return {run_dispose() { step('settings.dispose'); }}; }
             loadStylesheet() { step('stylesheet.load'); }
             unloadStylesheet() { step('stylesheet.unload'); }
         },
@@ -213,4 +213,30 @@ for (const point of ['_applyProfile', 'manager.after', 'panel.new']) {
     });
 }
 
+test('settings survive deactivation and release once after destruction', () => {
+    const h = harness();
+    const settings = h.runtime._settings;
+    for (let i = 0; i < 20; i++) {
+        h.runtime.activate(...args);
+        h.runtime.deactivate();
+        assert.equal(h.runtime._settings, settings);
+    }
+    assert.ok(!h.events.includes('settings.dispose'));
+    h.runtime.destroy(); h.runtime.destroy();
+    assert.equal(h.events.filter(e => e === 'settings.dispose').length, 1);
+    assert.throws(() => h.runtime.activate(...args), /destroyed/);
+});
+for (const point of ['manager.after', 'panel.destroy']) {
+    test(`settings disposal waits for ${point}`, () => {
+        const h = harness();
+        h.hooks.set(point, () => {
+            h.runtime.destroy();
+            assert.ok(!h.events.includes('settings.dispose'));
+        });
+        h.runtime.activate(...args);
+        h.runtime.destroy();
+        assert.equal(h.events.at(-1), 'settings.dispose');
+        assert.equal(h.Manager.current, null);
+    });
+}
 console.log(`${cases} dock lifecycle scenarios passed`);

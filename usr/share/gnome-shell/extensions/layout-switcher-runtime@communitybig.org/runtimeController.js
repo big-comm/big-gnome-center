@@ -11,7 +11,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 106;
+export const RUNTIME_BUILD = 107;
 
 export class RuntimeController {
     constructor(extension) {
@@ -74,8 +74,8 @@ export class RuntimeController {
         const settings = this._settings;
         const signalIds = this._settingsChangedIds ?? [];
         const components = [
-            ['dock', this._dock, 'deactivate'],
-            ['taskbar', this._taskbar, 'deactivate'],
+            ['dock', this._dock, 'destroy'],
+            ['taskbar', this._taskbar, 'destroy'],
             ['native panel', this._nativePanelOpacity, 'destroy'],
             ['popover theme', this._shellPopoverTheme, 'destroy'],
             ['startup overview', this._startupOverview, 'destroy'],
@@ -95,6 +95,11 @@ export class RuntimeController {
             } catch (error) {
                 console.warn(`[layout-switcher-runtime] signal cleanup failed: ${error}`);
             }
+        }
+        try {
+            settings?.run_dispose?.();
+        } catch (error) {
+            console.warn(`[layout-switcher-runtime] settings disposal failed: ${error}`);
         }
         for (const [name, component, method] of components) {
             try {

@@ -20,7 +20,7 @@ def test_taskbar_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "41 taskbar lifecycle scenarios passed" in result.stdout
+    assert "46 taskbar lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_lifecycle():
@@ -29,7 +29,7 @@ def test_dock_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "32 dock lifecycle scenarios passed" in result.stdout
+    assert "35 dock lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_dwell_lifecycle():

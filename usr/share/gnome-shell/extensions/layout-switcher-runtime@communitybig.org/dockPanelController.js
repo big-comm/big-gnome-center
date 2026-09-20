@@ -180,6 +180,7 @@ export class PanelController {
             else
                 this._panelBox.hide();
         });
+        this._cleanup(() => this._settings?.run_dispose?.());
         this._settings = null;
         this._panel = null;
         this._panelBox = null;

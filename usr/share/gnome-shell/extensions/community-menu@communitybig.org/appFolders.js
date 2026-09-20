@@ -9,6 +9,7 @@ const KEYS = {name: 'name', translate: 'translate', apps: 'apps',
 
 export class AppFolders {
     constructor(changed, appProvider, settingsFactory = null) {
+        this._ownsSettings = settingsFactory === null;
         this._changed = changed;
         this._appProvider = appProvider;
         this._factory = settingsFactory ?? (id => new Gio.Settings(id === null
@@ -37,6 +38,7 @@ export class AppFolders {
         for (const [id, entry] of this._folders) {
             if (!ids.includes(id)) {
                 entry.settings.disconnect(entry.signal);
+                if (this._ownsSettings) entry.settings.run_dispose?.();
                 this._folders.delete(id);
             }
         }
@@ -60,6 +62,16 @@ export class AppFolders {
     }
 
     edit(operation) {
+        const temporary = new Set();
+        try {
+            return this._edit(operation, temporary);
+        } finally {
+            if (this._ownsSettings)
+                for (const settings of temporary) settings.run_dispose?.();
+        }
+    }
+
+    _edit(operation, temporary) {
         if (operation.type === 'create')
             operation = {...operation, folder: GLib.uuid_string_random()};
         const before = this.snapshot();
@@ -68,6 +80,7 @@ export class AppFolders {
         for (const folder of after) {
             const old = before.find(f => f.id === folder.id);
             const settings = this._folders.get(folder.id)?.settings ?? this._factory(folder.id);
+            if (!this._folders.has(folder.id)) temporary.add(settings);
             for (const [field, key] of Object.entries(KEYS)) {
                 if (old && JSON.stringify(old[field]) === JSON.stringify(folder[field]))
                     continue;
@@ -109,13 +122,18 @@ export class AppFolders {
     }
 
     destroy() {
+        if (this._destroyed) return;
+        this._destroyed = true;
         if (this._idle)
             GLib.source_remove(this._idle);
         this._idle = 0;
         this._root.disconnect(this._rootSignal);
-        for (const {settings, signal} of this._folders.values())
+        for (const {settings, signal} of this._folders.values()) {
             settings.disconnect(signal);
+            if (this._ownsSettings) settings.run_dispose?.();
+        }
         this._folders.clear();
+        if (this._ownsSettings) this._root.run_dispose?.();
         this._changed = null;
     }
 }

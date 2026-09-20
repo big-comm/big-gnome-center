@@ -25,9 +25,9 @@ def test_community_dock_is_a_private_resource_host():
 
 
 def test_community_dock_tracks_accepted_core_baseline():
-    # Includes balanced compositing holds and retired edge-dwell timers.
+    # Includes balanced compositing holds, retired timers and owned settings disposal.
     assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
-        "6687d84149c63b21b0413f1086a795b67a4e7061f83488bec8fd7e47db5bd9d6"
+        "900e45d25510c2f8af17cfe6287cb9e2d7f3d2ee436dc5f13e7a3ca5179b20d5"
     )
 
 

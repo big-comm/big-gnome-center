@@ -459,6 +459,8 @@ export const Taskbar = class extends EventEmitter {
     this.previewMenu.destroy()
 
     this._disconnectWorkspaceSignals()
+    this._settings?.run_dispose?.()
+    this._settings = null
   }
 
   _dropIconAnimations() {
