@@ -18,6 +18,7 @@ export class DockHoverEffects {
         this._intensity = 40;
         this._isDockShown = isDockShown;
         this._records = new Map();
+        this._liftStates = new Map();
         this._updateCount = 0;
         this._resetCount = 0;
     }
@@ -27,10 +28,10 @@ export class DockHoverEffects {
         const nextIntensity = Math.max(20, Math.min(60, intensity ?? 40));
         const resolutionChanged = this._effect === 'magnify' &&
             next === 'magnify' && this._intensity !== nextIntensity;
+        if (next !== this._effect || resolutionChanged)
+            this.releaseAll();
         this._effect = next;
         this._intensity = nextIntensity;
-        if (next !== 'magnify' || resolutionChanged)
-            this.releaseAll();
     }
 
     effect() {
@@ -65,6 +66,8 @@ export class DockHoverEffects {
         if (this._effect === 'magnify')
             return;
 
+        if (this._effect === 'lift')
+            this._ensureLiftSource(actor);
         const lift = actor.hover && this._effect === 'lift';
         const distance = lift ? Math.max(3, Math.round(iconSize * 0.1)) : 0;
         let translationX = 0;
@@ -90,9 +93,37 @@ export class DockHoverEffects {
     }
 
     releaseAll() {
+        for (const [actor, state] of this._liftStates) {
+            this._liftStates.delete(actor);
+            this._destroyState(actor, state, true);
+        }
         for (const [dash, record] of [...this._records]) {
             if (this._records.get(dash) === record)
                 this._detach(dash, true);
+        }
+    }
+
+    _ensureLiftSource(actor) {
+        if (this._liftStates.has(actor))
+            return;
+        const state = {
+            retired: false, signals: [], destroyId: 0,
+            baseIcon: null, mappedIcon: null, iconChildAddedId: 0,
+        };
+        this._liftStates.set(actor, state);
+        try {
+            state.destroyId = actor.connect('destroy', () => {
+                if (this._liftStates.get(actor) !== state)
+                    return;
+                this._liftStates.delete(actor);
+                this._destroyState(actor, state, false);
+            });
+            // Keep a larger texture at the normal allocation throughout the lift.
+            this._enableHighResolutionSource(actor, state, 2);
+        } catch (error) {
+            this._liftStates.delete(actor);
+            this._destroyState(actor, state, true);
+            throw error;
         }
     }
 
@@ -109,6 +140,7 @@ export class DockHoverEffects {
             pointerWatches: records.filter(record => record.pointerId > 0).length,
             pollSources: 0,
             animationSources: records.filter(record => record.sourceId > 0).length,
+            liftSources: this._liftStates.size,
             trackedActors: states.length,
             cloneActors: states.filter(state => state.clone).length,
             highResolutionSources: states.filter(state => state.baseIcon).length,

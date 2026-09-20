@@ -33,6 +33,7 @@ function harness(scaleFactor = 1) {
         set_size(w, h) { step(`${this.name}.size`); this.size = [w, h]; }
         set_position() { step(`${this.name}.position`); }
         set_pivot_point() {}
+        ease(options) { this.animation = options; }
         get_transformed_position() { return [0, 0]; }
         get_transformed_size() { return [48, 48]; }
         get_paint_visibility() { return true; }
@@ -51,7 +52,7 @@ function harness(scaleFactor = 1) {
     const Effects = vm.runInNewContext(`${code}\nDockHoverEffects`, {
         console: {warn() {}}, global: {stage, get_pointer: () => pointer,
             backend: {get_cursor_tracker: () => tracker}},
-        Clutter: {EVENT_PROPAGATE: false, EventType: {MOTION: 1, ENTER: 2, LEAVE: 3}, Clone: class extends Actor {
+        Clutter: {AnimationMode: {EASE_OUT_QUAD: 1}, EVENT_PROPAGATE: false, EventType: {MOTION: 1, ENTER: 2, LEAVE: 3}, Clone: class extends Actor {
             constructor() { super('clone'); step('clone.new'); clones.push(this); }
         }},
         Main: {uiGroup: {add_child(actor) { step('chrome.add'); chrome.add(actor); }}},
@@ -86,6 +87,7 @@ function harness(scaleFactor = 1) {
 }
 function clean(h) {
     assert.equal(h.fx._records.size, 0);
+    assert.equal(h.fx._liftStates.size, 0);
     assert.equal(h.timers.size, 0);
     assert.equal(h.chrome.size, 0);
     assert.equal(h.watches.size, 0);
@@ -352,5 +354,56 @@ test('hidden pointer movement does not repeatedly touch clone actors', () => {
     for (let i = 0; i < 30; i++) for (const watch of h.watches) watch.callback();
     assert.deepEqual(h.events, []);
     h.fx.releaseAll(); clean(h);
+});
+for (const scale of [1, 2]) {
+    test(`lift keeps high resolution at native allocation ${scale}x`, () => {
+        const h = harness(scale), d = h.dock();
+        h.fx.setEffect('lift'); d.actor.hover = true;
+        h.fx.animate(d.actor, 1, 48);
+        assert.equal(d.requests[0][1], 96);
+        d.bin.child.mapped = true; d.bin.child.emit('notify::mapped');
+        assert.deepEqual(d.bin.child.size, [48 * scale, 48 * scale]);
+        assert.equal(d.actor.animation.scale_x, 1.08);
+        assert.equal(d.actor.animation.translation_y, -5);
+        assert.equal(h.timers.size, 0); assert.equal(h.watches.size, 0);
+        h.fx.setEffect('lift');
+        d.actor.hover = false; h.fx.animate(d.actor, 1, 48);
+        assert.equal(d.requests.length, 1);
+        assert.equal(d.actor.animation.scale_x, 1);
+        d.icon.iconSize = 32; d.icon._createIconTexture(32);
+        assert.equal(d.requests.at(-1)[1], 64);
+        const replacement = h.child(); replacement.mapped = true; d.bin.child = replacement;
+        d.bin.emit('child-added');
+        assert.deepEqual(replacement.size, [32 * scale, 32 * scale]);
+        h.fx.setEffect('default'); clean(h);
+        assert.equal(d.icon.createIcon, d.original);
+        assert.equal(d.requests.at(-1)[1], 32);
+    });
+}
+test('lift destruction retires pending mapping without refreshing a dead icon', () => {
+    const h = harness(), d = h.dock(); h.fx.setEffect('lift');
+    h.fx.animate(d.actor, 1, 48);
+    const stale = d.bin.child.history[0], count = d.requests.length;
+    d.actor.destroy(); clean(h);
+    stale(); assert.equal(d.requests.length, count);
+    assert.equal(d.icon.createIcon, d.original);
+});
+for (const effect of ['magnify', 'default']) {
+    test(`lift releases owned texture on switch to ${effect}`, () => {
+        const h = harness(), d = h.dock(); h.fx.setEffect('lift');
+        h.fx.animate(d.actor, 1, 48); h.fx.setEffect(effect); clean(h);
+        assert.equal(d.icon.createIcon, d.original);
+        if (effect === 'magnify') {
+            h.attach(d); assert.equal(d.requests.at(-1)[1], 68);
+            h.fx.releaseAll(); clean(h);
+        }
+    });
+}
+test('lift construction failure restores texture ownership', () => {
+    const h = harness(), d = h.dock(); h.fx.setEffect('lift');
+    h.failures.set('texture', new Error('injected'));
+    assert.throws(() => h.fx.animate(d.actor, 1, 48), /injected/);
+    h.failures.clear(); clean(h);
+    assert.equal(d.icon.createIcon, d.original);
 });
 console.log(`${count} dock hover lifecycle scenarios passed`);
