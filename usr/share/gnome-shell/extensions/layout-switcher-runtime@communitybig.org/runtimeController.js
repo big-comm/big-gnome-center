@@ -11,7 +11,7 @@ import {TaskbarRuntime} from './taskbarRuntime.js';
 
 const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 
-export const RUNTIME_BUILD = 110;
+export const RUNTIME_BUILD = 111;
 
 export class RuntimeController {
     constructor(extension) {
@@ -153,7 +153,7 @@ export class RuntimeController {
                 this._dock.deactivate();
             this._dock.activate(
                 profile, indicator, hover, magnificationIntensity, dockOpacity,
-                dockSize, visibility, menuSide, skipStartupOverview);
+                panelOpacity, dockSize, visibility, menuSide, skipStartupOverview);
         } else if (profile.surface === RuntimeSurface.TASKBAR) {
             this._nativePanelOpacity.deactivate();
             this._dock.deactivate();

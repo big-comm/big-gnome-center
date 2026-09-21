@@ -29,7 +29,7 @@ export default class extends Extension {
         global.settings.set_strv('favorite-apps', apps.slice(0, 20).map(app => app.get_id()));
         this.dock = new DockRuntime({path});
         this.dock.activate(profileForLayout('BigGnome'), 'dot', 'default', 40, 70,
-            48, 'always-visible', 'left', false);
+            65, 48, 'always-visible', 'left', false);
         const manager = DockSurfaceManager.getDefault();
         const iconActors = () => manager.mainDock.dash._box.get_children()
             .map(item => item.child).filter(actor => actor?._indicator);

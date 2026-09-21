@@ -15,9 +15,10 @@ const VALID_VISIBILITY = new Set([
     'intelligent',
 ]);
 export class PanelController {
-    constructor(extension, dockProvider = () => []) {
+    constructor(extension, dockProvider = () => [], opacity = null) {
         this._settings = extension.getSettings(SETTINGS_SCHEMA);
         this._dockProvider = dockProvider;
+        this._opacityOverride = this._normalizeOpacity(opacity);
         this._panel = Main.panel;
         this._panelBox = Main.layoutManager.panelBox;
         this._originalStyle = this._panel.get_style();
@@ -223,6 +224,7 @@ export class PanelController {
             windowFullscreen: Boolean(window?.fullscreen),
             monitorFullscreen: Boolean(monitor?.inFullscreen),
             overview: Boolean(this._inOverview),
+            opacity: this._effectiveOpacity(),
             affectsStruts: Boolean(this._panelActorData?.affectsStruts),
             trackFullscreen: Boolean(this._panelActorData?.trackFullscreen),
             dockAffectsStruts: this._dockTrackingDiagnostics(),
@@ -293,6 +295,24 @@ export class PanelController {
     _apply() {
         this._applyOpacity();
         this._applyVisibility();
+    }
+
+    setOpacity(opacity) {
+        if (this._destroyed || this._destroyRequested)
+            return;
+        this._opacityOverride = this._normalizeOpacity(opacity);
+        this._queueOpacityApply();
+    }
+
+    _normalizeOpacity(opacity) {
+        if (!Number.isFinite(opacity))
+            return null;
+        return Math.max(0, Math.min(100, Math.round(opacity)));
+    }
+
+    _effectiveOpacity() {
+        return this._opacityOverride ??
+            Math.min(100, this._settings.get_uint('panel-opacity'));
     }
 
     _onFullscreenChanged() {
@@ -548,7 +568,7 @@ export class PanelController {
     _applyOpacity() {
         if (this._destroyed || this._destroyRequested)
             return;
-        const opacity = Math.min(100, this._settings.get_uint('panel-opacity')) / 100;
+        const opacity = this._effectiveOpacity() / 100;
         const base = this._originalStyle ? `${this._originalStyle}; ` : '';
         this._ownedStyle = `${base}background-color: rgba(0, 0, 0, ${opacity.toFixed(2)});`;
         this._panel.set_style(this._ownedStyle);

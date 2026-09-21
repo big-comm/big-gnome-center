@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 110" in controller
+    assert "RUNTIME_BUILD = 111" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -90,8 +90,8 @@ def test_unified_runtime_profiles_capture_all_six_layout_surfaces():
     assert "visibility: 'always-visible'" in profiles
     assert "panelHeight: 38" in profiles
     assert "panelHeight: 40" in profiles
-    assert profiles.count("panelOpacity: 70") == 2
-    assert profiles.count("panelOpacity: 65") == 2
+    assert profiles.count("panelOpacity: 70") == 3
+    assert profiles.count("panelOpacity: 65") == 3
     assert "dockOpacity: 77" in profiles
     assert "dockOpacity: 70" in profiles
     assert profiles.count("dockSize: 39") == 2
@@ -359,6 +359,18 @@ def test_runtime_owns_taskbar_opacity_and_reports_effective_alpha():
     assert "set_boolean('trans-use-dynamic-opacity', false)" in runtime
     assert "set_double('trans-panel-opacity', opacity / 100)" in runtime
     assert "Math.round(panel.dynamicTransparency.alpha * 100)" in runtime
+
+
+def test_runtime_owns_dock_panel_opacity():
+    controller = (RUNTIME / "runtimeController.js").read_text()
+    runtime = (RUNTIME / "dockRuntime.js").read_text()
+    panel = (RUNTIME / "dockPanelController.js").read_text()
+
+    assert "dockOpacity,\n                panelOpacity, dockSize" in controller
+    assert "this._applyPanelOpacity(panelOpacity)" in runtime
+    assert "this._panelController?.setOpacity(opacity)" in runtime
+    assert "setOpacity(opacity)" in panel
+    assert "this._opacityOverride ??" in panel
 
 
 def test_runtime_owns_minimal_native_panel_opacity_and_visibility():

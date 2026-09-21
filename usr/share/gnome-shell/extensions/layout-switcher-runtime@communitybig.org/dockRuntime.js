@@ -54,11 +54,12 @@ export class DockRuntime {
         this._host.createPanelController = () => new PanelController(
             this._host,
             () => this._manager?._allDocks ?? [],
+            this._panelOpacity,
         );
     }
 
-    activate(profile, indicator, hover, magnificationIntensity, opacity, iconSize, visibility,
-        menuSide, skipStartupOverview) {
+    activate(profile, indicator, hover, magnificationIntensity, opacity, panelOpacity,
+        iconSize, visibility, menuSide, skipStartupOverview) {
         if (this._destroyed)
             throw new Error('Dock runtime is destroyed');
         if (this._activating || this._deactivating)
@@ -70,6 +71,7 @@ export class DockRuntime {
         this._hover = hover;
         this._magnificationIntensity = magnificationIntensity;
         this._opacity = opacity;
+        this._panelOpacity = panelOpacity;
         this._iconSize = iconSize;
         this._visibility = visibility;
         this._menuSide = menuSide;
@@ -80,6 +82,7 @@ export class DockRuntime {
             this._applyIndicator(indicator);
             this._applyHover(hover, magnificationIntensity);
             this._applyOpacity(opacity);
+            this._applyPanelOpacity(panelOpacity);
             this._applyIconSize(iconSize);
             this._host.visibilityModes.apply(visibility);
             this._applyMenuSide(menuSide);
@@ -93,6 +96,7 @@ export class DockRuntime {
             this._applyIndicator(indicator);
             this._applyHover(hover, magnificationIntensity);
             this._applyOpacity(opacity);
+            this._applyPanelOpacity(panelOpacity);
             this._applyIconSize(iconSize);
             this._host.visibilityModes.apply(visibility);
             this._applyMenuSide(menuSide);
@@ -158,6 +162,7 @@ export class DockRuntime {
             this._hover = null;
             this._magnificationIntensity = null;
             this._opacity = null;
+            this._panelOpacity = null;
             this._iconSize = null;
             this._visibility = null;
             this._menuSide = null;
@@ -189,6 +194,7 @@ export class DockRuntime {
             magnificationIntensity: this._host.hoverEffects.intensity(),
             hoverState: this._host.hoverEffects.diagnostics(),
             opacity: this._opacity ?? null,
+            panelOpacity: this._panelOpacity ?? null,
             iconSize: this._iconSize ?? null,
             managerGeneration: this._managerGeneration,
             visibility: this._host.visibilityModes.mode(),
@@ -314,6 +320,11 @@ export class DockRuntime {
         settings.set_boolean('custom-background-color', true);
         settings.set_enum('transparency-mode', 1);
         settings.set_double('background-opacity', opacity / 100);
+    }
+
+    _applyPanelOpacity(opacity) {
+        this._panelOpacity = opacity;
+        this._panelController?.setOpacity(opacity);
     }
 
     _applyIconSize(iconSize) {

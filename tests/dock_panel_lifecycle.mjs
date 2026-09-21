@@ -101,9 +101,9 @@ function harness() {
     });
     return {failures, hooks, events, timers, emitters, zones, autohides, shortcuts, chrome,
         panel, box, tracking, display, layout, overview, window, actor, surface, child, actors,
-        settings, Controller, create: () => new Controller({
+        settings, Controller, create: (opacity = null) => new Controller({
             getSettings() { step('settings.new'); return settings; },
-        })};
+        }, () => [], opacity)};
 }
 
 let count = 0;
@@ -131,6 +131,19 @@ function fullscreen(h, owner) {
     owner._ensureFullscreenSurface();
     return {window, actor, surface: actor.children[0], child: actor.children[0].children[0]};
 }
+test('runtime opacity overrides legacy settings and updates live', () => {
+    const h = harness(), owner = h.create(20);
+    assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.20\)/);
+    h.settings.opacity = 90;
+    h.settings.emit('changed');
+    assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.20\)/);
+    owner.setOpacity(0);
+    assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.00\)/);
+    owner.setOpacity(100);
+    assert.match(h.panel.style, /rgba\(0, 0, 0, 1\.00\)/);
+    assert.equal(owner.diagnostics().opacity, 100);
+    owner.destroy(); released(h, owner);
+});
 for (const point of ['settings.new', 'panel.get', 'zone.new', 'chrome.add', 'zone.position',
     'zone.size', 'autohide.new', 'shortcuts.new', 'settings.opacity', 'settings.visibility',
     'panel.set', 'autohide.enabled', 'autohide.visible']) {

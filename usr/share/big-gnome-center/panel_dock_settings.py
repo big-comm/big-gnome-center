@@ -91,6 +91,8 @@ class PanelDockSettings:
             self.runtime_active
             and self.runtime.supports_layout(self.active_layout)
             and (
+                self.dock_active
+                or
                 self.community_panel_active
                 or self.active_layout == "Minimal"
             )

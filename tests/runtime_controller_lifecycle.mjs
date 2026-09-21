@@ -52,8 +52,8 @@ function harness(layout = 'BigGnome', positionSupported = true) {
         }
         enable() {}
         apply() {}
-        activate(profile) {
-            this.activations.push(profile?.layout);
+        activate(profile, ...args) {
+            this.activations.push([profile?.layout, ...args]);
             if (this.failActivation)
                 throw new Error('injected activation failure');
             return this.pending?.promise;
@@ -285,5 +285,20 @@ await test('cached older schema preserves working default dock', async () => {
     assert.equal(c._positionSupported,false);
     assert.deepEqual(errors,[]);
     c.disable();
+});
+await test('dock panel opacity updates live from the layout override', async () => {
+    const {controller:c,errors}=harness('BigGnome');
+    await c._syncPromise;
+    const dock = c._dock, cleanups = dock.cleanups;
+    assert.equal(dock.activations.at(-1)[5], 65);
+    c._settings.overrides['panel-opacity-overrides'] = {BigGnome: 0};
+    c._queueSync(); await c._syncPromise;
+    assert.equal(dock.activations.at(-1)[5], 0);
+    assert.equal(dock.cleanups, cleanups);
+    c._settings.overrides['panel-opacity-overrides'] = {BigGnome: 100};
+    c._queueSync(); await c._syncPromise;
+    assert.equal(dock.activations.at(-1)[5], 100);
+    assert.equal(dock.cleanups, cleanups);
+    assert.deepEqual(errors, []); c.disable();
 });
 console.log(`${checks} runtime controller lifecycle scenarios passed`);

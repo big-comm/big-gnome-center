@@ -11,7 +11,7 @@ def test_runtime_controller_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "61 runtime controller lifecycle scenarios passed" in result.stdout
+    assert "62 runtime controller lifecycle scenarios passed" in result.stdout
 
 
 def test_taskbar_lifecycle():
@@ -29,7 +29,7 @@ def test_dock_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "35 dock lifecycle scenarios passed" in result.stdout
+    assert "36 dock lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_dwell_lifecycle():
@@ -83,7 +83,7 @@ def test_dock_panel_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "46 dock panel lifecycle scenarios passed" in result.stdout
+    assert "47 dock panel lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_hover_lifecycle():

@@ -9,9 +9,10 @@ const root = process.env.BGC_RUNTIME_DIRECTORY
     : new URL('../usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/', import.meta.url);
 const source = fs.readFileSync(new URL('dockRuntime.js', root), 'utf8')
     .replace(/^import .*;$/gm, '').replaceAll('export ', '');
-const args = [{layout: 'BigGnome'}, 'dot', 'default', 1, 70, 48, 'always-visible', 'left', false];
+const args = [{layout: 'BigGnome'}, 'dot', 'default', 1, 70, 65, 48,
+    'always-visible', 'left', false];
 const setters = ['_applyProfile', '_applyIndicator', '_applyHover', '_applyOpacity',
-    '_applyIconSize', 'visibility', '_applyMenuSide'];
+    '_applyPanelOpacity', '_applyIconSize', 'visibility', '_applyMenuSide'];
 
 function harness() {
     const events = [], failures = new Map(), hooks = new Map(), warnings = [];
