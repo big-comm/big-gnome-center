@@ -18,7 +18,7 @@ def test_switch_transaction_scenarios():
         capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "32 switch transaction scenarios passed" in result.stdout
+    assert "33 switch transaction scenarios passed" in result.stdout
 
 
 @pytest.mark.parametrize("success", [True, False])

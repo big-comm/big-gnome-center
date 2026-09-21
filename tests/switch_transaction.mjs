@@ -74,6 +74,18 @@ await test('success commits settings and membership', async () => {
     assert.ok(!h.values.has(branch + 'old')); assert.equal(h.values.get('/other/keep'), '42');
     assert.deepEqual(h.live(), ['helper', 'target']); h.clean();
 });
+await test('optional component failures do not roll back membership', async () => {
+    const h = harness(), complete = h.host.complete;
+    h.host.complete = async req => ({
+        ...await complete(req),
+        optionalFailures: ['optional@example.org'],
+    });
+    const result = await h.transaction.apply(request(), ':1.1');
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.optionalFailures, ['optional@example.org']);
+    assert.deepEqual(h.live(), ['helper', 'target']);
+    h.clean();
+});
 for (const point of ['begin', 'reset', 'load', 'complete', `write:${disabled}`, `write:${enabled}`, 'finish']) {
     await test(`recover failure after ${point}`, async () => {
         const h = harness(point), result = await h.transaction.apply(request(), ':1.1');

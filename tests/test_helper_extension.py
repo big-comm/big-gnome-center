@@ -45,7 +45,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 83" in source
+    assert "const HELPER_BUILD = 84" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -109,7 +109,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 83" in source
+    assert "const HELPER_BUILD = 84" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -127,6 +127,18 @@ def test_native_shell_running_indicators_follow_shell_accent():
     assert "layout-switcher-accent-probe" in stylesheet
     assert "layout-switcher-native-accent-panel" in stylesheet
     assert "background-color: -st-accent-color" in stylesheet
+
+
+def test_optional_extension_failure_does_not_abort_layout_switch():
+    source = HELPER.read_text()
+    complete = source.split("async _completeSwitch(payload) {", 1)[1]
+    complete = complete.split("AbortSwitchAsync", 1)[0]
+
+    assert "const failedStructural = failed.filter(uuid => STRUCTURAL_UUIDS.has(uuid))" in complete
+    assert "const failedOptional = failed.filter(uuid => !STRUCTURAL_UUIDS.has(uuid))" in complete
+    assert "optional components pending restart" in complete
+    assert "optionalFailures: failedOptional" in complete
+    assert "this._switchTransaction?.current || STRUCTURAL_UUIDS.has(uuid)" not in complete
 
 
 def test_incremental_migration_detaches_menu_before_replacing_panel():

@@ -122,7 +122,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 83;
+const HELPER_BUILD = 84;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -2718,10 +2718,16 @@ export default class LayoutSwitcherHelper extends Extension {
             steps.push(dtpReady ? 'dash-to-panel ready' : 'dash-to-panel readiness TIMEOUT');
         }
 
-        const failedStructural = [...target].filter(uuid =>
-            (this._switchTransaction?.current || STRUCTURAL_UUIDS.has(uuid)) &&
-                mgr.lookup(uuid)?.state !== STATE_ACTIVE
+        const failed = [...target].filter(uuid =>
+            mgr.lookup(uuid)?.state !== STATE_ACTIVE
         );
+        const failedStructural = failed.filter(uuid => STRUCTURAL_UUIDS.has(uuid));
+        const failedOptional = failed.filter(uuid => !STRUCTURAL_UUIDS.has(uuid));
+        if (failedOptional.length) {
+            const warning = `optional components pending restart: ${failedOptional.join(', ')}`;
+            steps.push(warning);
+            logHelper(warning);
+        }
         if (!dtpReady && !failedStructural.includes(targetPanelUuid))
             failedStructural.push(targetPanelUuid);
         if (failedStructural.length) {
@@ -2757,7 +2763,7 @@ export default class LayoutSwitcherHelper extends Extension {
             logHelper(`GTK3 theme follow failed: ${error}`);
         }
         if (this._switchTransaction?.current)
-            return {ok: true, steps, error: ''};
+            return {ok: true, steps, optionalFailures: failedOptional, error: ''};
         this._curtainCheckmark();
         await this._sleep(CURTAIN_CHECK_MS);
         this._checkOwnedSwitch();
@@ -2768,7 +2774,7 @@ export default class LayoutSwitcherHelper extends Extension {
         this._pendingLayoutLabel = null;
         this._switching = false;
         logHelper(`CompleteSwitch done: ${steps.join(' | ')}`);
-        return {ok: true, steps, error: ''};
+        return {ok: true, steps, optionalFailures: failedOptional, error: ''};
     }
 
     AbortSwitchAsync(params, invocation) {

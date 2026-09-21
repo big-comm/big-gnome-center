@@ -115,7 +115,13 @@ export class SwitchTransaction {
             this.check(operation);
             await host.finish();
             this.check(operation);
-            result = {ok: true, steps: completion.steps, recovered: false, error: ''};
+            result = {
+                ok: true,
+                steps: completion.steps,
+                optionalFailures: completion.optionalFailures ?? [],
+                recovered: false,
+                error: '',
+            };
         } catch (error) {
             operation.recovering = true;
             operation.reason = '';
