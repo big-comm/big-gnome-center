@@ -628,6 +628,11 @@ def test_app_grid_uses_responsive_header_and_session_footer():
     assert ".apps-menu StScrollBar" in stylesheet
     assert "min-width: 6px" in stylesheet
     assert ".session-actions-box" in stylesheet
+    light_action = stylesheet.split(
+        ".community-menu.community-menu-light .desk-ux-action {", 1
+    )[1].split("}", 1)[0]
+    assert "color: #222226" in light_action
+    assert "background-color: rgba(46,46,51,0.10)" in light_action
 
 
 def test_hybrid_layout_matches_enterprise_menu_structure():

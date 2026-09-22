@@ -124,7 +124,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 109;
+const HELPER_BUILD = 110;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -877,7 +877,6 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     _setupPanelSystemIndicator() {
-        this._setupQuickSettingsShutdownItem();
         const indicator = Main.panel.statusArea.quickSettings?._system;
         const powerToggle = indicator?._systemItem?.powerToggle;
         if (!powerToggle)
@@ -894,7 +893,6 @@ export default class LayoutSwitcherHelper extends Extension {
     }
 
     _teardownPanelSystemIndicator() {
-        this._teardownQuickSettingsShutdownItem();
         if (this._panelPowerToggle && this._panelPowerSignal)
             this._panelPowerToggle.disconnect(this._panelPowerSignal);
         this._panelPowerToggle = null;
@@ -902,60 +900,6 @@ export default class LayoutSwitcherHelper extends Extension {
 
         const indicator = Main.panel.statusArea.quickSettings?._system;
         indicator?._syncIndicatorsVisible?.();
-    }
-
-    _findQuickSettingsShutdownItem() {
-        const systemItem = Main.panel.statusArea.quickSettings?._system?._systemItem;
-        return systemItem?.child?.get_children()
-            .find(item => item?.menu === systemItem.menu) ?? null;
-    }
-
-    _syncQuickSettingsShutdownItem() {
-        const item = this._quickSettingsShutdownItem;
-        if (!item)
-            return;
-
-        if (this._usesMenuSessionActions()) {
-            if (item.visible)
-                item.hide();
-            this._quickSettingsShutdownHidden = true;
-        } else if (this._quickSettingsShutdownHidden) {
-            this._quickSettingsShutdownHidden = false;
-            if (typeof item._sync === 'function')
-                item._sync();
-            else
-                item.show();
-        }
-    }
-
-    _setupQuickSettingsShutdownItem() {
-        const item = this._findQuickSettingsShutdownItem();
-        if (!item)
-            return;
-
-        if (this._quickSettingsShutdownItem !== item) {
-            this._teardownQuickSettingsShutdownItem();
-            this._quickSettingsShutdownItem = item;
-            this._quickSettingsShutdownSignal = item.connect(
-                'notify::visible', () => this._syncQuickSettingsShutdownItem());
-        }
-        this._syncQuickSettingsShutdownItem();
-    }
-
-    _teardownQuickSettingsShutdownItem() {
-        const item = this._quickSettingsShutdownItem;
-        if (item && this._quickSettingsShutdownSignal)
-            item.disconnect(this._quickSettingsShutdownSignal);
-        this._quickSettingsShutdownSignal = 0;
-        this._quickSettingsShutdownItem = null;
-
-        if (item && this._quickSettingsShutdownHidden) {
-            this._quickSettingsShutdownHidden = false;
-            if (typeof item._sync === 'function')
-                item._sync();
-            else
-                item.show();
-        }
     }
 
     _clearLightOverviewPanelClass() {

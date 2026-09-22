@@ -568,6 +568,11 @@
 .community-menu.community-menu-light .desk-ux-folder {
     color: #242429;
 }
+.community-menu.community-menu-light .desk-ux-action {
+    color: #222226;
+    background-color: rgba(46,46,51,0.10);
+    border-color: rgba(46,46,51,0.12);
+}
 .community-menu.community-menu-light .desk-ux-caption { color: rgba(46,46,51,0.72); }
 .community-menu.community-menu-light .desk-ux-tile:hover { background-color: rgba(46,46,51,0.12); }
 .community-menu.community-menu-light .desk-ux-selection-box {
