@@ -11,4 +11,4 @@ def test_frosted_lifecycle():
         capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "24 Frosted lifecycle scenarios passed" in result.stdout
+    assert "28 Frosted lifecycle scenarios passed" in result.stdout

@@ -226,7 +226,9 @@ for (const broken of [false, true]) {
         console: {warn: message => calls.push('warning'), debug() {}, error() {}},
         Config: {PACKAGE_VERSION: '51.beta'}, Extension: class {},
         global: {settings: {}, context: {get_wayland_compositor: () => ({})}},
-        Gio: {Settings: class {}},
+        Gio: {Settings: class {}, SettingsSchemaSource: {
+            get_default: () => ({lookup: () => null}),
+        }},
         GLib: {build_filenamev: parts => parts.join('/'), idle_add(_priority, callback) {
             queue.push(callback); return 1;
         }},

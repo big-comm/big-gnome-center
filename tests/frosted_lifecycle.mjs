@@ -17,7 +17,7 @@ const deferred = () => {
 };
 async function flush() { for (let i = 0; i < 12; i++) await Promise.resolve(); }
 
-function harness(major = 51) {
+function harness(major = 51, runtimeAvailable = true) {
     const events = [], failures = new Set(), callbacks = [], timers = new Map();
     const errors = [], warnings = [], gates = new Map(), powers = [], surfaces = [];
     let nextId = 0;
@@ -27,7 +27,11 @@ function harness(major = 51) {
     };
     class Settings {
         constructor() { this.settings_schema = {has_key: () => true}; }
-        get_string(key) { return key === 'blur-mode' ? 'dynamic' : 'prefer-dark'; }
+        get_string(key) {
+            if (key === 'active-layout') return 'BigGnome';
+            return key === 'blur-mode' ? 'dynamic' : 'prefer-dark';
+        }
+        get_value() { return {deep_unpack: () => ({})}; }
         get_boolean() { return true; }
         get_int(key) { return key === 'blur-strength' ? 30 : 37; }
         get_enum() { return 3; }
@@ -47,7 +51,13 @@ function harness(major = 51) {
         set_background_blur_params(...values) { this.value = values; record('native.set'); },
     };
     const Extension = vm.runInNewContext(`${source}\nFrostedGlassExtension`, {
-        Gio: {Settings}, Config: {PACKAGE_VERSION: `${major}.0`},
+        Gio: {Settings, SettingsSchemaSource: {get_default: () => ({
+            lookup(name, recursive) {
+                assert.equal(name, 'org.communitybig.layout-switcher.runtime');
+                assert.equal(recursive, true);
+                return runtimeAvailable ? {} : null;
+            },
+        })}}, Config: {PACKAGE_VERSION: `${major}.0`},
         Extension: class {getSettings() { return new Settings(); }},
         console: {warn: x => warnings.push(x), error: x => errors.push(x), debug() {}},
         Main: {extensionManager: {lookup: () => null}},
@@ -92,6 +102,17 @@ async function test(name, run) {
 }
 
 for (const major of [50, 51]) {
+    for (const available of [false, true]) {
+        await test(`runtime schema: ${major}, available=${available}`, async () => {
+            const h = harness(major, available), e = h.extension;
+            e.enable(); await flush();
+            assert.equal(e._config().panelTintOpacity, available ? 0.65 : null);
+            assert.equal(h.warnings.length, 0);
+            assert.equal(h.errors.length, 0);
+            e.disable();
+            assert.equal(e._runtimeSettings, null);
+        });
+    }
     await test(`normal enable/disable and coalescing: ${major}`, async () => {
         const h = harness(major), e = h.extension;
         e.enable(); await flush();

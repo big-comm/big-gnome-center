@@ -309,7 +309,10 @@ def test_community_dock_owns_native_panel_runtime():
     assert "FULLSCREEN_EXIT_" not in controller
     assert "FULLSCREEN_TEXTURE_" not in controller
     assert "_queueFullscreenTextureRefresh" not in controller
-    assert controller.count("this._queueOpacityApply()") == 5
+    for signal in ("showing", "shown", "hiding", "hidden"):
+        callback = controller.split(f"this._connect(Main.overview, '{signal}',", 1)[1]
+        callback = callback.split("this._connect(", 1)[0]
+        assert "this._queueOpacityApply()" in callback
     assert "GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE" in controller
     assert "this._cancelOpacityApply();" in controller
 

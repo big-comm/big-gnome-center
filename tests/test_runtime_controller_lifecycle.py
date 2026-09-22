@@ -29,7 +29,7 @@ def test_dock_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "36 dock lifecycle scenarios passed" in result.stdout
+    assert "37 dock lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_dwell_lifecycle():
