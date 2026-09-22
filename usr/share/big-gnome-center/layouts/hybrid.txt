@@ -107,7 +107,7 @@ subtitle-encoding='UTF-8'
 folder-children=['Utilities', 'YaST', 'Pardus']
 
 [org/gnome/desktop/app-folders/folders/AudioVideo]
-apps=['org.gnome.Loupe.desktop', 'io.github.celluloid_player.Celluloid.desktop', 'com.github.neithern.g4music.desktop', 'br.com.biglinux.microphone.desktop', 'br.com.biglinux.audio.converter.desktop', 'br.com.biglinux.converter.desktop', 'me.timschneeberger.jdsp4linux.desktop', 'mpv.desktop', 'org.gnome.NetworkDisplays.desktop', 'org.ffado.FfadoMixer.desktop']
+apps=['org.gnome.Loupe.desktop', 'io.github.celluloid_player.Celluloid.desktop', 'com.github.neithern.g4music.desktop', 'br.com.biglinux.microphone.desktop', 'br.com.biglinux.audio.converter.desktop', 'br.com.biglinux.converter.desktop', 'br.com.biglinux.BigNetScreen.desktop', 'org.communitybig.bigrecorder.desktop', 'me.timschneeberger.jdsp4linux.desktop', 'mpv.desktop', 'org.ffado.FfadoMixer.desktop']
 categories=['AudioVideo']
 excluded-apps=['biglinux-noise-reduction-pipewire.desktop']
 name='AudioVideo.directory'
@@ -142,14 +142,14 @@ name='X-Pardus-Apps.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Settings]
-apps=['br.com.biglinux.BigGnomeCenter.desktop', 'br.com.biglinux-settings.desktop', 'org.gnome.tweaks.desktop', 'org.gnome.Settings.desktop', 'br.com.biglinux.bighardwareinfo.desktop', 'br.com.biglinux.drivermanager.desktop', 'org.manjaro.pamac.manager.desktop', 'timeshift-gtk.desktop', 'system-config-printer-only-jobs.desktop', 'hplip.desktop', 'hp-uiscan.desktop', 'cups.desktop', 'kvantummanager.desktop', 'ca.desrt.dconf-editor.desktop', 'org.gnome.Extensions.desktop', 'com.sidevesh.Luminance.desktop', 'pamac-updates.desktop', 'system-config-printer.desktop', 'big-parental-controls.desktop']
+apps=['br.com.biglinux.BigGnomeCenter.desktop', 'br.com.biglinux-settings.desktop', 'org.gnome.tweaks.desktop', 'org.gnome.Settings.desktop', 'br.com.biglinux.bighardwareinfo.desktop', 'br.com.biglinux.grub-restore.desktop', 'br.com.biglinux.drivermanager.desktop', 'org.manjaro.pamac.manager.desktop', 'timeshift-gtk.desktop', 'system-config-printer-only-jobs.desktop', 'hplip.desktop', 'hp-uiscan.desktop', 'cups.desktop', 'kvantummanager.desktop', 'ca.desrt.dconf-editor.desktop', 'org.gnome.Extensions.desktop', 'com.sidevesh.Luminance.desktop', 'pamac-updates.desktop', 'system-config-printer.desktop', 'qefientrymanager.desktop']
 categories=['Settings']
 excluded-apps=['big-store.desktop', 'bigsettings.desktop']
 name='Settings.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Utilities]
-apps=['org.freedesktop.GnomeAbrt.desktop', 'nm-connection-editor.desktop', 'org.gnome.baobab.desktop', 'org.gnome.Connections.desktop', 'org.gnome.DejaDup.desktop', 'org.gnome.DiskUtility.desktop', 'org.gnome.Evince.desktop', 'org.gnome.FileRoller.desktop', 'org.gnome.font-viewer.desktop', 'org.gnome.Loupe.desktop', 'org.gnome.seahorse.Application.desktop', 'org.gnome.tweaks.desktop', 'org.gnome.Usage.desktop']
+apps=['org.gnome.clocks.desktop', 'org.gnome.Weather.desktop', 'org.gnome.Characters.desktop', 'bigtts.desktop', 'org.gnome.font-viewer.desktop', 'org.gnome.FileRoller.desktop', 'org.gnome.baobab.desktop', 'net.nokyan.Resources.desktop', 'org.gnome.DiskUtility.desktop', 'gparted.desktop', 'org.gnome.SimpleScan.desktop']
 categories=['X-GNOME-Utilities']
 excluded-apps=['org.gnome.Extensions.desktop', 'org.gnome.Evince.desktop', 'org.gnome.eog.desktop']
 name='X-GNOME-Utilities.directory'

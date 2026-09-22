@@ -107,7 +107,7 @@ subtitle-encoding='UTF-8'
 folder-children=['AudioVideo', 'Development', 'Game', 'Network', 'Office', 'Settings', 'Utilities', 'Utility', 'WebApps']
 
 [org/gnome/desktop/app-folders/folders/AudioVideo]
-apps=['org.gnome.Loupe.desktop', 'io.github.celluloid_player.Celluloid.desktop', 'com.github.neithern.g4music.desktop', 'br.com.biglinux.microphone.desktop', 'br.com.biglinux.audio.converter.desktop', 'br.com.biglinux.converter.desktop', 'me.timschneeberger.jdsp4linux.desktop', 'mpv.desktop', 'org.gnome.NetworkDisplays.desktop', 'org.ffado.FfadoMixer.desktop']
+apps=['org.gnome.Loupe.desktop', 'io.github.celluloid_player.Celluloid.desktop', 'com.github.neithern.g4music.desktop', 'br.com.biglinux.microphone.desktop', 'br.com.biglinux.audio.converter.desktop', 'br.com.biglinux.converter.desktop', 'br.com.biglinux.BigNetScreen.desktop', 'org.communitybig.bigrecorder.desktop', 'me.timschneeberger.jdsp4linux.desktop', 'mpv.desktop', 'org.ffado.FfadoMixer.desktop']
 categories=['AudioVideo']
 excluded-apps=['biglinux-noise-reduction-pipewire.desktop']
 name='AudioVideo.directory'
