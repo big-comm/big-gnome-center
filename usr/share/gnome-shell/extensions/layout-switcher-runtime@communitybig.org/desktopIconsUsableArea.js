@@ -29,6 +29,9 @@ import * as ExtensionUtils from 'resource:///org/gnome/shell/misc/extensionUtils
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const DING_USABLE_AREA_UUID = '130cbc66-235c-4bd6-8571-98d2d8bba5e2';
+const DING_EXTENSION_UUID = 'gtk4-ding@smedius.gitlab.com';
+const DING_READY_RETRY_MS = 250;
+const DING_READY_RETRIES = 20;
 
 export class DesktopIconsUsableAreaClass {
     constructor(owner) {
@@ -41,6 +44,7 @@ export class DesktopIconsUsableAreaClass {
         this._timedMarginsId = 0;
         this._margins = {};
         this._dispatchCount = 0;
+        this._readyRetries = 0;
         this._recipientUuids = [];
         this._extensionManagerId = this._extensionManager.connect(
             'extension-state-changed',
@@ -57,6 +61,8 @@ export class DesktopIconsUsableAreaClass {
                             ]),
                         ];
                         this._dispatchCount++;
+                    } else if (extension.uuid === DING_EXTENSION_UUID) {
+                        this._queueReadyRetry();
                     }
                     return;
                 }
@@ -104,6 +110,7 @@ export class DesktopIconsUsableAreaClass {
 
     _changedMargins() {
         this._cancelDispatch();
+        this._readyRetries = 0;
         this._timedMarginsId = GLib.timeout_add(
             GLib.PRIORITY_DEFAULT,
             100,
@@ -124,13 +131,35 @@ export class DesktopIconsUsableAreaClass {
 
     _sendMarginsToAll() {
         const recipients = [];
+        let dingStarting = false;
         for (const uuid of this._extensionManager.getUuids()) {
             const extension = this._extensionManager.lookup(uuid);
             if (this._sendMarginsToExtension(extension))
                 recipients.push(uuid);
+            else if (uuid === DING_EXTENSION_UUID && this._isEnabled(extension))
+                dingStarting = true;
         }
         this._recipientUuids = recipients;
         this._dispatchCount++;
+        if (dingStarting && this._margins !== null)
+            this._queueReadyRetry();
+        else
+            this._readyRetries = 0;
+    }
+
+    _queueReadyRetry() {
+        if (this._timedMarginsId || this._readyRetries >= DING_READY_RETRIES)
+            return;
+        this._readyRetries++;
+        this._timedMarginsId = GLib.timeout_add(
+            GLib.PRIORITY_DEFAULT,
+            DING_READY_RETRY_MS,
+            () => {
+                this._timedMarginsId = 0;
+                this._sendMarginsToAll();
+                return GLib.SOURCE_REMOVE;
+            },
+        );
     }
 
     _sendMarginsToExtension(extension) {

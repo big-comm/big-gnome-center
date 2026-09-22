@@ -9,7 +9,6 @@ const supported = color => FOLDER_COLORS.some(([name]) => name === color);
 
 export class FolderColors {
     constructor(changed, settings = null) {
-        this._ownsSettings = settings === null;
         this._settings = settings ?? createMenuSettings('org.gnome.shell.extensions.community-menu.folders');
         this._signals = [
             this._settings.connect('changed::colors', changed),
@@ -49,6 +48,5 @@ export class FolderColors {
         for (const signal of this._signals)
             this._settings.disconnect(signal);
         this._signals = [];
-        if (this._ownsSettings) this._settings.run_dispose?.();
     }
 }

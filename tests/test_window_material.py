@@ -13,6 +13,32 @@ def paths(tmp_path):
     return directory / "gtk.css", directory / material.NAME
 
 
+@pytest.mark.parametrize(
+    ("version", "supported"),
+    [((4, 23, 2), False), ((4, 23, 3), True), ((4, 24, 0), True)],
+)
+def test_blur_support_uses_library_version_without_initializing_gtk(
+    monkeypatch, version, supported
+):
+    class Library:
+        gtk_get_major_version = staticmethod(lambda: version[0])
+        gtk_get_minor_version = staticmethod(lambda: version[1])
+        gtk_get_micro_version = staticmethod(lambda: version[2])
+
+    monkeypatch.setattr(material.ctypes, "CDLL", lambda _name: Library())
+
+    assert material.gtk_supports_blur() is supported
+
+
+def test_blur_support_rejects_missing_gtk(monkeypatch):
+    def missing(_name):
+        raise OSError("missing")
+
+    monkeypatch.setattr(material.ctypes, "CDLL", missing)
+
+    assert material.gtk_supports_blur() is False
+
+
 @pytest.mark.parametrize("original", [
     b"", b"/* User theme */\r\nlabel { color: red; }", b"\xef\xbb\xbf/* UTF-8 */",
 ])

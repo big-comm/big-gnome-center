@@ -214,7 +214,7 @@ for (const point of ['_applyProfile', 'manager.after', 'panel.new']) {
     });
 }
 
-test('settings survive deactivation and release once after destruction', () => {
+test('settings survive deactivation and release reference after destruction', () => {
     const h = harness();
     const settings = h.runtime._settings;
     for (let i = 0; i < 20; i++) {
@@ -224,11 +224,12 @@ test('settings survive deactivation and release once after destruction', () => {
     }
     assert.ok(!h.events.includes('settings.dispose'));
     h.runtime.destroy(); h.runtime.destroy();
-    assert.equal(h.events.filter(e => e === 'settings.dispose').length, 1);
+    assert.equal(h.events.filter(e => e === 'settings.dispose').length, 0);
+    assert.equal(h.runtime._settings, null);
     assert.throws(() => h.runtime.activate(...args), /destroyed/);
 });
 for (const point of ['manager.after', 'panel.destroy']) {
-    test(`settings disposal waits for ${point}`, () => {
+    test(`settings release waits for ${point}`, () => {
         const h = harness();
         h.hooks.set(point, () => {
             h.runtime.destroy();
@@ -236,7 +237,8 @@ for (const point of ['manager.after', 'panel.destroy']) {
         });
         h.runtime.activate(...args);
         h.runtime.destroy();
-        assert.equal(h.events.at(-1), 'settings.dispose');
+        assert.ok(!h.events.includes('settings.dispose'));
+        assert.equal(h.runtime._settings, null);
         assert.equal(h.Manager.current, null);
     });
 }

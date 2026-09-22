@@ -26,6 +26,7 @@ import hashlib
 import json
 import logging
 import os
+import sys
 import time
 from functools import wraps
 from pathlib import Path
@@ -50,6 +51,7 @@ _LAYOUT_MUTATION_LOCK_PATH = SETTINGS_GNOME.with_name("big-gnome-center-layout.l
 _LAYOUT_HASH_FILE = SETTINGS_GNOME.parent / (
     SETTINGS_GNOME.name + ".big-gnome-center.sha256"
 )
+_DCONF_BATCH_HELPER = Path(__file__).with_name("dconf_batch.py")
 SYNC_SERVICE = "dconf-sync-gnome.service"
 
 # comm-gnome-config's QT-theme path watcher fires whenever
@@ -92,6 +94,9 @@ _LEGACY_USER_THEME_UUID = "user-theme@gnome-shell-extensions.gcampax.github.com"
 _LEGACY_GTK_THEME_UUID = "legacyschemeautoswitcher@joshimukul29.gmail.com"
 _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
+_APPINDICATOR_UUID = "appindicatorsupport@rgcjonas.gmail.com"
+_COPYOUS_UUID = "copyous@boerdereinar.dev"
+_BIG_SHOT_UUID = "big-shot@communitybig.org"
 _FROSTED_GLASS_DEFAULT_OPACITY = 37
 _RUNTIME_SETTINGS_SECTION = "/org/communitybig/layout-switcher/runtime"
 _DOCK_PANEL_SETTINGS_SECTION = "/org/communitybig/panel-and-dock"
@@ -136,18 +141,22 @@ _HELPER_TEARDOWN_UUIDS = frozenset(
         _RUNTIME_UUID,
     }
 )
-# Extensions that remain live across layout switches. Some system indicators
-# leave orphan work behind when toggled. Frosted Glass is layout-independent
-# and discovers replacement panel, dock, and menu actors itself.
+# External stateful components that remain live across layout switches. Their
+# settings branches are excluded from the bulk dconf write. Layout-owned UI
+# components must stop so they cannot observe a partially loaded layout.
 _HELPER_PERSIST_UUIDS = frozenset(
     {
-        "appindicatorsupport@rgcjonas.gmail.com",
-        _FROSTED_GLASS_UUID,
+        _COPYOUS_UUID,
+        _BIG_SHOT_UUID,
     }
 )
 # Settings branches that layouts must never reset. GSConnect is no longer
 # bundled, but pairing data from existing installations must remain untouched.
 _PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect", "gtk4-ding"})
+_HELPER_PERSIST_SETTINGS_SUBDIRS = {
+    _COPYOUS_UUID: "copyous",
+    _BIG_SHOT_UUID: "big-shot",
+}
 # Extensions that paint the GNOME *shell* stylesheet themselves (the panel,
 # menus). Main.loadTheme() rebuilds the global St theme and clobbers their
 # styling, so they must (re)apply AFTER it. The in-shell helper v3 already
@@ -302,6 +311,18 @@ class LayoutApplier:
         )
         if not ok:
             raise OSError(f"cannot refresh dconf synchronization: {detail}")
+
+    @classmethod
+    def _sync_monitor(cls, action: str) -> bool:
+        """Pause or resume the persistence monitor around the live mutation."""
+        if not cls._has_user_unit(SYNC_SERVICE):
+            return False
+        ok, detail = run_cmd(
+            ["systemctl", "--user", action, SYNC_SERVICE], timeout=15
+        )
+        if not ok:
+            raise OSError(f"cannot {action} dconf synchronization: {detail}")
+        return True
 
     @staticmethod
     def _sync_lock_acquire() -> None:
@@ -653,6 +674,7 @@ class LayoutApplier:
                     subdirs.add(subdir)
         persist_stems = {
             *_PROTECTED_PERSIST_SETTINGS_SUBDIRS,
+            *_HELPER_PERSIST_SETTINGS_SUBDIRS.values(),
             HELPER_UUID.split("@", 1)[0],
         }
         return sorted(s for s in subdirs if s not in persist_stems)
@@ -743,15 +765,14 @@ class LayoutApplier:
 
           1. ``BeginSwitch``  — curtain up, every managed extension torn down
              (awaited, reverse load order; system indicators persist)
-          2. reset the layout-owned extension branches + ``dconf load`` the
-             full layout — nothing is live, so no Notify storm, no residue
+          2. apply the exact external dconf delta while nothing is live
           3. ``CompleteSwitch`` — colorScheme repair, one ``loadTheme()``,
              target set enabled in layout order (awaited), panel style
              recompute, checkmark, curtain down
 
-        Helpers advertising ownedSwitch serialize all phases and recovery in
-        one ApplySwitch call, including caller loss and final membership writes.
-        Cached older helpers retain the two-phase, best-effort recovery path.
+        The durable persistence transaction is owned by ``load_dconf_safely``.
+        This method keeps the proven build-80 two-phase Shell protocol small:
+        stop everything, apply absolute settings, then start the target order.
         """
         info = HelperClient.ping_info()
         if info.get("busy"):
@@ -772,11 +793,13 @@ class LayoutApplier:
             }
         ]
 
-        # Keep selected system indicators stable across switches.
+        # Keep selected system components in the final target. BeginSwitch
+        # still stops every live extension exactly once.
         currently_enabled = set(cls._enabled_extensions())
         for uuid in _HELPER_PERSIST_UUIDS:
             if uuid in currently_enabled and uuid not in target_enabled:
                 target_enabled.append(uuid)
+        managed_subdirs = cls._managed_extension_subdirs(layouts_dir)
         # Helper FIRST: the final dconf write of enabled-extensions defines
         # the next login's load order, and with the helper loaded before
         # everything else the Shell's rebase cascade can never touch it.
@@ -788,24 +811,6 @@ class LayoutApplier:
                 if u not in {HELPER_UUID, LEGACY_HELPER_UUID}
             ],
         ]
-
-        if info.get("ownedSwitch") is True:
-            ok, message = HelperClient.apply_switch({
-                "settings": settings_data,
-                "branches": [
-                    f"/org/gnome/shell/extensions/{subdir}/"
-                    for subdir in cls._managed_extension_subdirs(layouts_dir)
-                ],
-                "enabled": target_enabled,
-                "disabled": cls._string_list(shell_values.get("disabled-extensions")),
-                "label": layout_label,
-                "label_from": layout_label_from,
-                "icon_from": icon_from,
-                "icon_to": icon_to,
-            })
-            if ok:
-                return cls._finish_cleanroom(data, target_enabled, message)
-            return ok, message
 
         # Capture values before teardown; failed reads must not authorize resets.
         try:
@@ -830,24 +835,20 @@ class LayoutApplier:
             HelperClient.abort_switch()
             return False, msg
 
-        # Record attempted writes too: a timed-out command may have committed.
+        # Preserve build 80's clean-room lifecycle, but mutate only values
+        # that differ. A full dconf load emits enough change notifications to
+        # deadlock GNOME 51's GJS finalizer with dconf's weak-reference worker
+        # after repeated switches.
+        target_values = cls._dconf_dump_values(settings_data)
         touched: Set[str] = set()
         try:
-            for subdir in cls._managed_extension_subdirs(layouts_dir):
-                branch = f"/org/gnome/shell/extensions/{subdir}/"
-                touched.update(path for path in previous_values if path.startswith(branch))
-                ok_reset, msg_reset = run_cmd(
-                    ["dconf", "reset", "-f", branch],
-                    timeout=15,
-                )
-                if not ok_reset:
-                    raise RuntimeError(f"dconf reset {subdir} failed: {msg_reset}")
-            touched.update(cls._dconf_dump_values(settings_data))
-            ok_load, msg_load = run_cmd(
-                ["dconf", "load", "/"], stdin_text=settings_data, timeout=30
+            ok_delta, msg_delta, touched = cls._apply_dconf_delta(
+                previous_values,
+                target_values,
+                managed_subdirs,
             )
-            if not ok_load:
-                raise RuntimeError(f"dconf load failed: {msg_load}")
+            if not ok_delta:
+                raise RuntimeError(f"dconf delta failed: {msg_delta}")
         except Exception as exc:
             log.warning("clean-room dconf phase failed: %s — aborting", exc)
             recovered, recovery = cls._restore_dconf_values(previous_values, touched)
@@ -867,70 +868,19 @@ class LayoutApplier:
                 steps = f"{steps}; helper handoff failed: {recovery}"
         if not ok:
             log.warning("helper CompleteSwitch failed: %s", steps)
-            return cls._recover_cleanroom_completion(previous_values, touched, steps)
+            restored, recovery = cls._restore_dconf_values(previous_values, touched)
+            aborted = HelperClient.abort_switch()
+            errors = [steps]
+            if not restored:
+                errors.append(f"dconf recovery failed: {recovery}")
+            if not aborted:
+                errors.append("helper abort did not confirm recovery")
+            return False, "; ".join(errors)
 
-        # Converge the dconf switch keys with what is now live so the
-        # comm-gnome-config watcher's next dump records the layout's lists.
-        # The Shell's listener sees only already-true state — a near-no-op.
-        disabled_list = cls._string_list(shell_values.get("disabled-extensions"))
-        ok_disabled, disabled_error = run_cmd(
-            [
-                "dconf",
-                "write",
-                "/org/gnome/shell/disabled-extensions",
-                cls._quote_string_list(disabled_list),
-            ],
-            timeout=10,
-        )
-        if not ok_disabled:
-            return cls._recover_cleanroom_completion(
-                previous_values, touched, f"cannot confirm disabled extensions: {disabled_error}"
-            )
-        ok_enabled, enabled_error = run_cmd(
-            [
-                "dconf",
-                "write",
-                "/org/gnome/shell/enabled-extensions",
-                cls._quote_string_list(target_enabled),
-            ],
-            timeout=10,
-        )
-        if not ok_enabled:
-            return cls._recover_cleanroom_completion(
-                previous_values, touched, f"cannot confirm enabled extensions: {enabled_error}"
-            )
+        # Extension manager calls already persist final membership. Rewriting
+        # the same keys here starts a second Shell reconciliation on GNOME 51
+        # and can race GJS finalizers with dconf's weak-reference worker.
 
-        return cls._finish_cleanroom(data, target_enabled, steps)
-
-    @classmethod
-    def _recover_cleanroom_completion(cls, previous, touched, error) -> Tuple[bool, str]:
-        """Best-effort recovery for helpers without owned-switch support."""
-        errors = [str(error)]
-        restored, detail = cls._restore_dconf_values(previous, touched)
-        if not restored:
-            errors.append(f"dconf recovery failed: {detail}")
-        if not HelperClient.abort_switch():
-            errors.append("helper abort did not confirm recovery")
-        enabled = cls._string_list(previous.get("/org/gnome/shell/enabled-extensions"))
-        if HelperClient.active_uuid() == HELPER_UUID:
-            enabled = [HELPER_UUID, *[uuid for uuid in enabled
-                                     if uuid not in {HELPER_UUID, LEGACY_HELPER_UUID}]]
-        try:
-            ok, detail = HelperClient.apply_layout(enabled, reload=enabled, timeout_ms=120000)
-            if not ok:
-                errors.append(f"live recovery failed: {detail}")
-            states = ShellReloader.list_extensions_state()
-            missing = [uuid for uuid in enabled if states.get(uuid) != 1]
-            extra = [uuid for uuid, state in states.items()
-                     if state in _LIVE_EXTENSION_STATES and uuid not in enabled]
-            if missing or extra:
-                errors.append(f"live recovery incomplete: missing={missing}, extra={extra}")
-        except Exception as exc:
-            errors.append(f"live recovery failed: {exc}")
-        return False, "; ".join(errors)
-
-    @classmethod
-    def _finish_cleanroom(cls, data, target_enabled, steps) -> Tuple[bool, str]:
         # Kiwi's patched focus policy may have been installed after its JS
         # module was loaded. A plain disable/enable reuses that cached module,
         # leaving the old window-demands-attention handler connected. Force a
@@ -1317,12 +1267,13 @@ class LayoutApplier:
             "overview-enabled",
             value,
         )
-        if not enabled:
-            return data
-
         shell = cls._section_key_values(data, "/org/gnome/shell")
-        extensions = cls._string_list(shell.get("enabled-extensions"))
-        if _FROSTED_GLASS_UUID not in extensions:
+        extensions = [
+            uuid
+            for uuid in cls._string_list(shell.get("enabled-extensions"))
+            if uuid != _FROSTED_GLASS_UUID
+        ]
+        if enabled:
             extensions.append(_FROSTED_GLASS_UUID)
         return cls._replace_or_add_dconf_key(
             data,
@@ -1562,6 +1513,71 @@ class LayoutApplier:
                 path = "/" + "/".join(part for part in (section, key.strip()) if part)
                 values[path] = value
         return values
+
+    @staticmethod
+    def _serialize_dconf_values(values: Dict[str, str]) -> str:
+        """Serialize full dconf key paths without touching unrelated values."""
+        sections: Dict[str, List[str]] = {}
+        for path, value in sorted(values.items()):
+            section, separator, key = path.rpartition("/")
+            if not separator or not key:
+                raise ValueError(f"invalid dconf key path: {path}")
+            sections.setdefault(section.lstrip("/"), []).append(f"{key}={value}")
+        if not sections:
+            return ""
+        return "\n\n".join(
+            f"[{section or '/'}]\n" + "\n".join(lines)
+            for section, lines in sections.items()
+        ) + "\n"
+
+    @staticmethod
+    def _dconf_delta(
+        previous: Dict[str, str],
+        target: Dict[str, str],
+        managed_subdirs: Iterable[str],
+    ) -> Tuple[List[str], Dict[str, str]]:
+        """Return the exact minimum reset/write set for a layout target."""
+        prefixes = tuple(
+            f"/org/gnome/shell/extensions/{subdir}/"
+            for subdir in managed_subdirs
+        )
+        resets = sorted(
+            path
+            for path in previous
+            if prefixes and path.startswith(prefixes) and path not in target
+        )
+        changed = {
+            path: value
+            for path, value in target.items()
+            if previous.get(path) != value
+        }
+        return resets, changed
+
+    @classmethod
+    def _apply_dconf_delta(
+        cls,
+        previous: Dict[str, str],
+        target: Dict[str, str],
+        managed_subdirs: Iterable[str],
+    ) -> Tuple[bool, str, Set[str]]:
+        """Apply the minimum external dconf mutation in one worker."""
+        resets, changed = cls._dconf_delta(previous, target, managed_subdirs)
+        touched = set(resets) | set(changed)
+        if not touched:
+            return True, "", touched
+
+        command = [sys.executable, str(_DCONF_BATCH_HELPER)]
+        for path in resets:
+            command.extend(("--reset", path))
+        try:
+            ok, message = run_cmd(
+                command,
+                stdin_text=cls._serialize_dconf_values(changed),
+                timeout=60,
+            )
+        except Exception as exc:
+            ok, message = False, str(exc)
+        return ok, message, touched
 
     @staticmethod
     def _restore_dconf_values(previous: Dict[str, str], touched: Set[str]) -> Tuple[bool, str]:
@@ -2302,9 +2318,9 @@ class LayoutApplier:
         and keeps automatic saves quarantined. The next successful application
         or pre-Shell login recovers normal persistence.
 
-        The Qt theme watcher is paused during mutation. dconf-sync remains
-        running: its writer lock and transaction guard reject intermediate
-        snapshots. Live resets stay scoped to owned extension settings.
+        The Qt theme watcher and dconf-sync monitor are paused during mutation.
+        The writer lock and durable transaction remain active throughout.
+        Live resets stay scoped to owned extension settings.
 
         persist=False changes live settings without replacing the committed
         snapshot. progress_cb failures never interrupt an application.
@@ -2444,8 +2460,10 @@ class LayoutApplier:
         except OSError as exc:
             return False, f"cannot pause dconf synchronization: {exc}"
         persisted = False
+        sync_monitor_paused = False
         try:
             cls._refresh_sync_monitor()
+            sync_monitor_paused = cls._sync_monitor("stop")
             cls._qt_theme_watcher("stop")
 
             if persist:
@@ -2462,13 +2480,11 @@ class LayoutApplier:
                     return finish((False, f"settings.gnome write failed: {info}"))
                 persisted = True
 
-            # Prefer the in-shell helper extension when present: it performs
-            # the switch from inside gnome-shell, avoiding the cross-process
-            # race that hangs the shell on heavy transitions and re-theming
-            # appearance-owning extensions live. v7+ runs the clean-room
-            # protocol (login semantics under a transition curtain); older
-            # helpers get the incremental protocol; the legacy external path
-            # below is the fallback when the helper isn't installed/enabled.
+            # Prefer the helper protocol when present. v7+ tears down and
+            # rebuilds Shell components under its curtain, while this process
+            # applies the dconf delta between BeginSwitch and CompleteSwitch.
+            # Keeping dconf mutation outside a pending GJS D-Bus invocation
+            # avoids the Shell/libdconf deadlock seen under repeated switches.
             helper_version = HelperClient.helper_version()
             if helper_version >= _HELPER_CLEANROOM_VERSION:
                 progress("Applying layout…")
@@ -2729,7 +2745,11 @@ class LayoutApplier:
                 try:
                     cls._qt_theme_watcher("start")
                 finally:
-                    cls._sync_lock_release()
+                    try:
+                        if sync_monitor_paused:
+                            cls._sync_monitor("start")
+                    finally:
+                        cls._sync_lock_release()
 
     @classmethod
     def apply(

@@ -3,13 +3,14 @@
 
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
 from layout_applier import _HELPER_PERSIST_UUIDS, LayoutApplier
 
 ROOT = Path(__file__).resolve().parents[1]
+ORIGINAL_SYNC_MONITOR = LayoutApplier._sync_monitor.__func__
 
 CURRENT_DCONF = """\
 [org/gnome/desktop/input-sources]
@@ -35,12 +36,65 @@ def test_retired_extensions_are_not_preserved_across_layout_switches():
     )
 
 
+def test_only_external_stateful_components_stay_live_during_switches():
+    assert _HELPER_PERSIST_UUIDS == {
+        "copyous@boerdereinar.dev",
+        "big-shot@communitybig.org",
+    }
+
+
+def test_sync_monitor_controls_existing_user_service():
+    with (
+        patch.object(LayoutApplier, "_has_user_unit", return_value=True),
+        patch("layout_applier.run_cmd", return_value=(True, "")) as run,
+    ):
+        assert ORIGINAL_SYNC_MONITOR(LayoutApplier, "stop") is True
+
+    run.assert_called_once_with(
+        ["systemctl", "--user", "stop", "dconf-sync-gnome.service"],
+        timeout=15,
+    )
+
+
+def test_sync_monitor_failure_aborts_mutation():
+    with (
+        patch.object(LayoutApplier, "_has_user_unit", return_value=True),
+        patch("layout_applier.run_cmd", return_value=(False, "failed")),
+        pytest.raises(OSError, match="cannot stop dconf synchronization"),
+    ):
+        ORIGINAL_SYNC_MONITOR(LayoutApplier, "stop")
+
+
+def test_dconf_delta_is_absolute_without_rewriting_unchanged_values():
+    previous = {
+        "/org/gnome/shell/extensions/owned/keep": "true",
+        "/org/gnome/shell/extensions/owned/stale": "42",
+        "/org/gnome/shell/extensions/external/value": "'user'",
+        "/org/gnome/desktop/interface/color-scheme": "'default'",
+    }
+    target = {
+        "/org/gnome/shell/extensions/owned/keep": "true",
+        "/org/gnome/shell/extensions/owned/new": "7",
+        "/org/gnome/desktop/interface/color-scheme": "'prefer-dark'",
+    }
+
+    resets, changed = LayoutApplier._dconf_delta(previous, target, ["owned"])
+
+    assert resets == ["/org/gnome/shell/extensions/owned/stale"]
+    assert changed == {
+        "/org/gnome/shell/extensions/owned/new": "7",
+        "/org/gnome/desktop/interface/color-scheme": "'prefer-dark'",
+    }
+    assert "/org/gnome/shell/extensions/external/value" not in resets
+
+
 @pytest.fixture(autouse=True)
 def required_helper_available(tmp_path):
     """Keep layout tests focused on the apply stage after helper preflight."""
     with (
         patch("layout_applier.open_store"),
         patch("layout_applier.LayoutApplier._refresh_sync_monitor"),
+        patch("layout_applier.LayoutApplier._sync_monitor", return_value=True),
         patch("layout_applier.SETTINGS_GNOME", tmp_path / "settings.gnome"),
         patch("layout_applier._LAYOUT_HASH_FILE", tmp_path / "settings.sha256"),
         patch("layout_applier._LAYOUT_MUTATION_LOCK_PATH", tmp_path / "mutation.lock"),
@@ -1973,6 +2027,75 @@ class TestHelperIntegration:
         assert "gsconnect" not in subdirs
         assert "gtk4-ding" not in subdirs
 
+    def test_cleanroom_stops_components_but_preserves_protected_settings(
+        self, tmp_path, monkeypatch
+    ):
+        data = (
+            "[org/gnome/shell]\n"
+            "disabled-extensions=[]\n"
+            "enabled-extensions=['layout-switcher-helper@communitybig.org', "
+            "'copyous@boerdereinar.dev', 'big-shot@communitybig.org', "
+            "'appindicatorsupport@rgcjonas.gmail.com']\n\n"
+            "[org/gnome/shell/extensions/copyous]\n"
+            "history-length=70\n\n"
+            "[org/gnome/shell/extensions/appindicator]\n"
+            "tray-pos='center'\n\n"
+            "[org/gnome/shell/extensions/community-menu]\n"
+            "layout='APPS_ONLY'\n"
+        )
+        (tmp_path / "target.txt").write_text(data)
+
+        run = Mock(return_value=(True, ""))
+        begin = Mock(return_value=(True, ""))
+        complete = Mock(return_value=(True, "done"))
+        owned = Mock(side_effect=AssertionError("in-Shell writer used"))
+        monkeypatch.setattr("layout_applier.run_cmd", run)
+        monkeypatch.setattr(
+            "layout_applier.HelperClient.ping_info",
+            lambda *_args: {
+                "ownedSwitch": True,
+                "allowInShellDconf": True,
+                "uuid": "layout-switcher-helper@communitybig.org",
+            },
+        )
+        monkeypatch.setattr("layout_applier.HelperClient.begin_switch", begin)
+        monkeypatch.setattr("layout_applier.HelperClient.complete_switch", complete)
+        monkeypatch.setattr("layout_applier.HelperClient.apply_switch", owned)
+        monkeypatch.setattr("layout_applier.HelperClient.reload_extension", lambda _uuid: True)
+        monkeypatch.setattr("layout_applier.ShellReloader.list_extensions_state", lambda: {})
+        monkeypatch.setattr(
+            LayoutApplier,
+            "_enabled_extensions",
+            lambda: [
+                "copyous@boerdereinar.dev",
+                "big-shot@communitybig.org",
+                "appindicatorsupport@rgcjonas.gmail.com",
+            ],
+        )
+
+        ok, _message = LayoutApplier._apply_via_helper_v7(
+            data,
+            layouts_dir=tmp_path,
+        )
+
+        assert ok is True
+        owned.assert_not_called()
+        assert set(begin.call_args.args[0]) == {
+            "copyous@boerdereinar.dev",
+            "big-shot@communitybig.org",
+            "layout-switcher-helper@communitybig.org",
+        }
+        batches = [
+            call for call in run.call_args_list
+            if len(call.args[0]) > 1 and call.args[0][1].endswith("dconf_batch.py")
+        ]
+        assert len(batches) == 1
+        command = batches[0].args[0]
+        assert "/org/gnome/shell/extensions/copyous/history-length" not in command
+        assert "[org/gnome/shell/extensions/appindicator]" in (
+            batches[0].kwargs["stdin_text"]
+        )
+
     def test_inject_helper_uuid_adds(self):
         from helper_client import HELPER_UUID
 
@@ -2174,7 +2297,10 @@ class TestHelperIntegration:
         ],
     )
     def test_gnome50_overview_default_is_owned_by_three_original_layouts(self, layout_id, expected):
-        data = "[org/gnome/shell]\nenabled-extensions=['stay@ext']\n"
+        data = (
+            "[org/gnome/shell]\n"
+            "enabled-extensions=['stay@ext', 'frosted-glass@communitybig.org']\n"
+        )
 
         out = LayoutApplier._apply_gnome50_overview_default(data, layout_id)
         glass = LayoutApplier._section_key_values(out, "/org/communitybig/frosted-glass")
@@ -2271,7 +2397,7 @@ class TestHelperIntegration:
         root = Path(__file__).resolve().parents[1]
         for uuid, build in (
             ("layout-switcher-helper@bigcommunity.org", 43),
-            ("layout-switcher-helper@communitybig.org", 84),
+            ("layout-switcher-helper@communitybig.org", 109),
         ):
             source = (
                 root / "usr/share/gnome-shell/extensions" / uuid / "extension.js"

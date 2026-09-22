@@ -55,21 +55,16 @@ def test_failed_commit_reports_failure_and_restores_files(session):
     assert module.SETTINGS_GNOME.read_text() == OLD
 
 
-@pytest.mark.parametrize('key', ['disabled-extensions', 'enabled-extensions'])
-def test_failed_final_extension_write_cannot_commit(session, key):
+def test_extension_membership_is_committed_by_helper(session):
     session['begin_switch'].return_value = True, ''
-
-    def command(argv, **kwargs):
-        if argv[:3] == ['dconf', 'write', '/org/gnome/shell/' + key]:
-            return False, 'final write failed'
-        return True, ''
-
-    session['run_cmd'].side_effect = command
     ok, message = module.LayoutApplier.load_dconf_safely(DATA)
-    assert not ok and 'final write failed' in message
-    module.open_store.return_value.publish.assert_not_called()
-    module.open_store.return_value.abort.assert_called_once()
-    assert module.SETTINGS_GNOME.read_text() == OLD
+    assert ok, message
+    writes = [
+        call.args[0] for call in session['run_cmd'].call_args_list
+        if call.args[0][:2] == ['dconf', 'write']
+    ]
+    assert not any(argv[2].startswith('/org/gnome/shell/') for argv in writes)
+    session['complete_switch'].assert_called_once()
 
 
 def test_monitor_restart_failure_prevents_teardown_and_file_writes(session, monkeypatch):

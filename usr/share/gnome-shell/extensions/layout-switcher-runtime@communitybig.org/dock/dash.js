@@ -331,8 +331,6 @@ export const DockDash = GObject.registerClass({
 
     _onDestroy() {
         this._signalsHandler?.destroy();
-        this._communitySettings?.run_dispose?.();
-        this._shellSettings?.run_dispose?.();
         this._communitySettings = null;
         this._shellSettings = null;
         this.iconAnimator.destroy();

@@ -45,7 +45,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 84" in source
+    assert "const HELPER_BUILD = 109" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -109,7 +109,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 84" in source
+    assert "const HELPER_BUILD = 109" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
@@ -129,6 +129,23 @@ def test_native_shell_running_indicators_follow_shell_accent():
     assert "background-color: -st-accent-color" in stylesheet
 
 
+def test_cleanroom_collects_retired_settings_before_dconf_mutation():
+    source = HELPER.read_text()
+    begin = source.split("async _beginSwitch(payload) {", 1)[1]
+    begin = begin.split("CompleteSwitchAsync", 1)[0]
+
+    assert "import System from 'system';" in source
+    assert begin.index("const teardown =") < begin.index("System.gc();")
+    assert begin.index("System.gc();") < begin.index("BeginSwitch done")
+
+
+def test_dconf_mutation_is_not_owned_by_shell_dbus_call():
+    source = HELPER.read_text()
+
+    assert "ownedSwitch: false" in source
+    assert "deadlock libdconf's worker" in source
+
+
 def test_optional_extension_failure_does_not_abort_layout_switch():
     source = HELPER.read_text()
     complete = source.split("async _completeSwitch(payload) {", 1)[1]
@@ -139,6 +156,94 @@ def test_optional_extension_failure_does_not_abort_layout_switch():
     assert "optional components pending restart" in complete
     assert "optionalFailures: failedOptional" in complete
     assert "this._switchTransaction?.current || STRUCTURAL_UUIDS.has(uuid)" not in complete
+    assert "await this._waitConfigured(mgr, uuid)" in complete
+
+
+def test_cleanroom_retires_configured_inactive_extensions_through_manager():
+    source = HELPER.read_text()
+    complete = source.split("async _completeSwitch(payload) {", 1)[1]
+    complete = complete.split("AbortSwitchAsync", 1)[0]
+
+    assert "const configuredExtras = shellSettings.get_strv('enabled-extensions')" in complete
+    assert "await this._waitUnconfigured(mgr, uuid)" in complete
+    assert "shellSettings.set_strv('enabled-extensions'" not in complete
+
+
+def test_disabled_membership_accepts_shell_normalization_only_for_inactive_extensions():
+    source = HELPER.read_text()
+
+    assert "disabledMatches: (current, required, enabled)" in source
+    assert "active.every(uuid => !actual.has(uuid))" in source
+    assert "!LIVE_STATES.has(manager.lookup(uuid)?.state)" in source
+
+
+def test_cleanroom_stops_all_components_before_settings_load():
+    source = HELPER.read_text()
+    begin = source.split("async _beginSwitch(payload) {", 1)[1]
+    begin = begin.split("CompleteSwitchAsync", 1)[0]
+
+    assert "this._prevEnabled = this._orderedLive(mgr);" in begin
+    assert "const teardown = this._prevEnabled.filter(u => u !== self).reverse();" in begin
+    assert "requestedPersist" not in begin
+    assert "hoist self" in begin
+    assert begin.index("mgr._extensionOrder.splice") < begin.index(
+        "this._prevEnabled = this._orderedLive(mgr);"
+    )
+    assert begin.index("this._prevEnabled = this._orderedLive(mgr);") < begin.index(
+        "const teardown ="
+    )
+
+
+def test_panel_repaint_never_enters_overview():
+    source = HELPER.read_text()
+    repaint = source.split("async _panelRepaint() {", 1)[1]
+    repaint = repaint.split("// ── Rollback safety net", 1)[0]
+
+    assert repaint.count("this._yieldTransitionFrame()") == 2
+    assert "queue_repaint" not in repaint
+    assert "get_children" not in repaint
+    assert "Main.overview.show()" not in repaint
+    assert "Main.overview.hide()" not in repaint
+
+
+def test_desktop_entry_layouts_close_inherited_overview_before_success():
+    source = HELPER.read_text()
+    complete = source.split("async _completeSwitch(payload) {", 1)[1]
+    complete = complete.split("AbortSwitchAsync", 1)[0]
+
+    assert "const DESKTOP_ENTRY_LAYOUTS = new Set(['Hybrid', 'Desk UX', 'Classic']);" in source
+    assert "DESKTOP_ENTRY_LAYOUTS.has(this._activeLayoutLabel)" in complete
+    assert "Main.overview.visible || Main.overview.visibleTarget" in complete
+    assert "Main.overview.hide();" in complete
+    assert complete.index("Main.overview.hide();") < complete.index(
+        "this._curtainCheckmark();"
+    )
+
+
+def test_appindicator_refresh_uses_only_shared_icon_cache_and_actor_redraw():
+    source = HELPER.read_text()
+    refresh = source.split("async _refreshIconThemeConsumers() {", 1)[1]
+    refresh = refresh.split("// ── Transition curtain", 1)[0]
+
+    assert "rescan_icon_theme" in refresh
+    assert "queue_relayout" in refresh
+    assert "queue_redraw" in refresh
+    assert "destroyDefaultTheme" not in refresh
+    assert "refreshAllProperties" not in refresh
+    assert "new appIndicatorModule.IconActor" not in refresh
+
+
+def test_unavailable_optional_extensions_do_not_consume_settle_timeout():
+    source = HELPER.read_text()
+    complete = source.split("async _completeSwitch(payload) {", 1)[1]
+    complete = complete.split("AbortSwitchAsync", 1)[0]
+
+    assert "const STATE_OUT_OF_DATE = 4" in source
+    assert "if (state === STATE_OUT_OF_DATE || state === STATE_ERROR)" in complete
+    unavailable = complete.index(
+        "if (state === STATE_OUT_OF_DATE || state === STATE_ERROR)"
+    )
+    assert unavailable < complete.index("mgr.enableExtension(uuid)")
 
 
 def test_incremental_migration_detaches_menu_before_replacing_panel():
@@ -169,28 +274,23 @@ def test_icon_theme_change_refreshes_appindicator_cache():
     assert "iconThemeChanged = true" in source
     assert "await this._refreshIconThemeConsumers()" in source
     assert "rescan_icon_theme?.()" in source
-    assert "Gio.File.new_for_path(utilPath).get_uri()" in source
-    assert "await import(utilUri)" in source
-    assert "destroyDefaultTheme?.()" in source
-    assert "Gio.File.new_for_path(actorPath).get_uri()" in source
-    assert "appIndicatorModule = await import(actorUri)" in source
-    assert "new appIndicatorModule.IconActor" in source
-    assert "statusIcon._setIconActor(newIcon)" in source
     assert "Object.entries(Main.panel.statusArea)" in source
     assert "id.startsWith('appindicator-')" in source
-    assert "refreshAllProperties?.()" in source
-    assert "_invalidateIcon?.()" in source
-    assert source.count("steps.push(`status icons refreshed ${refreshed}`)") == 2
-    complete = source.index("async _completeSwitch")
-    legacy = source.index("async _applyLayout")
-    first_refresh = source.index("steps.push(`status icons refreshed ${refreshed}`)")
-    second_refresh = source.index(
-        "steps.push(`status icons refreshed ${refreshed}`)", first_refresh + 1
-    )
-    assert complete < first_refresh < legacy < second_refresh
-    private_reset = source.index("destroyDefaultTheme?.()")
-    actor_reset = source.index("_invalidateIcon?.()", private_reset)
-    assert private_reset < actor_reset
+    assert "statusIcon.queue_relayout?.()" in source
+    assert "statusIcon.queue_redraw?.()" in source
+    assert "destroyDefaultTheme?.()" not in source
+    assert "refreshAllProperties?.()" not in source
+    assert "new appIndicatorModule.IconActor" not in source
+    complete = source[source.index("async _completeSwitch"):source.index(
+        "AbortSwitchAsync"
+    )]
+    legacy = source[source.index("async _applyLayout"):]
+    follower = source[source.index("async _followColorScheme"):source.index(
+        "async _refreshIconThemeConsumers"
+    )]
+    assert "await this._refreshIconThemeConsumers()" in complete
+    assert "_refreshIconThemeConsumers" not in legacy
+    assert "await this._refreshIconThemeConsumers()" in follower
 
 
 def test_live_color_switch_supports_runtime_hosted_panel():

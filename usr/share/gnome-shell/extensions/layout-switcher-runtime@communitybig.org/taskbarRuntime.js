@@ -79,13 +79,7 @@ export class TaskbarRuntime {
     }
 
     _disposeSettings() {
-        const settings = this._settings;
         this._settings = null;
-        try {
-            settings?.run_dispose?.();
-        } catch (error) {
-            console.warn(`[layout-switcher-runtime] Taskbar settings disposal failed: ${error}`);
-        }
     }
 
     deactivate() {

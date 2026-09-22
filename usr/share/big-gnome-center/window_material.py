@@ -2,6 +2,7 @@
 """Reversible GTK background styles for validated applications."""
 
 import argparse
+import ctypes
 import os
 import stat
 import sys
@@ -76,18 +77,20 @@ def render_css(opacity: int) -> bytes:
 
 
 def gtk_supports_blur() -> bool:
-    import gi
-
-    gi.require_version("Gtk", "4.0")
-    from gi.repository import Gtk
-
-    if Gtk.check_version(4, 23, 3) is not None:
+    """Check GTK without opening a display or joining the desktop D-Bus."""
+    try:
+        library = ctypes.CDLL("libgtk-4.so.1")
+        version = tuple(
+            getattr(library, symbol)()
+            for symbol in (
+                "gtk_get_major_version",
+                "gtk_get_minor_version",
+                "gtk_get_micro_version",
+            )
+        )
+    except (AttributeError, OSError):
         return False
-    errors = []
-    provider = Gtk.CssProvider()
-    provider.connect("parsing-error", lambda *args: errors.append(args[-1]))
-    provider.load_from_string(render_css(37).decode())
-    return not errors
+    return version >= (4, 23, 3)
 
 
 def read_regular(path: Path) -> bytes | None:

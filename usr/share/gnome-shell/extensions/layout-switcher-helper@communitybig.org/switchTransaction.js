@@ -65,8 +65,10 @@ export class SwitchTransaction {
             const request = operation.request;
             if (!Array.isArray(request.branches) || !Array.isArray(request.enabled) ||
                 !Array.isArray(request.disabled) || typeof request.settings !== 'string' ||
+                (request.persist !== undefined && !Array.isArray(request.persist)) ||
                 request.branches.some(branch => !/^\/org\/gnome\/shell\/extensions\/[a-zA-Z0-9_-]+\/$/.test(branch)) ||
-                [...request.enabled, ...request.disabled].some(uuid => typeof uuid !== 'string' || !uuid))
+                [...request.enabled, ...request.disabled, ...(request.persist ?? [])]
+                    .some(uuid => typeof uuid !== 'string' || !uuid))
                 throw new Error('invalid layout switch request');
             const target = dumpValues(request.settings);
             if ([...target.keys()].some(key => SWITCH_KEYS.has(key)))
@@ -93,25 +95,16 @@ export class SwitchTransaction {
                     if (path.startsWith(branch))
                         operation.touched.add(path);
                 }
-                await host.run(['dconf', 'reset', '-f', branch]);
-                this.check(operation);
             }
             for (const key of target.keys())
                 operation.touched.add(key);
-            await host.run(['dconf', 'load', '/'], request.settings);
+            await host.mutate(request.branches, request.settings);
             this.check(operation);
             const completion = await host.complete(request);
             this.check(operation);
             if (!completion.ok)
                 throw new Error(completion.error || 'layout activation failed');
-            for (const [key, value] of [[DISABLED, request.disabled], [ENABLED, request.enabled]]) {
-                await host.run(['dconf', 'write', key, `@as ${JSON.stringify(value)}`]);
-                this.check(operation);
-            }
-            await this._verify(new Map([
-                [ENABLED, `@as ${JSON.stringify(request.enabled)}`],
-                [DISABLED, `@as ${JSON.stringify(request.disabled)}`],
-            ]));
+            this._verifyLive(request.enabled, completion.optionalFailures ?? []);
             this.check(operation);
             await host.finish();
             this.check(operation);
@@ -154,34 +147,50 @@ export class SwitchTransaction {
         return result;
     }
 
+    _verifyLive(expected, optionalFailures = []) {
+        const optional = new Set(optionalFailures);
+        const wanted = new Set(expected.filter(uuid => !optional.has(uuid)));
+        const actual = new Set(this.host.live());
+        const missing = [...wanted].filter(uuid => !actual.has(uuid));
+        const extra = [...actual].filter(uuid => !wanted.has(uuid));
+        if (missing.length || extra.length) {
+            throw new Error(`extension verification failed: missing ${missing.join(', ') || '-'}; ` +
+                `extra ${extra.join(', ') || '-'}`);
+        }
+    }
+
     async _restore(operation, membership) {
         const saved = new Map();
-        const errors = [];
+        const reset = [];
         for (const key of operation.touched) {
             if (SWITCH_KEYS.has(key) !== membership)
                 continue;
             this.check(operation);
             if (operation.previous.has(key))
                 saved.set(key, operation.previous.get(key));
-            else {
-                try { await this.host.run(['dconf', 'reset', key]); }
-                catch (error) { errors.push(String(error)); }
-            }
+            else
+                reset.push(key);
         }
-        if (saved.size) {
-            this.check(operation);
-            try { await this.host.run(['dconf', 'load', '/'], serialize(saved)); }
-            catch (error) { errors.push(String(error)); }
-        }
-        if (errors.length)
-            throw new Error(errors.join('; '));
+        this.check(operation);
+        await this.host.restoreValues(reset, serialize(saved));
+        this.check(operation);
     }
 
     async _verify(expected) {
-        const current = dumpValues(await this.host.run(['dconf', 'dump', '/']));
-        const mismatches = [...expected].filter(([key, value]) =>
-            !this.host.equal(current.get(key), value)).map(([key]) => key);
-        if (mismatches.length)
-            throw new Error(`settings verification failed: ${mismatches.join(', ')}`);
+        let mismatches = [];
+        for (let attempt = 0; attempt < 10; attempt++) {
+            const current = dumpValues(await this.host.run(['dconf', 'dump', '/']));
+            mismatches = [...expected].filter(([key, value]) => {
+                if (key === DISABLED && this.host.disabledMatches)
+                    return !this.host.disabledMatches(
+                        current.get(key), value, expected.get(ENABLED));
+                return !this.host.equal(current.get(key), value);
+            }).map(([key]) => key);
+            if (!mismatches.length)
+                return;
+            if (attempt < 9)
+                await this.host.settle(50);
+        }
+        throw new Error(`settings verification failed: ${mismatches.join(', ')}`);
     }
 }

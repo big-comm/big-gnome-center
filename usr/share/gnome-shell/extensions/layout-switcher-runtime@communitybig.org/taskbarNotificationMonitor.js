@@ -137,7 +137,6 @@ export class TaskbarNotificationMonitor extends EventEmitter {
         this._destroyed = true;
         this._disconnect(this._settings, this._settingsId);
         this._settingsId = 0;
-        this._settings?.run_dispose?.();
         this._settings = null;
         if (this._nameOwnerId) Gio.DBus.session.signal_unsubscribe(this._nameOwnerId);
         this._nameOwnerId = 0;

@@ -49,6 +49,10 @@ def _snapshot(**changes) -> Snapshot:
         "indicator_overrides": {},
     }
     values.update(changes)
+    if "desktop_icons_state" not in changes:
+        values["desktop_icons_state"] = (
+            1 if DESKTOP_ICONS_UUID in values["enabled_extensions"] else 0
+        )
     if "app_active_layout" not in changes:
         values["app_active_layout"] = values["active_layout"]
     if "runtime_diagnostics" not in changes:
@@ -236,7 +240,7 @@ def _snapshot(**changes) -> Snapshot:
                         "recipientUuids": (
                             [DESKTOP_ICONS_UUID]
                             if surface == "dock"
-                            and DESKTOP_ICONS_UUID in values["enabled_extensions"]
+                            and values["desktop_icons_state"] == 1
                             else []
                         ),
                     },
@@ -371,8 +375,7 @@ def _snapshot(**changes) -> Snapshot:
                                 "recipientUuids": (
                                     [DESKTOP_ICONS_UUID]
                                     if surface == "taskbar"
-                                    and DESKTOP_ICONS_UUID
-                                    in values["enabled_extensions"]
+                                    and values["desktop_icons_state"] == 1
                                     else []
                                 ),
                             },
@@ -822,6 +825,23 @@ def test_audit_rejects_owned_dock_setting_drift(tmp_path):
     } <= failures.keys()
 
 
+def test_audit_accepts_zero_opacity_for_hidden_intelligent_dock(tmp_path):
+    _payload(tmp_path)
+    snapshot = _snapshot()
+    diagnostics = dict(snapshot.runtime_diagnostics)
+    runtime = dict(diagnostics["runtime"])
+    dock = dict(runtime["dock"])
+    dock["actors"] = [dict(dock["actors"][0], opacity=0)]
+    runtime["dock"] = dock
+    diagnostics["runtime"] = runtime
+
+    failures = _failures(
+        audit_snapshot(_snapshot(runtime_diagnostics=diagnostics), tmp_path)
+    )
+
+    assert "dock-opacity" not in failures
+
+
 def test_audit_rejects_taskbar_opacity_drift(tmp_path):
     _payload(tmp_path)
     snapshot = _snapshot(active_layout="Hybrid")
@@ -1015,6 +1035,20 @@ def test_audit_rejects_inherited_or_disconnected_dock_desktop_bridge(tmp_path):
     assert "dock-desktop-bridge-connection" in failures
     assert "dock-desktop-bridge-settled" in failures
     assert "dock-desktop-bridge-recipient" in failures
+
+
+def test_audit_allows_no_recipient_when_desktop_icons_are_out_of_date(tmp_path):
+    _payload(tmp_path)
+    checks = audit_snapshot(
+        _snapshot(
+            active_layout="Hybrid",
+            enabled_extensions=(RUNTIME_UUID, HELPER_UUID, DESKTOP_ICONS_UUID),
+            desktop_icons_state=4,
+        ),
+        tmp_path,
+    )
+
+    assert "taskbar-desktop-bridge-recipient" not in _failures(checks)
 
 
 def test_audit_reports_missing_internal_payload(tmp_path):

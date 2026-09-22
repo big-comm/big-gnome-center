@@ -25,9 +25,9 @@ def test_community_dock_is_a_private_resource_host():
 
 
 def test_community_dock_tracks_accepted_core_baseline():
-    # Includes owned settings disposal and magnification visibility notifications.
+    # Includes deferred settings release and magnification visibility notifications.
     assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
-        "3b315181acdfd7cdf67f17e61c3b9d7a5303d72b4f822c1357136c123c9800c9"
+        "1aa0eb20ed1cf82cf94fb44e039d87ff3d3c688417587ca66270e2e07dbc3167"
     )
 
 

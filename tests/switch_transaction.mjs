@@ -30,15 +30,23 @@ function harness(failure = '') {
     const host = {
         async run(argv, input) {
             if (argv[1] === 'dump') { await point('dump'); return serialize(values); }
-            if (argv[1] === 'reset') {
-                const path = argv.at(-1);
-                for (const key of [...values.keys()])
-                    if (key === path || (argv.includes('-f') && key.startsWith(path))) values.delete(key);
-            } else if (argv[1] === 'load') {
-                for (const [key, value] of dumpValues(input)) values.set(key, value);
-            } else if (argv[1] === 'write') values.set(argv[2], argv[3]);
+            if (argv[1] === 'write') values.set(argv[2], argv[3]);
             await point(argv[1] === 'write' ? `write:${argv[2]}` : argv[1]);
             return '';
+        },
+        async mutate(branches, input) {
+            for (const path of branches) {
+                for (const key of [...values.keys()]) {
+                    if (key.startsWith(path)) values.delete(key);
+                }
+            }
+            for (const [key, value] of dumpValues(input)) values.set(key, value);
+            await point('mutate');
+        },
+        async restoreValues(paths, input) {
+            for (const path of paths) values.delete(path);
+            for (const [key, value] of dumpValues(input)) values.set(key, value);
+            await point('restore-values');
         },
         live: () => [...live], label: () => label,
         async begin() { live = ['helper']; await point('begin'); },
@@ -49,6 +57,7 @@ function harness(failure = '') {
         release() { events.push('release'); },
         arm(ms, callback) { const id = ++nextId; timers.set(id, callback); return id; },
         disarm(id) { timers.delete(id); },
+        async settle() { await point('settle'); },
         watch(callback) { const id = ++nextId; watches.set(id, callback); return id; },
         unwatch(id) { watches.delete(id); },
         equal: (a, b) => canonical(a) === canonical(b), warn() {},
@@ -68,11 +77,27 @@ let count = 0;
 async function test(name, callback) {
     try { await callback(); count++; } catch (error) { error.message = `${name}: ${error.message}`; throw error; }
 }
-await test('success commits settings and membership', async () => {
+await test('success commits settings without a second membership write', async () => {
     const h = harness(), result = await h.transaction.apply(request(), ':1.1');
     assert.equal(result.ok, true); assert.equal(h.values.get(branch + 'new'), 'true');
     assert.ok(!h.values.has(branch + 'old')); assert.equal(h.values.get('/other/keep'), '42');
-    assert.deepEqual(h.live(), ['helper', 'target']); h.clean();
+    assert.deepEqual(h.live(), ['helper', 'target']);
+    assert.equal(h.events.some(event => event.startsWith('write:')), false);
+    h.clean();
+});
+await test('persistent component list is accepted', async () => {
+    const h = harness(), req = request();
+    req.persist = ['copyous@example.org'];
+    const result = await h.transaction.apply(req, ':1.1');
+    assert.equal(result.ok, true); h.clean();
+});
+await test('malformed persistent component list is rejected before mutation', async () => {
+    const h = harness(), req = request();
+    req.persist = 'copyous@example.org';
+    const result = await h.transaction.apply(req, ':1.1');
+    assert.equal(result.ok, false);
+    assert.equal(h.events.includes('begin'), false);
+    h.clean();
 });
 await test('optional component failures do not roll back membership', async () => {
     const h = harness(), complete = h.host.complete;
@@ -86,7 +111,7 @@ await test('optional component failures do not roll back membership', async () =
     assert.deepEqual(h.live(), ['helper', 'target']);
     h.clean();
 });
-for (const point of ['begin', 'reset', 'load', 'complete', `write:${disabled}`, `write:${enabled}`, 'finish']) {
+for (const point of ['begin', 'mutate', 'complete', 'finish']) {
     await test(`recover failure after ${point}`, async () => {
         const h = harness(point), result = await h.transaction.apply(request(), ':1.1');
         assert.equal(result.ok, false); assert.equal(result.recovered, true);
@@ -97,7 +122,7 @@ await test('snapshot failure never tears down', async () => {
     const h = harness('dump'), result = await h.transaction.apply(request(), ':1.1');
     assert.equal(result.ok, false); assert.ok(!h.events.includes('begin')); h.recovered(); h.clean();
 });
-for (const phase of ['begin', 'load', 'complete', 'finish']) {
+for (const phase of ['begin', 'mutate', 'complete', 'finish']) {
     for (const mode of ['abort', 'deadline', 'caller-loss']) {
         await test(`${mode} waits for owned work at ${phase}`, async () => {
             const h = harness(), started = deferred(), gate = deferred();
@@ -121,13 +146,13 @@ await test('another caller disappearing does not cancel owner', async () => {
     const h = harness(); h.hooks.set('begin', () => [...h.watches.values()][0](':1.2'));
     assert.equal((await h.transaction.apply(request(), ':1.1')).ok, true); h.clean();
 });
-for (const point of ['stop', 'restore', 'load']) {
+for (const point of ['stop', 'restore', 'restore-values']) {
     await test(`recovery error remains visible: ${point}`, async () => {
         const h = harness('complete');
-        const originalMethod = h.host[point === 'load' ? 'run' : point];
-        if (point === 'load') h.host.run = async (argv, input) => {
-            if (h.transaction.current.recovering && argv[1] === 'load') throw new Error('cannot restore settings');
-            return originalMethod(argv, input);
+        const originalMethod = h.host[point];
+        if (point === 'restore-values') h.host.restoreValues = async (...args) => {
+            if (h.transaction.current.recovering) throw new Error('cannot restore settings');
+            return originalMethod(...args);
         };
         else h.host[point] = async () => { throw new Error('cannot recover extensions'); };
         const result = await h.transaction.apply(request(), ':1.1');
@@ -135,14 +160,37 @@ for (const point of ['stop', 'restore', 'load']) {
         assert.match(result.error, /recovery incomplete/); h.clean();
     });
 }
-await test('silent final write failure is detected', async () => {
-    const h = harness(); h.hooks.set(`write:${enabled}`, () => h.values.set(enabled, "['wrong']"));
+await test('unexpected live extension is detected', async () => {
+    const h = harness();
+    const complete = h.host.complete;
+    h.host.complete = async req => {
+        const result = await complete(req);
+        const live = h.host.live;
+        h.host.live = () => [...live(), 'unexpected'];
+        return result;
+    };
     const result = await h.transaction.apply(request(), ':1.1');
-    assert.equal(result.ok, false); assert.match(result.error, /verification failed/); h.recovered(); h.clean();
+    assert.equal(result.ok, false); assert.match(result.error, /extension verification failed/);
+    h.recovered(); h.clean();
+});
+await test('optional unavailable extension is excluded from live verification', async () => {
+    const h = harness();
+    const req = request();
+    req.enabled.push('optional');
+    const complete = h.host.complete;
+    h.host.complete = async value => {
+        const result = await complete(value);
+        const live = h.host.live;
+        h.host.live = () => live().filter(uuid => uuid !== 'optional');
+        return {...result, optionalFailures: ['optional']};
+    };
+    const result = await h.transaction.apply(req, ':1.1');
+    assert.equal(result.ok, true);
+    h.clean();
 });
 await test('unattempted settings retain concurrent changes', async () => {
-    const h = harness('reset'); h.values.set('/other/untouched', '0');
-    h.hooks.set('reset', () => h.values.set('/other/untouched', '1'));
+    const h = harness('mutate'); h.values.set('/other/untouched', '0');
+    h.hooks.set('mutate', () => h.values.set('/other/untouched', '1'));
     const result = await h.transaction.apply(request(), ':1.1');
     assert.equal(result.recovered, true); assert.equal(h.values.get('/other/untouched'), '1'); h.clean();
 });

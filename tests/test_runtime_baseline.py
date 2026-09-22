@@ -3,6 +3,8 @@
 
 from types import SimpleNamespace
 
+import pytest
+
 import runtime_baseline
 from runtime_baseline import LAYOUT_FILES, REFERENCE_ORDER, TRANSITIONS
 
@@ -21,6 +23,44 @@ def test_reference_run_covers_all_supported_layouts():
     assert len(REFERENCE_ORDER) == 6
 
 
+def test_apply_records_layout_only_after_success(monkeypatch, tmp_path):
+    writes = []
+    monkeypatch.setattr(
+        runtime_baseline.LayoutApplier,
+        "apply",
+        lambda _path: (True, "ok"),
+    )
+
+    class Store:
+        last_error = ""
+
+        def set(self, key, value):
+            writes.append((key, value))
+            return True
+
+    monkeypatch.setattr(runtime_baseline, "Settings", Store)
+
+    runtime_baseline._apply("BigGnome", tmp_path)
+
+    assert writes == [("active_layout", "BigGnome")]
+
+
+def test_apply_does_not_record_failed_layout(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        runtime_baseline.LayoutApplier,
+        "apply",
+        lambda _path: (False, "failed"),
+    )
+    monkeypatch.setattr(
+        runtime_baseline,
+        "Settings",
+        lambda: (_ for _ in ()).throw(AssertionError("store must not open")),
+    )
+
+    with pytest.raises(RuntimeError, match="cannot apply BigGnome"):
+        runtime_baseline._apply("BigGnome", tmp_path)
+
+
 def test_transition_matrix_covers_every_surface_direction():
     covered = {(SURFACE[source], SURFACE[target]) for source, target, _name in TRANSITIONS}
 
@@ -34,6 +74,37 @@ def test_transition_matrix_covers_every_surface_direction():
         ("native", "dock"),
         ("native", "taskbar"),
     }
+
+
+def test_desktop_entry_overview_check_requires_a_closed_overview():
+    def snapshot(visible, visible_target):
+        return SimpleNamespace(
+            runtime_diagnostics={
+                "runtime": {
+                    "taskbar": {
+                        "lifecycle": {
+                            "serviceHost": {
+                                "overviewIntegration": {
+                                    "overviewVisible": visible,
+                                    "overviewVisibleTarget": visible_target,
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+    for layout in ("Hybrid", "Desk UX", "Classic"):
+        assert runtime_baseline._desktop_entry_overview_check(
+            snapshot(False, False), layout
+        ).status == "PASS"
+        assert runtime_baseline._desktop_entry_overview_check(
+            snapshot(True, True), layout
+        ).status == "FAIL"
+    assert runtime_baseline._desktop_entry_overview_check(
+        snapshot(True, True), "BigGnome"
+    ) is None
 
 
 def test_transition_run_reuses_the_previous_verified_target(monkeypatch, tmp_path):

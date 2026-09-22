@@ -103,7 +103,6 @@ export class ShellPopoverThemeIntegration {
             }
         }
         this._syncRecords(new Map());
-        this._interfaceSettings?.run_dispose?.();
         this._interfaceSettings = null;
     }
 

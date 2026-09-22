@@ -66,6 +66,12 @@ def session(monkeypatch):
         events.append((argv, kwargs))
         if argv == ["dconf", "dump", "/"]:
             return True, dump(state)
+        if len(argv) > 1 and argv[1].endswith("dconf_batch.py"):
+            for index, argument in enumerate(argv):
+                if argument == "--reset":
+                    state.pop(argv[index + 1], None)
+            state.update(values(kwargs["stdin_text"]))
+            return True, ""
         if argv[:2] == ["dconf", "reset"]:
             path = argv[-1]
             for key in list(state):
@@ -81,20 +87,14 @@ def session(monkeypatch):
     return state, events, mocks, run
 
 
-@pytest.mark.parametrize("point", ["first-reset", "second-reset", "load"])
 @pytest.mark.parametrize("raises", [False, True], ids=["failed-command", "exception"])
-def test_failed_phase_restores_values_before_abort(session, monkeypatch, point, raises):
+def test_failed_phase_restores_values_before_abort(session, monkeypatch, raises):
     state, events, mocks, run = session
     failed = False
 
     def fail(argv, **kwargs):
         nonlocal failed
-        match = (
-            argv[:2] == ["dconf", "load"] if point == "load"
-            else argv == ["dconf", "reset", "-f", BASE + (
-                "owned/" if point == "first-reset" else "second/"
-            )]
-        )
+        match = len(argv) > 1 and argv[1].endswith("dconf_batch.py")
         result = run(argv, **kwargs)
         if match and not failed:
             failed = True
@@ -117,10 +117,6 @@ def test_failed_phase_restores_values_before_abort(session, monkeypatch, point, 
     mocks["complete_switch"].assert_not_called()
     mocks["abort_switch"].assert_called_once()
     assert all(argv != ["dconf", "reset", "-f", "/"] for argv, kw in events)
-    if point != "load":
-        assert not any(
-            "introduced=true" in kw.get("stdin_text", "") for argv, kw in events
-        )
 
 
 @pytest.mark.parametrize("raises", [False, True])
@@ -170,7 +166,11 @@ def test_recovery_failure_is_reported_and_abort_still_attempted(
                 raise OSError("recovery unavailable")
             return False, "recovery unavailable"
         result = run(argv, **kwargs)
-        if argv[:2] == ["dconf", "load"] and not loading_failed:
+        if (
+            len(argv) > 1
+            and argv[1].endswith("dconf_batch.py")
+            and not loading_failed
+        ):
             loading_failed = True
             return False, "original load failed"
         return result
@@ -196,31 +196,33 @@ def test_begin_failure_does_not_attempt_settings_recovery(session):
     assert all(argv[:2] == ["dconf", "dump"] for argv, kw in events)
 
 
-def test_failed_reset_does_not_overwrite_unattempted_branch(session, monkeypatch):
+def test_failed_delta_restores_every_attempted_key(session, monkeypatch):
     state, events, mocks, run = session
     failed = False
 
     def fail(argv, **kwargs):
         nonlocal failed
-        if argv == ["dconf", "reset", "-f", BASE + "owned/"] and not failed:
+        if len(argv) > 1 and argv[1].endswith("dconf_batch.py") and not failed:
             failed = True
             run(argv, **kwargs)
             state[BASE + "second/value"] = "42"
-            return False, "reset failed"
+            return False, "delta failed"
         return run(argv, **kwargs)
 
     monkeypatch.setattr(module, "run_cmd", fail)
     assert not module.LayoutApplier._apply_via_helper_v7(TARGET)[0]
-    assert state == {**OLD, BASE + "second/value": "42"}
+    assert state == OLD
 
 
-@pytest.mark.parametrize("point", ["dump", "begin", "load", "complete"])
+@pytest.mark.parametrize("point", ["dump", "begin", "delta", "complete"])
 def test_helper_failure_leaves_persistence_to_caller(session, monkeypatch, point):
     state, events, mocks, run = session
     if point in {"begin", "complete"}:
         mocks[point + "_switch"].return_value = False, "failed"
     else:
         def fail(argv, **kwargs):
+            if point == "delta" and len(argv) > 1 and argv[1].endswith("dconf_batch.py"):
+                return False, "failed"
             if argv[:2] == ["dconf", point]:
                 return False, "failed"
             return run(argv, **kwargs)
@@ -230,29 +232,15 @@ def test_helper_failure_leaves_persistence_to_caller(session, monkeypatch, point
     mocks["_restore_persisted_settings"].assert_not_called()
 
 
-@pytest.mark.parametrize("point", ["complete", "disabled-extensions", "enabled-extensions"])
-def test_completion_failure_restores_owned_values_and_membership(session, monkeypatch, point):
+def test_completion_failure_restores_owned_values_and_membership(session):
     state, events, mocks, run = session
-    if point == "complete":
-        mocks["complete_switch"].return_value = False, "completion failed"
-    else:
-        failed = False
-
-        def fail(argv, **kwargs):
-            nonlocal failed
-            result = run(argv, **kwargs)
-            if argv[:2] == ["dconf", "write"] and argv[2].endswith(point) and not failed:
-                failed = True
-                return False, "final write failed"
-            return result
-
-        monkeypatch.setattr(module, "run_cmd", fail)
+    mocks["complete_switch"].return_value = False, "completion failed"
     ok, message = module.LayoutApplier._apply_via_helper_v7(TARGET)
     assert not ok
     assert "failed" in message
     assert state == OLD
-    mocks["apply_layout"].assert_called_once()
-    assert mocks["apply_layout"].call_args.kwargs["reload"] == [HELPER_UUID, "before@example.org"]
+    mocks["abort_switch"].assert_called_once()
+    mocks["apply_layout"].assert_not_called()
 
 
 def test_serialized_variants_survive_recovery(session):

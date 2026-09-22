@@ -14,7 +14,8 @@ from pathlib import Path
 from typing import Sequence
 
 from layout_applier import LayoutApplier
-from runtime_audit import AuditEnvironmentError, audit_snapshot, collect_snapshot
+from runtime_audit import AuditEnvironmentError, Check, audit_snapshot, collect_snapshot
+from settings_store import Settings
 
 LAYOUT_FILES = {
     "BigGnome": "biggnome.txt",
@@ -36,6 +37,7 @@ TRANSITIONS = (
     ("Classic", "Minimal", "taskbar-to-native"),
 )
 SCHEMES = {"light": "prefer-light", "dark": "prefer-dark"}
+DESKTOP_ENTRY_LAYOUTS = frozenset(("Hybrid", "Desk UX", "Classic"))
 
 
 def _run(args: Sequence[str], *, timeout: int = 30) -> subprocess.CompletedProcess[str]:
@@ -61,6 +63,11 @@ def _apply(layout: str, layouts_dir: Path) -> float:
     ok, detail = LayoutApplier.apply(layouts_dir / LAYOUT_FILES[layout])
     if not ok:
         raise RuntimeError(f"cannot apply {layout}: {detail}")
+    settings = Settings()
+    if not settings.set("active_layout", layout):
+        raise RuntimeError(
+            f"cannot record {layout}: {settings.last_error or 'unknown settings error'}"
+        )
     return time.monotonic() - started
 
 
@@ -92,6 +99,26 @@ def _screenshot(path: Path) -> str:
     return ""
 
 
+def _desktop_entry_overview_check(snapshot, layout: str) -> Check | None:
+    if layout not in DESKTOP_ENTRY_LAYOUTS:
+        return None
+    runtime = snapshot.runtime_diagnostics.get("runtime") or {}
+    taskbar = runtime.get("taskbar") or {}
+    lifecycle = taskbar.get("lifecycle") or {}
+    service = lifecycle.get("serviceHost") or {}
+    overview = service.get("overviewIntegration") or {}
+    visible = overview.get("overviewVisible")
+    visible_target = overview.get("overviewVisibleTarget")
+    closed = visible is False and visible_target is False
+    return Check(
+        "PASS" if closed else "FAIL",
+        "desktop-entry-overview",
+        "overview closed after layout switch"
+        if closed
+        else f"overview remained open or unavailable: {visible}/{visible_target}",
+    )
+
+
 def _record(
     artifact_dir: Path,
     name: str,
@@ -104,6 +131,9 @@ def _record(
     external_capture: bool,
 ) -> dict:
     snapshot, checks = _settled_snapshot(root, settle_timeout)
+    overview_check = _desktop_entry_overview_check(snapshot, layout)
+    if overview_check is not None:
+        checks.append(overview_check)
     item_dir = artifact_dir / name
     item_dir.mkdir(parents=True, exist_ok=True)
     screenshot_error = ""

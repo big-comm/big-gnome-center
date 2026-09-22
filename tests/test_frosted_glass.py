@@ -121,7 +121,9 @@ def test_corner_shader_and_overview_are_project_owned():
     assert (EXTENSION / "roundedCorners.glsl").is_file()
     assert (EXTENSION / "overviewController.js").is_file()
     assert (EXTENSION / "shellBlurSurface.js").is_file()
-    assert (EXTENSION / "blurPaintSignal.js").is_file()
+    surface = (EXTENSION / "shellBlurSurface.js").read_text()
+    assert "attachBlurRepaint" not in surface
+    assert "_paintSignal" not in surface
 
 
 def test_window_backend_is_version_gated_without_erasing_preferences():

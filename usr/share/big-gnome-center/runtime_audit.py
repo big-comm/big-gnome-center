@@ -90,6 +90,7 @@ class Snapshot:
     runtime_diagnostics: dict = field(default_factory=dict)
     payload_hashes: dict[str, str] = field(default_factory=dict)
     menu_override: bool | None = None
+    desktop_icons_state: int = 0
 
 
 @dataclass(frozen=True)
@@ -253,6 +254,7 @@ def collect_snapshot() -> Snapshot:
         enabled_extensions=tuple(enabled),
         runtime_state=_extension_state(RUNTIME_UUID),
         helper_state=_extension_state(HELPER_UUID),
+        desktop_icons_state=_extension_state(DESKTOP_ICONS_UUID),
         shell_version=_run(("gnome-shell", "--version")),
         session_type=os.environ.get("XDG_SESSION_TYPE", "unknown"),
         color_scheme=str(_setting(INTERFACE_SCHEMA, "color-scheme")),
@@ -313,6 +315,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
         snapshot.active_layout != "Minimal"
         and snapshot.color_scheme != "prefer-dark"
     )
+    desktop_icons_live = snapshot.desktop_icons_state == 1
 
     checks = [
         _check(
@@ -1114,12 +1117,12 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 _check(
                     (DESKTOP_ICONS_UUID
                      in desktop_bridge.get("recipientUuids", []))
-                    == (DESKTOP_ICONS_UUID in snapshot.enabled_extensions),
+                    == desktop_icons_live,
                     "taskbar-desktop-bridge-recipient",
-                    "DING recipient matches enabled extensions",
+                    "DING recipient matches live extension state",
                     "recipients="
                     f"{desktop_bridge.get('recipientUuids', [])}, "
-                    f"enabled={DESKTOP_ICONS_UUID in snapshot.enabled_extensions}",
+                    f"state={snapshot.desktop_icons_state}",
                 ),
                 _check(
                     {"activities", "quickSettings", "dateMenu"}
@@ -1166,13 +1169,12 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 _check(
                     (DESKTOP_ICONS_UUID
                      in dock_desktop_bridge.get("recipientUuids", []))
-                    == (DESKTOP_ICONS_UUID in snapshot.enabled_extensions),
+                    == desktop_icons_live,
                     "dock-desktop-bridge-recipient",
-                    "DING recipient matches enabled extensions",
+                    "DING recipient matches live extension state",
                     "recipients="
                     f"{dock_desktop_bridge.get('recipientUuids', [])}, "
-                    "enabled="
-                    f"{DESKTOP_ICONS_UUID in snapshot.enabled_extensions}",
+                    f"state={snapshot.desktop_icons_state}",
                 ),
                 _check(
                     dock_monitor_indices == logical_monitor_indices,
@@ -1317,7 +1319,11 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                         f"{expected.get('menuSide')}, got {actor.get('menuSide')}",
                     ),
                     _check(
-                        actor.get("opacity") == expected.get("opacity"),
+                        actor.get("opacity") == expected.get("opacity")
+                        or (
+                            expected.get("visibility") != "always-visible"
+                            and actor.get("opacity") == 0
+                        ),
                         "dock-opacity",
                         f"{expected.get('opacity')}%",
                         f"expected {expected.get('opacity')}%, got "
@@ -1412,7 +1418,11 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                         f"grouped={actor.get('grouped')}",
                     ),
                     _check(
-                        actor.get("opacity") == expected.get("opacity"),
+                        actor.get("opacity") == expected.get("opacity")
+                        or (
+                            expected.get("visibility") != "always-visible"
+                            and actor.get("opacity") == 0
+                        ),
                         "taskbar-opacity",
                         f"{expected.get('opacity')}%",
                         f"expected {expected.get('opacity')}%, got "

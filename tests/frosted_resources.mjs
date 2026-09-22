@@ -122,6 +122,27 @@ test('styles', 'external panel styles become the restoration baseline', () => {
     f.s.destroy();
     assert.equal(f.actor.style, 'external-panel;'); assert.equal(f.content.style, 'external-content;');
 });
+test('styles', 'owned style signals do not reenter their writers', () => {
+    const h = actors(), f = h.surface('panel');
+    let depth = 0, maximumDepth = 0;
+    const emitBeforeCommit = action => value => {
+        depth++;
+        maximumDepth = Math.max(maximumDepth, depth);
+        f.actor.emit('style-changed');
+        action(value);
+        depth--;
+    };
+    f.actor.set_style = emitBeforeCommit(value => {
+        f.actor.style = value;
+    });
+    f.actor.add_style_class_name = emitBeforeCommit(name => {
+        f.actor.classes.add(name);
+    });
+    f.s.update(h.config);
+    assert.equal(maximumDepth, 1);
+    assert(f.actor.style.includes('background-color: transparent'));
+    f.s.destroy();
+});
 test('styles', 'preexisting material classes survive destroy', () => {
     const h = actors(), f = h.surface();
     f.actor.classes.add('frosted-glass-shell-surface'); f.actor.classes.add('frosted-glass-light');
@@ -180,10 +201,9 @@ test('resources', 'failed parent detach still destroys overlay', () => {
     const overlay = f.s._overlay; h.failures.add('remove-child'); f.s.destroy();
     assert(overlay.destroyed);
 });
-test('resources', 'retired paint callback does not repaint replacement effect', () => {
+test('resources', 'dynamic blur does not install a perpetual repaint effect', () => {
     const h = actors(), f = h.surface(); f.s.update(h.config);
-    const paint = f.s._paintSignal; f.s.update({...h.config, mode: 'static'});
-    assert.equal(paint.getEffect(), null); f.s.destroy();
+    assert.equal(f.s._paintSignal, undefined); f.s.destroy();
 });
 test('resources', 'mode changed while hidden is applied when mapped again', () => {
     const h = actors(), f = h.surface(); f.s.update(h.config);

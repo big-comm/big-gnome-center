@@ -7,7 +7,6 @@ import St from 'gi://St';
 import * as Background from 'resource:///org/gnome/shell/ui/background.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import {attachBlurRepaint} from './blurPaintSignal.js';
 import {RoundedCornersEffect} from './roundedCorners.js';
 import {createBackgroundEffect} from './roundedBackend.js';
 
@@ -122,6 +121,7 @@ export class ShellBlurSurface {
         this._materialApplied = false;
         this._styles = new Map();
         this._classes = new Map();
+        this._styleMutationDepth = new Map();
         this._borderVisibility = null;
         this._dockSlider = this._kind === 'dash-to-dock'
             ? findDockSlider(this.actor)
@@ -146,17 +146,22 @@ export class ShellBlurSurface {
         this._connectGeometryHierarchy();
         if (this._kind === 'panel') {
             this._connect(this.actor, 'style-changed', () => {
-                if (this._materialApplied && !this._destroyed)
+                if (this._materialApplied && !this._destroyed &&
+                    !this._isStyleMutation(this.actor))
                     this._applyTransparentStyle(
                         this.actor, PANEL_TRANSPARENT_STYLE);
             });
         }
         if (this._kind === 'dash-to-panel') {
-            this._connect(this.actor, 'style-changed', () =>
-                this._applyDashToPanelStyles());
+            this._connect(this.actor, 'style-changed', () => {
+                if (!this._isStyleMutation(this.actor))
+                    this._applyDashToPanelStyles();
+            });
             if (this._panelContent) {
-                this._connect(this._panelContent, 'style-changed', () =>
-                    this._applyDashToPanelStyles());
+                this._connect(this._panelContent, 'style-changed', () => {
+                    if (!this._isStyleMutation(this._panelContent))
+                        this._applyDashToPanelStyles();
+                });
             }
         }
         for (const object of [this._boxPointer, this._pointerBorder]) {
@@ -239,6 +244,7 @@ export class ShellBlurSurface {
             }
         }
         this._styles.clear();
+        this._styleMutationDepth.clear();
         for (const [actor, classes] of this._classes) {
             if (actor === disposed)
                 continue;
@@ -284,10 +290,12 @@ export class ShellBlurSurface {
                 original: previous && current === previous.applied ? previous.original : current,
                 applied: enabled,
             });
-            if (enabled)
-                actor.add_style_class_name(name);
-            else
-                actor.remove_style_class_name(name);
+            this._mutateStyle(actor, () => {
+                if (enabled)
+                    actor.add_style_class_name(name);
+                else
+                    actor.remove_style_class_name(name);
+            });
         } catch (error) {
             console.debug(`Frosted Glass: cannot apply surface class: ${error}`);
         }
@@ -341,9 +349,27 @@ export class ShellBlurSurface {
             if (normalizeStyle(style) === normalizeStyle(transparentStyle))
                 return;
             this._styles.set(actor, {original: style, applied: transparentStyle});
-            actor.set_style?.(transparentStyle);
+            this._mutateStyle(actor, () =>
+                actor.set_style?.(transparentStyle));
         } catch (error) {
             // Extension actors may be replaced while their layout is rebuilt.
+        }
+    }
+
+    _isStyleMutation(actor) {
+        return (this._styleMutationDepth.get(actor) ?? 0) > 0;
+    }
+
+    _mutateStyle(actor, action) {
+        const depth = this._styleMutationDepth.get(actor) ?? 0;
+        this._styleMutationDepth.set(actor, depth + 1);
+        try {
+            action();
+        } finally {
+            if (depth)
+                this._styleMutationDepth.set(actor, depth);
+            else
+                this._styleMutationDepth.delete(actor);
         }
     }
 
@@ -450,9 +476,6 @@ export class ShellBlurSurface {
             });
         } else {
             this._effect = createBackgroundEffect();
-            this._paintSignal = attachBlurRepaint(
-                this._overlay, () => !this._destroyed && this._overlay === overlay
-                    ? this._effect : null);
             this._overlay.add_effect_with_name(EFFECT_NAME, this._effect);
         }
 
@@ -567,7 +590,7 @@ export class ShellBlurSurface {
         const overlay = this._overlay;
         const manager = this._manager;
         const children = [this._tint, this._wallpaper].filter(Boolean);
-        const effects = [this._paintSignal, this._cornerEffect,
+        const effects = [this._cornerEffect,
             this._wallpaper ? null : this._effect].filter(Boolean);
         this._manager = null;
         this._overlay = null;
@@ -575,7 +598,6 @@ export class ShellBlurSurface {
         this._tint = null;
         this._effect = null;
         this._cornerEffect = null;
-        this._paintSignal = null;
         this._mode = null;
         this._monitorIndex = -1;
         const cleanup = action => {

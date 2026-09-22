@@ -168,10 +168,9 @@ Primary references:
 | `extension.js` | Lifecycle, version-gated backend loading, power policy, native compositor parameters |
 | `windowStyles.js` | Serialized GTK style synchronization and teardown |
 | `window_material.py` | Capability check, scoped CSS, reversible user import |
-| `blurPaintSignal.js` | Throttled repaint workaround for background blur |
 | `roundedCorners.js` and `.glsl` | Rounded alpha mask applied after blur |
 | `shellSurfaces.js` | Panel, dock, menus, popovers, and system-dialog discovery |
-| `shellBlurSurface.js` | Non-layout Shell blur actor and repaint workaround |
+| `shellBlurSurface.js` | Non-layout Shell blur actor with event-driven repaint |
 | `overviewController.js` | Per-monitor wallpaper blur behind Overview |
 | `powerMonitor.js` | Battery and power-saver state |
 | `connectionManager.js` | Deterministic signal cleanup |

@@ -200,7 +200,10 @@ def test_runtime_owns_biggnome_menu_side_without_legacy_writes():
     assert "const anchor = showAppsContainer === this._dashContainer" in dash
     assert "set_child_below_sibling(this._showAppsIcon, anchor)" in dash
     assert "set_child_above_sibling(this._showAppsIcon, anchor)" in dash
-    assert "menuSide: Number.isFinite(menuX)" in dock
+    assert "const orderedMenuSide = this._menuSideFromOrder(dock, menu)" in dock
+    assert "menuSide: orderedMenuSide ||" in dock
+    assert "children.indexOf(menu)" in dock
+    assert "menuIndex < anchorIndex ? 'left' : 'right'" in dock
     assert "set_boolean('show-apps-at-top'" not in dock
 
 
@@ -802,6 +805,8 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "typeof owner === 'string'" in desktop_icons
     assert "recipientUuids" in desktop_icons
     assert "extension.uuid" in desktop_icons
+    assert "DING_READY_RETRY_MS" in desktop_icons
+    assert "_queueReadyRetry()" in desktop_icons
     assert not (RUNTIME / "dock/desktopIconsIntegration.js").exists()
     assert not (
         ROOT
@@ -1134,3 +1139,19 @@ def test_unified_runtime_preserves_helper_fault_isolation():
     assert helper.is_file()
     assert json.loads(helper.read_text())["uuid"] != metadata["uuid"]
     assert "LayoutSwitcherHelper" not in (RUNTIME / "extension.js").read_text()
+
+
+def test_switchable_components_do_not_force_gsettings_disposal():
+    roots = [
+        RUNTIME,
+        ROOT / "usr/share/gnome-shell/extensions/community-menu@communitybig.org",
+        ROOT / "usr/share/gnome-shell/extensions/layout-switcher-helper@communitybig.org",
+    ]
+    offenders = []
+    for root in roots:
+        for source in root.rglob("*.js"):
+            if source.name == "launcherAPI.js":
+                continue
+            if "run_dispose" in source.read_text():
+                offenders.append(str(source.relative_to(ROOT)))
+    assert offenders == []

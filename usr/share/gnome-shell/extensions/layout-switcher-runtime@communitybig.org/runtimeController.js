@@ -98,11 +98,6 @@ export class RuntimeController {
                 console.warn(`[layout-switcher-runtime] signal cleanup failed: ${error}`);
             }
         }
-        try {
-            settings?.run_dispose?.();
-        } catch (error) {
-            console.warn(`[layout-switcher-runtime] settings disposal failed: ${error}`);
-        }
         for (const [name, component, method] of components) {
             try {
                 component?.[method]();

@@ -19,15 +19,6 @@ const make = id => new Gio.Settings(id === null
         path: `/org/gnome/desktop/app-folders/folders/${id}/`});
 const root = make(null);
 root.set_strv('folder-children', []);
-const nativeDispose = Gio.Settings.prototype.run_dispose;
-let disposed = 0;
-Gio.Settings.prototype.run_dispose = function () {
-    check(!this._testDisposed, 'Settings disposed twice');
-    this._testDisposed = true;
-    disposed++;
-    nativeDispose.call(this);
-};
-
 // Injected settings remain usable after their consumers are destroyed.
 const borrowed = new Map([[null, root]]);
 const factory = id => {
@@ -44,16 +35,12 @@ const borrowedColors = new FolderColors(() => {}, colorsSettings);
 borrowedStore.destroy(); borrowedStore.destroy();
 borrowedPins.destroy(); borrowedPins.destroy();
 borrowedColors.destroy(); borrowedColors.destroy();
-check(disposed === 0, 'Consumer disposed borrowed settings');
 check(factory(borrowedId).get_string('name') === 'Borrowed', 'Borrowed folder lost');
 check(pinsSettings.set_strv('apps', ['borrowed.desktop']), 'Borrowed pins unusable');
 check(colorsSettings.get_value('colors') !== null, 'Borrowed colors unusable');
 root.set_strv('folder-children', []);
-for (const settings of borrowed.values()) settings.run_dispose();
-pinsSettings.run_dispose(); colorsSettings.run_dispose();
 
 for (const mode of ['locked', 'rejected']) {
-    const before = disposed;
     const store = new AppFolders(() => {}, () => apps);
     const method = mode === 'locked' ? 'is_writable' : 'set_value';
     const original = store._root[method];
@@ -66,7 +53,6 @@ for (const mode of ['locked', 'rejected']) {
     check(rejected, `${mode}: write accepted`);
     check(store.snapshot().length === 0, `${mode}: partial folder survived`);
     store.destroy();
-    check(disposed - before === 2, `${mode}: temporary settings not disposed`);
 }
 
 const rounds = Number(GLib.getenv('BGC_STRESS_ROUNDS') ?? 200);
@@ -74,7 +60,6 @@ const loop = new GLib.MainLoop(null, false);
 let round = 0, lastId, error;
 GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1, () => {
     try {
-        const before = disposed;
         let callbacks = 0;
         const store = new AppFolders(() => callbacks++, () => apps);
         const pins = new MenuPins(() => callbacks++);
@@ -90,7 +75,6 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1, () => {
         }
         store.destroy(); pins.destroy(); colors.destroy();
         store.destroy(); pins.destroy(); colors.destroy();
-        check(disposed - before === 5, 'Owned settings not disposed exactly once');
         const stopped = callbacks;
         while (GLib.MainContext.default().pending()) GLib.MainContext.default().iteration(false);
         check(callbacks === stopped, 'Callback after destruction');
@@ -115,4 +99,4 @@ if (!memory) {
     check(read('/org/communitybig/community-menu/pins/apps').includes('saved.desktop'), 'Pin write lost');
     check(read('/org/communitybig/community-menu/folders/colors').includes('orange'), 'Color write lost');
 }
-print(JSON.stringify({passed: true, rounds, disposed, persistent: !memory}));
+print(JSON.stringify({passed: true, rounds, persistent: !memory}));

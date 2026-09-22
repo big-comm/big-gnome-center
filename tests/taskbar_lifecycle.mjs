@@ -255,7 +255,7 @@ await test('active profile update keeps its surface', async () => {
     runtime.deactivate();
 });
 for (const reject of [false, true]) {
-    await test(`settings disposal waits for pending initialization: reject=${reject}`, async () => {
+    await test(`settings release waits for pending initialization: reject=${reject}`, async () => {
         const h = harness(), runtime = new h.Runtime({});
         const pending = h.PanelSettings.pending = deferred();
         const activation = activate(runtime);
@@ -265,9 +265,10 @@ for (const reject of [false, true]) {
         if (reject) pending.reject(new Error('late rejection'));
         else pending.resolve();
         await activation.catch(() => {});
-        assert.equal(h.events.at(-1), 'settings.dispose');
+        assert.ok(!h.events.includes('settings.dispose'));
+        assert.equal(runtime._settings, null);
         runtime.destroy();
-        assert.equal(h.events.filter(e => e === 'settings.dispose').length, 1);
+        assert.equal(h.events.filter(e => e === 'settings.dispose').length, 0);
         await assert.rejects(activate(runtime), /destroyed/);
     });
 }
@@ -280,7 +281,8 @@ await test('settings remain live across ordinary deactivate/reactivate', async (
     }
     assert.ok(!h.events.includes('settings.dispose'));
     runtime.destroy();
-    assert.equal(h.events.at(-1), 'settings.dispose');
+    assert.ok(!h.events.includes('settings.dispose'));
+    assert.equal(runtime._settings, null);
 });
 for (const reverse of [false, true]) {
     await test(`destroy waits for both retired activations: reverse=${reverse}`, async () => {
@@ -296,7 +298,8 @@ for (const reverse of [false, true]) {
         ordered[0][0].resolve(); await ordered[0][1];
         assert.ok(!h.events.includes('settings.dispose'));
         ordered[1][0].resolve(); await ordered[1][1];
-        assert.equal(h.events.filter(event => event === 'settings.dispose').length, 1);
+        assert.equal(h.events.filter(event => event === 'settings.dispose').length, 0);
+        assert.equal(runtime._settings, null);
         assert.equal(h.Context.DTP_EXTENSION, null);
     });
 }

@@ -130,9 +130,7 @@ export class DockRuntime {
     }
 
     _disposeSettings() {
-        const settings = this._settings;
         this._settings = null;
-        this._cleanup('settings', () => settings?.run_dispose?.());
     }
 
     deactivate() {
@@ -256,6 +254,7 @@ export class DockRuntime {
         const actor = dock?._box ?? dock;
         const background = dock?.dash?._background;
         const menu = dock?.dash?._showAppsIcon;
+        const orderedMenuSide = this._menuSideFromOrder(dock, menu);
         const [menuX] = menu?.get_transformed_position?.() ?? [null];
         const [dockX] = actor?.get_transformed_position?.() ?? [null];
         const backgroundColor = background
@@ -275,12 +274,27 @@ export class DockRuntime {
                 : null,
             iconSize: Math.round(dock?.dash?.iconSize ?? 0),
             menuX: Number.isFinite(menuX) ? Math.round(menuX) : null,
-            menuSide: Number.isFinite(menuX) && Number.isFinite(dockX)
+            menuSide: orderedMenuSide ||
+                (Number.isFinite(menuX) && Number.isFinite(dockX)
                 ? menuX + menu.width / 2 < dockX + actor.width / 2
                     ? 'left'
                     : 'right'
-                : '',
+                : ''),
         };
+    }
+
+    _menuSideFromOrder(dock, menu) {
+        const parent = menu?.get_parent?.();
+        const children = parent?.get_children?.() ?? [];
+        const menuIndex = children.indexOf(menu);
+        if (menuIndex < 0)
+            return '';
+        for (const anchor of [dock?.dash?._scrollView, dock?.dash?._box]) {
+            const anchorIndex = children.indexOf(anchor);
+            if (anchorIndex >= 0)
+                return menuIndex < anchorIndex ? 'left' : 'right';
+        }
+        return '';
     }
 
     _dockIsShown(dash) {

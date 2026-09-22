@@ -60,6 +60,7 @@ import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
+import System from 'system';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -102,6 +103,7 @@ const GUNITY_DOCK_CLASS = 'layout-switcher-g-unity-dock';
 const ACCENT_PROBE_CLASS = 'layout-switcher-accent-probe';
 const HYBRID_INDICATOR_SCALE = 0.8;
 const HYBRID_UNFOCUSED_EFFECT = 'layout-switcher-hybrid-unfocused';
+const DESKTOP_ENTRY_LAYOUTS = new Set(['Hybrid', 'Desk UX', 'Classic']);
 const NOTIFICATION_POSITION_DEFAULTS = new Map([
     ['Classic', 'bottom-right'],
     ['Hybrid', 'bottom-right'],
@@ -122,7 +124,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 84;
+const HELPER_BUILD = 109;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -137,6 +139,7 @@ const DISCOVERABLE_UUIDS = new Set([
 const LIVE_STATES = new Set([1, 8]);
 const STATE_ACTIVE = 1;
 const STATE_ERROR = 3;
+const STATE_OUT_OF_DATE = 4;
 const STATE_DEACTIVATING = 7;
 
 // Per-extension settle budget while awaiting a state transition. Heavy
@@ -448,7 +451,6 @@ export default class LayoutSwitcherHelper extends Extension {
                 this._ifaceSettings.disconnect(this._accentSignal);
             this._schemeSignal = 0;
             this._accentSignal = 0;
-            this._ifaceSettings.run_dispose?.();
             this._ifaceSettings = null;
         }
         this._cancelled = true;
@@ -473,7 +475,10 @@ export default class LayoutSwitcherHelper extends Extension {
             uuid: this._selfUuid(),
             version: HELPER_VERSION,
             build: HELPER_BUILD,
-            ownedSwitch: true,
+            // Keep dconf mutation outside gnome-shell. Holding an async GJS
+            // invocation while dconf emits a large settings change-set can
+            // deadlock libdconf's worker on GNOME 50 and 51.
+            ownedSwitch: false,
             busy: Boolean(this._switching || this._applying),
             notificationPosition: this._notificationPosition ?? '',
         });
@@ -676,6 +681,45 @@ export default class LayoutSwitcherHelper extends Extension {
         }
     }
 
+    async _waitUnconfigured(mgr, uuid, timeoutMs = STATE_WAIT_MS) {
+        const deadline = GLib.get_monotonic_time() + timeoutMs * 1000;
+        const settings = this._shellSettings ??= new Gio.Settings({
+            schema_id: 'org.gnome.shell',
+        });
+        for (;;) {
+            if (this._cancelled)
+                return false;
+            const configured = settings.get_strv('enabled-extensions').includes(uuid);
+            const pending = Array.isArray(mgr._enabledExtensions) &&
+                mgr._enabledExtensions.includes(uuid);
+            if (!configured && !pending && this._isDown(mgr.lookup(uuid)?.state))
+                return true;
+            if (GLib.get_monotonic_time() >= deadline)
+                return false;
+            await this._sleep(STATE_POLL_MS);
+        }
+    }
+
+    async _waitConfigured(mgr, uuid, timeoutMs = STATE_WAIT_MS) {
+        const deadline = GLib.get_monotonic_time() + timeoutMs * 1000;
+        const settings = this._shellSettings ??= new Gio.Settings({
+            schema_id: 'org.gnome.shell',
+        });
+        for (;;) {
+            if (this._cancelled)
+                return false;
+            const enabled = settings.get_strv('enabled-extensions').includes(uuid);
+            const disabled = settings.get_strv('disabled-extensions').includes(uuid);
+            const settled = !Array.isArray(mgr._enabledExtensions) ||
+                mgr._enabledExtensions.includes(uuid);
+            if (enabled && !disabled && settled)
+                return true;
+            if (GLib.get_monotonic_time() >= deadline)
+                return false;
+            await this._sleep(STATE_POLL_MS);
+        }
+    }
+
     async _waitDashToPanelReady(timeoutMs = STATE_WAIT_MS) {
         const deadline = GLib.get_monotonic_time() + timeoutMs * 1000;
         for (;;) {
@@ -805,14 +849,10 @@ export default class LayoutSwitcherHelper extends Extension {
                 const settings = new Gio.Settings({
                     schema_id: 'org.gnome.shell.extensions.community-menu',
                 });
-                try {
-                    const layout = settings.get_enum('layout');
-                    return layout === CLASSIC_MENU_LAYOUT ||
-                        layout === DESK_UX_MENU_LAYOUT ||
-                        layout === HYBRID_MENU_LAYOUT;
-                } finally {
-                    settings.run_dispose?.();
-                }
+                const layout = settings.get_enum('layout');
+                return layout === CLASSIC_MENU_LAYOUT ||
+                    layout === DESK_UX_MENU_LAYOUT ||
+                    layout === HYBRID_MENU_LAYOUT;
             } catch (e) {
                 logHelper(`community layout read failed: ${e}`);
             }
@@ -1939,38 +1979,13 @@ export default class LayoutSwitcherHelper extends Extension {
         }
     }
 
-    // AppIndicator keeps rendered pixmaps after the desktop icon theme changes.
-    // Refresh the live proxies and actors in place; reloading the whole host can
-    // orphan applications that do not register their StatusNotifierItem again.
+    // Rescan the shared icon cache without touching AppIndicator internals.
+    // Its private theme singleton, proxies and actors may still be in use;
+    // replacing them during a layout switch can dispose live GObjects and
+    // deadlock the Shell main loop.
     async _refreshIconThemeConsumers() {
         const mgr = Main.extensionManager;
         const appIndicator = mgr.lookup(APPINDICATOR_UUID);
-        let appIndicatorModule = null;
-
-        // AppIndicator owns a private St.IconTheme singleton in util.js. Its
-        // actors can be invalidated while that singleton still resolves the
-        // previous light/dark asset. Reset the singleton in place so existing
-        // StatusNotifierItems survive and resolve against the current theme.
-        try {
-            if (appIndicator?.path) {
-                const utilPath = GLib.build_filenamev([
-                    appIndicator.path,
-                    'util.js',
-                ]);
-                const utilUri = Gio.File.new_for_path(utilPath).get_uri();
-                const appIndicatorUtil = await import(utilUri);
-                appIndicatorUtil.destroyDefaultTheme?.();
-
-                const actorPath = GLib.build_filenamev([
-                    appIndicator.path,
-                    'appIndicator.js',
-                ]);
-                const actorUri = Gio.File.new_for_path(actorPath).get_uri();
-                appIndicatorModule = await import(actorUri);
-            }
-        } catch (e) {
-            logHelper(`AppIndicator private icon-theme reset failed: ${e}`);
-        }
 
         try {
             St.TextureCache.get_default().rescan_icon_theme?.();
@@ -1978,7 +1993,7 @@ export default class LayoutSwitcherHelper extends Extension {
             logHelper(`icon-theme texture rescan failed: ${e}`);
         }
 
-        await this._sleep(150);
+        await this._yieldTransitionFrame();
         if (!LIVE_STATES.has(appIndicator?.state))
             return 0;
 
@@ -1987,23 +2002,14 @@ export default class LayoutSwitcherHelper extends Extension {
             if (!id.startsWith('appindicator-'))
                 continue;
             try {
-                await statusIcon?._indicator?._proxy?.refreshAllProperties?.();
-                const oldIcon = statusIcon?._icon;
-                if (appIndicatorModule?.IconActor &&
-                    statusIcon?._indicator && statusIcon?._setIconActor) {
-                    const iconSize = oldIcon?._iconSize ?? 22;
-                    const newIcon = new appIndicatorModule.IconActor(
-                        statusIcon._indicator, iconSize);
-                    statusIcon._setIconActor(newIcon);
-                } else {
-                    oldIcon?._invalidateIcon?.();
-                }
+                statusIcon.queue_relayout?.();
+                statusIcon.queue_redraw?.();
                 refreshed++;
             } catch (e) {
                 logHelper(`AppIndicator icon refresh ${id} failed: ${e}`);
             }
         }
-        await this._sleep(80);
+        await this._yieldTransitionFrame();
         logHelper(`AppIndicator icon-theme refresh: ${refreshed} actor(s)`);
         return refreshed;
     }
@@ -2262,38 +2268,13 @@ export default class LayoutSwitcherHelper extends Extension {
         }
     }
 
-    // Make the panel re-resolve its themed background for real. A style-class
-    // A style toggle and loadTheme() alone do not always repaint the panel;
-    // the reliable trigger found is an Overview
-    // round-trip (the old "overview pulse" workaround, removed for flashing —
-    // under the curtain it is invisible, so it returns here flash-free).
+    // Let the Shell process the theme change through normal frame boundaries.
+    // Forcing an Overview round-trip or recursively repainting actor trees can
+    // reenter extension code and deadlock the compositor.
     async _panelRepaint() {
         this._checkOwnedSwitch();
-        try {
-            Main.panel.add_style_class_name('ls-style-recompute');
-            await this._sleep(60);
-            this._checkOwnedSwitch();
-            Main.panel.remove_style_class_name('ls-style-recompute');
-            await this._sleep(60);
-            this._checkOwnedSwitch();
-        } catch (e) {
-            logHelper(`panel recompute failed: ${e}`);
-        } finally {
-            Main.panel.remove_style_class_name('ls-style-recompute');
-        }
-        this._checkOwnedSwitch();
-        try {
-            Main.overview.show();
-            await this._sleep(300);
-            this._checkOwnedSwitch();
-            Main.overview.hide();
-            await this._sleep(250);
-            this._checkOwnedSwitch();
-        } catch (e) {
-            logHelper(`overview pulse failed: ${e}`);
-        } finally {
-            Main.overview.hide();
-        }
+        await this._yieldTransitionFrame();
+        await this._yieldTransitionFrame();
         this._checkOwnedSwitch();
     }
 
@@ -2304,30 +2285,101 @@ export default class LayoutSwitcherHelper extends Extension {
             this._switchTransaction.check();
     }
 
-    _runSwitchCommand(argv, input = null) {
+    _runDconfWorker(argv, input = null, capture = false) {
         this._checkOwnedSwitch();
+        const token = GLib.uuid_string_random();
+        const runtimeDir = GLib.get_user_runtime_dir();
+        const inputPath = input === null ? null : `${runtimeDir}/bgc-dconf-${token}.in`;
+        const outputPath = capture ? `${runtimeDir}/bgc-dconf-${token}.out` : null;
+        const cleanup = () => {
+            if (inputPath)
+                GLib.unlink(inputPath);
+            if (outputPath)
+                GLib.unlink(outputPath);
+        };
+        if (inputPath) {
+            if (!GLib.file_set_contents(inputPath, input)) {
+                cleanup();
+                return Promise.reject(new Error('cannot create dconf batch input'));
+            }
+            argv.push('--input-file', inputPath);
+        }
+        if (outputPath)
+            argv.push('--dump-output', outputPath);
+        const phase = capture ? 'dconf dump' : 'dconf mutation';
+        logHelper(`switch worker start: ${phase}`);
         return new Promise((resolve, reject) => {
-            const process = Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDIN_PIPE |
-                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+            let pid;
+            try {
+                [, pid] = GLib.spawn_async(
+                    null,
+                    argv,
+                    null,
+                    GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                    () => {});
+            } catch (error) {
+                cleanup();
+                reject(error);
+                return;
+            }
             let expired = false;
             const timer = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
                 expired = true;
-                process.force_exit();
+                try {
+                    GLib.spawn_async(
+                        null,
+                        ['/usr/bin/kill', '-KILL', `${pid}`],
+                        null,
+                        GLib.SpawnFlags.SEARCH_PATH,
+                        () => {});
+                } catch (error) {
+                    logHelper(`switch worker kill failed: ${error}`);
+                }
                 return GLib.SOURCE_REMOVE;
             });
-            process.communicate_utf8_async(input, null, (source, result) => {
+            GLib.child_watch_add(GLib.PRIORITY_DEFAULT, pid, (childPid, status) => {
                 if (!expired)
                     GLib.Source.remove(timer);
                 try {
-                    const [, output, error] = source.communicate_utf8_finish(result);
-                    if (expired || !source.get_successful())
-                        throw new Error(`${argv.slice(0, 3).join(' ')}: ${expired ? 'timeout' : error}`);
+                    if (expired)
+                        throw new Error(`${phase}: timeout`);
+                    GLib.spawn_check_wait_status(status);
+                    let output = '';
+                    if (outputPath) {
+                        const [ok, contents] = GLib.file_get_contents(outputPath);
+                        if (!ok)
+                            throw new Error('cannot read dconf dump');
+                        output = new TextDecoder().decode(contents);
+                    }
+                    logHelper(`switch worker done: ${phase}`);
                     resolve(output);
                 } catch (error) {
                     reject(error);
+                } finally {
+                    GLib.spawn_close_pid(childPid);
+                    cleanup();
                 }
             });
         });
+    }
+
+    _runDconfBatch(resetTrees, resetKeys, input) {
+        const argv = [
+            '/usr/bin/python',
+            '/usr/share/big-gnome-center/dconf_batch.py',
+        ];
+        for (const path of resetTrees)
+            argv.push('--reset-tree', path);
+        for (const path of resetKeys)
+            argv.push('--reset', path);
+        return this._runDconfWorker(argv, input);
+    }
+
+    _runDconfDump() {
+        return this._runDconfWorker([
+            '/usr/bin/python',
+            '/usr/share/big-gnome-center/dconf_batch.py',
+        ], null, true);
     }
 
     async _stopOwnedExtensions() {
@@ -2377,7 +2429,13 @@ export default class LayoutSwitcherHelper extends Extension {
             return;
         }
         this._switchTransaction ??= new SwitchTransaction({
-            run: (argv, input) => this._runSwitchCommand(argv, input),
+            run: argv => {
+                if (argv[0] === 'dconf' && argv[1] === 'dump' && argv[2] === '/')
+                    return this._runDconfDump();
+                throw new Error(`unsupported switch command: ${argv.join(' ')}`);
+            },
+            mutate: (branches, input) => this._runDconfBatch(branches, [], input),
+            restoreValues: (paths, input) => this._runDconfBatch([], paths, input),
             live: () => this._orderedLive(Main.extensionManager),
             label: () => this._activeLayoutLabel,
             begin: value => this._beginSwitch(JSON.stringify(value)),
@@ -2409,6 +2467,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 if (GLib.MainContext.default().find_source_by_id(id))
                     GLib.Source.remove(id);
             },
+            settle: ms => this._sleep(ms),
             watch: callback => Gio.DBus.session.signal_subscribe('org.freedesktop.DBus',
                 'org.freedesktop.DBus', 'NameOwnerChanged', '/org/freedesktop/DBus', null,
                 Gio.DBusSignalFlags.NONE, (_bus, _sender, _path, _iface, _signal, value) => {
@@ -2422,6 +2481,24 @@ export default class LayoutSwitcherHelper extends Extension {
                     return left === right;
                 return GLib.Variant.parse(null, left, null, null)
                     .equal(GLib.Variant.parse(null, right, null, null));
+            },
+            disabledMatches: (current, required, enabled) => {
+                if (current === undefined || required === undefined || enabled === undefined)
+                    return false;
+                try {
+                    const actual = new Set(
+                        GLib.Variant.parse(null, current, null, null).deep_unpack());
+                    const wanted = GLib.Variant.parse(
+                        null, required, null, null).deep_unpack();
+                    const active = GLib.Variant.parse(
+                        null, enabled, null, null).deep_unpack();
+                    const manager = Main.extensionManager;
+                    return active.every(uuid => !actual.has(uuid)) &&
+                        wanted.every(uuid => actual.has(uuid) ||
+                            !LIVE_STATES.has(manager.lookup(uuid)?.state));
+                } catch (_error) {
+                    return false;
+                }
             },
             warn: error => logHelper(`switch cleanup: ${error}`),
         });
@@ -2483,10 +2560,7 @@ export default class LayoutSwitcherHelper extends Extension {
     // ── Clean-room protocol (v7) ────────────────────────────────────────────
 
     // payload (JSON):
-    //   persist: [uuid…]  informative: system indicators the caller re-adds
-    //                     to the CompleteSwitch target (the teardown cycles
-    //                     them too — one clean toggle beats the Shell's
-    //                     repeated rebase toggles, which break pamac-updates)
+    //   persist: [uuid…]  external stateful components retained across switch
     //   label:   str      layout display name shown on the curtain
     //   icon_from/icon_to: str  preview SVG paths for the curtain art
     // result (JSON): { ok, steps:[…], disabled:[…], error }
@@ -2524,7 +2598,6 @@ export default class LayoutSwitcherHelper extends Extension {
         this._curtainUp(req);
         // Let the curtain reach full opacity before the desktop mutates.
         await this._sleep(CURTAIN_FADE_MS + 30);
-        this._checkOwnedSwitch();
 
         // Release the tracked dock actor while it is still alive. The runtime
         // teardown disposes it, so deferring this cleanup until target enable
@@ -2561,8 +2634,7 @@ export default class LayoutSwitcherHelper extends Extension {
         // and arm the safety net BEFORE mutating anything — a fatal failure
         // anywhere in the teardown still auto-restores the previous set.
         this._prevEnabled = this._orderedLive(mgr);
-        if (!this._switchTransaction?.current)
-            this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
+        this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
 
         // Tear down EVERY live extension except ourselves — including the
         // persist indicators (req.persist is honoured by the CALLER keeping
@@ -2577,7 +2649,6 @@ export default class LayoutSwitcherHelper extends Extension {
         const teardown = this._prevEnabled.filter(u => u !== self).reverse();
         const disabled = [];
         for (const uuid of teardown) {
-            this._checkOwnedSwitch();
             try {
                 const accepted = mgr.disableExtension(uuid);
                 if (accepted === false) {
@@ -2585,23 +2656,19 @@ export default class LayoutSwitcherHelper extends Extension {
                     continue;
                 }
                 const settled = await this._waitState(mgr, uuid, s => this._isDown(s));
-                this._checkOwnedSwitch();
                 steps.push(settled ? `disable ${uuid}` : `disable ${uuid} TIMEOUT`);
                 disabled.push(uuid);
                 await this._yieldTransitionFrame();
-                this._checkOwnedSwitch();
             } catch (e) {
                 steps.push(`disable ${uuid} ERR ${e}`);
             }
         }
-        if (this._switchTransaction?.current) {
-            const live = teardown.filter(uuid => !this._isDown(mgr.lookup(uuid)?.state));
-            if (live.length)
-                throw new Error(`extensions not stopped: ${live.join(', ')}`);
-        }
-        // Drain any idles the last disable() queued.
+        // GNOME 51 may otherwise finalize retired Gio.Settings wrappers while
+        // the external process starts dconf load, deadlocking GJS and dconf's
+        // weak-reference worker. Collect only after every extension is down.
+        await this._sleep(250);
+        System.gc();
         await this._sleep(100);
-        this._checkOwnedSwitch();
 
         logHelper(`BeginSwitch done: ${steps.join(' | ')}`);
         return {ok: true, steps, disabled, error: ''};
@@ -2612,10 +2679,6 @@ export default class LayoutSwitcherHelper extends Extension {
     //   theme_reload: bool     call Main.loadTheme() before enabling (default true)
     // result (JSON): { ok, steps:[…], error }
     CompleteSwitchAsync(params, invocation) {
-        if (this._switchTransaction?.current) {
-            this._returnJson(invocation, {ok: false, error: 'owned layout switch in progress'});
-            return;
-        }
         const [payload] = params;
         if (!this._switching) {
             this._returnJson(invocation, {
@@ -2662,16 +2725,24 @@ export default class LayoutSwitcherHelper extends Extension {
                 logHelper(`loadTheme stack: ${e.stack ?? e}`);
             }
             await this._sleep(50);
-            this._checkOwnedSwitch();
         }
 
         // Build up the target set in layout order — a fresh enable() reading
         // the final dconf state, exactly like a login.
         for (const uuid of order) {
-            this._checkOwnedSwitch();
             const state = mgr.lookup(uuid)?.state;
             if (LIVE_STATES.has(state))
                 continue;
+            // GNOME 51 can mark an optional extension unavailable. Record it
+            // in the configured set without waiting for an active state that
+            // this Shell version cannot reach.
+            if (state === STATE_OUT_OF_DATE || state === STATE_ERROR) {
+                const accepted = mgr.enableExtension(uuid);
+                const configured = accepted !== false &&
+                    await this._waitConfigured(mgr, uuid);
+                steps.push(`enable ${uuid} UNAVAILABLE${configured ? '' : ' UNPERSISTED'}`);
+                continue;
+            }
             try {
                 const accepted = mgr.enableExtension(uuid);
                 if (accepted === false) {
@@ -2679,14 +2750,12 @@ export default class LayoutSwitcherHelper extends Extension {
                     continue;
                 }
                 const settled = await this._waitState(mgr, uuid, s => this._isSettledUp(s));
-                this._checkOwnedSwitch();
                 const finalState = mgr.lookup(uuid)?.state;
                 if (finalState === STATE_ERROR)
                     steps.push(`enable ${uuid} ERROR`);
                 else
                     steps.push(settled ? `enable ${uuid}` : `enable ${uuid} TIMEOUT`);
                 await this._yieldTransitionFrame();
-                this._checkOwnedSwitch();
             } catch (e) {
                 steps.push(`enable ${uuid} ERR ${e}`);
             }
@@ -2695,26 +2764,44 @@ export default class LayoutSwitcherHelper extends Extension {
         // Reconcile: anything still live that the target does not want
         // (defensive — persist uuids are part of the target by contract).
         for (const uuid of this._orderedLive(mgr).reverse()) {
-            this._checkOwnedSwitch();
             if (target.has(uuid))
                 continue;
             try {
                 mgr.disableExtension(uuid);
                 await this._waitState(mgr, uuid, s => this._isDown(s));
-                this._checkOwnedSwitch();
                 steps.push(`reconcile-off ${uuid}`);
                 await this._yieldTransitionFrame();
-                this._checkOwnedSwitch();
             } catch (e) {
                 steps.push(`reconcile-off ${uuid} ERR ${e}`);
             }
+        }
+
+        // GNOME 51 keeps incompatible extensions in enabled-extensions even
+        // though they have no live state. Retire only configured leftovers
+        // through the public manager so the target membership is exact
+        // without a second bulk dconf write after completion.
+        const shellSettings = this._shellSettings ??= new Gio.Settings({
+            schema_id: 'org.gnome.shell',
+        });
+        const configuredExtras = shellSettings.get_strv('enabled-extensions')
+            .filter(uuid => !target.has(uuid));
+        for (const uuid of configuredExtras) {
+            if (!mgr.lookup(uuid)) {
+                steps.push(`reconcile-config ${uuid} UNKNOWN`);
+                continue;
+            }
+            const accepted = mgr.disableExtension(uuid);
+            const settled = accepted !== false &&
+                await this._waitUnconfigured(mgr, uuid);
+            if (!settled)
+                throw new Error(`cannot retire configured extension ${uuid}`);
+            steps.push(`reconcile-config ${uuid}`);
         }
 
         const targetPanelUuid = PANEL_UUIDS.find(uuid => target.has(uuid));
         let dtpReady = true;
         if (targetPanelUuid) {
             dtpReady = await this._waitDashToPanelReady();
-            this._checkOwnedSwitch();
             steps.push(dtpReady ? 'dash-to-panel ready' : 'dash-to-panel readiness TIMEOUT');
         }
 
@@ -2733,8 +2820,7 @@ export default class LayoutSwitcherHelper extends Extension {
         if (failedStructural.length) {
             const error = `layout components failed: ${failedStructural.join(', ')}`;
             steps.push(error);
-            if (!this._switchTransaction?.current)
-                this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
+            this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
             logHelper(`CompleteSwitch rejected: ${error}`);
             return {ok: false, steps, error};
         }
@@ -2748,13 +2834,21 @@ export default class LayoutSwitcherHelper extends Extension {
         this._syncNotificationPosition();
         if (target.has(APPINDICATOR_UUID)) {
             const refreshed = await this._refreshIconThemeConsumers();
-            this._checkOwnedSwitch();
             steps.push(`status icons refreshed ${refreshed}`);
         }
         await this._panelRepaint();
-        this._checkOwnedSwitch();
         steps.push('panel repaint');
         this._setupPanelSystemIndicator();
+
+        // These layouts are desktop-first. A preceding GNOME-native layout
+        // may have left Overview open; close it while the transition curtain
+        // still covers the Shell. Runtime settings changes alone must keep a
+        // user-opened Overview, so this belongs to the explicit layout switch.
+        if (DESKTOP_ENTRY_LAYOUTS.has(this._activeLayoutLabel) &&
+            (Main.overview.visible || Main.overview.visibleTarget)) {
+            Main.overview.hide();
+            steps.push('hide overview');
+        }
 
         // Settle GTK3 before the caller saves the applied layout snapshot.
         try {
@@ -2762,11 +2856,8 @@ export default class LayoutSwitcherHelper extends Extension {
         } catch (error) {
             logHelper(`GTK3 theme follow failed: ${error}`);
         }
-        if (this._switchTransaction?.current)
-            return {ok: true, steps, optionalFailures: failedOptional, error: ''};
         this._curtainCheckmark();
         await this._sleep(CURTAIN_CHECK_MS);
-        this._checkOwnedSwitch();
         this._curtainDown();
 
         this._prevEnabled = null;
@@ -2988,11 +3079,6 @@ export default class LayoutSwitcherHelper extends Extension {
         this._syncMinimalPanelClass();
         this._syncGUnitySurfaceClasses();
         this._syncNotificationPosition();
-        if (target.has(APPINDICATOR_UUID)) {
-            const refreshed = await this._refreshIconThemeConsumers();
-            steps.push(`status icons refreshed ${refreshed}`);
-        }
-
         logHelper(`ApplyLayout done: ${steps.join(' | ')}`);
         return JSON.stringify({ok: true, steps, error: ''});
     }

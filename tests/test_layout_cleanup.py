@@ -120,10 +120,25 @@ def test_helper_cleanup_uses_profiles_not_snapshot_ownership(tmp_path, modern):
         apply = LayoutApplier._apply_via_helper_v7 if modern else LayoutApplier._apply_via_helper
         ok, message = apply(target, layouts_dir=tmp_path)
         assert ok, message
-    resets = [
-        call.args[0] for call in command.call_args_list
-        if call.args[0][:2] == ["dconf", "reset"]
-    ]
-    assert ["dconf", "reset", "-f", BASE + "owned/"] in resets
-    allowed = {BASE + branch + "/" for branch in ("owned", "arcmenu", "blur-my-shell")}
-    assert all(argv[-1] in allowed for argv in resets)
+    if modern:
+        batches = [
+            call.args[0] for call in command.call_args_list
+            if len(call.args[0]) > 1 and call.args[0][1].endswith("dconf_batch.py")
+        ]
+        assert len(batches) == 1
+        reset_paths = [
+            batches[0][index + 1]
+            for index, argument in enumerate(batches[0])
+            if argument == "--reset"
+        ]
+        assert BASE + "owned/keep" in reset_paths
+        assert BASE + "owned/stale" in reset_paths
+        assert not any("personal-extension" in path for path in reset_paths)
+    else:
+        resets = [
+            call.args[0] for call in command.call_args_list
+            if call.args[0][:2] == ["dconf", "reset"]
+        ]
+        assert ["dconf", "reset", "-f", BASE + "owned/"] in resets
+        allowed = {BASE + branch + "/" for branch in ("owned", "arcmenu", "blur-my-shell")}
+        assert all(argv[-1] in allowed for argv in resets)
