@@ -16,9 +16,18 @@ const FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51;
 const SHELL_MAJOR = Number.parseInt(Config.PACKAGE_VERSION.split('.')[0], 10);
 const FULL_BACKEND_AVAILABLE = SHELL_MAJOR >= FULL_BACKEND_MINIMUM_SHELL_MAJOR;
 const COMMUNITY_MENU_UUID = 'community-menu@communitybig.org';
+const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 const LIVE_EXTENSION_STATES = new Set([1, 8]);
 const LIGHT_SHELL_MENU_LAYOUTS = new Set([1, 4]);
 const MATERIAL_OPACITY_EXPONENT = 1.8;
+const PANEL_OPACITY_DEFAULTS = new Map([
+    ['BigGnome', 65],
+    ['G-Unity', 70],
+    ['Hybrid', 70],
+    ['Desk UX', 65],
+    ['Classic', 70],
+    ['Minimal', 65],
+]);
 
 export default class FrostedGlassExtension extends Extension {
     enable() {
@@ -37,6 +46,11 @@ export default class FrostedGlassExtension extends Extension {
         this._communityMenuSettings = new Gio.Settings({
             schema_id: 'org.gnome.shell.extensions.community-menu',
         });
+        const runtimeSchema = Gio.SettingsSchemaSource.get_default()
+            .lookup(RUNTIME_SCHEMA, true);
+        this._runtimeSettings = runtimeSchema
+            ? new Gio.Settings({settings_schema: runtimeSchema})
+            : null;
         this._connections = new ConnectionManager();
         this._power = new PowerMonitor(queueRefresh);
         this._overview = new OverviewController(() => this._config());
@@ -47,6 +61,12 @@ export default class FrostedGlassExtension extends Extension {
             'changed::color-scheme', queueRefresh);
         this._connections.connect(this._communityMenuSettings,
             'changed::layout', queueRefresh);
+        if (this._runtimeSettings) {
+            this._connections.connect(this._runtimeSettings,
+                'changed::active-layout', queueRefresh);
+            this._connections.connect(this._runtimeSettings,
+                'changed::panel-opacity-overrides', queueRefresh);
+        }
         this._connections.connect(global.settings,
             'changed::enabled-extensions', queueRefresh);
         this._connections.connect(global.settings,
@@ -74,6 +94,7 @@ export default class FrostedGlassExtension extends Extension {
         this._power = null;
         this._interfaceSettings = null;
         this._communityMenuSettings = null;
+        this._runtimeSettings = null;
         this._settings = null;
         const cleanup = (name, action) => {
             try {
@@ -165,6 +186,7 @@ export default class FrostedGlassExtension extends Extension {
             radius: Math.max(0, strength * 1.6),
             brightness: lightMode ? 1.0 : 0.9,
             tintOpacity: materialOpacity,
+            panelTintOpacity: this._panelTintOpacity(),
             materialOpacity,
             windowOpacity: opacityPercent,
             useAccentColor: this._settings.settings_schema.has_key('use-accent-color') &&
@@ -173,6 +195,20 @@ export default class FrostedGlassExtension extends Extension {
             appLightMode,
             mode,
         };
+    }
+
+    _panelTintOpacity() {
+        if (!this._runtimeSettings)
+            return null;
+        const layout = this._runtimeSettings.get_string('active-layout');
+        const fallback = PANEL_OPACITY_DEFAULTS.get(layout);
+        if (fallback === undefined)
+            return null;
+        const overrides = this._runtimeSettings
+            .get_value('panel-opacity-overrides')
+            .deep_unpack();
+        const percent = overrides[layout] ?? fallback;
+        return Math.max(0, Math.min(100, percent)) / 100;
     }
 
     _queueRefresh() {

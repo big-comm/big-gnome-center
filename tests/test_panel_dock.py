@@ -741,18 +741,15 @@ def test_taskbar_opacity_writes_only_layout_owned_settings():
     assert settings.panel_opacity() == 100
 
 
-def test_dock_panel_opacity_writes_only_layout_owned_settings():
+def test_dock_panel_opacity_mirrors_the_live_panel_schema():
     settings = settings_fixture()
     settings.active_layout = "BigGnome"
     settings.runtime_active = True
-    legacy_values = dict(settings.panel.values)
-
     settings.set_panel_opacity(0)
 
     assert settings.panel_opacity() == 0
     assert settings.runtime.values[("BigGnome", "panel-opacity")] == 0
-    assert settings.panel.values == legacy_values
-    assert settings.panel.calls == []
+    assert settings.panel.values["panel-opacity"] == 0
 
 
 def test_minimal_opacity_writes_only_layout_owned_settings():

@@ -186,6 +186,9 @@ export class ShellSurfaces {
                         lightMode: config.appLightMode,
                         brightness: config.appLightMode ? 1.0 : 0.9,
                     }
+                    : (kind === 'panel' || kind === 'dash-to-panel') &&
+                        Number.isFinite(config.panelTintOpacity)
+                        ? {...config, tintOpacity: config.panelTintOpacity}
                     : config);
             } catch (error) {
                 this._records.delete(actor);

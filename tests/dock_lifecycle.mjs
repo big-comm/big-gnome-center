@@ -48,7 +48,19 @@ function harness() {
         console: {warn: message => warnings.push(message)},
         DockSurfaceManager: Manager,
         ComponentHost: class {
-            getSettings() { return {run_dispose() { step('settings.dispose'); }}; }
+            getSettings(schema) {
+                const settings = {
+                    values: {},
+                    set_uint(key, value) {
+                        step(`${schema}.${key}.${value}`);
+                        this.values[key] = value;
+                    },
+                    run_dispose() { step('settings.dispose'); },
+                };
+                this.settings ??= {};
+                this.settings[schema] = settings;
+                return settings;
+            }
             loadStylesheet() { step('stylesheet.load'); }
             unloadStylesheet() { step('stylesheet.unload'); }
         },
@@ -64,11 +76,13 @@ function harness() {
         PanelController: resource('panel'),
     });
     const Runtime = vm.runInNewContext(`${source}\nDockRuntime`, sandbox);
+    const applyPanelOpacity = Runtime.prototype._applyPanelOpacity;
     for (const name of setters.filter(name => name !== 'visibility'))
         Runtime.prototype[name] = () => step(name);
     const runtime = new Runtime({});
     events.length = 0;
-    return {runtime, Runtime, Manager, events, failures, hooks, warnings};
+    return {runtime, Runtime, Manager, events, failures, hooks, warnings,
+        applyPanelOpacity: opacity => applyPanelOpacity.call(runtime, opacity)};
 }
 
 let cases = 0;
@@ -111,6 +125,20 @@ test('active updates reuse the manager', () => {
     assert.deepEqual(h.events, setters.slice(1));
     h.runtime.deactivate();
     assertReleased(h.runtime);
+});
+
+test('panel opacity mirrors the active profile through the panel schema', () => {
+    const h = harness();
+    h.applyPanelOpacity(0);
+    assert.equal(h.runtime._panelSettings.values['panel-opacity'], 0);
+    h.applyPanelOpacity(50);
+    assert.equal(h.runtime._panelSettings.values['panel-opacity'], 50);
+    h.applyPanelOpacity(100);
+    assert.equal(h.runtime._panelSettings.values['panel-opacity'], 100);
+    h.applyPanelOpacity(150);
+    assert.equal(h.runtime._panelSettings.values['panel-opacity'], 100);
+    h.applyPanelOpacity(25.5);
+    assert.equal(h.runtime._panelSettings.values['panel-opacity'], 100);
 });
 
 test('repeated deactivate is inert', () => {

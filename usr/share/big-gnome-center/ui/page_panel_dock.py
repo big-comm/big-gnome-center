@@ -595,6 +595,34 @@ class PanelDockPage(Gtk.Box):
             return
 
         self._syncing = True
+        try:
+            self._sync_control_values(
+                active_layout=active_layout,
+                position_available=position_available,
+                dock_available=dock_available,
+                community_panel_active=community_panel_active,
+                hover_available=hover_available,
+                magnification_available=magnification_available,
+                indicator_available=indicator_available,
+                panel_available=panel_available,
+                session_available=session_available,
+            )
+        finally:
+            self._syncing = False
+
+    def _sync_control_values(
+        self,
+        *,
+        active_layout: str,
+        position_available: bool,
+        dock_available: bool,
+        community_panel_active: bool,
+        hover_available: bool,
+        magnification_available: bool,
+        indicator_available: bool,
+        panel_available: bool,
+        session_available: bool,
+    ) -> None:
         if position_available:
             self._dock_positions = DOCK_POSITIONS[active_layout]
             labels = {"bottom": tr("Bottom"), "left": tr("Left"), "right": tr("Right")}
@@ -653,7 +681,20 @@ class PanelDockPage(Gtk.Box):
             self._skip_startup_overview.set_active(
                 self._settings.skip_startup_overview()
             )
-        self._syncing = False
+
+    def _settings_for_write(self):
+        active_layout = Settings().get("active_layout", "")
+        if (
+            self._settings is None
+            or self._settings.active_layout != active_layout
+        ):
+            self.refresh()
+        if (
+            self._settings is not None
+            and self._settings.active_layout == active_layout
+        ):
+            return self._settings
+        return None
 
     @staticmethod
     def _set_opacity(scale: Gtk.Scale, label: Gtk.Label, value: int) -> None:
@@ -674,8 +715,11 @@ class PanelDockPage(Gtk.Box):
     def _on_panel_opacity_changed(self, scale: Gtk.Scale) -> None:
         value = round(scale.get_value())
         self._panel_opacity_label.set_label(f"{value}%")
-        if not self._syncing and self._settings:
-            self._settings.set_panel_opacity(value)
+        if self._syncing:
+            return
+        settings = self._settings_for_write()
+        if settings:
+            settings.set_panel_opacity(value)
 
     def _on_dock_size_changed(self, scale: Gtk.Scale) -> None:
         value = round(scale.get_value())

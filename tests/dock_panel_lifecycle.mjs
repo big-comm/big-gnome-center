@@ -34,7 +34,7 @@ function harness() {
         statusArea: {}, menuManager: {}, contains: () => false,
         get_style() { step('panel.get'); return this.style; },
         set_style(value) { step('panel.set'); this.style = value; this.emit('notify::style'); },
-        get_theme_node() { return {get_background_color() { step('background'); return {red: 10, green: 20, blue: 30}; }}; },
+        get_theme_node() { return {get_background_color() { step('background'); return {red: 10, green: 20, blue: 30, alpha: 166}; }}; },
     });
     const box = Object.assign(new Emitter('box'), {
         visible: true, height: 32,
@@ -101,9 +101,9 @@ function harness() {
     });
     return {failures, hooks, events, timers, emitters, zones, autohides, shortcuts, chrome,
         panel, box, tracking, display, layout, overview, window, actor, surface, child, actors,
-        settings, Controller, create: (opacity = null) => new Controller({
+        settings, Controller, create: () => new Controller({
             getSettings() { step('settings.new'); return settings; },
-        }, () => [], opacity)};
+        }, () => [])};
 }
 
 let count = 0;
@@ -131,17 +131,19 @@ function fullscreen(h, owner) {
     owner._ensureFullscreenSurface();
     return {window, actor, surface: actor.children[0], child: actor.children[0].children[0]};
 }
-test('runtime opacity overrides legacy settings and updates live', () => {
-    const h = harness(), owner = h.create(20);
-    assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.20\)/);
-    h.settings.opacity = 90;
+test('panel opacity follows settings and updates live', () => {
+    const h = harness(), owner = h.create();
+    assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.65\)/);
+    assert(!h.panel.style.includes(';;'));
+    assert.match(h.panel.style, /^color: red; background-color:/);
+    h.settings.opacity = 0;
     h.settings.emit('changed');
-    assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.20\)/);
-    owner.setOpacity(0);
     assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.00\)/);
-    owner.setOpacity(100);
+    h.settings.opacity = 100;
+    h.settings.emit('changed');
     assert.match(h.panel.style, /rgba\(0, 0, 0, 1\.00\)/);
     assert.equal(owner.diagnostics().opacity, 100);
+    assert.equal(owner.diagnostics().renderedOpacity, 65);
     owner.destroy(); released(h, owner);
 });
 for (const point of ['settings.new', 'panel.get', 'zone.new', 'chrome.add', 'zone.position',

@@ -42,7 +42,7 @@ def test_unified_runtime_is_modular_and_has_no_preferences_entry_point():
     assert "new TaskbarRuntime(this._extension)" in controller
     assert "org.communitybig.layout-switcher.runtime" in controller
     assert "PASSIVE_BUILD" not in controller
-    assert "RUNTIME_BUILD = 111" in controller
+    assert "RUNTIME_BUILD = 112" in controller
     assert not (RUNTIME / "prefs.js").exists()
     assert not (RUNTIME / "Settings.ui").exists()
 
@@ -371,9 +371,9 @@ def test_runtime_owns_dock_panel_opacity():
 
     assert "dockOpacity,\n                panelOpacity, dockSize" in controller
     assert "this._applyPanelOpacity(panelOpacity)" in runtime
-    assert "this._panelController?.setOpacity(opacity)" in runtime
-    assert "setOpacity(opacity)" in panel
-    assert "this._opacityOverride ??" in panel
+    assert "this._panelSettings.set_uint('panel-opacity', this._panelOpacity)" in runtime
+    assert "setOpacity(opacity)" not in panel
+    assert "this._settings.get_uint('panel-opacity')" in panel
 
 
 def test_runtime_owns_minimal_native_panel_opacity_and_visibility():

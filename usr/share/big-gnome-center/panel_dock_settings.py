@@ -421,6 +421,10 @@ class PanelDockSettings:
         percent = max(0, min(100, int(percent)))
         self._remember("panel-opacity", percent)
         if self._runtime_owns_panel_opacity():
+            if self.dock_active:
+                # Keep an already-loaded pre-upgrade runtime responsive. The
+                # current runtime mirrors this value itself on layout changes.
+                self.panel.set_uint("panel-opacity", percent)
             return
         if self.community_panel_active:
             self.community_panel.set_boolean("trans-use-custom-opacity", True)

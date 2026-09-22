@@ -18,6 +18,7 @@ import {DockVisibilityModes} from './dockVisibilityModes.js';
 
 const DOCK_UUID = 'community-dock@communitybig.org';
 const DOCK_SCHEMA = 'org.gnome.shell.extensions.dash-to-dock';
+const PANEL_SCHEMA = 'org.communitybig.panel-and-dock';
 
 export class DockRuntime {
     constructor(extension) {
@@ -27,6 +28,7 @@ export class DockRuntime {
             version: 1,
         }, 'dock');
         this._settings = this._host.getSettings(DOCK_SCHEMA);
+        this._panelSettings = this._host.getSettings(PANEL_SCHEMA);
         this._actorFactory = new DockActorFactory();
         this._host.createDockActor = params => this._actorFactory.create(params);
         this._host.appActions = new DockAppActions();
@@ -54,7 +56,6 @@ export class DockRuntime {
         this._host.createPanelController = () => new PanelController(
             this._host,
             () => this._manager?._allDocks ?? [],
-            this._panelOpacity,
         );
     }
 
@@ -131,6 +132,7 @@ export class DockRuntime {
 
     _disposeSettings() {
         this._settings = null;
+        this._panelSettings = null;
     }
 
     deactivate() {
@@ -337,8 +339,10 @@ export class DockRuntime {
     }
 
     _applyPanelOpacity(opacity) {
-        this._panelOpacity = opacity;
-        this._panelController?.setOpacity(opacity);
+        if (!Number.isInteger(opacity))
+            return;
+        this._panelOpacity = Math.max(0, Math.min(100, opacity));
+        this._panelSettings.set_uint('panel-opacity', this._panelOpacity);
     }
 
     _applyIconSize(iconSize) {
