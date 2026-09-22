@@ -185,6 +185,14 @@ def provider(monkeypatch):
             pass
 
     launches = []
+    reloads = []
+    class Application:
+        def get_active_window(self):
+            return SimpleNamespace(
+                activate_action=lambda name, value: reloads.append((name, value))
+            )
+
+    application = Application()
 
     def launch(argv, flags):
         launches.append(argv)
@@ -195,12 +203,11 @@ def provider(monkeypatch):
     repository = ModuleType("gi.repository")
     repository.Gio = SimpleNamespace(
         Subprocess=SimpleNamespace(new=launch), SubprocessFlags=SimpleNamespace(NONE=0),
-        Application=SimpleNamespace(get_default=lambda: None),
-        File=Gio.File, FileQueryInfoFlags=Gio.FileQueryInfoFlags,
+        Application=SimpleNamespace(get_default=lambda: application),
     )
-    repository.Gtk = SimpleNamespace(Application=type("Application", (), {}))
     repository.GLib = SimpleNamespace(Error=RuntimeError)
     repository.GObject = SimpleNamespace(GObject=type("GObject", (), {}))
+    repository.Gtk = SimpleNamespace(Application=Application)
     repository.Nautilus = SimpleNamespace(
         MenuProvider=type("MenuProvider", (), {}), MenuItem=MenuItem
     )
@@ -212,9 +219,9 @@ def provider(monkeypatch):
     spec = importlib.util.spec_from_file_location("folder_icon_provider_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    monkeypatch.setattr(module, "icon_metadata", lambda location: (None, None))
     extension = module.BigGnomeCenterFolderIcons()
     extension._test_module = module
+    extension._test_reloads = reloads
     return extension, launches
 
 
@@ -265,128 +272,35 @@ def test_context_menu_ignores_unsupported_selections(provider, files):
     assert launches == []
 
 
-def test_context_observer_includes_subclasses_and_ignores_other_widgets(provider):
-    extension, launches = provider
+def test_nautilus_extension_uses_only_public_file_info_api(provider):
+    extension, _ = provider
     module = extension._test_module
+    source = Path(module.__file__).read_text()
+    assert "observe_children" not in source
+    assert "get_windows" not in source
+    assert "query_info" not in source
 
-    class Children:
-        def __init__(self):
-            self.connections = []
 
-        def connect(self, *args):
-            self.connections.append(args)
-
-        def get_n_items(self):
-            return 0
-
-    class Widget:
-        def __init__(self, kind, children=()):
-            self.__gtype__, self.children = kind, children
-            self.next = None
-            for left, right in zip(children, children[1:]):
-                left.next = right
-
-        def get_first_child(self):
-            return self.children[0] if self.children else None
-
-        def get_next_sibling(self):
-            return self.next
-
-        def observe_children(self):
-            return Children()
-
-    file_view = Widget("NautilusGridView")
-    toolbar = Widget("GtkBox")
-    window = Widget("NautilusWindow", (toolbar, file_view))
-    app = module.Gtk.Application()
-    app.get_windows = lambda: [window]
-    module.Gio.Application.get_default = lambda: app
-    module.GObject.type_from_name = lambda name: name
-    module.GObject.type_is_a = lambda kind, parent: (
-        kind in ("NautilusGridView", "NautilusFilesView") and parent == "NautilusFilesView"
+@pytest.mark.parametrize("gone", [False, True])
+def test_picker_exit_invalidates_live_folder_without_view_traversal(provider, gone):
+    extension, _ = provider
+    invalidations = []
+    folder = SimpleNamespace(
+        is_gone=lambda: gone,
+        invalidate_extension_info=lambda: invalidations.append(True),
     )
-    module.follow_context_menus()
-    module.follow_context_menus()
-    assert len(file_view._bgc_context_children.connections) == 1
-    assert not hasattr(toolbar, "_bgc_context_children")
-    assert not hasattr(window, "_bgc_context_children")
-
-
-def test_context_popover_uses_vertical_sliding_without_restyling(provider):
-    extension, launches = provider
-    module = extension._test_module
-
-    class Menu:
-        def set_position(self, value):
-            self.position = value
-
-        def set_valign(self, value):
-            self.valign = value
-
-    module.Gtk.PopoverMenu = Menu
-    module.Gtk.PositionType = SimpleNamespace(RIGHT="right")
-    module.Gtk.Align = SimpleNamespace(START="start")
-    first, second = Menu(), Menu()
-    items = [first, object(), second]
-    children = SimpleNamespace(get_item=items.__getitem__)
-    module.position_context_menus(children, 2, 0, 1)
-    assert second.position == "right" and second.valign == "start"
-    assert not hasattr(first, "position")
-    module.position_context_menus(children, 1, 0, 1)
-
-
-@pytest.mark.parametrize("after", [(None, None), (None, "folder-git"), ("file:///old.svg", None)])
-def test_picker_exit_refreshes_only_changed_metadata(provider, after):
-    extension, _ = provider
-    module = extension._test_module
-    refreshed = []
-    module.icon_metadata = lambda location: after
-    module.refresh_folder_views = refreshed.append
-    folder = SimpleNamespace(is_gone=lambda: False, invalidate_extension_info=lambda: None)
-    location = Gio.File.new_for_uri("file:///home/test/Projects")
     process = SimpleNamespace(wait_finish=lambda result: True)
-    extension._finished(process, None, (folder, location, (None, None)))
-    assert refreshed == ([location] if after != (None, None) else [])
+    extension._finished(process, None, folder)
+    assert invalidations == ([] if gone else [True])
+    assert extension._test_reloads == ([] if gone else [("slot.reload", None)])
 
 
-def test_refresh_keeps_other_locations_and_reloads_all_parent_tabs(provider):
+def test_picker_exit_tolerates_missing_active_window(provider):
     extension, _ = provider
-    module = extension._test_module
-    location = Gio.File.new_for_uri("file:///home/test/Projects")
-    refreshed = []
-
-    class Widget:
-        def __init__(self, path=None, children=()):
-            self.__gtype__ = "NautilusWindowSlot" if path else "GtkBox"
-            self.location = Gio.File.new_for_path(path) if path else None
-            self.children, self.next = children, None
-            for left, right in zip(children, children[1:]):
-                left.next = right
-
-        def get_first_child(self):
-            return self.children[0] if self.children else None
-
-        def get_next_sibling(self):
-            return self.next
-
-        def get_property(self, name):
-            assert name == "location"
-            return self.location
-
-        def activate_action(self, name, parameter):
-            assert (name, parameter) == ("slot.reload", None)
-            refreshed.append(self)
-
-    first, second = Widget("/home/test"), Widget("/home/test")
-    other, nested = Widget("/home/other"), Widget("/home/test/Projects")
-    window = Widget(children=(first, second, other, nested))
-    app = module.Gtk.Application()
-    app.get_windows = lambda: [window]
-    module.Gio.Application.get_default = lambda: app
-    module.GObject.type_from_name = lambda name: name
-    module.GObject.type_is_a = lambda kind, parent: kind == parent
-    module.refresh_folder_views(location)
-    assert set(refreshed) == {first, second}
+    extension._test_module.Gio.Application.get_default = lambda: None
+    folder = SimpleNamespace(is_gone=lambda: False, invalidate_extension_info=lambda: None)
+    process = SimpleNamespace(wait_finish=lambda result: True)
+    extension._finished(process, None, folder)
 
 
 def test_folder_picker_messages_are_translated_in_every_compiled_catalog():
