@@ -287,9 +287,9 @@ class ShellReloader:
         Apply live state, falling back to settings only when D-Bus is unavailable.
         An explicit Shell refusal must not be bypassed by rewriting preferences.
         """
-        from helper_client import HELPER_UUID
+        from extension_policy import REQUIRED_EXTENSION_UUIDS
 
-        if uuid == HELPER_UUID and not enable:
+        if uuid in REQUIRED_EXTENSION_UUIDS and not enable:
             return False, tr("Required for layout switching")
 
         # Import aqui para evitar circular import (ExtMgr importa ShellReloader)

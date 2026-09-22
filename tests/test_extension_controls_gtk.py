@@ -15,6 +15,7 @@ gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
 from ui.page_extensions import ExtensionsPage
+from extension_policy import REQUIRED_EXTENSION_UUIDS
 
 
 def _switch_in(widget):
@@ -27,6 +28,28 @@ def _switch_in(widget):
             return found
         child = child.get_next_sibling()
     return None
+
+
+@pytest.mark.parametrize("uuid", sorted(REQUIRED_EXTENSION_UUIDS))
+@pytest.mark.parametrize("featured", [False, True])
+def test_required_extension_switches_are_insensitive(monkeypatch, uuid, featured):
+    if not Gtk.init_check() or Gdk.Display.get_default() is None:
+        pytest.skip("Requires a GTK display")
+    Adw.init()
+    page = SimpleNamespace(_updates={}, _toggle_extension=Mock(), _toggle_feat=Mock())
+    monkeypatch.setattr("ui.page_extensions.ExtMgr.can_remove", lambda uuid: False)
+    ext = {"uuid": uuid, "name": "Required component", "enabled": True}
+    if featured:
+        widget = Gtk.Box()
+        ExtensionsPage._build_feat_installed(page, widget, ext, widget, True)
+    else:
+        widget = ExtensionsPage._make_installed_row(page, ext)
+    switch = _switch_in(widget)
+    assert switch.get_active()
+    assert not switch.get_sensitive()
+    switch.set_active(False)
+    page._toggle_extension.assert_not_called()
+    page._toggle_feat.assert_not_called()
 
 
 @pytest.mark.parametrize("featured", [False, True])
@@ -111,6 +134,9 @@ def test_lists_follow_settings_committed_after_operation_completion(monkeypatch)
     monkeypatch.setattr("ui.page_extensions.ExtMgr.can_remove", lambda value: False)
     monkeypatch.setattr("ui.page_extensions.ExtMgr.is_enabled",
                         lambda value: value in settings.get_strv("enabled-extensions"))
+    monkeypatch.setattr("ui.page_extensions.ExtMgr.enabled_list",
+                        lambda: settings.get_strv("enabled-extensions"))
+    monkeypatch.setattr("ui.page_extensions.ExtMgr.all_globally_enabled", lambda: True)
     monkeypatch.setattr("ui.page_extensions.ExtMgr.list_installed", lambda: [
         {**ext, "user": False, "enabled": uuid in settings.get_strv("enabled-extensions")},
     ])
@@ -118,8 +144,10 @@ def test_lists_follow_settings_committed_after_operation_completion(monkeypatch)
         page = ExtensionsPage(pool, lambda message: None)
         window = Adw.Window()
         window.set_content(page)
+        page._switch_sub("installed")
         page.refresh_installed()
         try:
+            assert not page._global_btn.get_visible()
             assert not _switch_in(page._feat_cards[uuid]).get_active()
             assert not _switch_in(page._inst_container).get_active()
             # The completion refresh has already read the old persisted state.
@@ -136,6 +164,16 @@ def test_lists_follow_settings_committed_after_operation_completion(monkeypatch)
                 time.sleep(0.001)
             assert _switch_in(page._feat_cards[uuid]).get_active()
             assert _switch_in(page._inst_container).get_active()
+            assert page._global_btn.get_visible()
+            settings.set_strv("enabled-extensions", [])
+            deadline = time.monotonic() + 3
+            while page._global_btn.get_visible() and time.monotonic() < deadline:
+                context.iteration(False)
+                time.sleep(0.001)
+            assert not page._global_btn.get_visible()
+            page._switch_sub("featured")
+            page._switch_sub("installed")
+            assert not page._global_btn.get_visible()
         finally:
             window.set_content(None)
             window.close()

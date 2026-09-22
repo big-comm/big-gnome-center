@@ -2181,3 +2181,19 @@ msgstr "Posição da doca"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Em baixo"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Desativar opcionais"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Desativar extensões opcionais?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."
+msgstr "As extensões opcionais serão desativadas. Os componentes obrigatórios dos layouts permanecerão ativos. Você pode reativar as extensões opcionais individualmente."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Extensões opcionais desativadas"

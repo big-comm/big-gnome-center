@@ -9,8 +9,7 @@ import pytest
 
 from constants import tr
 from extension_manager import ExtMgr
-from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR
-from helper_client import HELPER_UUID
+from extension_policy import REQUIRED_EXTENSION_UUIDS, BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR
 from system_extension_remover import remove_extension
 from ui.page_extensions import ExtensionsPage
 
@@ -81,7 +80,7 @@ def test_installed_row_hides_only_bundled_trash_buttons(uuid):
                  if call.kwargs.get('icon_name') == 'user-trash-symbolic']
         assert len(trash) == int(uuid not in BUNDLED_EXTENSION_UUIDS)
         gtk.Switch.assert_called_once()
-        if uuid == HELPER_UUID:
+        if uuid in REQUIRED_EXTENSION_UUIDS:
             gtk.Switch.return_value.set_sensitive.assert_called_once_with(False)
         else:
             gtk.Switch.return_value.set_sensitive.assert_not_called()

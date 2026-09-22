@@ -4,7 +4,7 @@ ui/page_extensions.py — Página de Extensões (sub-abas: Destaque e Instaladas
 
 Sub-aba Destaque: cards das extensões em FEATURED_EXTENSIONS com install/toggle/remove.
 Sub-aba Instaladas: lista completa de extensões instaladas no sistema.
-Botão global On/Off para desabilitar/habilitar todas as extensões de uma vez.
+Bulk controls preserve required layout components.
 
 DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
@@ -22,7 +22,7 @@ import update_checker
 from app_launcher import launch_extensions_app, launch_uri
 from constants import FEATURED_EXTENSIONS, tr
 from extension_manager import ExtMgr
-from helper_client import HELPER_UUID
+from extension_policy import REQUIRED_EXTENSION_UUIDS
 from shell_reloader import ShellReloader
 from ui.ext_browse_view import ExtBrowseView
 from ui.ext_detail_view import ExtDetailView
@@ -205,7 +205,6 @@ class ExtensionsPage(Gtk.Box):
         self._global_btn.set_valign(Gtk.Align.CENTER)
         self._refresh_global_btn()
         self._global_btn.connect("clicked", self._on_global_toggle)
-        self._global_btn.set_visible(self._ext_sub == "installed")
         tab_bar.append(self._global_btn)
 
         self.append(tab_bar)
@@ -263,7 +262,7 @@ class ExtensionsPage(Gtk.Box):
 
         # Botão "Desativar todas" só faz sentido na aba Instaladas.
         if hasattr(self, "_global_btn"):
-            self._global_btn.set_visible(key == "installed")
+            self._refresh_global_btn()
 
         if key == "installed":
             GLib.idle_add(self.refresh_installed)
@@ -405,12 +404,16 @@ class ExtensionsPage(Gtk.Box):
         sw.set_active(enabled)
         sw.set_valign(Gtk.Align.CENTER)
         sw.update_property([Gtk.AccessibleProperty.LABEL], [f"{tr('Toggle')} {ext['name']}"])
-        sw.connect(
-            "notify::active",
-            lambda s, p, _uuid=ext["uuid"], _card=card, _st=st, _sw=sw: self._toggle_feat(
-                _uuid, s.get_active(), _card, _st, _sw
-            ),
-        )
+        if ext["uuid"] in REQUIRED_EXTENSION_UUIDS:
+            sw.set_sensitive(False)
+            sw.set_tooltip_text(tr("Required for layout switching"))
+        else:
+            sw.connect(
+                "notify::active",
+                lambda s, p, _uuid=ext["uuid"], _card=card, _st=st, _sw=sw: self._toggle_feat(
+                    _uuid, s.get_active(), _card, _st, _sw
+                ),
+            )
         btm.append(sw)
         inner.append(btm)
 
@@ -789,7 +792,7 @@ class ExtensionsPage(Gtk.Box):
         Compact layout: icon | name+description | controls.
         """
         enabled = ext["enabled"]
-        is_required = ext["uuid"] == HELPER_UUID
+        is_required = ext["uuid"] in REQUIRED_EXTENSION_UUIDS
 
         row = Gtk.ListBoxRow()
         row.set_activatable(False)
@@ -997,7 +1000,11 @@ class ExtensionsPage(Gtk.Box):
 
     def _refresh_global_btn(self) -> None:
         on = ExtMgr.all_globally_enabled()
-        label = tr("Disable All") if on else tr("Enable All")
+        has_optional = bool(set(ExtMgr.enabled_list()) - REQUIRED_EXTENSION_UUIDS)
+        self._global_btn.set_visible(
+            self._ext_sub == "installed" and (not on or has_optional)
+        )
+        label = tr("Disable optional extensions") if on else tr("Enable All")
         self._global_btn.set_label(label)
         self._global_btn.update_property([Gtk.AccessibleProperty.LABEL], [label])
         for c in ("destructive-action", "suggested-action"):
@@ -1008,14 +1015,17 @@ class ExtensionsPage(Gtk.Box):
         currently_on = ExtMgr.all_globally_enabled()
 
         if currently_on:
+            if not (set(ExtMgr.enabled_list()) - REQUIRED_EXTENSION_UUIDS):
+                self._refresh_global_btn()
+                return
             # confirm before disabling all
             parent = self.get_root()
             d = Adw.AlertDialog(
-                heading=tr("Disable all extensions?"),
-                body=tr("All extensions will be disabled. You can re-enable them later."),
+                heading=tr("Disable optional extensions?"),
+                body=tr("Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."),
             )
             d.add_response("cancel", tr("Cancel"))
-            d.add_response("disable", tr("Disable All"))
+            d.add_response("disable", tr("Disable optional extensions"))
             d.set_response_appearance("disable", Adw.ResponseAppearance.DESTRUCTIVE)
 
             def on_r(_dlg, r):
@@ -1028,16 +1038,28 @@ class ExtensionsPage(Gtk.Box):
             self._do_global_toggle(False)
 
     def _do_global_toggle(self, currently_on: bool) -> None:
-        def task():
-            ok, err = ExtMgr.disable_all_globally(disable=currently_on)
-            if ok:
-                msg = (
-                    tr("All extensions disabled") if currently_on else tr("All extensions enabled")
-                )
-                GLib.idle_add(self._refresh_global_btn)
-                GLib.idle_add(self.refresh_installed)
-                GLib.idle_add(self._toast, msg)
-            else:
-                GLib.idle_add(self._toast, tr("Error") + f": {err}")
+        self._global_btn.set_sensitive(False)
 
-        self._pool.submit(task)
+        def complete(ok, err):
+            self._refresh_global_btn()
+            self.refresh_installed()
+            self.rebuild_featured()
+            self._global_btn.set_sensitive(True)
+            if ok:
+                self._toast(tr("Optional extensions disabled") if currently_on else tr("All extensions enabled"))
+            else:
+                self._toast(tr("Error") + f": {err}")
+            return GLib.SOURCE_REMOVE
+
+        def task():
+            try:
+                ok, err = (ExtMgr.disable_optional_extensions() if currently_on
+                           else ExtMgr.enable_extensions_globally())
+            except Exception as error:
+                ok, err = False, str(error)
+            GLib.idle_add(complete, ok, err)
+
+        try:
+            self._pool.submit(task)
+        except Exception as error:
+            complete(False, str(error))

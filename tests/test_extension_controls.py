@@ -2,32 +2,67 @@
 """Extension state contracts and malformed installed metadata."""
 
 import json
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import pytest
 
 from extension_manager import ExtMgr
+from extension_policy import REQUIRED_EXTENSION_UUIDS
 from shell_reloader import ShellReloader
 
 
-@pytest.mark.parametrize("disabled", [False, True])
-def test_global_toggle_uses_shell_key_without_reload(disabled):
+def test_global_recovery_clears_shell_block_without_reload():
     key = "/org/gnome/shell/disable-user-extensions"
     with (
         patch("extension_manager.dconf_write", return_value=(True, "")) as write,
-        patch("extension_manager.dconf_read", return_value=str(disabled).lower()) as read,
+        patch("extension_manager.dconf_read", return_value="true"),
         patch.object(ShellReloader, "reload_all") as reload,
     ):
-        assert ExtMgr.disable_all_globally(disabled)[0]
-        assert ExtMgr.all_globally_enabled() is not disabled
-    write.assert_called_once_with(key, str(disabled).lower())
-    assert all(call.args == (key,) for call in read.call_args_list)
+        assert ExtMgr.enable_extensions_globally()[0]
+        assert not ExtMgr.all_globally_enabled()
+    write.assert_called_once_with(key, "false")
     reload.assert_not_called()
 
 
 def test_global_toggle_preserves_write_failure():
     with patch("extension_manager.dconf_write", return_value=(False, "locked")):
-        assert ExtMgr.disable_all_globally(True) == (False, "locked")
+        assert ExtMgr.enable_extensions_globally() == (False, "locked")
+
+
+def test_bulk_disable_preserves_required_components_and_reports_refusals():
+    enabled = [*sorted(REQUIRED_EXTENSION_UUIDS), "a@example.org", "b@example.org", "a@example.org"]
+    with (
+        patch.object(ExtMgr, "enabled_list", return_value=enabled),
+        patch.object(ExtMgr, "set_enabled", side_effect=[(False, "refused"), (True, "")]) as toggle,
+        patch("extension_manager.dconf_write") as write,
+    ):
+        assert ExtMgr.disable_optional_extensions() == (False, "a@example.org: refused")
+    assert toggle.call_args_list == [call("a@example.org", False), call("b@example.org", False)]
+    write.assert_not_called()
+
+
+@pytest.mark.parametrize("enabled", [[], sorted(REQUIRED_EXTENSION_UUIDS), ["optional@example.org"]])
+def test_bulk_disable_never_sets_global_block(enabled):
+    with (
+        patch.object(ExtMgr, "enabled_list", return_value=enabled),
+        patch.object(ExtMgr, "set_enabled", return_value=(True, "")) as toggle,
+        patch("extension_manager.dconf_write") as write,
+    ):
+        assert ExtMgr.disable_optional_extensions() == (True, "")
+    assert toggle.call_count == len(set(enabled) - REQUIRED_EXTENSION_UUIDS)
+    write.assert_not_called()
+
+
+@pytest.mark.parametrize("uuid", sorted(REQUIRED_EXTENSION_UUIDS))
+def test_required_components_cannot_be_disabled_through_controls_or_fallback(uuid):
+    with (
+        patch.object(ShellReloader, "_request_extension_state") as request,
+        patch("extension_manager.dconf_write") as write,
+    ):
+        assert not ExtMgr.set_enabled(uuid, False)[0]
+        assert not ExtMgr._set_enabled_gsettings(uuid, False)[0]
+    request.assert_not_called()
+    write.assert_not_called()
 
 
 @pytest.mark.parametrize("enable", [False, True])

@@ -8,6 +8,7 @@ from unittest.mock import Mock
 import pytest
 
 from constants import tr
+from extension_policy import REQUIRED_EXTENSION_UUIDS
 from ui.page_extensions import (
     ExtensionsPage,
     _installed_extension_description,
@@ -16,6 +17,30 @@ from ui.page_extensions import (
 )
 
 SOURCE = Path(__file__).parents[1] / "usr/share/big-gnome-center/ui/page_extensions.py"
+
+
+@pytest.mark.parametrize("tab", ["installed", "featured", "browse"])
+@pytest.mark.parametrize("blocked,optional", [(False, False), (False, True), (True, False)])
+def test_bulk_button_only_shown_when_action_is_available(monkeypatch, tab, blocked, optional):
+    enabled = sorted(REQUIRED_EXTENSION_UUIDS) + (["test@example.org"] if optional else [])
+    monkeypatch.setattr("ui.page_extensions.ExtMgr.enabled_list", lambda: enabled)
+    monkeypatch.setattr("ui.page_extensions.ExtMgr.all_globally_enabled", lambda: not blocked)
+    page = SimpleNamespace(_ext_sub=tab, _global_btn=Mock())
+    ExtensionsPage._refresh_global_btn(page)
+    page._global_btn.set_visible.assert_called_once_with(
+        tab == "installed" and (blocked or optional)
+    )
+
+
+def test_stale_bulk_click_does_not_open_empty_confirmation(monkeypatch):
+    monkeypatch.setattr("ui.page_extensions.ExtMgr.enabled_list", lambda: sorted(REQUIRED_EXTENSION_UUIDS))
+    monkeypatch.setattr("ui.page_extensions.ExtMgr.all_globally_enabled", lambda: True)
+    dialog = Mock()
+    monkeypatch.setattr("ui.page_extensions.Adw.AlertDialog", dialog)
+    page = SimpleNamespace(_refresh_global_btn=Mock())
+    ExtensionsPage._on_global_toggle(page, None)
+    page._refresh_global_btn.assert_called_once()
+    dialog.assert_not_called()
 
 
 def test_installed_list_hides_system_runtime_and_legacy_duplicates():

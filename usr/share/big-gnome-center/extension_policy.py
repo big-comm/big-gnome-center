@@ -1,5 +1,11 @@
 # SPDX-License-Identifier: MIT
-"""Removal policy shared by the UI and privileged helper."""
+"""Extension protection shared by controls and removal helpers."""
+
+REQUIRED_EXTENSION_UUIDS = frozenset({
+    "layout-switcher-helper@bigcommunity.org",
+    "layout-switcher-helper@communitybig.org",
+    "layout-switcher-runtime@communitybig.org",
+})
 
 BUNDLED_EXTENSION_UUIDS = frozenset({
     "community-dock@communitybig.org",

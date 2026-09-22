@@ -2159,3 +2159,19 @@ msgstr ""
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr ""

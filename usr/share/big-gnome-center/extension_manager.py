@@ -36,7 +36,7 @@ _SYSTEM_EXTENSION_REMOVER = Path("/usr/bin/big-gnome-center-remove-extension")
 
 from app_launcher import launch_command, report_launch_error
 from constants import CONFIG_DIR, EXT_SYS_DIR, EXT_USER_DIR, tr
-from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR
+from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR, REQUIRED_EXTENSION_UUIDS
 from utils import dconf_read, dconf_write, gnome_shell_version, gsettings_get, run_cmd
 
 
@@ -198,6 +198,8 @@ class ExtMgr:
         """Reconcile both Shell lists when the live D-Bus API is unavailable."""
         if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
             return False, "invalid extension UUID"
+        if uuid in REQUIRED_EXTENSION_UUIDS and not enable:
+            return False, tr("Required for layout switching")
         try:
             from gi.repository import Gio
 
@@ -260,17 +262,21 @@ class ExtMgr:
         return True, msg or live_msg
 
     @staticmethod
-    def disable_all_globally(disable: bool) -> Tuple[bool, str]:
-        """
-        Desabilita ou habilita globalmente todas as extensões.
-        disable=True  → desabilita tudo
-        disable=False → re-habilita tudo
-        """
-        # Shell observes this key; reloading extensions is unnecessary.
-        return dconf_write(
-            "/org/gnome/shell/disable-user-extensions",
-            "true" if disable else "false",
-        )
+    def disable_optional_extensions() -> Tuple[bool, str]:
+        """Disable individually; never use Shell's global kill switch."""
+        failures = []
+        for uuid in dict.fromkeys(ExtMgr.enabled_list()):
+            if uuid in REQUIRED_EXTENSION_UUIDS:
+                continue
+            ok, error = ExtMgr.set_enabled(uuid, False)
+            if not ok:
+                failures.append(f"{uuid}: {error}")
+        return not failures, "\n".join(failures)
+
+    @staticmethod
+    def enable_extensions_globally() -> Tuple[bool, str]:
+        """Recover a global block created by older versions or external tools."""
+        return dconf_write("/org/gnome/shell/disable-user-extensions", "false")
 
     # ── Instalar ──────────────────────────────────────────────────────────────
 
