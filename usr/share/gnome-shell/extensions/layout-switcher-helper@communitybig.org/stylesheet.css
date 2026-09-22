@@ -127,6 +127,14 @@ Gjs_ui_dateMenu_DateMenuButton StLabel {
     padding-bottom: 48px;
 }
 
+.message-list.layout-switcher-g-unity-notifications .message-view:ltr {
+    margin-right: 4px;
+}
+
+.message-list.layout-switcher-g-unity-notifications .message-view:rtl {
+    margin-left: 4px;
+}
+
 .message-list.layout-switcher-g-unity-notifications
 .message-list-clear-button {
     min-height: 1.5em;
