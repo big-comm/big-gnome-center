@@ -169,7 +169,8 @@ class PanelDockSettings:
         layout = self.active_layout
         if not layout or not self.runtime.supports_layout(layout):
             return
-        self.runtime.set_active_layout(layout)
+        # Refreshes can run mid-switch with the previous UI label. Only the
+        # layout transaction may select the live runtime profile.
         if self.runtime.is_imported(layout):
             return
         # Active runtime profiles already own their settings. Legacy values

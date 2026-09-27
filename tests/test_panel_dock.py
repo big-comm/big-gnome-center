@@ -275,7 +275,7 @@ def test_compatibility_adapter_imports_active_layout_once():
     settings.dock.values["background-opacity"] = 0.15
     settings._import_active_layout_once()
 
-    assert settings.runtime.active_layout == "BigGnome"
+    assert settings.runtime.active_layout == ""
     assert settings.runtime.imported == {"BigGnome"}
     assert first_values[("BigGnome", "dock-opacity")] == 77
     assert settings.runtime.values == first_values
@@ -376,12 +376,14 @@ def test_active_runtime_profiles_never_import_legacy_component_settings(
     settings.dock_active = dock_active
     settings.community_panel_active = taskbar_active
     settings.runtime_active = True
+    settings.runtime.active_layout = "Minimal" if layout != "Minimal" else "Classic"
+    live_layout = settings.runtime.active_layout
     settings.panel.values["indicator-style"] = "dot"
     settings.community_panel.values["dot-style-focused"] = "DOTS"
 
     settings._import_active_layout_once()
 
-    assert settings.runtime.active_layout == layout
+    assert settings.runtime.active_layout == live_layout
     assert settings.runtime.imported == {layout}
     assert settings.runtime.values == {}
 

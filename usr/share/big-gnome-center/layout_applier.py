@@ -2357,8 +2357,14 @@ class LayoutApplier:
             available_uuids=HelperClient.installed_extension_uuids(),
         )
         data = cls._apply_user_component_overrides(data, original=bool(layout_id))
+        # Snapshots may predate the runtime or contain a stale profile. Select
+        # the requested layout inside the transaction, never from UI refresh.
+        runtime_layout_id = layout_id or next(
+            (key for key, name in _LAYOUT_DISPLAY_NAMES.items() if name == layout_label),
+            "",
+        )
+        data = cls._inject_runtime_active_layout(data, runtime_layout_id)
         if layout_id:
-            data = cls._inject_runtime_active_layout(data, layout_id)
             data = cls._apply_original_frosted_glass_defaults(data)
             if gnome_shell_version()[0] == 50:
                 data = cls._apply_gnome50_overview_default(data, layout_id)

@@ -2387,17 +2387,27 @@ class TestHelperIntegration:
     @patch("layout_applier.LayoutApplier._has_user_unit", return_value=False)
     def test_prefers_cleanroom_on_v7_helper(self, _has, _persist, _run, _ver, mock_v7):
         """A v7+ helper routes the apply through the clean-room protocol."""
-        data = "[org/gnome/shell]\nenabled-extensions=['kiwi@kemma']\n"
+        data = (
+            "[org/gnome/shell]\nenabled-extensions=['kiwi@kemma']\n"
+            "[org/communitybig/layout-switcher/runtime]\n"
+            "active-layout='Classic'\n"
+            "panel-opacity-overrides={'G-Unity': 42}\n"
+        )
         ok, _msg = LayoutApplier.load_dconf_safely(data, before_uuids=[], layout_label="G-Unity")
         assert ok is True
         mock_v7.assert_called_once()
         assert mock_v7.call_args.kwargs["layout_label"] == "G-Unity"
+        runtime = LayoutApplier._section_key_values(
+            mock_v7.call_args.args[0], "/org/communitybig/layout-switcher/runtime",
+        )
+        assert runtime["active-layout"] == "'G-Unity'"
+        assert runtime["panel-opacity-overrides"] == "{'G-Unity': 42}"
 
     def test_helpers_expose_restricted_component_discovery(self):
         root = Path(__file__).resolve().parents[1]
         for uuid, build in (
             ("layout-switcher-helper@bigcommunity.org", 43),
-            ("layout-switcher-helper@communitybig.org", 110),
+            ("layout-switcher-helper@communitybig.org", 111),
         ):
             source = (
                 root / "usr/share/gnome-shell/extensions" / uuid / "extension.js"
