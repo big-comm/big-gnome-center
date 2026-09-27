@@ -170,7 +170,7 @@
 
 .layout-switcher-light-quick-settings
 .frosted-glass-shell-surface.quick-settings .message {
-    background-color: rgba(255, 255, 255, 0.34) !important;
+    background-color: #ffffff !important;
     border-color: rgba(0, 0, 0, 0.18) !important;
     box-shadow: none !important;
 }
@@ -410,7 +410,7 @@
 .frosted-glass-shell-surface.datemenu-popover .message:second-in-stack,
 .layout-switcher-light-date-menu
 .frosted-glass-shell-surface.datemenu-popover .message:lower-in-stack {
-    background-color: rgba(255, 255, 255, 0.34) !important;
+    background-color: #ffffff !important;
     border-color: rgba(0, 0, 0, 0.18) !important;
     box-shadow: none !important;
 }

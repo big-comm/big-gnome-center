@@ -385,7 +385,7 @@ def test_calendar_and_notifications_are_an_independent_surface():
     assert ".frosted-glass-shell-surface.notification-banner" in stylesheet
     assert ".message:second-in-stack" in stylesheet
     assert ".message:lower-in-stack" in stylesheet
-    assert "background-color: rgba(30, 31, 38, 0.26) !important" in stylesheet
+    assert "background-color: #1e1f26 !important" in stylesheet
     assert "get_boolean('calendar-enabled')" in extension
     assert "POINTER_KINDS.has(this._kind)" in (EXTENSION / "shellBlurSurface.js").read_text()
 

@@ -124,7 +124,7 @@ const NOTIFICATION_SURFACE_GAP = 12;
 // Build marker within a protocol version — lets a deploy verify over Ping
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
-const HELPER_BUILD = 111;
+const HELPER_BUILD = 112;
 const DISCOVERABLE_UUIDS = new Set([
     'layout-switcher-helper@communitybig.org',
     'layout-switcher-runtime@communitybig.org',
@@ -158,6 +158,41 @@ const GUnityMessageBin = GObject.registerClass(
 class GUnityMessageBin extends St.Bin {
     vfunc_get_preferred_width(_forHeight) {
         return [0, 0];
+    }
+
+    vfunc_get_preferred_height(forWidth) {
+        const [minimum, natural] = super.vfunc_get_preferred_height(forWidth);
+        const menu = this.menuOwner;
+        if (!menu)
+            return [minimum, natural];
+        const grid = menu?._grid;
+        const layout = grid?.layout_manager;
+        const monitor = Main.layoutManager.findMonitorForActor(menu?.sourceActor);
+        if (!monitor || !layout?._getRows)
+            return [minimum, natural];
+
+        const workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
+        const [, sourceY] = menu.sourceActor.get_transformed_position();
+        const [, sourceHeight] = menu.sourceActor.get_transformed_size();
+        const space = Math.max(
+            sourceY - workArea.y,
+            workArea.y + workArea.height - sourceY - sourceHeight);
+        // QuickSettingsLayout allocates each row at its natural height, even
+        // when the popup is constrained. Bound this row before allocation.
+        const rows = layout._getRows(grid);
+        let reserved = Math.max(0, rows.length - 1) * layout.row_spacing;
+        for (const row of rows) {
+            reserved += Math.max(0, ...row.filter(actor => actor !== this)
+                .map(actor => actor.get_preferred_height(-1)[1]));
+        }
+        reserved += layout._overlay?.get_preferred_height(forWidth)[1] ?? 0;
+        reserved += menu.box.get_theme_node().adjust_preferred_height(0, 0)[1];
+        const pointerNode = menu._boxPointer.get_theme_node();
+        reserved += pointerNode.adjust_preferred_height(0, 0)[1];
+        reserved += pointerNode.get_length('-arrow-rise');
+        const gap = 12 * St.ThemeContext.get_for_stage(global.stage).scale_factor;
+        const limit = Math.max(0, space - reserved - gap);
+        return [Math.min(minimum, limit), Math.min(natural, limit)];
     }
 });
 
@@ -1074,7 +1109,9 @@ export default class LayoutSwitcherHelper extends Extension {
                 x_expand: true,
                 clip_to_allocation: true,
             });
+            this._gUnityMessageBin.menuOwner = quickSettings.menu;
             quickSettings.menu.addItem(this._gUnityMessageBin, 2);
+            this._setupGUnityMessageEvents(messageList, quickSettings.menu);
         }
 
         const indicatorBox = quickSettings._indicators;
@@ -1254,6 +1291,39 @@ export default class LayoutSwitcherHelper extends Extension {
         this._gUnityTitleButton.visible = Boolean(title) && !Main.overview.visible;
     }
 
+    _setupGUnityMessageEvents(messageList, menu) {
+        this._gUnityMessageEvents = [];
+        const connect = (object, signal, callback) => {
+            this._gUnityMessageEvents.push([object, object.connect(signal, callback)]);
+        };
+        if (typeof messageList.setCaptureContainer === 'function') {
+            // GNOME 51 owns capture-phase gestures and key controllers.
+            messageList.setCaptureContainer(menu.actor);
+        } else {
+            // GNOME 50 connects these events on the calendar popup instead.
+            for (const type of ['button', 'touch', 'key']) {
+                connect(menu.actor, `captured-event::${type}`, (_actor, event) =>
+                    messageList.maybeCollapseMessageGroupForEvent(event));
+            }
+        }
+        connect(menu, 'open-state-changed', (_menu, open) => {
+            if (!open)
+                messageList._messageView.collapse();
+        });
+    }
+
+    _teardownGUnityMessageEvents(messageList, dateMenu) {
+        if (!this._gUnityMessageEvents)
+            return;
+        for (const [object, id] of this._gUnityMessageEvents ?? [])
+            object.disconnect(id);
+        this._gUnityMessageEvents = null;
+        messageList?._messageView.collapse();
+        messageList?.setCaptureContainer?.(dateMenu?.menu?.actor ?? null);
+        if (this._gUnityMessageBin)
+            this._gUnityMessageBin.menuOwner = null;
+    }
+
     _teardownGUnityShell() {
         if (!this._gUnityShellActive)
             return;
@@ -1301,6 +1371,7 @@ export default class LayoutSwitcherHelper extends Extension {
         this._gUnityDndToggleWasVisible = false;
 
         const messageList = Main.panel.statusArea.dateMenu?._messageList;
+        this._teardownGUnityMessageEvents(messageList, Main.panel.statusArea.dateMenu);
         if (messageList && this._gUnityMessageOriginal) {
             messageList.get_parent?.()?.remove_child(messageList);
             messageList.remove_style_class_name('layout-switcher-g-unity-notifications');

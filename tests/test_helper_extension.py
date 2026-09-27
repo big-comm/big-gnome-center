@@ -45,7 +45,7 @@ def test_live_color_switch_empties_shell_rebase_slices():
 def test_menu_layouts_hide_only_the_desktop_power_fallback():
     source = HELPER.read_text()
 
-    assert "const HELPER_BUILD = 111" in source
+    assert "const HELPER_BUILD = 112" in source
     assert "get_strv('enabled-extensions')" in source
     assert "_panelWillRun()" in source
     assert "_usesMenuSessionActions()" in source
@@ -67,6 +67,14 @@ def test_menu_layouts_shutdown_action_lifecycle():
     import subprocess
 
     script = Path(__file__).with_name("helper_panel_actions.mjs")
+    result = subprocess.run(["node", str(script)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_g_unity_notification_geometry_and_lifecycle():
+    import subprocess
+
+    script = Path(__file__).with_name("g_unity_notifications.mjs")
     result = subprocess.run(["node", str(script)], capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
 
@@ -104,7 +112,7 @@ def test_native_shell_running_indicators_follow_shell_accent():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    assert "const HELPER_BUILD = 111" in source
+    assert "const HELPER_BUILD = 112" in source
     assert "NATIVE_ACCENT_PANEL_CLASS" in source
     assert "_syncNativeAccentPanelClass()" in source
     assert "_clearNativeAccentPanelClass()" in source
