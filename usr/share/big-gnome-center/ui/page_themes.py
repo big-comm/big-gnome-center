@@ -31,6 +31,10 @@ _ACCENT_LABELS = {
 }
 
 
+_TILE_WIDTH = 170
+_LABEL_WIDTH_CAP = 130
+
+
 class ThemeTile(Gtk.FlowBoxChild):
     """Theme tile with a typed theme name."""
 
@@ -41,6 +45,31 @@ class ThemeTile(Gtk.FlowBoxChild):
     @property
     def theme_name(self) -> str:
         return self._theme_name
+
+
+def _cap_label_width(label: Gtk.Label) -> Gtk.Widget:
+    """Wrap ``label`` so it can never widen its parent's size request.
+
+    Even with ellipsize + max-width-chars, a Gtk.Label's *natural* width
+    still depends on the actual text (and grows further once the CSS
+    font-weight goes bold for the active tile), so different themes ended
+    up requesting different natural widths for what should be identically
+    sized tiles - and a homogeneous Gtk.FlowBox sizes every column after
+    the widest one. An overlay's non-main ("overlay") children never
+    contribute to its own measurement in any dimension, only the main
+    child does, so putting the label there and giving the main child a
+    fixed size pins the label's contribution to layout regardless of its
+    text, font weight, or the font metrics of whatever system this runs
+    on - while still rendering (and ellipsizing) the real text on top at
+    whatever width it is actually allocated.
+    """
+    _, label_height, _, _ = label.measure(Gtk.Orientation.VERTICAL, -1)
+    spacer = Gtk.Box()
+    spacer.set_size_request(_LABEL_WIDTH_CAP, label_height)
+    overlay = Gtk.Overlay()
+    overlay.set_child(spacer)
+    overlay.add_overlay(label)
+    return overlay
 
 
 class ThemesPage(Gtk.Box):
@@ -338,7 +367,7 @@ class ThemesPage(Gtk.Box):
         is_active = name == active
         tile = ThemeTile(theme_name=name)
         tile.add_css_class("theme-tile")
-        tile.set_size_request(142, -1)
+        tile.set_size_request(_TILE_WIDTH, -1)
         tile.set_tooltip_text(name)
         if is_active:
             tile.add_css_class("theme-tile-active")
@@ -380,9 +409,10 @@ class ThemesPage(Gtk.Box):
         label.set_halign(Gtk.Align.START)
         label.set_xalign(0)
         label.set_ellipsize(Pango.EllipsizeMode.END)
-        # Keep long or bold names from changing the grid's column count.
+        # Purely visual truncation; the grid's column count no longer
+        # depends on this (see _cap_label_width).
         label.set_max_width_chars(20)
-        content.append(label)
+        content.append(_cap_label_width(label))
         tile.set_child(content)
 
         accessible_label = tr("{name} theme").format(name=name)
