@@ -1144,20 +1144,6 @@ export default class LayoutSwitcherHelper extends Extension {
         this._gUnityQuickSettingsActor?.add_style_class_name(
             'layout-switcher-g-unity-quick-settings');
 
-        if (!this._setupGUnityDndAction(quickSettings)) {
-            this._gUnityDndRetryId = GLib.timeout_add(
-                GLib.PRIORITY_DEFAULT, 100, () => {
-                    if (!this._gUnityShellActive)
-                        return GLib.SOURCE_REMOVE;
-                    return this._setupGUnityDndAction()
-                        ? GLib.SOURCE_REMOVE
-                        : GLib.SOURCE_CONTINUE;
-                });
-            GLib.Source.set_name_by_id(
-                this._gUnityDndRetryId,
-                '[layout-switcher-helper] setup G-Unity DND action');
-        }
-
         const titleBox = new St.BoxLayout({
             style_class: 'layout-switcher-g-unity-window-title-box',
         });
@@ -1239,44 +1225,6 @@ export default class LayoutSwitcherHelper extends Extension {
             hasNotifications || queued;
     }
 
-    _setupGUnityDndAction(
-        quickSettings = Main.panel.statusArea.quickSettings
-    ) {
-        if (this._gUnityDndButton)
-            return true;
-        const dndToggle = quickSettings?._doNotDisturb?.quickSettingsItems?.[0];
-        const systemBox = quickSettings?._system?._systemItem?.child;
-        const children = systemBox?.get_children?.() ?? [];
-        if (!dndToggle || children.length < 2)
-            return false;
-
-        this._gUnityDndToggle = dndToggle;
-        this._gUnityDndToggleWasVisible = dndToggle.visible;
-        dndToggle.hide();
-
-        this._gUnityDndButton = new St.Button({
-            style_class: 'icon-button layout-switcher-g-unity-dnd-button',
-            accessible_name: dndToggle.title,
-            can_focus: true,
-            toggle_mode: true,
-            checked: dndToggle.checked,
-            child: new St.Icon({
-                icon_name: 'notifications-disabled-symbolic',
-            }),
-        });
-        this._gUnityDndButton.connect('clicked', button => {
-            dndToggle.checked = button.checked;
-        });
-        this._gUnityDndToggleSignal = dndToggle.connect(
-            'notify::checked', () => {
-                if (this._gUnityDndButton)
-                    this._gUnityDndButton.checked = dndToggle.checked;
-            });
-        systemBox.insert_child_at_index(
-            this._gUnityDndButton, children.length - 2);
-        return true;
-    }
-
     _syncGUnityWindowTitle() {
         if (!this._gUnityTitleButton)
             return;
@@ -1356,19 +1304,6 @@ export default class LayoutSwitcherHelper extends Extension {
         this._gUnityQuickSettingsActor?.remove_style_class_name(
             'layout-switcher-g-unity-quick-settings');
         this._gUnityQuickSettingsActor = null;
-
-        if (this._gUnityDndRetryId)
-            GLib.source_remove(this._gUnityDndRetryId);
-        this._gUnityDndRetryId = 0;
-        if (this._gUnityDndToggleSignal && this._gUnityDndToggle)
-            this._gUnityDndToggle.disconnect(this._gUnityDndToggleSignal);
-        this._gUnityDndToggleSignal = 0;
-        this._gUnityDndButton?.destroy();
-        this._gUnityDndButton = null;
-        if (this._gUnityDndToggle)
-            this._gUnityDndToggle.visible = this._gUnityDndToggleWasVisible;
-        this._gUnityDndToggle = null;
-        this._gUnityDndToggleWasVisible = false;
 
         const messageList = Main.panel.statusArea.dateMenu?._messageList;
         this._teardownGUnityMessageEvents(messageList, Main.panel.statusArea.dateMenu);

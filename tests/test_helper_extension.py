@@ -410,9 +410,6 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "children.at(-1) === container" in source
     assert "'child-added', (_box, child)" in source
     assert "this._gUnityRightBox.disconnect(this._gUnityRightBoxSignal)" in source
-    assert "_setupGUnityDndAction" in source
-    assert "notifications-disabled-symbolic" in source
-    assert "dndToggle.hide()" in source
 
 
 def test_fixed_dark_layouts_resolve_the_shell_stylesheet_before_enable():
