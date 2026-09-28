@@ -7,10 +7,11 @@ import sys
 from helper_client import (
     BIG_SHOT_UUID, COMMUNITY_MENU_UUID, HELPER_UUID,
     LEGACY_BIG_SHOT_UUID, LEGACY_COMMUNITY_MENU_UUID, LEGACY_HELPER_UUID,
-    HelperClient,
+    BIG_CLIPBOARD_UUID, LEGACY_COPYOUS_UUID, HelperClient,
 )
 
 IDENTITIES = {
+    LEGACY_COPYOUS_UUID: BIG_CLIPBOARD_UUID,
     LEGACY_HELPER_UUID: HELPER_UUID,
     LEGACY_BIG_SHOT_UUID: BIG_SHOT_UUID,
     LEGACY_COMMUNITY_MENU_UUID: COMMUNITY_MENU_UUID,
@@ -29,7 +30,10 @@ def migrate_lists(enabled, disabled, installed):
         return result
 
     enabled_out = convert(enabled)
-    disabled_out = [value for value in convert(disabled) if value not in enabled_out]
+    disabled_converted = convert(disabled)
+    if BIG_CLIPBOARD_UUID in disabled_converted:
+        enabled_out = [value for value in enabled_out if value != BIG_CLIPBOARD_UUID]
+    disabled_out = [value for value in disabled_converted if value not in enabled_out]
     return enabled_out, disabled_out
 
 

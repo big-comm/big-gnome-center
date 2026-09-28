@@ -40,6 +40,7 @@ def test_retired_extensions_are_not_preserved_across_layout_switches():
 def test_only_external_stateful_components_stay_live_during_switches():
     assert _HELPER_PERSIST_UUIDS == {
         "copyous@boerdereinar.dev",
+        "big-clipboard@communitybig.org",
         "big-shot@communitybig.org",
     }
 
@@ -2120,6 +2121,7 @@ class TestHelperIntegration:
         owned.assert_not_called()
         assert set(begin.call_args.args[0]) == {
             "copyous@boerdereinar.dev",
+            "big-clipboard@communitybig.org",
             "big-shot@communitybig.org",
             "layout-switcher-helper@communitybig.org",
         }

@@ -96,6 +96,7 @@ _KIWI_UUID = "kiwi@kemma"
 _FROSTED_GLASS_UUID = "frosted-glass@communitybig.org"
 _APPINDICATOR_UUID = "appindicatorsupport@rgcjonas.gmail.com"
 _COPYOUS_UUID = "copyous@boerdereinar.dev"
+_BIG_CLIPBOARD_UUID = "big-clipboard@communitybig.org"
 _BIG_SHOT_UUID = "big-shot@communitybig.org"
 _FROSTED_GLASS_DEFAULT_OPACITY = 37
 _RUNTIME_SETTINGS_SECTION = "/org/communitybig/layout-switcher/runtime"
@@ -147,6 +148,7 @@ _HELPER_TEARDOWN_UUIDS = frozenset(
 _HELPER_PERSIST_UUIDS = frozenset(
     {
         _COPYOUS_UUID,
+        _BIG_CLIPBOARD_UUID,
         _BIG_SHOT_UUID,
     }
 )
@@ -155,6 +157,7 @@ _HELPER_PERSIST_UUIDS = frozenset(
 _PROTECTED_PERSIST_SETTINGS_SUBDIRS = frozenset({"gsconnect", "gtk4-ding"})
 _HELPER_PERSIST_SETTINGS_SUBDIRS = {
     _COPYOUS_UUID: "copyous",
+    _BIG_CLIPBOARD_UUID: "copyous",
     _BIG_SHOT_UUID: "big-shot",
 }
 # Extensions that paint the GNOME *shell* stylesheet themselves (the panel,
@@ -436,6 +439,8 @@ class LayoutApplier:
 
         enabled = migrate(cls._string_list(shell_values.get("enabled-extensions")))
         disabled = migrate(cls._string_list(shell_values.get("disabled-extensions")))
+        if _BIG_CLIPBOARD_UUID in disabled:
+            enabled = [uuid for uuid in enabled if uuid != _BIG_CLIPBOARD_UUID]
         disabled = [uuid for uuid in disabled if uuid not in enabled]
 
         out = data
