@@ -11,6 +11,7 @@ from layout_applier import _HELPER_PERSIST_UUIDS, LayoutApplier
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL_SYNC_MONITOR = LayoutApplier._sync_monitor.__func__
+ORIGINAL_CLIPBOARD_READ = LayoutApplier._read_clipboard_settings
 
 CURRENT_DCONF = """\
 [org/gnome/desktop/input-sources]
@@ -93,6 +94,7 @@ def required_helper_available(tmp_path):
     """Keep layout tests focused on the apply stage after helper preflight."""
     with (
         patch("layout_applier.open_store"),
+        patch.object(LayoutApplier, "_read_clipboard_settings", return_value=""),
         patch("layout_applier.LayoutApplier._refresh_sync_monitor"),
         patch("layout_applier.LayoutApplier._sync_monitor", return_value=True),
         patch("layout_applier.SETTINGS_GNOME", tmp_path / "settings.gnome"),
@@ -113,6 +115,42 @@ def required_helper_available(tmp_path):
 
 
 class TestLayoutApplier:
+    @pytest.mark.parametrize("filename", ["biggnome", "desk-ux", "hybrid", "g-unity", "classic", "minimal"])
+    def test_layout_preserves_live_clipboard_history_preferences(self, filename):
+        data = (ROOT / "usr/share/big-gnome-center/layouts" / f"{filename}.txt").read_text()
+        live = (
+            "[/]\nhistory-length=500\ndatabase-location='/data/history.db'\n"
+            "clipboard-history='keep-all'\nopen-clipboard-dialog-shortcut=['<Super>c']\n"
+            "highlight-languages=['ada']\n"
+        )
+        with patch.object(LayoutApplier, "_read_clipboard_settings", return_value=live):
+            out = LayoutApplier._preserve_clipboard_settings(data)
+        values = LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous")
+        assert values == LayoutApplier._section_key_values(live, "/")
+        assert "history-length=70" not in out
+        assert LayoutApplier._section_key_values(out, "/org/gnome/shell") == (
+            LayoutApplier._section_key_values(data, "/org/gnome/shell")
+        )
+
+    def test_empty_clipboard_preferences_do_not_restore_old_snapshot(self):
+        with patch.object(LayoutApplier, "_read_clipboard_settings", return_value=""):
+            out = LayoutApplier._preserve_clipboard_settings(
+                "[org/gnome/shell/extensions/copyous]\nhistory-length=70\n"
+                "[org/gnome/shell/extensions/copyous/custom]\nvalue='stale'\n"
+            )
+        assert "copyous" not in out
+
+    def test_clipboard_read_failure_aborts_before_layout_mutation(self):
+        with (
+            patch.object(LayoutApplier, "_read_clipboard_settings", ORIGINAL_CLIPBOARD_READ),
+            patch("layout_applier.run_cmd", return_value=(False, "read failed")),
+            patch.object(LayoutApplier, "_preserve_layout_independent_settings") as later,
+        ):
+            ok, detail = LayoutApplier.load_dconf_safely("[org/gnome/shell]\nenabled-extensions=[]\n")
+        assert not ok
+        assert "cannot preserve clipboard settings" in detail
+        later.assert_not_called()
+
     @pytest.mark.parametrize("success", [False, True])
     def test_original_clears_menu_preference_only_after_success(self, tmp_path, success):
         layout = tmp_path / "biggnome.txt"

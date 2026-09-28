@@ -1187,6 +1187,29 @@ class LayoutApplier:
                 out.append(raw)
         return "".join(out)
 
+    @staticmethod
+    def _read_clipboard_settings() -> str:
+        ok, dump = run_cmd(
+            ["dconf", "dump", "/org/gnome/shell/extensions/copyous/"], timeout=15,
+        )
+        if not ok:
+            raise RuntimeError(f"cannot preserve clipboard settings: {dump}")
+        return dump
+
+    @classmethod
+    def _preserve_clipboard_settings(cls, data: str) -> str:
+        """Clipboard retention and database choices belong to the user."""
+        prefix = "/org/gnome/shell/extensions/copyous/"
+        values = {
+            prefix + key.lstrip("/"): value
+            for key, value in cls._dconf_dump_values(cls._read_clipboard_settings()).items()
+        }
+        return (
+            cls._remove_dconf_subtree(data, prefix).rstrip()
+            + "\n\n"
+            + cls._serialize_dconf_values(values)
+        )
+
     @classmethod
     def _preserve_layout_independent_settings(cls, data: str) -> str:
         """Keep global feature settings out of layout-owned snapshots."""
@@ -2346,6 +2369,10 @@ class LayoutApplier:
         if not discovered:
             log.warning("could not discover newly installed layout components: %s", discovery_info)
 
+        try:
+            data = cls._preserve_clipboard_settings(data)
+        except Exception as exc:
+            return False, str(exc)
         data = cls._preserve_layout_independent_settings(data)
         data = cls._inject_helper_uuid(
             data,

@@ -16,7 +16,7 @@ depends=(
     # GNOME Shell extensions used by the bundled layouts
     'gnome-shell-big-shot'
     'gnome-shell-extension-appindicator'
-    'gnome-shell-extension-copyous'
+    'gnome-shell-extension-big-clipboard'
     'gnome-shell-extension-gtk4-desktop-icons-ng'
 )
 makedepends=('git')

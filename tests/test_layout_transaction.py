@@ -68,6 +68,7 @@ def test_extension_membership_is_committed_by_helper(session):
 
 
 def test_monitor_restart_failure_prevents_teardown_and_file_writes(session, monkeypatch):
+    monkeypatch.setattr(module.LayoutApplier, '_read_clipboard_settings', lambda: '')
     monkeypatch.setattr(module.LayoutApplier, '_refresh_sync_monitor', refresh_sync_monitor)
     session['run_cmd'].return_value = False, 'restart denied'
     with pytest.raises(OSError, match='cannot refresh dconf synchronization'):
