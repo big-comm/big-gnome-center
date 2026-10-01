@@ -60,6 +60,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
+import {ExtensionTransitions} from '../layout-switcher-helper@communitybig.org/extensionTransitions.js';
 
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
@@ -1811,43 +1812,18 @@ export default class LayoutSwitcherHelper extends Extension {
         teardown.delete(self);
 
         const live = this._liveUuids(mgr);
+        const transitions = new ExtensionTransitions(this, mgr, steps, stepMs);
 
         // 1. Disable extensions leaving the layout. Reverse so later-loaded go
         //    first (fewer of the Shell's internal "rebase" cycles). Extensions
         //    in `teardown` (dock/panel owners) get a reload first so their
         //    actor is fresh and disable() destroys it cleanly instead of
         //    leaving a ghost.
-        const leaving = [...live].filter(u => !target.has(u)).reverse();
-        for (const uuid of leaving) {
-            try {
-                if (teardown.has(uuid)) {
-                    await this._reloadOne(mgr, uuid);
-                    steps.push(`teardown-reload ${uuid}`);
-                    await this._sleep(stepMs);
-                }
-                const accepted = mgr.disableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isDown(s));
-                steps.push(accepted === false ? `disable ${uuid} REJECTED` : `disable ${uuid}`);
-            } catch (e) {
-                steps.push(`disable ${uuid} ERR ${e}`);
-            }
-            await this._sleep(stepMs);
-        }
+        await transitions.disableLeaving(live, target, teardown);
 
         // 2. Disable the staying-but-reload set so step 4 re-enables them and
         //    their enable() re-reads the (already loaded) dconf appearance.
-        for (const uuid of order) {
-            if (reload.has(uuid) && live.has(uuid) && target.has(uuid)) {
-                try {
-                    mgr.disableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isDown(s));
-                    steps.push(`reload-off ${uuid}`);
-                } catch (e) {
-                    steps.push(`reload-off ${uuid} ERR ${e}`);
-                }
-                await this._sleep(stepMs);
-            }
-        }
+        await transitions.detachReloads(order, reload, live, target);
 
         // 3. Reload the base Shell stylesheet before appearance extensions.
         if (ensureValidColorScheme())
@@ -1865,19 +1841,7 @@ export default class LayoutSwitcherHelper extends Extension {
 
         // 4. Enable every target extension not currently live, in target order,
         //    so each applies its appearance on top of the freshly-loaded theme.
-        const liveNow = this._liveUuids(mgr);
-        for (const uuid of order) {
-            if (liveNow.has(uuid))
-                continue;
-            try {
-                const accepted = mgr.enableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isSettledUp(s));
-                steps.push(accepted === false ? `enable ${uuid} REJECTED` : `enable ${uuid}`);
-            } catch (e) {
-                steps.push(`enable ${uuid} ERR ${e}`);
-            }
-            await this._sleep(stepMs);
-        }
+        await transitions.enableMissing(order);
 
         this._panelStyleRecompute();
         this._setupPanelSystemIndicator();

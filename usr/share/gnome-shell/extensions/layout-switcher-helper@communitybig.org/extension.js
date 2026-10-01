@@ -65,6 +65,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
+import {ExtensionTransitions} from './extensionTransitions.js';
 import {GtkThemeFollower} from './gtkTheme.js';
 import {FolderAccentFollower, folderBaseTheme} from './folderAccent.js';
 import {SwitchTransaction} from './switchTransaction.js';
@@ -3009,43 +3010,18 @@ export default class LayoutSwitcherHelper extends Extension {
         }
 
         const live = this._liveUuids(mgr);
+        const transitions = new ExtensionTransitions(this, mgr, steps, stepMs);
 
         // 1. Detach staying menu extensions before their host panel changes.
         //    Reload targets are enabled again in target order at step 4.
-        for (const uuid of order) {
-            if (reload.has(uuid) && live.has(uuid) && target.has(uuid)) {
-                try {
-                    mgr.disableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isDown(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
-                    steps.push(`reload-off ${uuid}`);
-                } catch (e) {
-                    steps.push(`reload-off ${uuid} ERR ${e}`);
-                }
-                await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
-            }
-        }
+        await transitions.detachReloads(order, reload, live, target);
 
         // 2. Disable extensions leaving the layout. Reverse so later-loaded go
         //    first (fewer of the Shell's internal "rebase" cycles). Extensions
         //    in `teardown` (dock/panel owners) get a reload first so their
         //    actor is fresh and disable() destroys it cleanly instead of
         //    leaving a ghost.
-        const leaving = [...live].filter(u => !target.has(u)).reverse();
-        for (const uuid of leaving) {
-            try {
-                if (teardown.has(uuid)) {
-                    await this._reloadOne(mgr, uuid); // NOSONAR: S9382 - Shell extension transitions must run in order.
-                    steps.push(`teardown-reload ${uuid}`);
-                    await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
-                }
-                const accepted = mgr.disableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isDown(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
-                steps.push(accepted === false ? `disable ${uuid} REJECTED` : `disable ${uuid}`);
-            } catch (e) {
-                steps.push(`disable ${uuid} ERR ${e}`);
-            }
-            await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
-        }
+        await transitions.disableLeaving(live, target, teardown);
 
         // 3. Select the Shell variant and reload its base stylesheet before
         //    re-enabling appearance extensions.
@@ -3066,19 +3042,7 @@ export default class LayoutSwitcherHelper extends Extension {
 
         // 4. Enable every target extension not currently live, in target order,
         //    so each applies its appearance on top of the freshly-loaded theme.
-        const liveNow = this._liveUuids(mgr);
-        for (const uuid of order) {
-            if (liveNow.has(uuid))
-                continue;
-            try {
-                const accepted = mgr.enableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isSettledUp(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
-                steps.push(accepted === false ? `enable ${uuid} REJECTED` : `enable ${uuid}`);
-            } catch (e) {
-                steps.push(`enable ${uuid} ERR ${e}`);
-            }
-            await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
-        }
+        await transitions.enableMissing(order);
 
         this._panelStyleRecompute();
         this._setupPanelSystemIndicator();

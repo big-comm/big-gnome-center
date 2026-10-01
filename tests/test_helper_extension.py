@@ -262,8 +262,8 @@ def test_incremental_migration_detaches_menu_before_replacing_panel():
 
     migration = source.index("async _applyLayout")
     hoist = source.index("steps.push('hoist self')", migration)
-    reload_off = source.index("steps.push(`reload-off ${uuid}`)", migration)
-    leaving = source.index("const leaving =", source.index("async _applyLayout"))
+    reload_off = source.index("await transitions.detachReloads(", migration)
+    leaving = source.index("await transitions.disableLeaving(", migration)
     assert hoist < reload_off < leaving
 
 
