@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 TREE_RE = re.compile(r"^/org/gnome/shell/extensions/[A-Za-z0-9_-]+/$")
-KEY_RE = re.compile(r"^/[A-Za-z0-9_./-]+$")
+KEY_RE = re.compile(r"^/[A-Za-z0-9_./:-]+$")
 
 
 def _run(arguments, *, text=None):
