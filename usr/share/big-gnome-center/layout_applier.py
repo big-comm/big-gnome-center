@@ -2130,8 +2130,7 @@ class LayoutApplier:
             if uuid in leaving_set and uuid not in seen:
                 ordered.append(uuid)
                 seen.add(uuid)
-        for uuid in sorted(leaving_set - seen):
-            ordered.append(uuid)
+        ordered.extend(sorted(leaving_set - seen))
         return ordered
 
     @classmethod

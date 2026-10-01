@@ -663,7 +663,7 @@ export default class LayoutSwitcherHelper extends Extension {
             try {
                 const extension = manager.createExtensionObject(
                     uuid, dir, ExtensionType.SYSTEM);
-                await manager.loadExtension(extension);
+                await manager.loadExtension(extension); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 loaded.push(uuid);
             } catch (error) {
                 errors.push(`${uuid}: ${error}`);
@@ -715,7 +715,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 return true;
             if (GLib.get_monotonic_time() >= deadline)
                 return false;
-            await this._sleep(STATE_POLL_MS);
+            await this._sleep(STATE_POLL_MS); // NOSONAR: S9382 - polling must yield before rechecking Shell state.
         }
     }
 
@@ -734,7 +734,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 return true;
             if (GLib.get_monotonic_time() >= deadline)
                 return false;
-            await this._sleep(STATE_POLL_MS);
+            await this._sleep(STATE_POLL_MS); // NOSONAR: S9382 - polling must yield before rechecking Shell state.
         }
     }
 
@@ -754,7 +754,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 return true;
             if (GLib.get_monotonic_time() >= deadline)
                 return false;
-            await this._sleep(STATE_POLL_MS);
+            await this._sleep(STATE_POLL_MS); // NOSONAR: S9382 - polling must yield before rechecking Shell state.
         }
     }
 
@@ -770,7 +770,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 return true;
             if (GLib.get_monotonic_time() >= deadline)
                 return false;
-            await this._sleep(STATE_POLL_MS);
+            await this._sleep(STATE_POLL_MS); // NOSONAR: S9382 - polling must yield before rechecking Shell state.
         }
     }
 
@@ -1831,7 +1831,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 continue;
             this._moveExtensionLast(mgr, uuid);
             mgr.disableExtension(uuid);
-            await this._waitState(mgr, uuid, state => this._isDown(state));
+            await this._waitState(mgr, uuid, state => this._isDown(state)); // NOSONAR: S9382 - Shell extension transitions must run in order.
         }
 
         const shellSettings = this._shellSettings ??= new Gio.Settings({schema_id: 'org.gnome.shell'});
@@ -2401,7 +2401,7 @@ export default class LayoutSwitcherHelper extends Extension {
             try {
                 const accepted = manager.disableExtension(uuid);
                 if (accepted === false ||
-                    !await this._waitState(manager, uuid, state => this._isDown(state)))
+                    !await this._waitState(manager, uuid, state => this._isDown(state))) // NOSONAR: S9382 - Shell extension transitions must run in order.
                     throw new Error(`cannot stop ${uuid}`);
             } catch (error) { errors.push(String(error)); }
         }
@@ -2547,7 +2547,7 @@ export default class LayoutSwitcherHelper extends Extension {
             try {
                 if (!LIVE_STATES.has(mgr.lookup(uuid)?.state)) {
                     mgr.enableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isSettledUp(s));
+                    await this._waitState(mgr, uuid, s => this._isSettledUp(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 }
             } catch (e) {
                 logHelper(`rollback enable ${uuid} failed: ${e}`);
@@ -2664,10 +2664,10 @@ export default class LayoutSwitcherHelper extends Extension {
                     steps.push(`disable ${uuid} REJECTED`);
                     continue;
                 }
-                const settled = await this._waitState(mgr, uuid, s => this._isDown(s));
+                const settled = await this._waitState(mgr, uuid, s => this._isDown(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 steps.push(settled ? `disable ${uuid}` : `disable ${uuid} TIMEOUT`);
                 disabled.push(uuid);
-                await this._yieldTransitionFrame();
+                await this._yieldTransitionFrame(); // NOSONAR: S9382 - Shell extension transitions must run in order.
             } catch (e) {
                 steps.push(`disable ${uuid} ERR ${e}`);
             }
@@ -2748,7 +2748,7 @@ export default class LayoutSwitcherHelper extends Extension {
             if (state === STATE_OUT_OF_DATE || state === STATE_ERROR) {
                 const accepted = mgr.enableExtension(uuid);
                 const configured = accepted !== false &&
-                    await this._waitConfigured(mgr, uuid);
+                    await this._waitConfigured(mgr, uuid); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 steps.push(`enable ${uuid} UNAVAILABLE${configured ? '' : ' UNPERSISTED'}`);
                 continue;
             }
@@ -2758,13 +2758,13 @@ export default class LayoutSwitcherHelper extends Extension {
                     steps.push(`enable ${uuid} REJECTED`);
                     continue;
                 }
-                const settled = await this._waitState(mgr, uuid, s => this._isSettledUp(s));
+                const settled = await this._waitState(mgr, uuid, s => this._isSettledUp(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 const finalState = mgr.lookup(uuid)?.state;
                 if (finalState === STATE_ERROR)
                     steps.push(`enable ${uuid} ERROR`);
                 else
                     steps.push(settled ? `enable ${uuid}` : `enable ${uuid} TIMEOUT`);
-                await this._yieldTransitionFrame();
+                await this._yieldTransitionFrame(); // NOSONAR: S9382 - Shell extension transitions must run in order.
             } catch (e) {
                 steps.push(`enable ${uuid} ERR ${e}`);
             }
@@ -2777,9 +2777,9 @@ export default class LayoutSwitcherHelper extends Extension {
                 continue;
             try {
                 mgr.disableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isDown(s));
+                await this._waitState(mgr, uuid, s => this._isDown(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 steps.push(`reconcile-off ${uuid}`);
-                await this._yieldTransitionFrame();
+                await this._yieldTransitionFrame(); // NOSONAR: S9382 - Shell extension transitions must run in order.
             } catch (e) {
                 steps.push(`reconcile-off ${uuid} ERR ${e}`);
             }
@@ -2801,7 +2801,7 @@ export default class LayoutSwitcherHelper extends Extension {
             }
             const accepted = mgr.disableExtension(uuid);
             const settled = accepted !== false &&
-                await this._waitUnconfigured(mgr, uuid);
+                await this._waitUnconfigured(mgr, uuid); // NOSONAR: S9382 - Shell extension transitions must run in order.
             if (!settled)
                 throw new Error(`cannot retire configured extension ${uuid}`);
             steps.push(`reconcile-config ${uuid}`);
@@ -3016,12 +3016,12 @@ export default class LayoutSwitcherHelper extends Extension {
             if (reload.has(uuid) && live.has(uuid) && target.has(uuid)) {
                 try {
                     mgr.disableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isDown(s));
+                    await this._waitState(mgr, uuid, s => this._isDown(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                     steps.push(`reload-off ${uuid}`);
                 } catch (e) {
                     steps.push(`reload-off ${uuid} ERR ${e}`);
                 }
-                await this._sleep(stepMs);
+                await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
             }
         }
 
@@ -3034,17 +3034,17 @@ export default class LayoutSwitcherHelper extends Extension {
         for (const uuid of leaving) {
             try {
                 if (teardown.has(uuid)) {
-                    await this._reloadOne(mgr, uuid);
+                    await this._reloadOne(mgr, uuid); // NOSONAR: S9382 - Shell extension transitions must run in order.
                     steps.push(`teardown-reload ${uuid}`);
-                    await this._sleep(stepMs);
+                    await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 }
                 const accepted = mgr.disableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isDown(s));
+                await this._waitState(mgr, uuid, s => this._isDown(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 steps.push(accepted === false ? `disable ${uuid} REJECTED` : `disable ${uuid}`);
             } catch (e) {
                 steps.push(`disable ${uuid} ERR ${e}`);
             }
-            await this._sleep(stepMs);
+            await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
         }
 
         // 3. Select the Shell variant and reload its base stylesheet before
@@ -3072,12 +3072,12 @@ export default class LayoutSwitcherHelper extends Extension {
                 continue;
             try {
                 const accepted = mgr.enableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isSettledUp(s));
+                await this._waitState(mgr, uuid, s => this._isSettledUp(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 steps.push(accepted === false ? `enable ${uuid} REJECTED` : `enable ${uuid}`);
             } catch (e) {
                 steps.push(`enable ${uuid} ERR ${e}`);
             }
-            await this._sleep(stepMs);
+            await this._sleep(stepMs); // NOSONAR: S9382 - Shell extension transitions must run in order.
         }
 
         this._panelStyleRecompute();
