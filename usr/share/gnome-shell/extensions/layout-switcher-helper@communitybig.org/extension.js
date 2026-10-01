@@ -376,6 +376,8 @@ export default class LayoutSwitcherHelper extends Extension {
                     this._syncMinimalPanelClass();
                     this._syncGUnitySurfaceClasses();
                     this._syncNotificationPosition();
+                }).catch(error => {
+                    logHelper(`delayed startup sync failed: ${error}`);
                 });
             } catch (e) {
                 logHelper(`color-scheme follower unavailable: ${e}`);

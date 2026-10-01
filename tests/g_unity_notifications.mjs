@@ -89,8 +89,8 @@ class Actor extends Signals {
     constructor(props = {}) { super(); Object.assign(this, props); this.children = []; }
     add_child(child) { this.children.push(child); }
     get_children() { return this.children; }
-    add_style_class_name() {}
-    remove_style_class_name() {}
+    add_style_class_name(name) { (this.styles ??= new Set()).add(name); }
+    remove_style_class_name(name) { this.styles?.delete(name); }
     destroy() { this.handlers.clear(); }
 }
 const nativeDnd = new Actor({visible: true, checked: false, title: 'Do Not Disturb'});

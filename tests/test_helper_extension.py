@@ -79,6 +79,14 @@ def test_g_unity_notification_geometry_and_lifecycle():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_delayed_startup_failures_are_handled():
+    import subprocess
+
+    script = Path(__file__).with_name("helper_startup.mjs")
+    result = subprocess.run(["node", str(script)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_transition_content_is_centered_on_the_primary_monitor():
     source = HELPER.read_text()
 
