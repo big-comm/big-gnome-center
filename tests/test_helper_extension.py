@@ -193,15 +193,15 @@ def test_cleanroom_stops_all_components_before_settings_load():
     begin = source.split("async _beginSwitch(payload) {", 1)[1]
     begin = begin.split("CompleteSwitchAsync", 1)[0]
 
-    assert "this._prevEnabled = this._orderedLive(mgr);" in begin
-    assert "const teardown = this._prevEnabled.filter(u => u !== self).reverse();" in begin
+    shared = HELPER.with_name("helperLifecycle.js").read_text()
+    assert "this._prepareTeardown(mgr, steps, ROLLBACK_TIMEOUT_S)" in begin
+    assert "await transitions.disableAll(teardown" in begin
     assert "requestedPersist" not in begin
-    assert "hoist self" in begin
-    assert begin.index("mgr._extensionOrder.splice") < begin.index(
-        "this._prevEnabled = this._orderedLive(mgr);"
+    assert shared.index("manager._extensionOrder.splice") < shared.index(
+        "this._prevEnabled = this._orderedLive(manager);"
     )
-    assert begin.index("this._prevEnabled = this._orderedLive(mgr);") < begin.index(
-        "const teardown ="
+    assert shared.index("this._armRollbackTimer(rollbackSeconds)") < shared.index(
+        "return this._prevEnabled.filter(uuid => uuid !== self).reverse()"
     )
 
 
@@ -460,10 +460,10 @@ def test_g_unity_shell_is_restored_before_extensions_are_disabled():
 
     assert "this._isGUnityActive() && req.label !== 'G-Unity'" in begin_switch
     assert begin_switch.index("this._teardownGUnityShell();") < begin_switch.index(
-        "for (const uuid of teardown)"
+        "await transitions.disableAll(teardown"
     )
     assert begin_switch.index("this._clearGUnitySurfaceClasses();") < begin_switch.index(
-        "for (const uuid of teardown)"
+        "await transitions.disableAll(teardown"
     )
 
 
@@ -490,7 +490,7 @@ def test_biggnome_dock_style_is_released_before_runtime_teardown():
     begin_switch = begin_switch.split("CompleteSwitchAsync", 1)[0]
 
     assert begin_switch.index("this._clearBigGnomeDockClass();") < begin_switch.index(
-        "for (const uuid of teardown)"
+        "await transitions.disableAll(teardown"
     )
 
 
@@ -504,7 +504,7 @@ def test_clean_room_switch_yields_frames_between_shell_components():
     assert "const TRANSITION_FRAME_MS = 16" in source
     assert "_yieldTransitionFrame()" in source
     assert "return this._sleep(TRANSITION_FRAME_MS);" in source
-    assert "await this._yieldTransitionFrame();" in begin_switch
+    assert "disableAll(teardown, () => this._yieldTransitionFrame())" in begin_switch
     assert complete_switch.count("await this._yieldTransitionFrame();") == 2
 
 

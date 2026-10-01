@@ -2454,8 +2454,11 @@ class TestHelperIntegration:
             ).read_text()
             assert f"const HELPER_BUILD = {build};" in source
             assert '<method name="DiscoverExtensions">' in source
-            assert "DISCOVERABLE_UUIDS.has(uuid)" in source
-            assert "ExtensionType.SYSTEM" in source
+            assert "extends HelperLifecycle" in source
+        shared = (root / "usr/share/gnome-shell/extensions"
+                  / "layout-switcher-helper@communitybig.org/helperLifecycle.js").read_text()
+        assert "DISCOVERABLE_UUIDS.has(uuid)" in shared
+        assert "ExtensionType.SYSTEM" in shared
 
     @patch("layout_applier.ShellReloader.list_extensions_state", return_value={})
     @patch("layout_applier.HelperClient.reload_extension", return_value=True)

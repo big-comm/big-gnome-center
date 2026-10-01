@@ -9,6 +9,27 @@ export class ExtensionTransitions {
         this.delay = delay;
     }
 
+    async disableAll(teardown, afterDisable = null) {
+        const disabled = [];
+        for (const uuid of teardown) {
+            try {
+                const accepted = this.manager.disableExtension(uuid);
+                if (accepted === false) {
+                    this.steps.push(`disable ${uuid} REJECTED`);
+                    continue;
+                }
+                const settled = await this.helper._waitState(this.manager, uuid, state => this.helper._isDown(state)); // NOSONAR: S9382 - finish each disable before the next Shell transition.
+                this.steps.push(settled ? `disable ${uuid}` : `disable ${uuid} TIMEOUT`);
+                disabled.push(uuid);
+                if (afterDisable)
+                    await afterDisable(); // NOSONAR: S9382 - drain the frame before disabling the next component.
+            } catch (error) {
+                this.steps.push(`disable ${uuid} ERR ${error}`);
+            }
+        }
+        return disabled;
+    }
+
     async detachReloads(order, reload, live, target) {
         for (const uuid of order) {
             if (!reload.has(uuid) || !live.has(uuid) || !target.has(uuid))

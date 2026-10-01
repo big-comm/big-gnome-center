@@ -8,12 +8,13 @@ from pathlib import Path
 import pytest
 
 
-def test_shared_extension_transitions():
+@pytest.mark.parametrize("script", ["extension_transitions.mjs", "helper_lifecycle.mjs"])
+def test_shared_extension_transitions(script):
     node = shutil.which("node")
     if not node:
         pytest.skip("Node.js unavailable")
     subprocess.run(
-        [node, str(Path(__file__).with_name("extension_transitions.mjs"))],
+        [node, str(Path(__file__).with_name(script))],
         check=True,
         capture_output=True,
         text=True,

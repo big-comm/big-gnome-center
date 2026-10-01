@@ -1,7 +1,8 @@
 # Big Gnome Center Helper (GNOME Shell extension)
 
 This legacy UUID remains available for sessions started before migration.
-Extension activation and teardown use `ExtensionTransitions` from the current
+Discovery, polling, and transitions share `HelperLifecycle` and
+`ExtensionTransitions` from the current
 `layout-switcher-helper@communitybig.org` directory. Ship both directories
 together; the legacy helper retains its own layout and appearance behavior.
 
