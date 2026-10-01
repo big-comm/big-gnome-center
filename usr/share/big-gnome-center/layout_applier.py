@@ -38,6 +38,7 @@ from helper_client import (
     HELPER_UUID,
     LEGACY_HELPER_UUID,
     HelperClient,
+    clipboard_migration_disabled,
 )
 from layout_persistence import SETTINGS_GNOME, open_store
 from runtime_settings import RuntimeSettings
@@ -437,8 +438,10 @@ class LayoutApplier:
                     migrated.append(current)
             return migrated
 
-        enabled = migrate(cls._string_list(shell_values.get("enabled-extensions")))
-        disabled = migrate(cls._string_list(shell_values.get("disabled-extensions")))
+        enabled_input = cls._string_list(shell_values.get("enabled-extensions"))
+        disabled_input = cls._string_list(shell_values.get("disabled-extensions"))
+        enabled = migrate(enabled_input)
+        disabled = migrate(clipboard_migration_disabled(enabled_input, disabled_input))
         if _BIG_CLIPBOARD_UUID in disabled:
             enabled = [uuid for uuid in enabled if uuid != _BIG_CLIPBOARD_UUID]
         disabled = [uuid for uuid in disabled if uuid not in enabled]
