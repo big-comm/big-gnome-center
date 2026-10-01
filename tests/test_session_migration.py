@@ -140,3 +140,38 @@ def test_clipboard_identity_preserves_disabled_state_and_data(enabled, disabled)
     assert HelperClient.required_extension_lists(enabled, disabled, installed)[1] == expected_disabled
     assert HelperClient.resolve_component_uuid(BIG_CLIPBOARD_UUID, {LEGACY_COPYOUS_UUID}) == LEGACY_COPYOUS_UUID
     assert HelperClient.resolve_component_uuid(LEGACY_COPYOUS_UUID, installed) == BIG_CLIPBOARD_UUID
+
+
+@pytest.mark.parametrize('enabled,disabled,active', [
+    (['big-clipboard@communitybig.org'], ['copyous@boerdereinar.dev'], True),
+    (['copyous@boerdereinar.dev', 'big-clipboard@communitybig.org'], ['copyous@boerdereinar.dev'], True),
+    (['copyous@boerdereinar.dev'], ['big-clipboard@communitybig.org'], False),
+    (['big-clipboard@communitybig.org'], ['copyous@boerdereinar.dev', 'big-clipboard@communitybig.org'], False),
+])
+def test_current_clipboard_choice_overrides_legacy_state(enabled, disabled, active):
+    from helper_client import BIG_CLIPBOARD_UUID, LEGACY_COPYOUS_UUID
+    from layout_applier import LayoutApplier
+
+    installed = {BIG_CLIPBOARD_UUID}
+    enabled = ['custom'] + enabled
+    disabled = ['other'] + disabled
+    expected = (
+        ['custom'] + ([BIG_CLIPBOARD_UUID] if active else []),
+        ['other'] + ([] if active else [BIG_CLIPBOARD_UUID]),
+    )
+    assert migrate_lists(enabled, disabled, installed) == expected
+    required = HelperClient.required_extension_lists(enabled, disabled, installed)
+    assert (BIG_CLIPBOARD_UUID in required[0]) is active
+    assert required[1] == expected[1]
+    data = (
+        f'[org/gnome/shell]\nenabled-extensions={enabled!r}\n'
+        f'disabled-extensions={disabled!r}\n\n'
+        '[org/gnome/shell/extensions/copyous]\nhistory-length=5000\n'
+    )
+    for convert in (migrate_dump, LayoutApplier._migrate_layout_component_uuids):
+        result = convert(data, installed)
+        assert f'enabled-extensions={expected[0]!r}' in result
+        assert f'disabled-extensions={expected[1]!r}' in result
+        assert LEGACY_COPYOUS_UUID not in result
+        assert 'history-length=5000' in result
+        assert convert(result, installed) == result

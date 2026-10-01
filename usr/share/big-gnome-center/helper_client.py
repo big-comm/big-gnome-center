@@ -47,6 +47,7 @@ LEGACY_DASH_TO_PANEL_UUID = "dash-to-panel@jderose9.github.com"
 RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 ARCMENU_UUID = "arcmenu@arcmenu.com"
 
+
 _DISCOVERABLE_COMPONENT_UUIDS = (
     HELPER_UUID,
     RUNTIME_UUID,
@@ -95,6 +96,13 @@ _EXTENSION_DIRS = (
     Path("/usr/share/gnome-shell/extensions"),
     Path("/usr/local/share/gnome-shell/extensions"),
 )
+
+
+def clipboard_migration_disabled(enabled, disabled):
+    """An active replacement overrides stale disablement of the old UUID."""
+    if BIG_CLIPBOARD_UUID in enabled and BIG_CLIPBOARD_UUID not in disabled:
+        return [uuid for uuid in disabled if uuid != LEGACY_COPYOUS_UUID]
+    return list(disabled)
 
 
 class HelperClient:
@@ -155,7 +163,7 @@ class HelperClient:
         """Migrate installed components and keep the helper enabled first."""
 
         enabled_input = list(enabled)
-        disabled_input = list(disabled)
+        disabled_input = clipboard_migration_disabled(enabled_input, list(disabled))
         available = set(available_uuids) if available_uuids is not None else None
 
         def migrate(values: Iterable[str]) -> list[str]:
