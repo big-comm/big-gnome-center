@@ -36,6 +36,8 @@ HELPER_UUID = "layout-switcher-helper@communitybig.org"
 LEGACY_HELPER_UUID = "layout-switcher-helper@bigcommunity.org"
 COMMUNITY_MENU_UUID = "community-menu@communitybig.org"
 LEGACY_COMMUNITY_MENU_UUID = "community-menu@bigcommunity.org"
+BIG_CLIPBOARD_UUID = "big-clipboard@communitybig.org"
+LEGACY_COPYOUS_UUID = "copyous@boerdereinar.dev"
 BIG_SHOT_UUID = "big-shot@communitybig.org"
 LEGACY_BIG_SHOT_UUID = "big-shot@bigcommunity.org"
 COMMUNITY_DOCK_UUID = "community-dock@communitybig.org"
@@ -50,6 +52,7 @@ _DISCOVERABLE_COMPONENT_UUIDS = (
     RUNTIME_UUID,
     COMMUNITY_MENU_UUID,
     BIG_SHOT_UUID,
+    BIG_CLIPBOARD_UUID,
     COMMUNITY_DOCK_UUID,
     COMMUNITY_PANEL_UUID,
 )
@@ -65,6 +68,7 @@ _COMMUNITY_MENU_DIR = (
 )
 
 LAYOUT_COMPONENT_UUID_MIGRATIONS = {
+    LEGACY_COPYOUS_UUID: BIG_CLIPBOARD_UUID,
     LEGACY_HELPER_UUID: HELPER_UUID,
     LEGACY_COMMUNITY_MENU_UUID: COMMUNITY_MENU_UUID,
     LEGACY_BIG_SHOT_UUID: BIG_SHOT_UUID,
@@ -164,6 +168,9 @@ class HelperClient:
 
         enabled_migrated = migrate(enabled_input)
         disabled_migrated = migrate(disabled_input)
+        # Unlike mandatory layout components, clipboard disablement is a user choice.
+        if BIG_CLIPBOARD_UUID in disabled_migrated:
+            enabled_migrated = [uuid for uuid in enabled_migrated if uuid != BIG_CLIPBOARD_UUID]
         migrate_hybrid_menu = (
             active_layout == "Hybrid"
             and LEGACY_DASH_TO_PANEL_UUID in enabled_input
@@ -228,6 +235,12 @@ class HelperClient:
             return target
         if target != uuid and target not in available_uuids:
             return uuid
+        if (
+            uuid == BIG_CLIPBOARD_UUID
+            and BIG_CLIPBOARD_UUID not in available_uuids
+            and LEGACY_COPYOUS_UUID in available_uuids
+        ):
+            return LEGACY_COPYOUS_UUID
         if (
             uuid == BIG_SHOT_UUID
             and BIG_SHOT_UUID not in available_uuids

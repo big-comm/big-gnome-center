@@ -1,5 +1,11 @@
 # Big Gnome Center Helper (GNOME Shell extension)
 
+This legacy UUID remains available for sessions started before migration.
+Discovery, polling, and transitions share `HelperLifecycle` and
+`ExtensionTransitions` from the current
+`layout-switcher-helper@communitybig.org` directory. Ship both directories
+together; the legacy helper retains its own layout and appearance behavior.
+
 In-shell companion for the **Big Gnome Center**. It performs the
 *live* layout switch from **inside** GNOME Shell, driven over D-Bus by the
 `layout-switcher` app.

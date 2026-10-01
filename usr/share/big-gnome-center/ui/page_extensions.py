@@ -54,6 +54,9 @@ _CURATED_EXTENSION_DESCRIPTIONS = {
     "community-panel@communitybig.org": tr(
         "Provides the taskbar and system panel used by desktop layouts."
     ),
+    "big-clipboard@communitybig.org": tr(
+        "Keeps a searchable history of copied content."
+    ),
     "copyous@boerdereinar.dev": tr(
         "Keeps a searchable history of copied content."
     ),

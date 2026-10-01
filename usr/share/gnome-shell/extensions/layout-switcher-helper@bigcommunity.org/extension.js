@@ -58,8 +58,8 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
-import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-import {ExtensionType} from 'resource:///org/gnome/shell/misc/extensionUtils.js';
+import {HelperLifecycle} from '../layout-switcher-helper@communitybig.org/helperLifecycle.js';
+import {ExtensionTransitions} from '../layout-switcher-helper@communitybig.org/extensionTransitions.js';
 
 const BUS_PATH = '/org/bigcommunity/LayoutSwitcherHelper';
 const HELPER_VERSION = 7;
@@ -88,27 +88,11 @@ const HYBRID_UNFOCUSED_EFFECT = 'layout-switcher-hybrid-unfocused';
 // that the RUNNING module is the freshly-installed code (the Shell caches
 // ES modules; only a reload/relogin picks a new file up).
 const HELPER_BUILD = 43;
-const DISCOVERABLE_UUIDS = new Set([
-    'layout-switcher-helper@communitybig.org',
-    'layout-switcher-runtime@communitybig.org',
-    'community-menu@communitybig.org',
-    'big-shot@communitybig.org',
-    'community-dock@communitybig.org',
-    'community-panel@communitybig.org',
-]);
 
 // GNOME Shell ExtensionState: ACTIVE=1, INACTIVE=2, ERROR=3, OUT_OF_DATE=4,
 // DOWNLOADING=5, INITIALIZED=6, DEACTIVATING=7, ACTIVATING=8.
 const LIVE_STATES = new Set([1, 8]);
-const STATE_ACTIVE = 1;
 const STATE_ERROR = 3;
-const STATE_DEACTIVATING = 7;
-
-// Per-extension settle budget while awaiting a state transition. Heavy
-// extensions (dash-to-panel) can take well over the old fixed 150 ms; a
-// bounded poll means we move on exactly when the extension is ready.
-const STATE_WAIT_MS = 4000;
-const STATE_POLL_MS = 50;
 
 // If the caller dies between BeginSwitch and CompleteSwitch, restore the
 // previous extension set so the user is never left on a bare desktop.
@@ -185,7 +169,7 @@ function ensureValidColorScheme() {
     return repaired;
 }
 
-export default class LayoutSwitcherHelper extends Extension {
+export default class LayoutSwitcherHelper extends HelperLifecycle {
     enable() {
         this._pendingSources ??= new Set();
         if (this._bounceCheck) {
@@ -233,6 +217,8 @@ export default class LayoutSwitcherHelper extends Extension {
                     this._syncLightOverviewPanelClass();
                     this._syncNativeAccentPanelClass();
                     this._syncBigGnomePanelClass();
+                }).catch(error => {
+                    logHelper(`delayed startup sync failed: ${error}`);
                 });
             } catch (e) {
                 logHelper(`color-scheme follower unavailable: ${e}`);
@@ -339,170 +325,6 @@ export default class LayoutSwitcherHelper extends Extension {
 
     _selfUuid() {
         return this.metadata?.uuid ?? 'layout-switcher-helper@bigcommunity.org';
-    }
-
-    _busy() {
-        return Boolean(this._switching || this._applying);
-    }
-
-    _returnJson(invocation, obj) {
-        invocation.return_value(new GLib.Variant('(s)', [JSON.stringify(obj)]));
-    }
-
-    DiscoverExtensionsAsync(params, invocation) {
-        const [payload] = params;
-        this._discoverExtensions(payload)
-            .then(result => this._returnJson(invocation, result))
-            .catch(error => this._returnJson(invocation, {
-                ok: false, loaded: [], missing: [], error: String(error),
-            }));
-    }
-
-    async _discoverExtensions(payload) {
-        const requested = [...new Set((JSON.parse(payload || '{}').uuids ?? [])
-            .filter(uuid => DISCOVERABLE_UUIDS.has(uuid)))];
-        const manager = Main.extensionManager;
-        const loaded = [];
-        const missing = [];
-        const errors = [];
-
-        for (const uuid of requested) {
-            if (manager.lookup(uuid))
-                continue;
-            const dir = Gio.File.new_for_path(
-                `/usr/share/gnome-shell/extensions/${uuid}`);
-            if (!dir.query_exists(null)) {
-                missing.push(uuid);
-                continue;
-            }
-            try {
-                const extension = manager.createExtensionObject(
-                    uuid, dir, ExtensionType.SYSTEM);
-                await manager.loadExtension(extension);
-                loaded.push(uuid);
-            } catch (error) {
-                errors.push(`${uuid}: ${error}`);
-            }
-        }
-
-        for (const uuid of requested) {
-            if (!manager.lookup(uuid) && !missing.includes(uuid))
-                missing.push(uuid);
-        }
-        return {
-            ok: missing.length === 0 && errors.length === 0,
-            loaded,
-            missing,
-            error: errors.join('; '),
-        };
-    }
-
-    // Resolve after `ms` on the main loop — lets each extension's
-    // enable()/disable() body and any idle callbacks it queued drain before
-    // the next step. Sources are tracked so disable() can cancel them; a
-    // cancelled sleep never resolves (the caller chain is abandoned, which is
-    // exactly what we want mid-lock).
-    _sleep(ms) {
-        return new Promise(resolve => {
-            const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, Math.max(0, ms | 0), () => {
-                this._pendingSources?.delete(id);
-                resolve();
-                return GLib.SOURCE_REMOVE;
-            });
-            this._pendingSources?.add(id);
-        });
-    }
-
-    // Await an extension state transition instead of trusting a fixed delay.
-    // Polls until `predicate(state)` (state is undefined when the uuid is not
-    // in the manager map) or the timeout elapses. Returns true on success.
-    async _waitState(mgr, uuid, predicate, timeoutMs = STATE_WAIT_MS) {
-        const deadline = GLib.get_monotonic_time() + timeoutMs * 1000;
-        for (;;) {
-            if (this._cancelled)
-                return false;
-            const state = mgr.lookup(uuid)?.state;
-            if (predicate(state))
-                return true;
-            if (GLib.get_monotonic_time() >= deadline)
-                return false;
-            await this._sleep(STATE_POLL_MS);
-        }
-    }
-
-    async _waitDashToPanelReady(timeoutMs = STATE_WAIT_MS) {
-        const deadline = GLib.get_monotonic_time() + timeoutMs * 1000;
-        for (;;) {
-            if (this._cancelled)
-                return false;
-            const ready = global.dashToPanel?.panels?.some(
-                panel => Boolean(panel?.taskbar?._box)
-            );
-            if (ready)
-                return true;
-            if (GLib.get_monotonic_time() >= deadline)
-                return false;
-            await this._sleep(STATE_POLL_MS);
-        }
-    }
-
-    _isDown(state) {
-        return state === undefined ||
-            (!LIVE_STATES.has(state) && state !== STATE_DEACTIVATING);
-    }
-
-    _isSettledUp(state) {
-        // ERROR counts as settled: waiting longer won't fix it, and the
-        // caller's self-heal pass handles it.
-        return state === STATE_ACTIVE || state === STATE_ERROR;
-    }
-
-    _liveUuids(mgr) {
-        const uuids = typeof mgr.getUuids === 'function'
-            ? mgr.getUuids()
-            : [...(mgr._extensions?.keys() ?? [])];
-        const live = new Set();
-        for (const uuid of uuids) {
-            const ext = mgr.lookup(uuid);
-            if (ext && LIVE_STATES.has(ext.state))
-                live.add(uuid);
-        }
-        return live;
-    }
-
-    // Live uuids in the Shell's real enable order (`_extensionOrder`), so a
-    // reverse walk disables later-loaded extensions first. Disabling in that
-    // order keeps every `_callExtensionDisable` "rebase" slice empty — the
-    // Shell never has to bounce other extensions through silent
-    // stateObj.disable()/enable() cycles (the source of duplicated actors and
-    // dead cross-extension hooks in the incremental protocol).
-    _orderedLive(mgr) {
-        const live = this._liveUuids(mgr);
-        const order = Array.isArray(mgr._extensionOrder) ? mgr._extensionOrder : [];
-        const ordered = order.filter(u => live.has(u));
-        for (const uuid of live) {
-            if (!ordered.includes(uuid))
-                ordered.push(uuid);
-        }
-        return ordered;
-    }
-
-    // GNOME Shell disables an extension by bouncing every live extension that
-    // follows it in `_extensionOrder`. Put a single target last before turning
-    // it off so that rebase slice is empty. This protects long-lived status
-    // indicators whose disable() leaves callbacks behind (notably pamac).
-    _moveExtensionLast(mgr, uuid) {
-        const order = mgr._extensionOrder;
-        if (!Array.isArray(order))
-            return false;
-        const idx = order.indexOf(uuid);
-        if (idx < 0)
-            return false;
-        if (idx !== order.length - 1) {
-            order.splice(idx, 1);
-            order.push(uuid);
-        }
-        return true;
     }
 
     _extensionWillRun(uuid) {
@@ -1019,7 +841,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 continue;
             this._moveExtensionLast(mgr, uuid);
             mgr.disableExtension(uuid);
-            await this._waitState(mgr, uuid, state => this._isDown(state));
+            await this._waitState(mgr, uuid, state => this._isDown(state)); // NOSONAR: S9382 - Shell extension transitions must run in order.
         }
 
         const shellSettings = new Gio.Settings({schema_id: 'org.gnome.shell'});
@@ -1476,7 +1298,7 @@ export default class LayoutSwitcherHelper extends Extension {
             try {
                 if (!LIVE_STATES.has(mgr.lookup(uuid)?.state)) {
                     mgr.enableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isSettledUp(s));
+                    await this._waitState(mgr, uuid, s => this._isSettledUp(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 }
             } catch (e) {
                 logHelper(`rollback enable ${uuid} failed: ${e}`);
@@ -1527,62 +1349,15 @@ export default class LayoutSwitcherHelper extends Extension {
     async _beginSwitch(payload) {
         const steps = [];
         const req = JSON.parse(payload || '{}');
-        const self = this._selfUuid();
         const mgr = Main.extensionManager;
 
         this._curtainUp(req);
         // Let the curtain reach full opacity before the desktop mutates.
         await this._sleep(CURTAIN_FADE_MS + 30);
 
-        // Hoist ourselves to the FRONT of the Shell's extension order. The
-        // Shell's "rebase" cascade re-toggles every live extension loaded
-        // AFTER the one being disabled — asynchronously, with awaits in
-        // between — and a single broken third-party disable() (pamac-updates
-        // throws on a double toggle) aborts it mid-way, leaving extensions
-        // (including us) dead. With the helper first and the teardown below
-        // walking strict reverse order, every rebase slice is empty: nobody
-        // gets bounced, ever.
-        if (Array.isArray(mgr._extensionOrder)) {
-            const idx = mgr._extensionOrder.indexOf(self);
-            if (idx > 0) {
-                mgr._extensionOrder.splice(idx, 1);
-                mgr._extensionOrder.unshift(self);
-                steps.push('hoist self');
-            }
-        }
-
-        // Snapshot for AbortSwitch / the auto-rollback timer (enable order),
-        // and arm the safety net BEFORE mutating anything — a fatal failure
-        // anywhere in the teardown still auto-restores the previous set.
-        this._prevEnabled = this._orderedLive(mgr);
-        this._armRollbackTimer(ROLLBACK_TIMEOUT_S);
-
-        // Tear down EVERY live extension except ourselves — including the
-        // persist indicators (req.persist is honoured by the CALLER keeping
-        // them in the CompleteSwitch target list). Skipping them here looks
-        // gentler but is strictly worse: they sit late in the load order, so
-        // each managed disable would rebase-toggle them repeatedly and
-        // pamac-updates' broken disable() aborts the Shell's rebase loop.
-        // One clean disable + one clean enable per switch instead. Strict
-        // reverse order keeps every rebase slice empty. After this loop
-        // nothing is listening to the layout-owned dconf branches — the
-        // caller can reset+load them like a login does.
-        const teardown = this._prevEnabled.filter(u => u !== self).reverse();
-        const disabled = [];
-        for (const uuid of teardown) {
-            try {
-                const accepted = mgr.disableExtension(uuid);
-                if (accepted === false) {
-                    steps.push(`disable ${uuid} REJECTED`);
-                    continue;
-                }
-                const settled = await this._waitState(mgr, uuid, s => this._isDown(s));
-                steps.push(settled ? `disable ${uuid}` : `disable ${uuid} TIMEOUT`);
-                disabled.push(uuid);
-            } catch (e) {
-                steps.push(`disable ${uuid} ERR ${e}`);
-            }
-        }
+        const teardown = this._prepareTeardown(mgr, steps, ROLLBACK_TIMEOUT_S);
+        const transitions = new ExtensionTransitions(this, mgr, steps);
+        const disabled = await transitions.disableAll(teardown);
         // Drain any idles the last disable() queued.
         await this._sleep(100);
 
@@ -1651,7 +1426,7 @@ export default class LayoutSwitcherHelper extends Extension {
                     steps.push(`enable ${uuid} REJECTED`);
                     continue;
                 }
-                const settled = await this._waitState(mgr, uuid, s => this._isSettledUp(s));
+                const settled = await this._waitState(mgr, uuid, s => this._isSettledUp(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 const finalState = mgr.lookup(uuid)?.state;
                 if (finalState === STATE_ERROR)
                     steps.push(`enable ${uuid} ERROR`);
@@ -1669,7 +1444,7 @@ export default class LayoutSwitcherHelper extends Extension {
                 continue;
             try {
                 mgr.disableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isDown(s));
+                await this._waitState(mgr, uuid, s => this._isDown(s)); // NOSONAR: S9382 - Shell extension transitions must run in order.
                 steps.push(`reconcile-off ${uuid}`);
             } catch (e) {
                 steps.push(`reconcile-off ${uuid} ERR ${e}`);
@@ -1811,43 +1586,18 @@ export default class LayoutSwitcherHelper extends Extension {
         teardown.delete(self);
 
         const live = this._liveUuids(mgr);
+        const transitions = new ExtensionTransitions(this, mgr, steps, stepMs);
 
         // 1. Disable extensions leaving the layout. Reverse so later-loaded go
         //    first (fewer of the Shell's internal "rebase" cycles). Extensions
         //    in `teardown` (dock/panel owners) get a reload first so their
         //    actor is fresh and disable() destroys it cleanly instead of
         //    leaving a ghost.
-        const leaving = [...live].filter(u => !target.has(u)).reverse();
-        for (const uuid of leaving) {
-            try {
-                if (teardown.has(uuid)) {
-                    await this._reloadOne(mgr, uuid);
-                    steps.push(`teardown-reload ${uuid}`);
-                    await this._sleep(stepMs);
-                }
-                const accepted = mgr.disableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isDown(s));
-                steps.push(accepted === false ? `disable ${uuid} REJECTED` : `disable ${uuid}`);
-            } catch (e) {
-                steps.push(`disable ${uuid} ERR ${e}`);
-            }
-            await this._sleep(stepMs);
-        }
+        await transitions.disableLeaving(live, target, teardown);
 
         // 2. Disable the staying-but-reload set so step 4 re-enables them and
         //    their enable() re-reads the (already loaded) dconf appearance.
-        for (const uuid of order) {
-            if (reload.has(uuid) && live.has(uuid) && target.has(uuid)) {
-                try {
-                    mgr.disableExtension(uuid);
-                    await this._waitState(mgr, uuid, s => this._isDown(s));
-                    steps.push(`reload-off ${uuid}`);
-                } catch (e) {
-                    steps.push(`reload-off ${uuid} ERR ${e}`);
-                }
-                await this._sleep(stepMs);
-            }
-        }
+        await transitions.detachReloads(order, reload, live, target);
 
         // 3. Reload the base Shell stylesheet before appearance extensions.
         if (ensureValidColorScheme())
@@ -1865,19 +1615,7 @@ export default class LayoutSwitcherHelper extends Extension {
 
         // 4. Enable every target extension not currently live, in target order,
         //    so each applies its appearance on top of the freshly-loaded theme.
-        const liveNow = this._liveUuids(mgr);
-        for (const uuid of order) {
-            if (liveNow.has(uuid))
-                continue;
-            try {
-                const accepted = mgr.enableExtension(uuid);
-                await this._waitState(mgr, uuid, s => this._isSettledUp(s));
-                steps.push(accepted === false ? `enable ${uuid} REJECTED` : `enable ${uuid}`);
-            } catch (e) {
-                steps.push(`enable ${uuid} ERR ${e}`);
-            }
-            await this._sleep(stepMs);
-        }
+        await transitions.enableMissing(order);
 
         this._panelStyleRecompute();
         this._setupPanelSystemIndicator();

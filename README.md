@@ -66,36 +66,43 @@ a single responsive interface.
   distribution layouts, independent from ArcMenu.
 - **Localization** — Gettext catalogs are included for 29 languages.
 
-## Screenshots
+## Walkthrough
+
+Watch an English interface tour recorded on **GNOME 51 with Frosted Glass**.
+Explore layouts, fonts, themes, desktop and panel settings, visual effects,
+extensions, and startup applications in both light and dark themes.
 
 <p align="center">
-  <img src="docs/screenshots/layouts.webp" alt="Layouts page with six desktop layouts" width="820">
-  <br>
-  <sub>Six curated layouts with active and modified-state indicators.</sub>
+  <img src="docs/screenshots/big-gnome-center-demo.gif" alt="Big Gnome Center interface tour in English, with light and dark themes and background blur" width="1000">
 </p>
+
+<details>
+<summary>Light and dark screenshots</summary>
 
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/screenshots/fonts.webp" alt="Font preferences page"><br>
-      <sub>Font families, rendering, scale, and Google Fonts.</sub>
+      <img src="docs/screenshots/layouts-light.webp" alt="Six desktop layouts in the light theme"><br>
+      <sub>Layouts and saved customizations.</sub>
     </td>
     <td align="center" width="50%">
-      <img src="docs/screenshots/themes.webp" alt="Theme accent color page"><br>
-      <sub>GNOME accent colors and searchable icon themes.</sub>
+      <img src="docs/screenshots/themes-light.webp" alt="GNOME accent colors in the light theme"><br>
+      <sub>Accent colors, icons, and cursors.</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/screenshots/effects.webp" alt="Visual effects page"><br>
-      <sub>Visual effects with previews and installation controls.</sub>
+      <img src="docs/screenshots/effects-dark.webp" alt="Frosted Glass controls in the dark theme"><br>
+      <sub>Blur for windows and GNOME Shell surfaces.</sub>
     </td>
     <td align="center" width="50%">
-      <img src="docs/screenshots/extensions.webp" alt="Featured extensions page"><br>
-      <sub>Featured, browsable, and installed extensions.</sub>
+      <img src="docs/screenshots/extensions-dark.webp" alt="Featured extensions in the dark theme"><br>
+      <sub>Featured and installed desktop extensions.</sub>
     </td>
   </tr>
 </table>
+
+</details>
 
 ## Requirements
 

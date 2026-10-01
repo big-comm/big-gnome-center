@@ -110,3 +110,33 @@ def test_prestart_migrates_saved_and_live_lists_via_locked_store(monkeypatch, tm
     assert saved.read_text() == before  # No writer bypasses the store.
     session_migration.run()
     store.publish.assert_called_once()
+
+
+@pytest.mark.parametrize('enabled,disabled', [
+    (['copyous@boerdereinar.dev'], []),
+    ([], ['copyous@boerdereinar.dev']),
+    (['copyous@boerdereinar.dev'], ['copyous@boerdereinar.dev']),
+    (['copyous@boerdereinar.dev', 'big-clipboard@communitybig.org'], []),
+])
+def test_clipboard_identity_preserves_disabled_state_and_data(enabled, disabled):
+    from helper_client import BIG_CLIPBOARD_UUID, LEGACY_COPYOUS_UUID
+    from layout_applier import LayoutApplier
+    installed = {BIG_CLIPBOARD_UUID}
+    expected_enabled = [BIG_CLIPBOARD_UUID] if enabled and not disabled else []
+    expected_disabled = [BIG_CLIPBOARD_UUID] if disabled else []
+    text = (
+        f'[org/gnome/shell]\nenabled-extensions={enabled!r}\n'
+        f'disabled-extensions={disabled!r}\ndisable-user-extensions=true\n\n'
+        "[org/gnome/shell/extensions/copyous]\nhistory-length=5000\n"
+        "database-location='/custom/history.db'\n"
+    )
+    for migrate in (migrate_dump, LayoutApplier._migrate_layout_component_uuids):
+        result = migrate(text, installed)
+        assert f'enabled-extensions={expected_enabled!r}' in result
+        assert f'disabled-extensions={expected_disabled!r}' in result
+        assert result[result.index('disable-user-extensions'): ] == text[text.index('disable-user-extensions'): ]
+        assert LEGACY_COPYOUS_UUID not in result
+        assert migrate(result, installed) == result
+    assert HelperClient.required_extension_lists(enabled, disabled, installed)[1] == expected_disabled
+    assert HelperClient.resolve_component_uuid(BIG_CLIPBOARD_UUID, {LEGACY_COPYOUS_UUID}) == LEGACY_COPYOUS_UUID
+    assert HelperClient.resolve_component_uuid(LEGACY_COPYOUS_UUID, installed) == BIG_CLIPBOARD_UUID

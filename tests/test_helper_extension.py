@@ -79,6 +79,14 @@ def test_g_unity_notification_geometry_and_lifecycle():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_delayed_startup_failures_are_handled():
+    import subprocess
+
+    script = Path(__file__).with_name("helper_startup.mjs")
+    result = subprocess.run(["node", str(script)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_transition_content_is_centered_on_the_primary_monitor():
     source = HELPER.read_text()
 
@@ -185,15 +193,15 @@ def test_cleanroom_stops_all_components_before_settings_load():
     begin = source.split("async _beginSwitch(payload) {", 1)[1]
     begin = begin.split("CompleteSwitchAsync", 1)[0]
 
-    assert "this._prevEnabled = this._orderedLive(mgr);" in begin
-    assert "const teardown = this._prevEnabled.filter(u => u !== self).reverse();" in begin
+    shared = HELPER.with_name("helperLifecycle.js").read_text()
+    assert "this._prepareTeardown(mgr, steps, ROLLBACK_TIMEOUT_S)" in begin
+    assert "await transitions.disableAll(teardown" in begin
     assert "requestedPersist" not in begin
-    assert "hoist self" in begin
-    assert begin.index("mgr._extensionOrder.splice") < begin.index(
-        "this._prevEnabled = this._orderedLive(mgr);"
+    assert shared.index("manager._extensionOrder.splice") < shared.index(
+        "this._prevEnabled = this._orderedLive(manager);"
     )
-    assert begin.index("this._prevEnabled = this._orderedLive(mgr);") < begin.index(
-        "const teardown ="
+    assert shared.index("this._armRollbackTimer(rollbackSeconds)") < shared.index(
+        "return this._prevEnabled.filter(uuid => uuid !== self).reverse()"
     )
 
 
@@ -254,8 +262,8 @@ def test_incremental_migration_detaches_menu_before_replacing_panel():
 
     migration = source.index("async _applyLayout")
     hoist = source.index("steps.push('hoist self')", migration)
-    reload_off = source.index("steps.push(`reload-off ${uuid}`)", migration)
-    leaving = source.index("const leaving =", source.index("async _applyLayout"))
+    reload_off = source.index("await transitions.detachReloads(", migration)
+    leaving = source.index("await transitions.disableLeaving(", migration)
     assert hoist < reload_off < leaving
 
 
@@ -410,9 +418,6 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "children.at(-1) === container" in source
     assert "'child-added', (_box, child)" in source
     assert "this._gUnityRightBox.disconnect(this._gUnityRightBoxSignal)" in source
-    assert "_setupGUnityDndAction" in source
-    assert "notifications-disabled-symbolic" in source
-    assert "dndToggle.hide()" in source
 
 
 def test_fixed_dark_layouts_resolve_the_shell_stylesheet_before_enable():
@@ -455,10 +460,10 @@ def test_g_unity_shell_is_restored_before_extensions_are_disabled():
 
     assert "this._isGUnityActive() && req.label !== 'G-Unity'" in begin_switch
     assert begin_switch.index("this._teardownGUnityShell();") < begin_switch.index(
-        "for (const uuid of teardown)"
+        "await transitions.disableAll(teardown"
     )
     assert begin_switch.index("this._clearGUnitySurfaceClasses();") < begin_switch.index(
-        "for (const uuid of teardown)"
+        "await transitions.disableAll(teardown"
     )
 
 
@@ -485,7 +490,7 @@ def test_biggnome_dock_style_is_released_before_runtime_teardown():
     begin_switch = begin_switch.split("CompleteSwitchAsync", 1)[0]
 
     assert begin_switch.index("this._clearBigGnomeDockClass();") < begin_switch.index(
-        "for (const uuid of teardown)"
+        "await transitions.disableAll(teardown"
     )
 
 
@@ -499,7 +504,7 @@ def test_clean_room_switch_yields_frames_between_shell_components():
     assert "const TRANSITION_FRAME_MS = 16" in source
     assert "_yieldTransitionFrame()" in source
     assert "return this._sleep(TRANSITION_FRAME_MS);" in source
-    assert "await this._yieldTransitionFrame();" in begin_switch
+    assert "disableAll(teardown, () => this._yieldTransitionFrame())" in begin_switch
     assert complete_switch.count("await this._yieldTransitionFrame();") == 2
 
 

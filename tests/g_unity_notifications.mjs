@@ -84,4 +84,57 @@ for (const version of [50, 51]) {
         assert.equal(collapsed, before + 2, 'teardown is idempotent');
     }
 }
+// Layout lifecycle must preserve the labelled native DND control and its state.
+class Actor extends Signals {
+    constructor(props = {}) { super(); Object.assign(this, props); this.children = []; }
+    add_child(child) { this.children.push(child); }
+    get_children() { return this.children; }
+    add_style_class_name(name) { (this.styles ??= new Set()).add(name); }
+    remove_style_class_name(name) { this.styles?.delete(name); }
+    destroy() { this.handlers.clear(); }
+}
+const nativeDnd = new Actor({visible: true, checked: false, title: 'Do Not Disturb'});
+nativeDnd.hide = () => { nativeDnd.visible = false; };
+const systemBox = new Actor();
+systemBox.children = [new Actor(), new Actor(), new Actor()];
+systemBox.insert_child_at_index = (actor, index) => systemBox.children.splice(index, 0, actor);
+const quickSettings = {
+    _doNotDisturb: {quickSettingsItems: [nativeDnd]},
+    _system: {_systemItem: {child: systemBox}},
+    menu: {actor: new Actor()},
+};
+const shellMain = {
+    panel: {statusArea: {dateMenu: {}, quickSettings}, _leftBox: new Actor(), _rightBox: new Actor()},
+    overview: new Signals(),
+};
+const display = new Signals();
+const lifecycleMethods = ['_setupGUnityShell', '_teardownGUnityShell', '_teardownGUnityMessageEvents', '_setupGUnityDndAction']
+    .filter(name => source.includes(`    ${name}(`))
+    .map(name => {
+        const i = source.indexOf(`    ${name}(`);
+        return source.slice(i, source.indexOf('\n    }', i) + 6);
+    });
+const ShellHelper = vm.runInNewContext(`class Helper {${lifecycleMethods.join('\n')}}; Helper`, {
+    Main: shellMain, global: {display}, KIWI_UUID: 'kiwi',
+    St: {BoxLayout: Actor, Icon: Actor, Label: Actor, Button: Actor},
+    Clutter: {ActorAlign: {CENTER: 0}},
+});
+const shellHelper = new ShellHelper();
+shellHelper._extensionWillRun = () => false;
+shellHelper._syncGUnityDatePosition = () => {};
+shellHelper._syncGUnityWindowTitle = () => {};
+for (const checked of [false, true, false]) {
+    nativeDnd.checked = checked;
+    shellHelper._setupGUnityShell();
+    shellHelper._setupGUnityShell();
+    assert.equal(nativeDnd.visible, true, 'G-Unity keeps the labelled native toggle visible');
+    assert.equal(nativeDnd.checked, checked, 'entering G-Unity preserves DND preference');
+    assert.equal(systemBox.children.length, 3, 'no duplicate icon-only control');
+    shellHelper._teardownGUnityShell();
+    assert.equal(nativeDnd.visible, true);
+    assert.equal(nativeDnd.checked, checked, 'leaving G-Unity preserves DND preference');
+    assert.equal(display.handlers.size, 0);
+    assert.equal(shellMain.overview.handlers.size, 0);
+    assert.equal(shellMain.panel._rightBox.handlers.size, 0);
+}
 console.log('G-Unity notification geometry and lifecycle passed');
