@@ -122,16 +122,51 @@ class TestLayoutApplier:
         live = (
             "[/]\nhistory-length=500\ndatabase-location='/data/history.db'\n"
             "clipboard-history='keep-all'\nopen-clipboard-dialog-shortcut=['<Super>c']\n"
-            "highlight-languages=['ada']\n"
+            "highlight-languages=['ada']\nitem-width=300\nitem-height=100\n"
+            "dynamic-item-height=true\nshow-header=false\nheader-controls-visibility='visible-on-hover'\n"
+            "compact-type-filters=true\nauto-hide-search=true\n"
+            "[file-item]\nfile-preview-visibility='file-info'\n"
         )
         with patch.object(LayoutApplier, "_read_clipboard_settings", return_value=live):
             out = LayoutApplier._preserve_clipboard_settings(data)
         values = LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous")
-        assert values == LayoutApplier._section_key_values(live, "/")
+        expected = LayoutApplier._section_key_values(live, "/")
+        expected.update({
+            "clipboard-orientation": "'horizontal'",
+            "clipboard-position-horizontal": "'fill'",
+            "clipboard-position-vertical": "'bottom'" if filename in {"desk-ux", "hybrid", "classic"} else "'top'",
+            "show-at-pointer": "false",
+            "show-at-cursor": "false",
+            "item-width": "250", "item-height": "210", "dynamic-item-height": "false",
+            "show-header": "true", "header-controls-visibility": "'visible'", "auto-hide-search": "false",
+        })
+        assert values == expected
+        assert LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous/file-item") == {
+            "file-preview-visibility": "'file-preview-or-file-info'",
+        }
+        assert LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous/link-item") == {
+            "link-preview-orientation": "'vertical'",
+        }
         assert "history-length=70" not in out
         assert LayoutApplier._section_key_values(out, "/org/gnome/shell") == (
             LayoutApplier._section_key_values(data, "/org/gnome/shell")
         )
+
+    def test_saved_layout_restores_placement_without_restoring_history(self):
+        live = "[/]\nhistory-length=500\nclipboard-position-vertical='top'\ncompact-type-filters=true\n"
+        snapshot = (
+            "[org/gnome/shell/extensions/copyous]\nhistory-length=70\n"
+            "clipboard-orientation='vertical'\nclipboard-position-horizontal='bottom'\n"
+            "clipboard-position-vertical='fill'\n"
+        )
+        with patch.object(LayoutApplier, "_read_clipboard_settings", return_value=live):
+            out = LayoutApplier._preserve_clipboard_settings(snapshot)
+        values = LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous")
+        assert values == {
+            "history-length": "500", "compact-type-filters": "true",
+            "clipboard-orientation": "'vertical'", "clipboard-position-horizontal": "'bottom'",
+            "clipboard-position-vertical": "'fill'",
+        }
 
     def test_empty_clipboard_preferences_do_not_restore_old_snapshot(self):
         with patch.object(LayoutApplier, "_read_clipboard_settings", return_value=""):

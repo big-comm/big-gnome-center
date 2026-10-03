@@ -261,6 +261,17 @@ favorite-apps=['org.gnome.Nautilus.desktop', 'brave-browser.desktop', 'org.gnome
 welcome-dialog-last-shown-version='43.2'
 
 [org/gnome/shell/extensions/copyous]
+auto-hide-search=false
+item-width=250
+item-height=210
+dynamic-item-height=false
+show-header=true
+header-controls-visibility='visible'
+clipboard-orientation='horizontal'
+clipboard-position-horizontal='fill'
+clipboard-position-vertical='top'
+show-at-pointer=false
+show-at-cursor=false
 history-length=70
 open-clipboard-dialog-shortcut=['<Super>v']
 paste-on-copy=false
@@ -345,3 +356,9 @@ show-extensions-notice=false
 [org/gnome/shell/extensions/community-menu]
 desktop-layout='BigGnome'
 layout='MINT'
+
+[org/gnome/shell/extensions/copyous/file-item]
+file-preview-visibility='file-preview-or-file-info'
+
+[org/gnome/shell/extensions/copyous/link-item]
+link-preview-orientation='vertical'

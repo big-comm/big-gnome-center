@@ -1206,12 +1206,23 @@ class LayoutApplier:
 
     @classmethod
     def _preserve_clipboard_settings(cls, data: str) -> str:
-        """Clipboard retention and database choices belong to the user."""
+        """Restore layout presentation while preserving clipboard data preferences."""
         prefix = "/org/gnome/shell/extensions/copyous/"
         values = {
             prefix + key.lstrip("/"): value
             for key, value in cls._dconf_dump_values(cls._read_clipboard_settings()).items()
         }
+        presentation = cls._dconf_dump_values(data)
+        for key in (
+            "clipboard-orientation", "clipboard-position-horizontal",
+            "clipboard-position-vertical", "show-at-pointer", "show-at-cursor",
+            "item-width", "item-height", "dynamic-item-height", "show-header",
+            "header-controls-visibility", "auto-hide-search", "file-item/file-preview-visibility",
+            "link-item/link-preview-orientation",
+        ):
+            path = prefix + key
+            if path in presentation:
+                values[path] = presentation[path]
         return (
             cls._remove_dconf_subtree(data, prefix).rstrip()
             + "\n\n"

@@ -165,7 +165,7 @@ def test_desktop_icon_activation_defaults_are_owned_by_layouts():
         assert "[org/gnome/shell/extensions/gtk4-ding]" not in text
 
 
-def test_copyous_settings_match_biggnome_in_every_layout():
+def test_clipboard_defaults_and_layout_placement():
     reference = _section_key_values(
         (LAYOUT_DIR / "biggnome.txt").read_text(),
         COPYOUS_SECTION,
@@ -175,10 +175,18 @@ def test_copyous_settings_match_biggnome_in_every_layout():
         "history-length": "70",
         "open-clipboard-dialog-shortcut": "['<Super>v']",
         "paste-on-copy": "false",
+        "clipboard-orientation": "'horizontal'",
+        "clipboard-position-horizontal": "'fill'",
+        "clipboard-position-vertical": "'top'",
+        "show-at-pointer": "false",
+        "show-at-cursor": "false",
+        "item-width": "250", "item-height": "210", "dynamic-item-height": "false",
+        "show-header": "true", "header-controls-visibility": "'visible'", "auto-hide-search": "false",
     }
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         values = _section_key_values(layout_file.read_text(), COPYOUS_SECTION)
-        assert values == reference, f"{layout_file.name} differs from BigGnome"
+        position = "'bottom'" if layout_file.stem in {"desk-ux", "hybrid", "classic"} else "'top'"
+        assert values == {**reference, "clipboard-position-vertical": position}, layout_file.name
 
 
 def test_original_layouts_reset_accent_to_blue():

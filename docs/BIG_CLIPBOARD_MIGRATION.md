@@ -23,3 +23,5 @@ UUID migration follow-up:
 - Repeated all six layouts per VM with 120 entries, 24 pins and 40 images. Exact SQL, image/JSON/action hashes and clipboard settings remained unchanged; default and custom SQLite paths passed.
 - Old saved layout UUIDs migrated to the replacement in live and persisted settings. JSON history, preferences, copying, search, pinning and Super+V passed.
 - Original VM histories/preferences restored and verified. Full BGC package check: 1,735 passed.
+
+Original layouts place Big Clipboard horizontally: bottom for Desk UX, Hybrid and Classic; top for BigGnome, G-Unity and Minimal. All original layouts restore fixed 250 × 210 cards, visible headers/actions, file previews and the search field. Saved layouts restore their recorded presentation. History, database, filters and other clipboard preferences remain global. Older snapshots without presentation keys retain the corresponding live values.
