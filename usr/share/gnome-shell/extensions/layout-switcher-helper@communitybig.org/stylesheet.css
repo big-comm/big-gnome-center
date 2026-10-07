@@ -102,7 +102,7 @@ Gjs_ui_dateMenu_DateMenuButton StLabel {
 }
 
 .layout-switcher-g-unity-notification-indicator {
-    background-color: #ff3b30;
+    background-color: -st-accent-color;
     border-radius: 999px;
     min-width: 8px;
     min-height: 8px;

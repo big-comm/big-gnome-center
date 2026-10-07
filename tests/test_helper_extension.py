@@ -400,7 +400,10 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "_syncGUnityNotificationIndicator" in source
     assert "notification-added" in source
     assert "notification-removed" in source
-    assert "background-color: #ff3b30" in stylesheet
+    g_unity_indicator = stylesheet.split(
+        ".layout-switcher-g-unity-notification-indicator {", 1
+    )[1].split("}", 1)[0]
+    assert "background-color: -st-accent-color;" in g_unity_indicator
     assert "width: 8" in source
     assert "height: 8" in source
     assert "y_align: Clutter.ActorAlign.CENTER" in source
