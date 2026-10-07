@@ -355,6 +355,25 @@ def test_minimal_uses_helper_owned_rectangular_panel():
     assert "border-radius: 0" in stylesheet
 
 
+def test_native_unread_dot_follows_accent_except_minimal():
+    source = HELPER.read_text()
+    stylesheet = HELPER_STYLESHEET.read_text()
+
+    sync = source.split("    _syncNotificationAccentClass() {", 1)[1].split(
+        "\n    }\n", 1
+    )[0]
+    assert "this._activeLayoutLabel !== 'Minimal'" in sync
+    assert "Main.layoutManager.uiGroup" in sync
+    assert source.count("this._syncNotificationAccentClass();") == source.count(
+        "this._syncMinimalPanelClass();"
+    )
+    assert "this._clearNotificationAccentClass();" in source
+    rule = stylesheet.split(
+        ".layout-switcher-accent-notifications .messages-indicator {", 1
+    )[1].split("}", 1)[0]
+    assert "color: -st-accent-color;" in rule
+
+
 def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()

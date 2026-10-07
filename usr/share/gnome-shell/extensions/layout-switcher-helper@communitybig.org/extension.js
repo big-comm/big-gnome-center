@@ -98,6 +98,7 @@ const NATIVE_ACCENT_PANEL_CLASS = 'layout-switcher-native-accent-panel';
 const BIGGNOME_PANEL_CLASS = 'layout-switcher-biggnome-panel';
 const BIGGNOME_DOCK_CLASS = 'layout-switcher-biggnome-dock';
 const MINIMAL_PANEL_CLASS = 'layout-switcher-minimal-panel';
+const ACCENT_NOTIFICATIONS_CLASS = 'layout-switcher-accent-notifications';
 const GUNITY_PANEL_CLASS = 'layout-switcher-g-unity-panel';
 const GUNITY_DOCK_CLASS = 'layout-switcher-g-unity-dock';
 const ACCENT_PROBE_CLASS = 'layout-switcher-accent-probe';
@@ -325,6 +326,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
         this._syncNativeAccentPanelClass();
         this._syncBigGnomePanelClass();
         this._syncMinimalPanelClass();
+        this._syncNotificationAccentClass();
         this._syncGUnitySurfaceClasses();
         // Live appearance follower. Classic/Hybrid follow GNOME's native mode;
         // the other Community layouts keep their project-owned styling.
@@ -355,6 +357,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
                 this._syncNativeAccentPanelClass();
                 this._syncBigGnomePanelClass();
                 this._syncMinimalPanelClass();
+                this._syncNotificationAccentClass();
                 this._syncGUnitySurfaceClasses();
                 // Retire old theme extensions after Shell startup settles.
                 this._sleep(1000).then(() => {
@@ -364,6 +367,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
                     this._syncNativeAccentPanelClass();
                     this._syncBigGnomePanelClass();
                     this._syncMinimalPanelClass();
+                    this._syncNotificationAccentClass();
                     this._syncGUnitySurfaceClasses();
                     this._syncNotificationPosition();
                 }).catch(error => {
@@ -464,6 +468,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
         this._clearBigGnomePanelClass();
         this._clearBigGnomeDockClass();
         this._clearMinimalPanelClass();
+        this._clearNotificationAccentClass();
         this._clearGUnitySurfaceClasses();
         this._teardownGUnityShell();
         this._unexport();
@@ -1359,6 +1364,23 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
         this._minimalPanels.add(Main.panel);
     }
 
+    _syncNotificationAccentClass() {
+        // Minimal keeps GNOME's native unread dot; other layouts follow the
+        // accent color. The class sits on uiGroup to cover every panel clock.
+        const accent = Boolean(this._activeLayoutLabel) &&
+            this._activeLayoutLabel !== 'Minimal';
+        const uiGroup = Main.layoutManager.uiGroup;
+        if (accent)
+            uiGroup.add_style_class_name(ACCENT_NOTIFICATIONS_CLASS);
+        else
+            uiGroup.remove_style_class_name(ACCENT_NOTIFICATIONS_CLASS);
+    }
+
+    _clearNotificationAccentClass() {
+        Main.layoutManager.uiGroup.remove_style_class_name(
+            ACCENT_NOTIFICATIONS_CLASS);
+    }
+
     _syncGUnitySurfaceClasses() {
         this._clearGUnitySurfaceClasses();
         if (!this._isGUnityActive()) {
@@ -1804,6 +1826,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
             this._syncNativeAccentPanelClass();
             this._syncBigGnomePanelClass();
             this._syncMinimalPanelClass();
+            this._syncNotificationAccentClass();
             this._syncGUnitySurfaceClasses();
             // Cross-frame style recompute so the panel picks the new theme.
             Main.panel.add_style_class_name('ls-style-recompute');
@@ -2394,6 +2417,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
         this._syncNativeAccentPanelClass();
         this._syncBigGnomePanelClass();
         this._syncMinimalPanelClass();
+        this._syncNotificationAccentClass();
         this._syncGUnitySurfaceClasses();
         this._syncNotificationPosition();
         await this._panelRepaint();
@@ -2628,6 +2652,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
         this._syncNativeAccentPanelClass();
         this._syncBigGnomePanelClass();
         this._syncMinimalPanelClass();
+        this._syncNotificationAccentClass();
         this._syncGUnitySurfaceClasses();
         this._syncNotificationPosition();
         if (target.has(APPINDICATOR_UUID)) {
@@ -2838,6 +2863,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
         this._syncNativeAccentPanelClass();
         this._syncBigGnomePanelClass();
         this._syncMinimalPanelClass();
+        this._syncNotificationAccentClass();
         this._syncGUnitySurfaceClasses();
         this._syncNotificationPosition();
         logHelper(`ApplyLayout done: ${steps.join(' | ')}`);

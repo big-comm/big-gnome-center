@@ -73,7 +73,8 @@ for (const domain of ['communitybig.org', 'bigcommunity.org']) {
         for (const name of ['_panelStyleRecompute', '_setupPanelSystemIndicator',
             '_syncLightOverviewPanelClass', '_syncNativeAccentPanelClass',
             '_syncBigGnomePanelClass', '_syncMinimalPanelClass',
-            '_syncGUnitySurfaceClasses', '_syncNotificationPosition']) {
+            '_syncGUnitySurfaceClasses', '_syncNotificationPosition',
+            '_syncNotificationAccentClass']) {
             helper[name] = () => undefined;
         }
         const result = JSON.parse(await helper._applyLayout(JSON.stringify({

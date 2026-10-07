@@ -15,7 +15,7 @@ async function checkStartup(Helper, messages, failure) {
     for (const name of ['_export', '_syncNotificationPosition',
         '_syncNativeAccentPanelClass', '_syncBigGnomePanelClass',
         '_syncMinimalPanelClass', '_syncGUnitySurfaceClasses',
-        '_syncLightOverviewPanelClass']) {
+        '_syncLightOverviewPanelClass', '_syncNotificationAccentClass']) {
         helper[name] = () => undefined;
     }
     let synced = 0;
