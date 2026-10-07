@@ -940,6 +940,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
                 y_align: Clutter.ActorAlign.CENTER,
             });
             indicatorBox.add_child(this._gUnityNotificationIndicator);
+            this._detachGUnityDateIndicator(dateMenu);
             Main.messageTray.connectObject(
                 'source-added', (_tray, source) => {
                     this._watchGUnityNotificationSource(source);
@@ -1025,6 +1026,29 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
             'notification-removed', () =>
                 this._syncGUnityNotificationIndicator(),
             this._gUnityNotificationIndicator);
+    }
+
+    _detachGUnityDateIndicator(dateMenu) {
+        const indicator = dateMenu._indicator;
+        const clock = dateMenu._clockDisplay;
+        const parent = clock?.get_parent();
+        const pad = clock?.get_previous_sibling();
+        if (!parent || !pad || indicator?.get_parent() !== parent)
+            return;
+
+        // Quick Settings owns notifications here. Keep the native indicator
+        // and its balancing spacer alive, but out of the clock's allocation.
+        this._gUnityDateIndicators = [pad, indicator].map(actor => ({
+            actor, parent, index: parent.get_children().indexOf(actor),
+        }));
+        for (const {actor} of this._gUnityDateIndicators)
+            parent.remove_child(actor);
+    }
+
+    _restoreGUnityDateIndicator() {
+        for (const {actor, parent, index} of this._gUnityDateIndicators ?? [])
+            parent.insert_child_at_index(actor, index);
+        this._gUnityDateIndicators = null;
     }
 
     _syncGUnityNotificationIndicator() {
@@ -1113,6 +1137,7 @@ export default class LayoutSwitcherHelper extends HelperLifecycle {
         this._gUnityRightBoxSignal = 0;
         this._gUnityRightBox = null;
 
+        this._restoreGUnityDateIndicator();
         this._gUnityNotificationIndicator?.destroy();
         this._gUnityNotificationIndicator = null;
         this._gUnityQuickSettingsActor?.remove_style_class_name(

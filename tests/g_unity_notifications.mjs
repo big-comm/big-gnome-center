@@ -108,7 +108,7 @@ const shellMain = {
     overview: new Signals(),
 };
 const display = new Signals();
-const lifecycleMethods = ['_setupGUnityShell', '_teardownGUnityShell', '_teardownGUnityMessageEvents', '_setupGUnityDndAction']
+const lifecycleMethods = ['_setupGUnityShell', '_teardownGUnityShell', '_detachGUnityDateIndicator', '_restoreGUnityDateIndicator', '_teardownGUnityMessageEvents', '_setupGUnityDndAction']
     .filter(name => source.includes(`    ${name}(`))
     .map(name => {
         const i = source.indexOf(`    ${name}(`);
@@ -136,5 +136,30 @@ for (const checked of [false, true, false]) {
     assert.equal(display.handlers.size, 0);
     assert.equal(shellMain.overview.handlers.size, 0);
     assert.equal(shellMain.panel._rightBox.handlers.size, 0);
+}
+// The native unread dot reserves an equal spacer before the clock.
+// Both must leave the layout while Quick Settings owns notifications.
+const clock = new Actor();
+const pad = new Actor({visible: false});
+const indicator = new Actor({visible: false});
+const clockBox = new Actor();
+clockBox.children = [pad, clock, indicator];
+clockBox.remove_child = actor => clockBox.children.splice(clockBox.children.indexOf(actor), 1);
+clockBox.insert_child_at_index = (actor, index) => clockBox.children.splice(index, 0, actor);
+clock.get_parent = () => clockBox;
+clock.get_previous_sibling = () => clockBox.children[clockBox.children.indexOf(clock) - 1];
+indicator.get_parent = () => clockBox;
+for (let cycle = 0; cycle < 3; cycle++) {
+    shellHelper._detachGUnityDateIndicator({_clockDisplay: clock, _indicator: indicator});
+    assert.deepEqual(clockBox.children, [clock]);
+    for (const unread of [true, false, true]) {
+        indicator.visible = pad.visible = unread;
+        assert.deepEqual(clockBox.children, [clock], 'unread changes must not shift the clock');
+    }
+    shellHelper._restoreGUnityDateIndicator();
+    assert.deepEqual(clockBox.children, [pad, clock, indicator]);
+    assert.equal(indicator.visible, true, 'restore current unread state');
+    shellHelper._restoreGUnityDateIndicator();
+    assert.deepEqual(clockBox.children, [pad, clock, indicator]);
 }
 console.log('G-Unity notification geometry and lifecycle passed');
