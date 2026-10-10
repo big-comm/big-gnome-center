@@ -19,7 +19,7 @@ gi.require_version("Pango", "1.0")
 from gi.repository import Adw, Gio, GLib, Gtk, Pango
 
 import update_checker
-from app_launcher import launch_extensions_app, launch_uri
+from app_launcher import launch_uri
 from constants import FEATURED_EXTENSIONS, tr
 from extension_manager import ExtMgr
 from extension_policy import REQUIRED_EXTENSION_UUIDS
@@ -641,7 +641,7 @@ class ExtensionsPage(Gtk.Box):
         self._installed_search.connect("search-changed", self._on_installed_search_changed)
         outer.append(self._installed_search)
 
-        # Barra superior: contagem + botão abrir GNOME Extensions
+        # Barra superior: contagem + atualizar tudo
         toolbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         toolbar.set_margin_start(22)
         toolbar.set_margin_end(22)
@@ -664,12 +664,6 @@ class ExtensionsPage(Gtk.Box):
         self._update_all_btn.connect("clicked", lambda b: self._do_update_all())
         toolbar.append(self._update_all_btn)
 
-        open_btn = Gtk.Button(label=tr("Open GNOME Extensions"))
-        open_btn.add_css_class("flat")
-        open_btn.add_css_class("caption")
-        open_btn.set_valign(Gtk.Align.CENTER)
-        open_btn.connect("clicked", self._open_gnome_extensions)
-        toolbar.append(open_btn)
         outer.append(toolbar)
 
         # Scroll com Adw.Clamp para limitar largura da lista
@@ -691,9 +685,6 @@ class ExtensionsPage(Gtk.Box):
         sc.set_child(clamp)
         outer.append(sc)
         return outer
-
-    def _open_gnome_extensions(self, btn) -> None:
-        launch_extensions_app(self._launch_error)
 
     def _launch_error(self, detail: str) -> None:
         self._toast(tr("Error") + f": {detail}")

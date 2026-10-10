@@ -1,0 +1,11 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Target = usr/share/applications/org.gnome.Extensions.desktop
+Target = usr/share/libalpm/scripts/big-gnome-center-extensions-app
+
+[Action]
+Description = Hiding GNOME Extensions app in favor of Big Gnome Center...
+When = PostTransaction
+Exec = /usr/share/libalpm/scripts/big-gnome-center-extensions-app hide

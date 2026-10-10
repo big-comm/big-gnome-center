@@ -19,7 +19,6 @@ from gi.repository import Gdk, GLib, Gtk
 
 import app_launcher as launcher
 from ui.ext_detail_view import ExtDetailView
-from ui.page_extensions import ExtensionsPage
 
 
 def require_display():
@@ -42,12 +41,10 @@ def test_native_button_launch_keeps_child_window_alive(tmp_path, monkeypatch):
     )
     executable.chmod(0o755)
     monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
-    fallback = Mock()
-    monkeypatch.setattr(launcher, "launch_uri", fallback)
     errors, ticks = [], []
-    page = SimpleNamespace(_launch_error=errors.append)
     button = Gtk.Button(label="Launch test")
-    button.connect("clicked", lambda widget: ExtensionsPage._open_gnome_extensions(page, widget))
+    button.connect("clicked", lambda widget: launcher.launch_command(
+        ["gnome-extensions-app"], errors.append))
     timer = GLib.timeout_add(20, lambda: ticks.append(True) or GLib.SOURCE_CONTINUE)
     start = time.monotonic()
     try:
@@ -63,7 +60,6 @@ def test_native_button_launch_keeps_child_window_alive(tmp_path, monkeypatch):
         assert time.monotonic() - start > 6
         assert len(ticks) > 50
         assert not errors
-        fallback.assert_not_called()
     finally:
         GLib.source_remove(timer)
 

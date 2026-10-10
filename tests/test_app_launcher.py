@@ -133,25 +133,6 @@ def test_uri_launch_reports_async_failures(monkeypatch, failure):
     assert len(errors) == (failure != "none")
 
 
-@pytest.mark.parametrize("available", [[], ["gnome-extensions-app"],
-                                       ["gnome-shell-extension-prefs"],
-                                       ["gnome-extensions-app", "gnome-shell-extension-prefs"]])
-def test_extension_manager_fallback_requires_failure(monkeypatch, available):
-    monkeypatch.setattr(launcher.shutil, "which", lambda cmd: cmd if cmd in available else None)
-    command, uri, error = Mock(), Mock(), Mock()
-    monkeypatch.setattr(launcher, "launch_command", command)
-    monkeypatch.setattr(launcher, "launch_uri", uri)
-    launcher.launch_extensions_app(error)
-    for index, name in enumerate(available):
-        assert command.call_count == index + 1
-        assert command.call_args.args[0] == [name]
-        uri.assert_not_called()
-        # Until the active child reports failure, no fallback is launched.
-        command.call_args.args[1]("launch failed")
-    uri.assert_called_once_with("https://extensions.gnome.org", error)
-    error.assert_not_called()
-
-
 @pytest.fixture
 def preferences(tmp_path, monkeypatch):
     monkeypatch.setattr(manager, "EXT_USER_DIR", tmp_path)
@@ -241,14 +222,13 @@ def test_native_schema_preparation_gates_preferences(tmp_path, monkeypatch, vali
     assert bool(errors) is not valid
 
 
-def test_extensions_page_uses_nonblocking_launcher(monkeypatch):
+def test_extensions_page_has_no_gnome_extensions_shortcut():
     from ui.page_extensions import ExtensionsPage
 
-    launch = Mock()
-    monkeypatch.setattr("ui.page_extensions.launch_extensions_app", launch)
-    page = SimpleNamespace(_launch_error=Mock())
-    ExtensionsPage._open_gnome_extensions(page, None)
-    launch.assert_called_once_with(page._launch_error)
+    # Big Gnome Center manages extensions itself; the GNOME app lists private
+    # runtime and upgrade-compatibility hosts that the page hides.
+    assert not hasattr(ExtensionsPage, "_open_gnome_extensions")
+    assert not hasattr(launcher, "launch_extensions_app")
 
 
 @pytest.mark.parametrize("module,cls", [("ui.page_extensions", "ExtensionsPage"),

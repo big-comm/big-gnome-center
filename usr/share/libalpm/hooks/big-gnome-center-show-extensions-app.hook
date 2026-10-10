@@ -1,0 +1,9 @@
+[Trigger]
+Type = Path
+Operation = Remove
+Target = usr/share/libalpm/scripts/big-gnome-center-extensions-app
+
+[Action]
+Description = Restoring GNOME Extensions app...
+When = PreTransaction
+Exec = /usr/share/libalpm/scripts/big-gnome-center-extensions-app show
