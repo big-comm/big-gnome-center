@@ -245,10 +245,6 @@ FEATURED_EXTENSIONS: List[Dict] = [
     },
 ]
 
-EFFECT_EXTENSIONS: List[Dict] = [
-    ext for ext in FEATURED_EXTENSIONS if ext.get("preview") in ("cube", "lamp", "wobbly")
-]
-
 # Layouts shown in the grid but greyed out and not clickable.
 # Use for work-in-progress layouts that should remain visible to users
 # (so they know it's coming) but can't be applied yet.

@@ -2,14 +2,15 @@
 """
 ui/page_extensions.py — Página de Extensões (sub-abas: Destaque e Instaladas).
 
-Sub-aba Destaque: cards das extensões em FEATURED_EXTENSIONS com install/toggle/remove.
+Sub-aba Destaque: cards com prévia das extensões em FEATURED_EXTENSIONS, com install/toggle/remove.
 Sub-aba Instaladas: lista completa de extensões instaladas no sistema.
 Bulk controls preserve required layout components.
 
 DEVELOPER NOTE — DO NOT name any variable `_` in this file.
 """
 
-from typing import Dict, Iterable, List
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional
 
 import gi
 
@@ -27,6 +28,7 @@ from shell_reloader import ShellReloader
 from ui.ext_browse_view import ExtBrowseView
 from ui.ext_detail_view import ExtDetailView
 
+_PREVIEW_DIR = Path(__file__).resolve().parent.parent / "effects"
 _BIG_SHOT_DESCRIPTION = tr("Captures, annotates and records the screen.")
 _HIDDEN_SYSTEM_EXTENSION_UUIDS = frozenset(
     {
@@ -281,7 +283,7 @@ class ExtensionsPage(Gtk.Box):
         self._feat_flow = Gtk.FlowBox()
         self._feat_flow.set_selection_mode(Gtk.SelectionMode.NONE)
         self._feat_flow.set_max_children_per_line(2)
-        self._feat_flow.set_min_children_per_line(1)
+        self._feat_flow.set_min_children_per_line(2)
         self._feat_flow.set_row_spacing(12)
         self._feat_flow.set_column_spacing(12)
         self._feat_flow.set_margin_start(22)
@@ -316,14 +318,17 @@ class ExtensionsPage(Gtk.Box):
         card.add_css_class("card")
         if enabled:
             card.add_css_class("ext-on")
-        card.set_size_request(200, -1)
+        card.set_size_request(300, -1)
 
         inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
-        inner.set_margin_start(14)
-        inner.set_margin_end(14)
-        inner.set_margin_top(14)
-        inner.set_margin_bottom(14)
+        inner.set_margin_start(10)
+        inner.set_margin_end(10)
+        inner.set_margin_top(10)
+        inner.set_margin_bottom(10)
 
+        preview = self._make_feat_preview(ext)
+        if preview is not None:
+            inner.append(preview)
         inner.append(self._make_feat_header(ext))
 
         # system extension badge
@@ -360,12 +365,39 @@ class ExtensionsPage(Gtk.Box):
         card.update_property([Gtk.AccessibleProperty.LABEL], [card_label])
         return card
 
+    def _make_feat_preview(self, ext: Dict) -> Optional[Gtk.Widget]:
+        """Large preview image for featured extensions that ship one."""
+        name = ext.get("preview")
+        if not name:
+            return None
+        preview = Gtk.Picture.new_for_filename(str(_PREVIEW_DIR / f"{name}.png"))
+        preview.set_content_fit(Gtk.ContentFit.CONTAIN)
+        preview.set_can_shrink(True)
+        preview.set_hexpand(True)
+        preview.set_size_request(300, 169)
+        preview.set_overflow(Gtk.Overflow.HIDDEN)
+        preview.add_css_class("effect-preview-image")
+        preview.update_property(
+            [Gtk.AccessibleProperty.LABEL],
+            [tr("{name} effect preview").format(name=ext["name"])],
+        )
+        preview.set_margin_bottom(2)
+        return preview
+
     def _make_feat_header(self, ext: Dict) -> Gtk.Box:
-        """Build card header: icon + name + description + author."""
+        """Build card header: framed icon + name + description + author."""
         hdr = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        icon_frame = Gtk.CenterBox()
+        icon_frame.add_css_class("effect-icon-frame")
+        icon_frame.set_size_request(52, 52)
+        icon_frame.set_halign(Gtk.Align.CENTER)
+        icon_frame.set_valign(Gtk.Align.CENTER)
         ico = Gtk.Image.new_from_icon_name(ext.get("icon", "application-x-addon-symbolic"))
         ico.set_pixel_size(28)
-        hdr.append(ico)
+        ico.set_halign(Gtk.Align.CENTER)
+        ico.set_valign(Gtk.Align.CENTER)
+        icon_frame.set_center_widget(ico)
+        hdr.append(icon_frame)
 
         tc = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
         tc.set_hexpand(True)

@@ -232,7 +232,6 @@ def test_extensions_page_has_no_gnome_extensions_shortcut():
 
 
 @pytest.mark.parametrize("module,cls", [("ui.page_extensions", "ExtensionsPage"),
-                                      ("ui.page_effects", "EffectsPage"),
                                       ("ui.ext_detail_view", "ExtDetailView")])
 def test_pages_surface_launch_errors(module, cls):
     import importlib
