@@ -323,8 +323,12 @@ class WindowPreviewList extends PopupMenu.PopupMenuSection {
     }
 }
 
-// Neutral marks follow the popup's text color, so light and dark menus both
-// work; the current-workspace mark takes the accent color from the stylesheet.
+// Styles are inline, like the rest of this file. Neutral marks follow the
+// popup's text color, so light and dark menus both work; the mark of the
+// workspace the user is on takes the accent color.
+const WORKSPACE_INDICATOR_STYLE = 'spacing: 5px; padding-top: 6px;';
+const WORKSPACE_MARK_SIZE = 6;
+const WORKSPACE_MARK_PILL_WIDTH = 18;
 const WORKSPACE_MARK_ALPHA = 0.22;
 const WORKSPACE_MARK_ON_ALPHA = 0.9;
 
@@ -338,6 +342,7 @@ class WorkspaceIndicator extends St.BoxLayout {
     _init(window) {
         super._init({
             style_class: 'dashtodock-preview-workspace-indicator',
+            style: WORKSPACE_INDICATOR_STYLE,
             x_align: Clutter.ActorAlign.CENTER,
             x_expand: true,
         });
@@ -405,35 +410,45 @@ class WorkspaceIndicator extends St.BoxLayout {
 
         this._marks.forEach((mark, index) => {
             const isWindowWorkspace = everywhere || index === windowIndex;
+            // On every workspace: all marks lit, none stretched.
+            const isPill = isWindowWorkspace && !everywhere;
             const isCurrent = isWindowWorkspace && index === activeIndex;
 
-            // On every workspace: all marks lit, none stretched.
-            if (isWindowWorkspace && !everywhere)
+            if (isPill)
                 mark.add_style_class_name('window-workspace');
             else
                 mark.remove_style_class_name('window-workspace');
 
-            if (isCurrent) {
+            if (isCurrent)
                 mark.add_style_class_name('current-workspace');
-                mark.set_style(null);
-            } else {
+            else
                 mark.remove_style_class_name('current-workspace');
-                mark.set_style(this._neutralStyle(isWindowWorkspace));
-            }
+
+            mark.set_style(this._markStyle(isPill, isWindowWorkspace, isCurrent));
         });
 
-        this.accessible_name = everywhere
-            ? Meta.prefs_get_workspace_name(activeIndex)
-            : Meta.prefs_get_workspace_name(Math.max(windowIndex, 0));
+        let name = '';
+        if (everywhere)
+            name = Meta.prefs_get_workspace_name(activeIndex);
+        else if (windowIndex >= 0)
+            name = Meta.prefs_get_workspace_name(windowIndex);
+        this.accessible_name = name;
     }
 
-    _neutralStyle(lit) {
+    _markStyle(isPill, lit, isCurrent) {
+        const width = isPill ? WORKSPACE_MARK_PILL_WIDTH : WORKSPACE_MARK_SIZE;
+        const shape = `width: ${width}px; height: ${WORKSPACE_MARK_SIZE}px; ` +
+            `border-radius: ${WORKSPACE_MARK_SIZE / 2}px; transition-duration: 200ms;`;
+
+        if (isCurrent)
+            return `${shape} background-color: -st-accent-color;`;
+
         if (!this._fg)
-            return null;
+            return shape;
 
         const {red, green, blue} = this._fg;
         const alpha = lit ? WORKSPACE_MARK_ON_ALPHA : WORKSPACE_MARK_ALPHA;
-        return `background-color: rgba(${red}, ${green}, ${blue}, ${alpha});`;
+        return `${shape} background-color: rgba(${red}, ${green}, ${blue}, ${alpha});`;
     }
 });
 
