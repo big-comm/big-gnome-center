@@ -421,3 +421,24 @@
     border-color: transparent !important;
     box-shadow: none !important;
 }
+
+/* Dock window previews: workspace indicator under each preview. */
+.dashtodock-preview-workspace-indicator {
+    spacing: 5px;
+    padding-top: 6px;
+}
+
+.dashtodock-preview-workspace-mark {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    transition-duration: 200ms;
+}
+
+.dashtodock-preview-workspace-mark.window-workspace {
+    width: 18px;
+}
+
+.dashtodock-preview-workspace-mark.current-workspace {
+    background-color: -st-accent-color;
+}

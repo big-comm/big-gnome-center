@@ -323,6 +323,120 @@ class WindowPreviewList extends PopupMenu.PopupMenuSection {
     }
 }
 
+// Neutral marks follow the popup's text color, so light and dark menus both
+// work; the current-workspace mark takes the accent color from the stylesheet.
+const WORKSPACE_MARK_ALPHA = 0.22;
+const WORKSPACE_MARK_ON_ALPHA = 0.9;
+
+/**
+ * Miniature of the panel's workspace indicator shown under a window preview.
+ * One mark per workspace; the window's workspace is drawn as a pill, in the
+ * accent color when it is the workspace the user is on.
+ */
+export const WorkspaceIndicator = GObject.registerClass(
+class WorkspaceIndicator extends St.BoxLayout {
+    _init(window) {
+        super._init({
+            style_class: 'dashtodock-preview-workspace-indicator',
+            x_align: Clutter.ActorAlign.CENTER,
+            x_expand: true,
+        });
+
+        this._window = window;
+        this._marks = [];
+        this._fg = null;
+
+        const workspaceManager = global.workspace_manager;
+        this._signals = [
+            [workspaceManager, workspaceManager.connect('notify::n-workspaces',
+                () => this._rebuild())],
+            [workspaceManager, workspaceManager.connect('active-workspace-changed',
+                () => this._sync())],
+            [workspaceManager, workspaceManager.connect('workspaces-reordered',
+                () => this._sync())],
+            [window, window.connect('workspace-changed', () => this._sync())],
+            [window, window.connect('notify::on-all-workspaces', () => this._sync())],
+        ];
+
+        this.connect('destroy', () => {
+            this._signals.forEach(([object, id]) => object.disconnect(id));
+            this._signals = [];
+        });
+
+        this._rebuild();
+    }
+
+    vfunc_style_changed() {
+        super.vfunc_style_changed();
+        this._fg = this.get_theme_node().get_foreground_color();
+        this._sync();
+    }
+
+    _rebuild() {
+        const count = global.workspace_manager.n_workspaces;
+
+        while (this._marks.length > count)
+            this._marks.pop().destroy();
+
+        while (this._marks.length < count) {
+            const mark = new St.Widget({
+                style_class: 'dashtodock-preview-workspace-mark',
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            this.add_child(mark);
+            this._marks.push(mark);
+        }
+
+        this._sync();
+    }
+
+    _sync() {
+        if (!this._marks?.length)
+            return;
+
+        // A single workspace carries no information.
+        this.visible = this._marks.length > 1;
+
+        const workspaceManager = global.workspace_manager;
+        const activeIndex = workspaceManager.get_active_workspace_index();
+        const everywhere = this._window.is_on_all_workspaces();
+        const windowIndex = everywhere
+            ? -1 : this._window.get_workspace()?.index() ?? -1;
+
+        this._marks.forEach((mark, index) => {
+            const isWindowWorkspace = everywhere || index === windowIndex;
+            const isCurrent = isWindowWorkspace && index === activeIndex;
+
+            // On every workspace: all marks lit, none stretched.
+            if (isWindowWorkspace && !everywhere)
+                mark.add_style_class_name('window-workspace');
+            else
+                mark.remove_style_class_name('window-workspace');
+
+            if (isCurrent) {
+                mark.add_style_class_name('current-workspace');
+                mark.set_style(null);
+            } else {
+                mark.remove_style_class_name('current-workspace');
+                mark.set_style(this._neutralStyle(isWindowWorkspace));
+            }
+        });
+
+        this.accessible_name = everywhere
+            ? Meta.prefs_get_workspace_name(activeIndex)
+            : Meta.prefs_get_workspace_name(Math.max(windowIndex, 0));
+    }
+
+    _neutralStyle(lit) {
+        if (!this._fg)
+            return null;
+
+        const {red, green, blue} = this._fg;
+        const alpha = lit ? WORKSPACE_MARK_ON_ALPHA : WORKSPACE_MARK_ALPHA;
+        return `background-color: rgba(${red}, ${green}, ${blue}, ${alpha});`;
+    }
+});
+
 export const WindowPreviewMenuItem = GObject.registerClass(
 class WindowPreviewMenuItem extends PopupMenu.PopupBaseMenuItem {
     _init(window, position, params) {
@@ -388,12 +502,16 @@ class WindowPreviewMenuItem extends PopupMenu.PopupBaseMenuItem {
             x_expand: true,
         });
 
+        const workspaceIndicator = new WorkspaceIndicator(window);
+
         if (box.add) {
             box.add(overlayGroup);
             box.add(labelBin);
+            box.add(workspaceIndicator);
         } else {
             box.add_child(overlayGroup);
             box.add_child(labelBin);
+            box.add_child(workspaceIndicator);
         }
         this._box = box;
         this.add_child(box);
