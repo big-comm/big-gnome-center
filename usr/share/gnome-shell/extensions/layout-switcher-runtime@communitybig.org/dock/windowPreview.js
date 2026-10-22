@@ -323,6 +323,135 @@ class WindowPreviewList extends PopupMenu.PopupMenuSection {
     }
 }
 
+// Styles are inline, like the rest of this file. Neutral marks follow the
+// popup's text color, so light and dark menus both work; the mark of the
+// workspace the user is on takes the accent color.
+const WORKSPACE_INDICATOR_STYLE = 'spacing: 5px; padding-top: 6px;';
+const WORKSPACE_MARK_SIZE = 6;
+const WORKSPACE_MARK_PILL_WIDTH = 18;
+const WORKSPACE_MARK_ALPHA = 0.22;
+const WORKSPACE_MARK_ON_ALPHA = 0.9;
+
+/**
+ * Miniature of the panel's workspace indicator shown under a window preview.
+ * One mark per workspace; the window's workspace is drawn as a pill, in the
+ * accent color when it is the workspace the user is on.
+ */
+export const WorkspaceIndicator = GObject.registerClass(
+class WorkspaceIndicator extends St.BoxLayout {
+    _init(window) {
+        super._init({
+            style_class: 'dashtodock-preview-workspace-indicator',
+            style: WORKSPACE_INDICATOR_STYLE,
+            x_align: Clutter.ActorAlign.CENTER,
+            x_expand: true,
+        });
+
+        this._window = window;
+        this._marks = [];
+        this._fg = null;
+
+        const workspaceManager = global.workspace_manager;
+        this._signals = [
+            [workspaceManager, workspaceManager.connect('notify::n-workspaces',
+                () => this._rebuild())],
+            [workspaceManager, workspaceManager.connect('active-workspace-changed',
+                () => this._sync())],
+            [workspaceManager, workspaceManager.connect('workspaces-reordered',
+                () => this._sync())],
+            [window, window.connect('workspace-changed', () => this._sync())],
+            [window, window.connect('notify::on-all-workspaces', () => this._sync())],
+        ];
+
+        this.connect('destroy', () => {
+            this._signals.forEach(([object, id]) => object.disconnect(id));
+            this._signals = [];
+        });
+
+        this._rebuild();
+    }
+
+    vfunc_style_changed() {
+        super.vfunc_style_changed();
+        this._fg = this.get_theme_node().get_foreground_color();
+        this._sync();
+    }
+
+    _rebuild() {
+        const count = global.workspace_manager.n_workspaces;
+
+        while (this._marks.length > count)
+            this._marks.pop().destroy();
+
+        while (this._marks.length < count) {
+            const mark = new St.Widget({
+                style_class: 'dashtodock-preview-workspace-mark',
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            this.add_child(mark);
+            this._marks.push(mark);
+        }
+
+        this._sync();
+    }
+
+    _sync() {
+        if (!this._marks?.length)
+            return;
+
+        // A single workspace carries no information.
+        this.visible = this._marks.length > 1;
+
+        const workspaceManager = global.workspace_manager;
+        const activeIndex = workspaceManager.get_active_workspace_index();
+        const everywhere = this._window.is_on_all_workspaces();
+        const windowIndex = everywhere
+            ? -1 : this._window.get_workspace()?.index() ?? -1;
+
+        this._marks.forEach((mark, index) => {
+            const isWindowWorkspace = everywhere || index === windowIndex;
+            // On every workspace: all marks lit, none stretched.
+            const isPill = isWindowWorkspace && !everywhere;
+            const isCurrent = isWindowWorkspace && index === activeIndex;
+
+            if (isPill)
+                mark.add_style_class_name('window-workspace');
+            else
+                mark.remove_style_class_name('window-workspace');
+
+            if (isCurrent)
+                mark.add_style_class_name('current-workspace');
+            else
+                mark.remove_style_class_name('current-workspace');
+
+            mark.set_style(this._markStyle(isPill, isWindowWorkspace, isCurrent));
+        });
+
+        let name = '';
+        if (everywhere)
+            name = Meta.prefs_get_workspace_name(activeIndex);
+        else if (windowIndex >= 0)
+            name = Meta.prefs_get_workspace_name(windowIndex);
+        this.accessible_name = name;
+    }
+
+    _markStyle(isPill, lit, isCurrent) {
+        const width = isPill ? WORKSPACE_MARK_PILL_WIDTH : WORKSPACE_MARK_SIZE;
+        const shape = `width: ${width}px; height: ${WORKSPACE_MARK_SIZE}px; ` +
+            `border-radius: ${WORKSPACE_MARK_SIZE / 2}px; transition-duration: 200ms;`;
+
+        if (isCurrent)
+            return `${shape} background-color: -st-accent-color;`;
+
+        if (!this._fg)
+            return shape;
+
+        const {red, green, blue} = this._fg;
+        const alpha = lit ? WORKSPACE_MARK_ON_ALPHA : WORKSPACE_MARK_ALPHA;
+        return `${shape} background-color: rgba(${red}, ${green}, ${blue}, ${alpha});`;
+    }
+});
+
 export const WindowPreviewMenuItem = GObject.registerClass(
 class WindowPreviewMenuItem extends PopupMenu.PopupBaseMenuItem {
     _init(window, position, params) {
@@ -388,12 +517,16 @@ class WindowPreviewMenuItem extends PopupMenu.PopupBaseMenuItem {
             x_expand: true,
         });
 
+        const workspaceIndicator = new WorkspaceIndicator(window);
+
         if (box.add) {
             box.add(overlayGroup);
             box.add(labelBin);
+            box.add(workspaceIndicator);
         } else {
             box.add_child(overlayGroup);
             box.add_child(labelBin);
+            box.add_child(workspaceIndicator);
         }
         this._box = box;
         this.add_child(box);
