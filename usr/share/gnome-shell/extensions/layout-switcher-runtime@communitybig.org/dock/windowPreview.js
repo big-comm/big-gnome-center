@@ -763,6 +763,11 @@ class WindowPreviewMenuItem extends PopupMenu.PopupBaseMenuItem {
     }
 
     _animateOutAndDestroy() {
+        // Leave the menu's active-item tracking before disposal, or the parent
+        // menu keeps a reference and touches the disposed item on the next hover.
+        this.active = false;
+        this.reactive = false;
+
         this.remove_all_transitions();
         this.ease({
             opacity: 0,
