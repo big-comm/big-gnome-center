@@ -62,6 +62,9 @@ Runtime entry and orchestration:
 
 - `dockRuntime.js`, `dockSurface.js`, `dockActorFactory.js`, `dock/dash.js`.
 - `startupOverviewIntegration.js` owns per-layout login Overview policy.
+- `regionUpdateWatchdog.js` runs Shell's struts/work-area update when its
+  later stays pending (seen after monitor and power changes on real
+  hardware), so maximized windows stop going under a fixed dock.
 - `shellPopoverThemeIntegration.js` owns light Quick Settings, date/calendar,
   and notification policy with exact cleanup; Minimal stays native dark.
 - `taskbarOverviewIntegration.js` owns Taskbar Overview behavior.
