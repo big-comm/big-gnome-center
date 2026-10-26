@@ -897,6 +897,7 @@ export const Panel = GObject.registerClass(
       let allocateGroup = (group, tlLimit, brLimit) => {
         let startPosition = tlLimit
         let currentPosition = 0
+        let sideSizes = null
 
         if (group.expandableIndex >= 0) {
           let availableSize = brLimit - tlLimit
@@ -938,7 +939,15 @@ export const Panel = GObject.registerClass(
             }
           }
 
-          if (group.isCentered) {
+          if (group.position == Pos.CENTERED_MONITOR) {
+            availableSize = Pos.centeredMonitorSpace(
+              availableSize,
+              tlSize,
+              brSize,
+              group.size,
+            )
+            sideSizes = [tlSize, brSize]
+          } else if (group.isCentered) {
             availableSize -= Math.max(tlSize, brSize) * 2
           } else {
             availableSize -= tlSize + brSize
@@ -954,7 +963,14 @@ export const Panel = GObject.registerClass(
           }
         }
 
-        if (group.isCentered) {
+        if (sideSizes) {
+          startPosition = Pos.centeredMonitorStart(
+            tlLimit,
+            brLimit,
+            ...sideSizes,
+            group.size,
+          )
+        } else if (group.isCentered) {
           startPosition = tlLimit + (brLimit - tlLimit - group.size) * 0.5
         } else if (group.position == Pos.STACKED_BR) {
           startPosition = brLimit - group.size
