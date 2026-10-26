@@ -5,6 +5,7 @@ import Gio from 'gi://Gio';
 import {DockRuntime} from './dockRuntime.js';
 import {profileForLayout, RuntimeSurface} from './layoutProfiles.js';
 import {NativePanelOpacityIntegration} from './nativePanelOpacityIntegration.js';
+import {RegionUpdateWatchdog} from './regionUpdateWatchdog.js';
 import {ShellPopoverThemeIntegration} from './shellPopoverThemeIntegration.js';
 import {StartupOverviewIntegration} from './startupOverviewIntegration.js';
 import {TaskbarRuntime} from './taskbarRuntime.js';
@@ -34,6 +35,8 @@ export class RuntimeController {
         this._nativePanelOpacity = new NativePanelOpacityIntegration();
         this._shellPopoverTheme = new ShellPopoverThemeIntegration();
         this._startupOverview = new StartupOverviewIntegration();
+        this._regionUpdates = new RegionUpdateWatchdog();
+        this._regionUpdates.enable();
         this._enabled = true;
         this._syncPromise = Promise.resolve();
         this._settings = new Gio.Settings({settings_schema: schema});
@@ -81,6 +84,7 @@ export class RuntimeController {
             ['native panel', this._nativePanelOpacity, 'destroy'],
             ['popover theme', this._shellPopoverTheme, 'destroy'],
             ['startup overview', this._startupOverview, 'destroy'],
+            ['region updates', this._regionUpdates, 'destroy'],
         ];
         this._settingsChangedIds = [];
         this._activeProfile = null;
@@ -89,6 +93,7 @@ export class RuntimeController {
         this._nativePanelOpacity = null;
         this._shellPopoverTheme = null;
         this._startupOverview = null;
+        this._regionUpdates = null;
         this._settings = null;
         this._syncPromise = null;
         for (const id of signalIds) {
@@ -327,6 +332,7 @@ export class RuntimeController {
             shellPopoverTheme: this._shellPopoverTheme?.diagnostics() ?? {},
             startupOverview: this._startupOverview?.diagnostics() ?? {},
             nativePanelOpacity: this._nativePanelOpacity?.diagnostics() ?? {},
+            regionUpdates: this._regionUpdates?.diagnostics() ?? {},
             dock: this._dock?.diagnostics() ?? {active: false, actors: []},
             taskbar: this._taskbar?.diagnostics() ?? {active: false, actors: []},
         };
