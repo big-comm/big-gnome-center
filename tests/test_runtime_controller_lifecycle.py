@@ -11,7 +11,7 @@ def test_runtime_controller_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "62 runtime controller lifecycle scenarios passed" in result.stdout
+    assert "63 runtime controller lifecycle scenarios passed" in result.stdout
 
 
 def test_taskbar_lifecycle():
@@ -102,3 +102,12 @@ def test_dock_menu_lifecycle():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "14 dock menu lifecycle scenarios passed" in result.stdout
+
+
+def test_region_update_watchdog():
+    script = Path(__file__).with_name("region_update_watchdog.mjs")
+    result = subprocess.run(
+        ["node", str(script)], capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "14 region update watchdog scenarios passed" in result.stdout

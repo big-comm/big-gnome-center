@@ -74,6 +74,7 @@ function harness(layout = 'BigGnome', positionSupported = true) {
         NativePanelOpacityIntegration: component('native'),
         ShellPopoverThemeIntegration: component('popover'),
         StartupOverviewIntegration: component('overview'),
+        RegionUpdateWatchdog: component('regions'),
         console: {info() {}, error: error => errors.push(error), warn: error => warnings.push(error)},
     });
     const controller = new Controller({});
@@ -207,7 +208,7 @@ for (const layout of ['BigGnome', 'Desk UX', 'Minimal']) {
     });
 }
 
-for (const failing of ['dock', 'taskbar', 'native', 'popover', 'overview', 'signal']) {
+for (const failing of ['dock', 'taskbar', 'native', 'popover', 'overview', 'regions', 'signal']) {
     await test(`disable continues after ${failing} failure`, async () => {
         const {controller: c, components, settings, warnings} = harness();
         await c._syncPromise;
