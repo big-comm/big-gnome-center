@@ -137,14 +137,14 @@ name='Office.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Settings]
-apps=['br.com.biglinux.BigGnomeCenter.desktop', 'br.com.biglinux-settings.desktop', 'org.gnome.tweaks.desktop', 'org.gnome.Settings.desktop', 'br.com.biglinux.bighardwareinfo.desktop', 'br.com.biglinux.grub-restore.desktop', 'br.com.biglinux.drivermanager.desktop', 'org.manjaro.pamac.manager.desktop', 'timeshift-gtk.desktop', 'system-config-printer-only-jobs.desktop', 'hplip.desktop', 'hp-uiscan.desktop', 'cups.desktop', 'kvantummanager.desktop', 'ca.desrt.dconf-editor.desktop', 'org.gnome.Extensions.desktop', 'com.sidevesh.Luminance.desktop', 'pamac-updates.desktop', 'system-config-printer.desktop', 'qefientrymanager.desktop']
+apps=['br.com.biglinux.BigGnomeCenter.desktop', 'br.com.biglinux-settings.desktop', 'org.gnome.tweaks.desktop', 'org.gnome.Settings.desktop', 'br.com.biglinux.bighardwareinfo.desktop', 'br.com.biglinux.grub-restore.desktop', 'br.com.biglinux.drivermanager.desktop', 'org.openrgb.OpenRGB.desktop', 'org.manjaro.pamac.manager.desktop', 'timeshift-gtk.desktop', 'system-config-printer-only-jobs.desktop', 'hplip.desktop', 'hp-uiscan.desktop', 'cups.desktop', 'kvantummanager.desktop', 'ca.desrt.dconf-editor.desktop', 'org.gnome.Extensions.desktop', 'com.sidevesh.Luminance.desktop', 'pamac-updates.desktop', 'system-config-printer.desktop', 'qefientrymanager.desktop']
 categories=['Settings']
 excluded-apps=['big-store.desktop', 'bigsettings.desktop']
 name='Settings.directory'
 translate=true
 
 [org/gnome/desktop/app-folders/folders/Utilities]
-apps=['com.bigcommunity.ashypass.desktop', 'org.gnome.clocks.desktop', 'org.gnome.Weather.desktop', 'org.gnome.Characters.desktop', 'bigtts.desktop', 'org.gnome.font-viewer.desktop', 'org.gnome.FileRoller.desktop', 'org.gnome.baobab.desktop', 'net.nokyan.Resources.desktop', 'org.gnome.DiskUtility.desktop', 'gparted.desktop', 'org.gnome.SimpleScan.desktop']
+apps=['com.bigcommunity.ashypass.desktop', 'org.gnome.clocks.desktop', 'org.gnome.Weather.desktop', 'org.gnome.Characters.desktop', 'org.gnome.font-viewer.desktop', 'org.gnome.FileRoller.desktop', 'org.gnome.baobab.desktop', 'net.nokyan.Resources.desktop', 'org.gnome.DiskUtility.desktop', 'gparted.desktop', 'org.gnome.SimpleScan.desktop']
 categories=['X-GNOME-Utilities']
 excluded-apps=['org.gnome.Extensions.desktop', 'org.gnome.Evince.desktop', 'org.gnome.eog.desktop']
 name='X-GNOME-Utilities.directory'
