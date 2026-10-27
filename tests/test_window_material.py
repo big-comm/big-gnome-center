@@ -157,7 +157,7 @@ def test_extension_gates_styles_and_cleans_up():
     "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
     "biglinux-webapps", "biglinux-settings", "bigrecorder",
     "community-release", "biglinux-microphone",
-    "big-driver-manager",
+    "big-driver-manager", "ashypass",
 ])
 def test_application_profiles_use_exclusive_window_classes(window_class):
     css = material.render_css(37).decode()

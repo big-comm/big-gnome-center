@@ -22,7 +22,7 @@ WINDOW_CLASSES = (
     "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
     "biglinux-webapps", "biglinux-settings", "bigrecorder",
     "community-release", "biglinux-microphone",
-    "big-driver-manager",
+    "big-driver-manager", "ashypass",
 )
 SELECTORS = ", ".join(f"window.{name}" for name in WINDOW_CLASSES)
 DIALOG_SELECTORS = ", ".join(f"window.{name} dialog" for name in WINDOW_CLASSES)
