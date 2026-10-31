@@ -2175,3 +2175,15 @@ msgstr ""
 #: usr/share/big-gnome-center/ui/page_extensions.py
 msgid "Optional extensions disabled"
 msgstr ""
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr ""

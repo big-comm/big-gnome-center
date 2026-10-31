@@ -2197,3 +2197,15 @@ msgstr "As extensões opcionais serão desativadas. Os componentes obrigatórios
 #: usr/share/big-gnome-center/ui/page_extensions.py
 msgid "Optional extensions disabled"
 msgstr "Extensões opcionais desativadas"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Restaurar padrões dos efeitos"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Redefine o material e as opções de economia de energia."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Padrões dos efeitos restaurados"

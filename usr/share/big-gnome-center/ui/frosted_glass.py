@@ -22,6 +22,15 @@ FULL_BACKEND_MINIMUM_SHELL_MAJOR = 51
 _LIVE_EXTENSION_STATES = {1, 8}
 _ACTIVATION_TIMEOUT_SECONDS = 2.5
 _ACTIVATION_POLL_SECONDS = 0.1
+# Tuning restored by "Restore effect defaults". Surface switches and the master
+# switch stay as the user set them.
+_MATERIAL_KEYS = (
+    "blur-mode",
+    "blur-strength",
+    "glass-opacity",
+    "use-accent-color",
+    "power-save-behavior",
+)
 
 
 def is_frosted_glass_supported() -> bool:
@@ -106,6 +115,7 @@ class FrostedGlassControls(Gtk.Box):
             self._settings.set_boolean("overview-enabled", True)
             self.append(self._build_overview_main_group())
             self.append(self._build_overview_material_group())
+            self.append(self._build_restore_group())
             self._sync_sensitivity()
             self._repair_enabled_runtime()
             return
@@ -113,6 +123,7 @@ class FrostedGlassControls(Gtk.Box):
         self.append(self._build_targets_group())
         self.append(self._build_material_group())
         self.append(self._build_rules_group())
+        self.append(self._build_restore_group())
         self._sync_sensitivity()
         self._repair_enabled_runtime()
 
@@ -246,6 +257,28 @@ class FrostedGlassControls(Gtk.Box):
         self._dependent_rows.append(power)
         return group
 
+    def _build_restore_group(self) -> Adw.PreferencesGroup:
+        group = Adw.PreferencesGroup()
+        row = Adw.ActionRow(
+            title=tr("Restore effect defaults"),
+            subtitle=tr("Reset the material and power saving options."),
+        )
+        button = Gtk.Button(label=tr("Restore"))
+        button.set_valign(Gtk.Align.CENTER)
+        button.add_css_class("destructive-action")
+        button.connect("clicked", self._on_restore_defaults_clicked)
+        row.add_suffix(button)
+        row.set_activatable_widget(button)
+        group.add(row)
+        self._dependent_rows.append(row)
+        return group
+
+    def _on_restore_defaults_clicked(self, _button: Gtk.Button) -> None:
+        for key in _MATERIAL_KEYS:
+            if _schema_has_key(key):
+                self._settings.reset(key)
+        self._toast(tr("Effect defaults restored"))
+
     def _switch_row(self, key: str, title: str, subtitle: str) -> Adw.SwitchRow:
         row = Adw.SwitchRow(title=title, subtitle=subtitle)
         self._settings.bind(key, row, "active", Gio.SettingsBindFlags.DEFAULT)
@@ -270,6 +303,14 @@ class FrostedGlassControls(Gtk.Box):
                 setting, options[min(widget.get_selected(), len(options) - 1)]
             ),
         )
+
+        def sync(settings: Gio.Settings, changed: str) -> None:
+            value = settings.get_string(changed)
+            index = values.index(value) if value in values else 0
+            if row.get_selected() != index:
+                row.set_selected(index)
+
+        self._settings.connect(f"changed::{key}", sync)
         return row
 
     def _scale_row(self, key: str, title: str, low: str, high: str) -> Adw.ActionRow:
@@ -294,6 +335,11 @@ class FrostedGlassControls(Gtk.Box):
             lambda widget, label=value: label.set_label(f"{round(widget.get_value())}%"),
         )
         box.append(value)
+        def sync(settings: Gio.Settings, changed: str) -> None:
+            if round(scale.get_value()) != settings.get_int(changed):
+                scale.set_value(settings.get_int(changed))
+
+        self._settings.connect(f"changed::{key}", sync)
         high_label = Gtk.Label(label=high)
         high_label.add_css_class("caption")
         box.append(high_label)

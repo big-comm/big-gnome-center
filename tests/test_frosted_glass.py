@@ -173,6 +173,28 @@ def test_layout_switcher_exposes_frosted_glass_controls():
         assert setting in controls
 
 
+def test_controls_restore_material_defaults_only():
+    import ast
+
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
+    tree = ast.parse(controls)
+    keys = next(
+        ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(getattr(target, "id", "") == "_MATERIAL_KEYS" for target in node.targets)
+    )
+    assert set(keys) == {
+        "blur-mode", "blur-strength", "glass-opacity", "use-accent-color",
+        "power-save-behavior",
+    }
+    # Both the full and the overview-only page offer the restore row.
+    assert controls.count("self.append(self._build_restore_group())") == 2
+    assert "self._settings.reset(key)" in controls
+    # Rows that are not bound to GSettings follow external changes.
+    assert controls.count('self._settings.connect(f"changed::{key}", sync)') == 2
+
+
 def test_controls_persist_missing_extension_before_live_activation():
     from ui.frosted_glass import FrostedGlassControls
 
