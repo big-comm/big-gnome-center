@@ -99,6 +99,10 @@ def test_automatic_mode_uses_live_background_blur():
 
     assert "requestedMode === 'automatic' ? 'dynamic'" in extension
     assert "savingPower && powerBehavior === 'static'" in extension
+    # The power saving choices are dynamic ("keep"), static and none.
+    assert "savingPower && powerBehavior === 'keep'" in extension
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
+    assert '[tr("Dynamic"), tr("Static"), tr("None")]' in controls
     assert "MATERIAL_OPACITY_EXPONENT = 1.8" in extension
     assert "Math.pow(opacityPercent / 100, MATERIAL_OPACITY_EXPONENT)" in extension
 

@@ -263,7 +263,7 @@ The bundled extension is GPL-3.0-or-later.
 | `application-exclusions` | string array | Legacy; unused by native window tuning |
 | `maximized-behavior` | enum | Legacy; unused by native window tuning |
 | `fullscreen-behavior` | enum | Legacy; unused by native window tuning |
-| `power-save-behavior` | enum | `keep`, `static`, or `disable` |
+| `power-save-behavior` | enum | Blur on battery or power saver: `keep` (dynamic), `static`, or `disable` (none) |
 
 Automatic selects dynamic blur so panel, dock, and popup materials sample the
 live framebuffer behind them. The power policy can switch Automatic to static

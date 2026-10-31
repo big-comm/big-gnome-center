@@ -157,7 +157,10 @@ export default class FrostedGlassExtension extends Extension {
         let mode = requestedMode === 'automatic' ? 'dynamic' : requestedMode;
         let enabled = this._settings.get_boolean('enabled');
 
-        if (savingPower && powerBehavior === 'static')
+        // Power saving picks the blur by itself; "keep" stores the dynamic choice.
+        if (savingPower && powerBehavior === 'keep')
+            mode = 'dynamic';
+        else if (savingPower && powerBehavior === 'static')
             mode = 'static';
         else if (savingPower && powerBehavior === 'disable')
             enabled = false;

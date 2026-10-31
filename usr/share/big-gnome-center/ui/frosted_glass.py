@@ -250,8 +250,9 @@ class FrostedGlassControls(Gtk.Box):
             "power-save-behavior",
             tr("Power saving"),
             tr("Used on battery and with the power-saver profile"),
+            # "keep" is the stored value of the dynamic choice.
             ["keep", "static", "disable"],
-            [tr("Keep selected mode"), tr("Use static blur"), tr("Disable blur")],
+            [tr("Dynamic"), tr("Static"), tr("None")],
         )
         group.add(power)
         self._dependent_rows.append(power)
