@@ -173,7 +173,7 @@ let disposedOverlay = false;
 let overlayDestroy;
 const OverlaySurface = vm.runInNewContext(surfaceSource + '\nShellBlurSurface;', {
     console, Main: {uiGroup: {add_child() {}}},
-    attachBlurRepaint() {}, createBackgroundEffect: () => ({}),
+    attachBlurRepaint() {}, createBackgroundEffect: () => ({}), createRedrawGuard: () => ({}),
     St: {Widget: class {
         connect(_signal, callback) { overlayDestroy = callback; }
         add_effect_with_name() {} add_child() {}

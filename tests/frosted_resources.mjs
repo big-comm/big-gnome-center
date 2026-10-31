@@ -67,6 +67,7 @@ function actors() {
         St: {Widget: Actor, Corner: {TOPLEFT: 0}, ThemeContext: {get_for_stage: () => ({scale_factor: 1})}},
         Shell: {BlurEffect: Effect, BlurMode: {ACTOR: 0}}, RoundedCornersEffect: Effect,
         createBackgroundEffect() { hit('effect-new'); return new Effect(); },
+        createRedrawGuard() { const e = new Effect(); e.redrawGuard = true; return e; },
         attachBlurRepaint(actor, getEffect) { const e = {getEffect}; actor.add_effect(e); return e; },
         Background: {BackgroundManager: class {
             constructor() { managers.push(this); }
@@ -204,6 +205,16 @@ test('resources', 'failed parent detach still destroys overlay', () => {
 test('resources', 'dynamic blur does not install a perpetual repaint effect', () => {
     const h = actors(), f = h.surface(); f.s.update(h.config);
     assert.equal(f.s._paintSignal, undefined); f.s.destroy();
+});
+test('resources', 'only dynamic blur repairs partial redraws', () => {
+    const h = actors(), f = h.surface(); f.s.update(h.config);
+    const overlay = f.s._overlay, guard = f.s._redrawGuard;
+    assert(guard?.redrawGuard); assert(overlay.effects.has(guard));
+    f.s.update({...h.config, mode: 'static'});
+    assert.equal(f.s._redrawGuard, null); assert(!overlay.effects.has(guard));
+    f.s.update(h.config); const next = f.s._overlay;
+    assert(next.effects.has(f.s._redrawGuard)); f.s.destroy();
+    assert(!next.effects.has(guard)); assert.equal(f.s._redrawGuard, null);
 });
 test('resources', 'mode changed while hidden is applied when mapped again', () => {
     const h = actors(), f = h.surface(); f.s.update(h.config);

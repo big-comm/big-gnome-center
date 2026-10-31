@@ -171,6 +171,7 @@ Primary references:
 | `roundedCorners.js` and `.glsl` | Rounded alpha mask applied after blur |
 | `shellSurfaces.js` | Panel, dock, menus, popovers, and system-dialog discovery |
 | `shellBlurSurface.js` | Non-layout Shell blur actor with event-driven repaint |
+| `redrawGuard.js` | Repaints a dynamic blur whole after a partial redraw, without loops |
 | `overviewController.js` | Per-monitor wallpaper blur behind Overview |
 | `powerMonitor.js` | Battery and power-saver state |
 | `connectionManager.js` | Deterministic signal cleanup |
@@ -206,6 +207,17 @@ Its `Blur.BlurEffect` applies the rounded mask in the native paint-node pipeline
 Separate stacked Clutter effects cannot provide the same result: an inner mask
 is blurred back into a rectangle, while an outer offscreen mask prevents
 background sampling. The JavaScript corner shader remains the static-mode mask.
+
+Mutter repaints only damaged regions. A dynamic background blur redrawn
+inside a partial clip samples a partial backdrop and leaves square blocks, for
+example while hovering dock icons or calendar days, until a full redraw.
+`redrawGuard.js` checks each overlay paint against the redraw clip; when the
+clip misses part of the on-screen surface, it queues that surface and every
+overlapping blurred surface once. The next paint covers them, so idle screens
+never repaint, and three partial paints in a row disable the requeue until a
+full paint. Blur My Shell v77 uses the same approach in
+`src/render/backdrop/capture.js`. An earlier workaround queued a repaint from
+every paint and looped; do not reintroduce it.
 
 Before importing the optional library, `roundedBackend.js` resolves its symbols
 in an isolated GJS process with `LD_BIND_NOW=1`, matching the Shell GI/library
