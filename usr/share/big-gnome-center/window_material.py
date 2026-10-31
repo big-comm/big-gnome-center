@@ -22,7 +22,7 @@ WINDOW_CLASSES = (
     "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
     "biglinux-webapps", "biglinux-settings", "bigrecorder",
     "community-release", "biglinux-microphone",
-    "big-driver-manager", "ashypass",
+    "big-driver-manager", "ashypass", "big-audio-player", "bns-window",
 )
 SELECTORS = ", ".join(f"window.{name}" for name in WINDOW_CLASSES)
 DIALOG_SELECTORS = ", ".join(f"window.{name} dialog" for name in WINDOW_CLASSES)
@@ -57,6 +57,14 @@ def render_css(opacity: int) -> bytes:
     window.bigrecorder windowhandle,
     window.bigrecorder .titlebar {{
         background-color: var(--window-bg-color);
+    }}
+    /* These panes paint the fixed @named colors, not the variables. */
+    window.big-audio-converter .queue-pane {{
+        background-color: var(--window-bg-color);
+    }}
+    window.big-audio-converter .sidebar,
+    window.bns-window .bns-sidebar {{
+        background-color: var(--sidebar-bg-color);
     }}
     window.org-gnome-TextEditor textview,
     window.org-gnome-TextEditor textview text {{

@@ -157,7 +157,7 @@ def test_extension_gates_styles_and_cleans_up():
     "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
     "biglinux-webapps", "biglinux-settings", "bigrecorder",
     "community-release", "biglinux-microphone",
-    "big-driver-manager", "ashypass",
+    "big-driver-manager", "ashypass", "big-audio-player", "bns-window",
 ])
 def test_application_profiles_use_exclusive_window_classes(window_class):
     css = material.render_css(37).decode()
@@ -203,6 +203,15 @@ def test_recorder_chrome_uses_inherited_palette():
     chrome = css.split("window.bigrecorder .app-bg,", 1)[1].split("}", 1)[0]
     assert "background-color: var(--window-bg-color);" in chrome
     assert "window.bigrecorder headerbar" in chrome
+
+
+def test_panes_painted_with_named_colors_follow_the_material():
+    css = material.render_css(37).decode()
+    queue = css.split("window.big-audio-converter .queue-pane {", 1)[1].split("}", 1)[0]
+    assert queue.strip() == "background-color: var(--window-bg-color);"
+    sidebars = css.split("window.big-audio-converter .sidebar,", 1)[1].split("}", 1)[0]
+    assert "window.bns-window .bns-sidebar" in sidebars
+    assert "background-color: var(--sidebar-bg-color);" in sidebars
 
 
 def test_old_gtk_does_not_enable_styles(tmp_path, monkeypatch):
