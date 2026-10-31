@@ -206,6 +206,16 @@ test('resources', 'dynamic blur does not install a perpetual repaint effect', ()
     const h = actors(), f = h.surface(); f.s.update(h.config);
     assert.equal(f.s._paintSignal, undefined); f.s.destroy();
 });
+test('resources', 'popup scale animation moves the blur with the menu', () => {
+    const h = actors(), f = h.surface('date-menu'); f.s.update(h.config);
+    let synced = 0;
+    f.s._overlay.set_size = () => { synced++; };
+    for (const signal of ['notify::scale-x', 'notify::scale-y']) {
+        assert([...f.pointer.signals.values()].some(r => r.signal === signal), signal);
+        f.pointer.emit(signal);
+    }
+    assert.equal(synced, 2); f.s.destroy();
+});
 test('resources', 'only dynamic blur repairs partial redraws', () => {
     const h = actors(), f = h.surface(); f.s.update(h.config);
     const overlay = f.s._overlay, guard = f.s._redrawGuard;

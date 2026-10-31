@@ -415,6 +415,9 @@ export class ShellBlurSurface {
                 'notify::visible',
                 'notify::translation-x',
                 'notify::translation-y',
+                // GNOME 51 opens popups from 96 % scale.
+                'notify::scale-x',
+                'notify::scale-y',
             ]) {
                 this._connect(current, signal, () => this._geometryChanged());
             }
