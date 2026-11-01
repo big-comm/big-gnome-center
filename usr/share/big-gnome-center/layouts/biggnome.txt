@@ -163,8 +163,8 @@ translate=true
 [org/gnome/desktop/background]
 color-shading-type='solid'
 picture-options='zoom'
-picture-uri='file:///usr/share/wallpapers/fire-big.avif'
-picture-uri-dark='file:///usr/share/wallpapers/fire-big.avif'
+picture-uri='file:///usr/share/wallpapers/Snowy.avif'
+picture-uri-dark='file:///usr/share/wallpapers/Snowy.avif'
 primary-color='#ffffff'
 secondary-color='#000000'
 
@@ -200,7 +200,7 @@ recent-files-max-age=-1
 [org/gnome/desktop/screensaver]
 color-shading-type='solid'
 picture-options='stretched'
-picture-uri='file:///usr/share/wallpapers/fire-big.avif'
+picture-uri='file:///usr/share/wallpapers/Snowy.avif'
 primary-color='#ffffff'
 secondary-color='#000000'
 
