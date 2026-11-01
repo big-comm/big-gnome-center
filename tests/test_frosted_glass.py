@@ -88,7 +88,7 @@ def test_overview_material_defaults_and_range():
     schema = ET.parse(SCHEMA).getroot().find("schema")
     keys = {node.attrib["name"]: node for node in schema.findall("key")}
 
-    assert keys["blur-strength"].findtext("default") == "60"
+    assert keys["blur-strength"].findtext("default") == "63"
     assert keys["glass-opacity"].findtext("default") == "30"
     assert keys["glass-opacity"].find("range").attrib == {"min": "0", "max": "100"}
     assert keys["use-accent-color"].findtext("default") == "false"

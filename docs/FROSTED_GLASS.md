@@ -269,7 +269,7 @@ The bundled extension is GPL-3.0-or-later.
 | `calendar-enabled` | bool | Calendar and notifications popup |
 | `system-dialogs-enabled` | bool | Power, restart, and other Shell dialogs |
 | `overview-enabled` | bool | Workspace and application overview |
-| `blur-strength` | int 0–100 | Blur radius on a logarithmic scale: 0 is off, 1 to 100 is 2 to 128 px (default 60 = 24 px) |
+| `blur-strength` | int 0–100 | Blur radius on a logarithmic scale: 0 is off, 1 to 100 is 2 to 128 px (default 63 = 27 px) |
 | `blur-scale` | int | Internal: values from the linear scale 1 (1.6 px per step) are converted once |
 | `glass-opacity` | int 0–100 | Shell material tint; never client opacity |
 | `blur-mode` | enum | `automatic`, `dynamic`, or `static` |

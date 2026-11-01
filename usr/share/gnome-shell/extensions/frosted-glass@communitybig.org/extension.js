@@ -23,7 +23,7 @@ const MATERIAL_OPACITY_EXPONENT = 1.8;
 // Blur strength follows Weber's law: every step grows the radius by the same
 // ratio, so each looks like the same change. Step 1 already shows a slight
 // 2 px blur and 100 reaches 128 px, where the backdrop is featureless. The
-// default 60 gives 24 px; macOS materials use about 30 px, here 65.
+// default 63 gives 27 px; macOS materials use about 30 px, here 65.
 const BLUR_RADIUS_MIN = 2;
 const BLUR_RADIUS_MAX = 128;
 // Scale 1 used 1.6 px per step.

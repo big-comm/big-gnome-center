@@ -40,7 +40,7 @@
     </key>
     <key name="blur-strength" type="i">
       <range min="0" max="100"/>
-      <default>60</default>
+      <default>63</default>
       <summary>Blur strength</summary>
     </key>
     <key name="blur-scale" type="i">

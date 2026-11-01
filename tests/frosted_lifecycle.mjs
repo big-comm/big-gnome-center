@@ -234,7 +234,7 @@ await test('blur strength grows by the same ratio every step', async () => {
     assert.equal(radius(0), 0);
     assert.equal(radius(1), 2, 'the first step already blurs');
     assert.equal(radius(100), 128);
-    assert.ok(Math.abs(radius(60) - 23.85) < 0.01, 'the default is a 24 px blur');
+    assert.ok(Math.abs(radius(63) - 27.05) < 0.01, 'the default is a 27 px blur');
     const ratios = [1, 10, 30, 50, 70, 90].map(step => radius(step + 10) / radius(step));
     for (const ratio of ratios)
         assert.ok(Math.abs(ratio - ratios[0]) < 1e-9);
