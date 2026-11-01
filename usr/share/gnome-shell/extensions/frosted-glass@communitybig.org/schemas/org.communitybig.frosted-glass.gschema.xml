@@ -40,12 +40,17 @@
     </key>
     <key name="blur-strength" type="i">
       <range min="0" max="100"/>
-      <default>23</default>
+      <default>60</default>
       <summary>Blur strength</summary>
+    </key>
+    <key name="blur-scale" type="i">
+      <default>1</default>
+      <summary>Blur strength scale version</summary>
+      <description>Internal: blur-strength values from the linear scale 1 are converted once.</description>
     </key>
     <key name="glass-opacity" type="i">
       <range min="0" max="100"/>
-      <default>37</default>
+      <default>30</default>
       <summary>Material opacity</summary>
     </key>
     <key name="use-accent-color" type="b">

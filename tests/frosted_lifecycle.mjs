@@ -225,4 +225,35 @@ for (const failure of ['timer.remove', 'connections.disconnect', 'styles.destroy
         e.disable();
     });
 }
+await test('blur strength grows by the same ratio every step', async () => {
+    const h = harness(), e = h.extension;
+    e.enable(); await flush();
+    assert.ok(Math.abs(e._config().radius - 6.76) < 0.01, 'strength 30 in the harness');
+    e.disable();
+    const radius = vm.runInNewContext(`${source}\nblurRadius`, {Config: {PACKAGE_VERSION: '51.0'}, Extension: class {}});
+    assert.equal(radius(0), 0);
+    assert.equal(radius(1), 2, 'the first step already blurs');
+    assert.equal(radius(100), 128);
+    assert.ok(Math.abs(radius(60) - 23.85) < 0.01, 'the default is a 24 px blur');
+    const ratios = [1, 10, 30, 50, 70, 90].map(step => radius(step + 10) / radius(step));
+    for (const ratio of ratios)
+        assert.ok(Math.abs(ratio - ratios[0]) < 1e-9);
+});
+await test('a blur chosen on the old scale keeps its radius', async () => {
+    const make = (scale, chosen) => ({  // 40 stands for an untouched default
+        values: {'blur-scale': scale, 'blur-strength': chosen ?? 40},
+        settings_schema: {has_key: () => true},
+        get_int(key) { return this.values[key]; },
+        set_int(key, value) { this.values[key] = value; },
+        get_user_value: () => chosen === undefined ? null : {unpack: () => chosen},
+    });
+    const e = harness().extension;
+    for (const [scale, chosen, expected] of [[1, 20, 67], [1, 55, 91], [1, 0, 0], [1, 100, 100], [1, undefined, 40], [2, 20, 20]]) {
+        e._settings = make(scale, chosen);
+        e._migrateBlurScale();
+        e._migrateBlurScale();
+        assert.deepEqual(e._settings.values, {'blur-scale': 2, 'blur-strength': expected});
+    }
+    e._settings = null;
+});
 console.log(`${checks} Frosted lifecycle scenarios passed`);

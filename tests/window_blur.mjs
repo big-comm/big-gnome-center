@@ -242,7 +242,7 @@ for (const broken of [false, true]) {
     });
     const extension = new ExtensionClass();
     extension.path = '/usr/share/gnome-shell/extensions/frosted-glass@communitybig.org';
-    extension.getSettings = () => ({});
+    extension.getSettings = () => ({settings_schema: {has_key: () => false}});
     extension._config = () => ({enabled: true, windowsEnabled: true, mode: 'dynamic', radius: 55});
     extension._enableFullBackend = () => calls.push('backend');
     extension._applyNativeParameters = () => {};

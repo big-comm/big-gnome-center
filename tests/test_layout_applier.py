@@ -2393,7 +2393,7 @@ class TestHelperIntegration:
         out = LayoutApplier._apply_original_frosted_glass_defaults(data)
         glass = LayoutApplier._section_key_values(out, "/org/communitybig/frosted-glass")
 
-        assert glass["glass-opacity"] == "37"
+        assert glass["glass-opacity"] == "30"
 
     def test_inject_helper_uuid_retires_blur_my_shell(self):
         blur_my_shell = "blur-my-shell@aunetx"

@@ -20,6 +20,30 @@ const RUNTIME_SCHEMA = 'org.communitybig.layout-switcher.runtime';
 const LIVE_EXTENSION_STATES = new Set([1, 8]);
 const LIGHT_SHELL_MENU_LAYOUTS = new Set([1, 4]);
 const MATERIAL_OPACITY_EXPONENT = 1.8;
+// Blur strength follows Weber's law: every step grows the radius by the same
+// ratio, so each looks like the same change. Step 1 already shows a slight
+// 2 px blur and 100 reaches 128 px, where the backdrop is featureless. The
+// default 60 gives 24 px; macOS materials use about 30 px, here 65.
+const BLUR_RADIUS_MIN = 2;
+const BLUR_RADIUS_MAX = 128;
+// Scale 1 used 1.6 px per step.
+const LEGACY_RADIUS_PER_STEP = 1.6;
+const BLUR_SCALE_VERSION = 2;
+
+function blurRadius(strength) {
+    const step = Math.max(0, Math.min(100, strength));
+    if (step === 0)
+        return 0;
+    return BLUR_RADIUS_MIN * (BLUR_RADIUS_MAX / BLUR_RADIUS_MIN) ** ((step - 1) / 99);
+}
+
+function blurStrength(radius) {
+    if (!(radius > 0))
+        return 0;
+    const step = 1 + 99 * Math.log(radius / BLUR_RADIUS_MIN) /
+        Math.log(BLUR_RADIUS_MAX / BLUR_RADIUS_MIN);
+    return Math.max(1, Math.min(100, Math.round(step)));
+}
 const PANEL_OPACITY_DEFAULTS = new Map([
     ['BigGnome', 65],
     ['G-Unity', 70],
@@ -40,6 +64,7 @@ export default class FrostedGlassExtension extends Extension {
                 this._queueRefresh();
         };
         this._settings = this.getSettings();
+        this._migrateBlurScale();
         this._interfaceSettings = new Gio.Settings({
             schema_id: 'org.gnome.desktop.interface',
         });
@@ -186,7 +211,7 @@ export default class FrostedGlassExtension extends Extension {
             calendarEnabled: this._settings.get_boolean('calendar-enabled'),
             systemDialogsEnabled: this._settings.get_boolean('system-dialogs-enabled'),
             overviewEnabled: this._settings.get_boolean('overview-enabled'),
-            radius: Math.max(0, strength * 1.6),
+            radius: blurRadius(strength),
             brightness: lightMode ? 1.0 : 0.9,
             tintOpacity: materialOpacity,
             panelTintOpacity: this._panelTintOpacity(),
@@ -198,6 +223,19 @@ export default class FrostedGlassExtension extends Extension {
             appLightMode,
             mode,
         };
+    }
+
+    // Move a strength chosen on the old linear scale to the step with the
+    // same radius, once, so the blur looks the same.
+    _migrateBlurScale() {
+        if (!this._settings.settings_schema.has_key('blur-scale') ||
+            this._settings.get_int('blur-scale') >= BLUR_SCALE_VERSION)
+            return;
+        const chosen = this._settings.get_user_value('blur-strength');
+        if (chosen)
+            this._settings.set_int('blur-strength',
+                blurStrength(chosen.unpack() * LEGACY_RADIUS_PER_STEP));
+        this._settings.set_int('blur-scale', BLUR_SCALE_VERSION);
     }
 
     _panelTintOpacity() {
