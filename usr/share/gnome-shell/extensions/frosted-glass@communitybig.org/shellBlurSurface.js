@@ -9,9 +9,11 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import {RoundedCornersEffect} from './roundedCorners.js';
 import {createBackgroundEffect} from './roundedBackend.js';
+import {createRedrawGuard} from './redrawGuard.js';
 
 const EFFECT_NAME = 'communitybig-frosted-glass-shell';
 const CORNER_EFFECT_NAME = 'communitybig-frosted-glass-shell-corners';
+const REDRAW_GUARD_NAME = 'communitybig-frosted-glass-shell-redraw';
 const STYLE_CLASS = 'frosted-glass-shell-surface';
 const LIGHT_STYLE_CLASS = 'frosted-glass-light';
 const MINIMAL_PANEL_CLASS = 'layout-switcher-minimal-panel';
@@ -413,6 +415,9 @@ export class ShellBlurSurface {
                 'notify::visible',
                 'notify::translation-x',
                 'notify::translation-y',
+                // GNOME 51 opens popups from 96 % scale.
+                'notify::scale-x',
+                'notify::scale-y',
             ]) {
                 this._connect(current, signal, () => this._geometryChanged());
             }
@@ -477,6 +482,9 @@ export class ShellBlurSurface {
         } else {
             this._effect = createBackgroundEffect();
             this._overlay.add_effect_with_name(EFFECT_NAME, this._effect);
+            // Dynamic blur samples the screen; repair partial redraws.
+            this._redrawGuard = createRedrawGuard();
+            this._overlay.add_effect_with_name(REDRAW_GUARD_NAME, this._redrawGuard);
         }
 
         this._newOverlayChild('_tint');
@@ -590,7 +598,7 @@ export class ShellBlurSurface {
         const overlay = this._overlay;
         const manager = this._manager;
         const children = [this._tint, this._wallpaper].filter(Boolean);
-        const effects = [this._cornerEffect,
+        const effects = [this._redrawGuard, this._cornerEffect,
             this._wallpaper ? null : this._effect].filter(Boolean);
         this._manager = null;
         this._overlay = null;
@@ -598,6 +606,7 @@ export class ShellBlurSurface {
         this._tint = null;
         this._effect = null;
         this._cornerEffect = null;
+        this._redrawGuard = null;
         this._mode = null;
         this._monitorIndex = -1;
         const cleanup = action => {

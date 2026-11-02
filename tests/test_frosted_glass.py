@@ -88,8 +88,8 @@ def test_overview_material_defaults_and_range():
     schema = ET.parse(SCHEMA).getroot().find("schema")
     keys = {node.attrib["name"]: node for node in schema.findall("key")}
 
-    assert keys["blur-strength"].findtext("default") == "23"
-    assert keys["glass-opacity"].findtext("default") == "37"
+    assert keys["blur-strength"].findtext("default") == "63"
+    assert keys["glass-opacity"].findtext("default") == "30"
     assert keys["glass-opacity"].find("range").attrib == {"min": "0", "max": "100"}
     assert keys["use-accent-color"].findtext("default") == "false"
 
@@ -99,6 +99,10 @@ def test_automatic_mode_uses_live_background_blur():
 
     assert "requestedMode === 'automatic' ? 'dynamic'" in extension
     assert "savingPower && powerBehavior === 'static'" in extension
+    # The power saving choices are dynamic ("keep"), static and none.
+    assert "savingPower && powerBehavior === 'keep'" in extension
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
+    assert '[tr("Dynamic"), tr("Static"), tr("None")]' in controls
     assert "MATERIAL_OPACITY_EXPONENT = 1.8" in extension
     assert "Math.pow(opacityPercent / 100, MATERIAL_OPACITY_EXPONENT)" in extension
 
@@ -171,6 +175,28 @@ def test_layout_switcher_exposes_frosted_glass_controls():
         "power-save-behavior",
     ]:
         assert setting in controls
+
+
+def test_controls_restore_material_defaults_only():
+    import ast
+
+    controls = (ROOT / "usr/share/big-gnome-center/ui/frosted_glass.py").read_text()
+    tree = ast.parse(controls)
+    keys = next(
+        ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(getattr(target, "id", "") == "_MATERIAL_KEYS" for target in node.targets)
+    )
+    assert set(keys) == {
+        "blur-mode", "blur-strength", "glass-opacity", "use-accent-color",
+        "power-save-behavior",
+    }
+    # Both the full and the overview-only page offer the restore row.
+    assert controls.count("self.append(self._build_restore_group())") == 2
+    assert "self._settings.reset(key)" in controls
+    # Rows that are not bound to GSettings follow external changes.
+    assert controls.count('self._settings.connect(f"changed::{key}", sync)') == 2
 
 
 def test_controls_persist_missing_extension_before_live_activation():

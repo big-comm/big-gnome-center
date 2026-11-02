@@ -1,0 +1,58 @@
+#!/bin/bash
+# shellcheck disable=SC2016  # $0 and friends belong to the awk programs.
+# Hide GNOME's Extensions app while Big Gnome Center manages extensions.
+# The app lists private runtime and upgrade-compatibility hosts as duplicates.
+# usage: big-gnome-center-extensions-app hide|show
+set -euo pipefail
+
+desktop="${BGC_EXTENSIONS_DESKTOP:-/usr/share/applications/org.gnome.Extensions.desktop}"
+marker="X-BigGnomeCenter-Hidden=true"
+
+[[ -f "$desktop" ]] || exit 0
+
+# Only the main group decides launcher visibility; actions are separate groups.
+main_group_has() {
+    awk -v key="$1" '
+        /^\[/ { main = ($0 == "[Desktop Entry]") }
+        main && index($0, key "=") == 1 { found = 1 }
+        END { exit !found }
+    ' "$desktop"
+}
+
+rewrite() {
+    local tmp
+    tmp=$(mktemp "${desktop}.XXXXXX")
+    if awk -v marker="$marker" "$1" "$desktop" > "$tmp"; then
+        chmod --reference="$desktop" "$tmp"
+        mv -f "$tmp" "$desktop"
+    else
+        rm -f "$tmp"
+        return 1
+    fi
+}
+
+case "${1:-}" in
+    hide)
+        # Respect an upstream NoDisplay and never insert twice.
+        main_group_has NoDisplay && exit 0
+        rewrite '{ print } $0 == "[Desktop Entry]" && !done { print "NoDisplay=true"; print marker; done = 1 }'
+        ;;
+    show)
+        grep -qxF "$marker" "$desktop" || exit 0
+        rewrite '
+            $0 == marker { next }
+            { lines[++n] = $0 }
+            END {
+                for (i = 1; i <= n; i++) {
+                    # Drop only the NoDisplay line inserted with the marker.
+                    if (lines[i] == "NoDisplay=true" && lines[i - 1] == "[Desktop Entry]")
+                        continue
+                    print lines[i]
+                }
+            }'
+        ;;
+    *)
+        echo "usage: $0 hide|show" >&2
+        exit 2
+        ;;
+esac

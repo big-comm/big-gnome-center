@@ -65,3 +65,19 @@ optionDialogFunctions[DESKTOP_BTN] = '_showDesktopButtonOptions'
 export function checkIfCentered(position) {
   return position == CENTERED || position == CENTERED_MONITOR
 }
+
+// A monitor-centered group (the taskbar) stays centered while it fits between
+// the side groups. When one side grows (e.g. recorder controls in the right
+// box) it takes the free space on the other side instead of being clipped,
+// and recenters once it fits again.
+export function centeredMonitorSpace(total, tlSize, brSize, size) {
+  let symmetric = total - Math.max(tlSize, brSize) * 2
+
+  return size <= symmetric ? symmetric : total - tlSize - brSize
+}
+
+export function centeredMonitorStart(tlLimit, brLimit, tlSize, brSize, size) {
+  let centered = tlLimit + (brLimit - tlLimit - size) * 0.5
+
+  return Math.max(tlLimit + tlSize, Math.min(centered, brLimit - brSize - size))
+}

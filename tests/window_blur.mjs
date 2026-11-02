@@ -173,7 +173,7 @@ let disposedOverlay = false;
 let overlayDestroy;
 const OverlaySurface = vm.runInNewContext(surfaceSource + '\nShellBlurSurface;', {
     console, Main: {uiGroup: {add_child() {}}},
-    attachBlurRepaint() {}, createBackgroundEffect: () => ({}),
+    attachBlurRepaint() {}, createBackgroundEffect: () => ({}), createRedrawGuard: () => ({}),
     St: {Widget: class {
         connect(_signal, callback) { overlayDestroy = callback; }
         add_effect_with_name() {} add_child() {}
@@ -242,7 +242,7 @@ for (const broken of [false, true]) {
     });
     const extension = new ExtensionClass();
     extension.path = '/usr/share/gnome-shell/extensions/frosted-glass@communitybig.org';
-    extension.getSettings = () => ({});
+    extension.getSettings = () => ({settings_schema: {has_key: () => false}});
     extension._config = () => ({enabled: true, windowsEnabled: true, mode: 'dynamic', radius: 55});
     extension._enableFullBackend = () => calls.push('backend');
     extension._applyNativeParameters = () => {};

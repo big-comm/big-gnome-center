@@ -99,3 +99,13 @@ def test_destroy_cleanup_does_not_access_disposed_window(live):
     instance.close(remove_class=False)
     style.remove_provider_for_display.assert_called_once()
     instance.close()
+
+
+def test_any_managed_sheet_styles_windows_without_a_named_profile(live):
+    instance, window, provider, style, config = live
+    material.sync_styles(config, True, 37)
+    instance._class = "app-without-profile"
+    window.reset_mock()
+    instance._refresh()
+    window.add_css_class.assert_called_once_with("app-without-profile")
+    provider.load_from_string.assert_called_with(material.render_css(37).decode())

@@ -93,15 +93,24 @@ def test_effect_assets_and_gallery_geometry():
         assert (width, height) == (600, 338)
         assert 100_000 <= len(data) <= 200_000
 
+    extensions_source = (ROOT / "usr/share/big-gnome-center/ui/page_extensions.py").read_text()
     effects_source = (ROOT / "usr/share/big-gnome-center/ui/page_effects.py").read_text()
     themes_source = (ROOT / "usr/share/big-gnome-center/ui/page_themes.py").read_text()
 
-    assert "set_max_children_per_line(2)" in effects_source
-    assert "set_min_children_per_line(2)" in effects_source
-    assert "Gtk.ContentFit.CONTAIN" in effects_source
-    assert "Gtk.Picture.new_for_filename" in effects_source
-    assert "icon_frame = Gtk.CenterBox()" in effects_source
-    assert "icon_frame.set_center_widget(ico)" in effects_source
+    # Third-party effect extensions are installed from Extensions > Featured,
+    # with their previews; Effects only keeps the system's own controls.
+    assert "self._feat_flow.set_max_children_per_line(2)" in extensions_source
+    assert "self._feat_flow.set_min_children_per_line(2)" in extensions_source
+    assert "Gtk.ContentFit.CONTAIN" in extensions_source
+    assert "Gtk.Picture.new_for_filename" in extensions_source
+    assert "icon_frame = Gtk.CenterBox()" in extensions_source
+    assert "icon_frame.set_center_widget(ico)" in extensions_source
+    assert "FEATURED_EXTENSIONS" not in effects_source
+    assert "Other visual effects" not in effects_source
+    window_source = (ROOT / "usr/share/big-gnome-center/ui/window.py").read_text()
+    assert 'key == "effects"' not in window_source
+    assert "effects_page" not in window_source
+    assert "def rebuild" not in effects_source
     assert 'set_max_children_per_line(3 if kind == "cursors" else 5)' in themes_source
     assert "set_size_request(128, 68)" in themes_source
     assert 'self._section = "accent"' in themes_source

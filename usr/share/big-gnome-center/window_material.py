@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""Reversible GTK background styles for validated applications."""
+"""Reversible GTK background styles for native GTK 4 application windows."""
 
 import argparse
 import ctypes
@@ -16,16 +16,21 @@ IMPORT = (
     f'@import url("{NAME}");\n'
     '/* END Big Gnome Center windows */\n'
 ).encode()
-WINDOW_CLASSES = (
-    "nautilus-window", "big-gnome-center", "org-gnome-TextEditor",
-    "big-audio-converter", "big-video-converter", "big-hardware-info",
-    "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
-    "biglinux-webapps", "biglinux-settings", "bigrecorder",
-    "community-release", "biglinux-microphone",
-    "big-driver-manager",
+# GTK gives every window the "background" class; windows meant to be see-through
+# drop it. User CSS outranks application CSS regardless of specificity, so the
+# exclusions below name the windows that must never be tinted:
+# - dialog windows keep an opaque surface, like embedded dialogs;
+# - the desktop icons (DING) window and its widgets show the wallpaper;
+# - Ashyterm and BigCam keep their own palette and only add the blur;
+# - Chromium browsers read GTK colors through a "window.background.chromium"
+#   node to paint their own frame; a transparent one leaves the tab strip clear.
+EXCLUDED = (
+    ".dialog", ".messagedialog",
+    "#desktopwindow", "#testwindow", "#errorstate", ".ding-widget-window",
+    ".ashyterm-window", ".bgc-bigcam", ".chromium",
 )
-SELECTORS = ", ".join(f"window.{name}" for name in WINDOW_CLASSES)
-DIALOG_SELECTORS = ", ".join(f"window.{name} dialog" for name in WINDOW_CLASSES)
+SELECTORS = "window.background" + "".join(f":not({name})" for name in EXCLUDED)
+DIALOG_SELECTORS = f"{SELECTORS} dialog"
 
 
 def render_css(opacity: int) -> bytes:
@@ -58,6 +63,14 @@ def render_css(opacity: int) -> bytes:
     window.bigrecorder .titlebar {{
         background-color: var(--window-bg-color);
     }}
+    /* These panes paint the fixed @named colors, not the variables. */
+    window.big-audio-converter .queue-pane {{
+        background-color: var(--window-bg-color);
+    }}
+    window.big-audio-converter .sidebar,
+    window.bns-window .bns-sidebar {{
+        background-color: var(--sidebar-bg-color);
+    }}
     window.org-gnome-TextEditor textview,
     window.org-gnome-TextEditor textview text {{
         background-color: transparent;
@@ -65,6 +78,19 @@ def render_css(opacity: int) -> bytes:
     window.community-release .main-view,
     window.community-release headerbar {{
         background-color: var(--window-bg-color);
+    }}
+    /* Mahjongg paints its theme backdrop opaque; keep the hue, pass the blur. */
+    window toolbarview.postmodern {{
+        background: hsl(from var(--bg-postmodern) h s
+            calc(l * var(--bg-lightness-factor)) / {alpha:.2f});
+    }}
+    window toolbarview.smooth {{
+        background: hsl(from var(--bg-smooth) h s
+            calc(l * var(--bg-lightness-factor)) / {alpha:.2f});
+    }}
+    window toolbarview.educational {{
+        background: hsl(from var(--bg-educational) h s
+            calc(l * var(--bg-lightness-factor)) / {alpha:.2f});
     }}
     window.ashyterm-window {{
         backdrop-filter: blur(30px);

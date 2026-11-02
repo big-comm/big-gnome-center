@@ -2,7 +2,6 @@
 """Nonblocking GUI launches and bounded preparation commands."""
 
 import logging
-import shutil
 from typing import Callable, Optional
 
 from gi.repository import Gio, GLib
@@ -73,17 +72,3 @@ def launch_uri(uri: str, on_error: ErrorCallback = None) -> None:
         Gio.AppInfo.launch_default_for_uri_async(uri, None, None, finished)
     except GLib.Error as exc:
         report_launch_error(str(exc), on_error)
-
-
-def launch_extensions_app(on_error: ErrorCallback = None) -> None:
-    """Try installed managers, then the website, only after a real failure."""
-    candidates = iter(("gnome-extensions-app", "gnome-shell-extension-prefs"))
-
-    def next_candidate(detail=None) -> None:
-        for command in candidates:
-            if shutil.which(command):
-                launch_command([command], next_candidate)
-                return
-        launch_uri("https://extensions.gnome.org", on_error)
-
-    next_candidate()

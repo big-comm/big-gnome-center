@@ -178,8 +178,8 @@ class MainWindow(Adw.ApplicationWindow):
         Coalesce a burst of external GSettings changes into a single refresh.
 
         A layout apply rewrites ``enabled-extensions`` several times in quick
-        succession; without coalescing, each write fired a full extensions +
-        effects page rebuild (each spawning more subprocesses). This replaces
+        succession; without coalescing, each write fired a full extension-backed
+        page refresh (each spawning more subprocesses). This replaces
         any pending timer for ``key`` so only the last change in a burst runs,
         ~``delay_ms`` after it settles. Runs on the GTK main thread (the Gio
         ``changed`` signal already fires there).
@@ -203,9 +203,6 @@ class MainWindow(Adw.ApplicationWindow):
         ext_page = self._pages.get("extensions")
         if ext_page is not None:
             ext_page.refresh_installed()
-        effects_page = self._pages.get("effects")
-        if effects_page is not None:
-            effects_page.rebuild()
         desktop_page = self._pages.get("desktop")
         if desktop_page is not None:
             desktop_page.refresh()
@@ -496,9 +493,6 @@ class MainWindow(Adw.ApplicationWindow):
         if key == "extensions":
             page = self._ensure_page("extensions")
             GLib.idle_add(page.refresh_installed)
-        elif key == "effects":
-            page = self._ensure_page("effects")
-            GLib.idle_add(page.rebuild)
         elif key == "desktop":
             page = self._ensure_page("desktop")
             GLib.idle_add(page.refresh)
@@ -549,9 +543,6 @@ class MainWindow(Adw.ApplicationWindow):
         ext_page = self._pages.get("extensions")
         if ext_page is not None:
             ext_page.refresh_installed()
-        effects_page = self._pages.get("effects")
-        if effects_page is not None:
-            effects_page.rebuild()
         desktop_page = self._pages.get("desktop")
         if desktop_page is not None:
             desktop_page.refresh()

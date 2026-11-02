@@ -9,6 +9,7 @@ import {ShellBlurSurface} from './shellBlurSurface.js';
 const TARGET_CLASS = 'frosted-glass-shell-surface';
 const QUICK_SUBMENU_CLASS = 'frosted-glass-quick-submenu';
 const LIGHT_STYLE_CLASS = 'frosted-glass-light';
+const DESTROY_SIGNAL = Symbol('destroy-signal');
 const THEME_RADIUS_KINDS = new Set([
     'panel',
     'dash-to-panel',
@@ -103,6 +104,7 @@ export class ShellSurfaces {
         this._refreshId = 0;
         this._modalDialogSignal = 0;
         this._messageTraySignals = [];
+        this._uiGroupSignal = 0;
     }
 
     enable() {
@@ -118,6 +120,16 @@ export class ShellSurfaces {
     }
 
     _enable() {
+        // Logout disposes the whole Shell UI while extensions stay enabled.
+        // Stop scanning then, or refreshes walk disposed actors.
+        const uiGroup = Main.uiGroup;
+        if (uiGroup) {
+            this._uiGroupObject = uiGroup;
+            this._uiGroupSignal = uiGroup.connect('destroy', () => {
+                this._uiGroupSignal = 0;
+                this._abandon();
+            });
+        }
         this.refresh();
         const modalGroup = Main.layoutManager.modalDialogGroup;
         if (modalGroup) {
@@ -206,11 +218,20 @@ export class ShellSurfaces {
         }
     }
 
-    destroy() {
-        if (this._destroyed)
-            return;
+    _abandon() {
+        // The actors are gone; release bookkeeping without touching them.
+        this._stopSources();
         this._destroyed = true;
         this._enabled = false;
+        this._records.clear();
+        this._quickSubmenus.clear();
+        this._modalDialogSignal = 0;
+        this._modalDialogObject = null;
+        this._messageTraySignals.length = 0;
+        this._uiGroupObject = null;
+    }
+
+    _stopSources() {
         for (const property of ['_refreshId', '_scanId']) {
             const id = this[property];
             this[property] = 0;
@@ -222,6 +243,23 @@ export class ShellSurfaces {
                 }
             }
         }
+    }
+
+    destroy() {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this._enabled = false;
+        this._stopSources();
+        if (this._uiGroupSignal) {
+            try {
+                this._uiGroupObject.disconnect(this._uiGroupSignal);
+            } catch (error) {
+                // Shell teardown may dispose the group first.
+            }
+            this._uiGroupSignal = 0;
+        }
+        this._uiGroupObject = null;
         if (this._modalDialogSignal) {
             try {
                 this._modalDialogObject.disconnect(
@@ -344,7 +382,7 @@ export class ShellSurfaces {
     _syncQuickSubmenus(nextActors, lightMode) {
         for (const [actor, classes] of this._quickSubmenus) {
             if (!nextActors.has(actor)) {
-                this._quickSubmenus.delete(actor);
+                this._forgetQuickSubmenu(actor, classes);
                 for (const [name, record] of classes) {
                     try {
                         if (actor.has_style_class_name(name) === record.applied) {
@@ -364,6 +402,7 @@ export class ShellSurfaces {
             if (!classes) {
                 classes = new Map();
                 this._quickSubmenus.set(actor, classes);
+                this._watchQuickSubmenu(actor, classes);
             }
             for (const [name, enabled] of [[QUICK_SUBMENU_CLASS, true], [LIGHT_STYLE_CLASS, lightMode]]) {
                 try {
@@ -382,6 +421,33 @@ export class ShellSurfaces {
                 } catch (error) {
                     // Submenu may be disposed during a Shell rebuild.
                 }
+            }
+        }
+    }
+
+    _watchQuickSubmenu(actor, classes) {
+        try {
+            // Shell rebuilds and logout dispose submenus behind our back; drop
+            // them on destroy so no later refresh touches a disposed actor.
+            const id = actor.connect('destroy', () => {
+                if (this._quickSubmenus.get(actor) === classes)
+                    this._quickSubmenus.delete(actor);
+            });
+            classes.set(DESTROY_SIGNAL, id);
+        } catch (error) {
+            // Only live actors expose the destroy signal.
+        }
+    }
+
+    _forgetQuickSubmenu(actor, classes) {
+        this._quickSubmenus.delete(actor);
+        const id = classes.get(DESTROY_SIGNAL);
+        classes.delete(DESTROY_SIGNAL);
+        if (id) {
+            try {
+                actor.disconnect(id);
+            } catch (error) {
+                // Actor may already be disposed.
             }
         }
     }
