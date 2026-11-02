@@ -70,7 +70,8 @@ class WindowMaterialClient:
             content = self._path.read_text()
         except (OSError, UnicodeError, GLib.Error):
             content = ""
-        valid = content.startswith(OWNER.decode()) and f"window.{self._class}" in content
+        # Any non-empty managed sheet styles every GTK 4 window.
+        valid = content.startswith(OWNER.decode()) and content != OWNER.decode()
         self._window.remove_css_class(self._class)
         self._provider.load_from_string(content if valid else "")
         if valid:

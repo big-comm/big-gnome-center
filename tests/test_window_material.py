@@ -128,10 +128,8 @@ def test_concurrent_edit_is_not_overwritten(tmp_path):
     assert not list(entry.parent.glob(".bgc-windows-*"))
 
 
-def test_styles_only_target_validated_backgrounds():
+def test_styles_only_target_window_backgrounds():
     css = material.render_css(37).decode()
-    assert "window.nautilus-window" in css
-    assert "window.big-gnome-center" in css
     assert "window.org-gnome-TextEditor textview text" in css
     assert "backdrop-filter: blur(30px)" in css
     assert "prefers-contrast: no-preference" in css
@@ -152,31 +150,32 @@ def test_extension_gates_styles_and_cleans_up():
     assert "this._windowStyles ??=" in source
 
 
-@pytest.mark.parametrize("window_class", [
-    "big-audio-converter", "big-video-converter", "big-hardware-info",
-    "big-network-info", "bigocrpdf", "bigocrimage", "bigocrpdf-editor",
-    "biglinux-webapps", "biglinux-settings", "bigrecorder",
-    "community-release", "biglinux-microphone",
-    "big-driver-manager", "ashypass", "big-audio-player", "bns-window",
-])
-def test_application_profiles_use_exclusive_window_classes(window_class):
+def test_every_native_gtk4_window_gets_the_material():
     css = material.render_css(37).decode()
-    assert f"window.{window_class}" in material.SELECTORS
+    assert material.SELECTORS.startswith("window.background:not(")
+    assert f"\n    {material.SELECTORS} {{" in css
+    # Never a bare selector, and never content widgets.
     assert "\n    window {" not in css
     assert "drawingarea" not in css
     assert "picture" not in css
 
 
+@pytest.mark.parametrize("excluded", [
+    ".dialog", ".messagedialog", "#desktopwindow", "#testwindow", "#errorstate",
+    ".ding-widget-window", ".ashyterm-window", ".bgc-bigcam", ".chromium",
+])
+def test_see_through_and_self_styled_windows_are_never_tinted(excluded):
+    assert f":not({excluded})" in material.SELECTORS
+
+
 def test_terminal_profile_preserves_its_own_palette_and_transparency():
     css = material.render_css(37).decode()
-    assert "ashyterm-window" not in material.WINDOW_CLASSES
     terminal = css.split("window.ashyterm-window {", 1)[1].split("}", 1)[0]
     assert terminal.strip() == "backdrop-filter: blur(30px);"
 
 
 def test_camera_profile_preserves_preview_and_opacity():
     css = material.render_css(37).decode()
-    assert "bgc-bigcam" not in material.WINDOW_CLASSES
     camera = css.split("window.bgc-bigcam {", 1)[1].split("}", 1)[0]
     assert camera.strip() == "backdrop-filter: blur(30px);"
     assert "window.bigcam" not in css
@@ -186,8 +185,7 @@ def test_camera_profile_preserves_preview_and_opacity():
 
 def test_embedded_dialogs_restore_background_palette():
     css = material.render_css(37).decode()
-    for name in material.WINDOW_CLASSES:
-        assert f"window.{name} dialog" in material.DIALOG_SELECTORS
+    assert material.DIALOG_SELECTORS == f"{material.SELECTORS} dialog"
     dialog = css.split(material.DIALOG_SELECTORS + " {", 1)[1].split("}", 1)[0]
     for variable in (
         "window-bg-color", "view-bg-color", "headerbar-bg-color",
@@ -196,6 +194,14 @@ def test_embedded_dialogs_restore_background_palette():
         assert f"--{variable}: @{variable.replace('-', '_')};" in dialog
     assert "background-color:" not in dialog
     assert "backdrop-filter:" not in dialog
+
+
+@pytest.mark.parametrize("theme", ["postmodern", "smooth", "educational"])
+def test_mahjongg_theme_backdrop_keeps_its_hue_and_passes_the_blur(theme):
+    css = material.render_css(30).decode()
+    rule = css.split(f"window toolbarview.{theme} {{", 1)[1].split("}", 1)[0]
+    assert f"var(--bg-{theme})" in rule
+    assert rule.strip().endswith("/ 0.72);")
 
 
 def test_recorder_chrome_uses_inherited_palette():

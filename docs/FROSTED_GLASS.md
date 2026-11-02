@@ -42,52 +42,54 @@ an effect object and submit its surface-local blur region. Therefore the native
 protocol improves cooperating applications but cannot force arbitrary GTK,
 Qt, Electron, or XWayland windows to request blur. GTK4 alone is insufficient:
 the application must request a blurred background through its rendering tree.
-For validated native GTK applications, Big Gnome Center supplies that request
-through GTK's user stylesheet: `backdrop-filter` plus translucent background
-colors. This requires GTK 4.23.3 or newer and successful CSS capability parsing.
-Profiles cover Nautilus, Big Gnome Center, GNOME Text Editor and cooperating
-BigLinux/Community applications with explicit window CSS classes.
-Calculator has no exclusive window selector in the tested version and remains
-unchanged. GTK3, Qt, Electron, and Flatpak runtimes are not supported profiles.
+Big Gnome Center supplies that request for native GTK 4 windows through GTK's
+user stylesheet: `backdrop-filter` plus translucent background colors. This
+requires GTK 4.23.3 or newer and successful CSS capability parsing. GTK3, Qt,
+Electron, XWayland, Flatpak and AppImage runtimes with their own GTK are not
+covered.
 
-### Validated application profiles
+### Every native GTK 4 window
 
-- Files (Nautilus): `window.nautilus-window`.
-- Big Gnome Center: `window.big-gnome-center`.
-- GNOME Text Editor: `window.org-gnome-TextEditor`; background-only text-view rule.
-- Ashyterm: `window.ashyterm-window`; blur only, preserving its palette and alpha.
-- Audio/Video Converter: `window.big-audio-converter`, `window.big-video-converter`.
-- Hardware/Network Info: `window.big-hardware-info`, `window.big-network-info`.
-- BigOCR: `window.bigocrpdf`, `window.bigocrimage`, `window.bigocrpdf-editor`.
-- WebApps Manager: `window.biglinux-webapps`; not browser/web content.
-- General Adjustments: `window.biglinux-settings`.
-- Big Recorder: `window.bigrecorder`.
-- System / Distribution Info: `window.community-release`; live client.
-- Big Microphone (Python): `window.biglinux-microphone`; live client.
-- BigCam: `window.bgc-bigcam`; live blur only, preserving camera opacity.
-- Big Driver Manager: `window.big-driver-manager`; live client.
+User decision (2026-11-01): style every native GTK 4 window, replacing the list
+of validated window classes (the 2026-09-07 decision deferred Calculator for
+lack of a selector). A 2026-11-01 test on the GNOME 51 host covered Calculator,
+Mines, Papers, Resources, Disk Usage Analyzer and Settings; only Mahjongg needed
+a fix.
 
-These profiles were tested on the GNOME 51.beta / GTK 4.23.3 VM. This list is
-not a claim that every GTK4 application supports the managed style.
-Camera/audio discovery and driver detection were disabled in the new UI tests;
-recording and package operations were not exercised. The current Rust Microphone
-clone shares its profile but has startup-only integration; VM validation pending.
+The rule matches `window.background`. GTK gives every window that class and
+see-through windows drop it. User CSS outranks application CSS regardless of
+specificity, so these windows are excluded by name:
 
-Embedded dialogs restore opaque palette variables at their boundary. Recorder
-chrome follows the inherited palette; text, icons and document canvases are
-not faded. App integration adds a class without replacing toolkit classes.
+- `.dialog`, `.messagedialog`: dialog windows stay opaque like embedded dialogs.
+- `#desktopwindow`, `#testwindow`, `#errorstate`, `.ding-widget-window`: the
+  desktop icons (DING) windows keep showing the wallpaper.
+- `.ashyterm-window`, `.bgc-bigcam`: blur only, preserving their palette and
+  camera opacity.
+- `.chromium`: Chromium browsers (Brave, Chrome) in GTK theme mode read colors
+  through a `window.background.chromium` node to paint their own frame. They
+  never request blur, so a transparent color left the tab strip clear.
 
-Cooperating app packages must include their window class; updating Big Gnome
-Center alone does not retrofit older app binaries. The class itself has no
-effect without the managed style. GNOME 50 remains unchanged. No app bundles a
-global GTK override. Media, PDF pages and drawing widgets receive no overrides.
-Reopen running applications after installing either side of the integration.
+GTK CSS cannot select a window by application ID. An application without a
+window class can be corrected only through CSS names inside it. Many
+applications paint some panes with fixed colors; those panes stay opaque, which
+reads as a design choice. Per-application fixes let the blur through:
+
+- GNOME Text Editor: `window.org-gnome-TextEditor`; transparent text view.
+- Big Recorder: `window.bigrecorder`; chrome follows the inherited palette.
+- Audio Converter and BigNetScreen: panes painted with `@named` colors.
+- System / Distribution Info: `window.community-release` main view.
+- Mahjongg: `toolbarview.postmodern`, `.smooth` and `.educational` keep their
+  theme hue at the material opacity.
+
+Embedded dialogs restore opaque palette variables at their boundary. Text,
+icons, media, PDF pages and drawing widgets receive no overrides.
 
 Big Gnome Center monitors the managed sheet and reloads its GTK provider while
-open. Disabling removes its material class, including matches from GTK's cached
-startup stylesheet. System / Distribution Info, Python Microphone, BigCam and
-Driver Manager use the same client. Other profiles still require reopening after
-material changes; a static CSS class is not live integration.
+open. System / Distribution Info, Python Microphone, BigCam and Driver Manager
+use the same live client: any non-empty managed sheet applies. Other windows
+read the sheet at startup; reopen them after material changes. Disabling empties
+the sheet, but windows still running keep GTK's cached startup stylesheet until
+reopened.
 
 The package exposes optional Python integration:
 
@@ -97,7 +99,7 @@ try:
 except ImportError:
     attach_window_material = None
 
-# After initializing the GTK window; requires a registered app profile.
+# After initializing the GTK window.
 self.add_css_class("community-release")
 if attach_window_material is not None:
     self._window_material = attach_window_material(self, "community-release")
@@ -108,16 +110,6 @@ and releases providers on window destruction. It never changes window opacity.
 
 Native panel material preserves transparency after runtime opacity updates
 during overview transitions, then restores the latest underlying style on stop.
-
-### Calculator: deferred
-
-GNOME Calculator 51beta-1 has no exclusive window CSS class or explicit widget
-name in its `MathWindow` template. Its GType name is not a CSS ID. Do not use a
-generic window selector, inject code, or patch the executable to force support.
-
-User decision (2026-09-07): defer Calculator support; do not create or maintain
-a separate fork/package. Revisit when upstream provides a suitable selector or
-native application integration. Calculator remains visually unchanged.
 
 The compositor's `set_background_blur_params()` tunes native client-requested
 blur. Window tuning is opt-in and restricted to GNOME 51. No fallback modifies
