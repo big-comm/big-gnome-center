@@ -59,7 +59,12 @@ function actors() {
     const monitor = {index: 0, x: 0, y: 0, width: 1280, height: 800};
     const Main = {uiGroup: group, layoutManager: {uiGroup: group, modalDialogGroup: new Actor(),
         primaryMonitor: monitor, monitors: [monitor], findMonitorForActor: () => monitor}};
-    const context = {Main, global: {stage: {}}, Clutter: {},
+    const laters = new Map();
+    const compositor = {get_laters: () => ({
+        add(_type, cb) { laters.set(++id, cb); return id; },
+        remove(id) { laters.delete(id); },
+    })};
+    const context = {Main, global: {stage: {}, compositor}, Clutter: {}, Meta: {LaterType: {BEFORE_REDRAW: 1}},
         GLib: {PRIORITY_DEFAULT: 0, PRIORITY_DEFAULT_IDLE: 0, SOURCE_REMOVE: false, SOURCE_CONTINUE: true,
             idle_add(_p, cb) { timers.set(++id, cb); return id; },
             timeout_add_seconds(_p, _s, cb) { timers.set(++id, cb); return id; },
@@ -89,7 +94,7 @@ function actors() {
         return {s, actor, pointer, border: pointer._border, content: actor.panel};
     }
     const config = {enabled: true, mode: 'dynamic', radius: 30, brightness: 0.9, tintOpacity: 0.1, lightMode: false};
-    return {Actor, Surface, Surfaces, surface, config, all, managers, failures, timers, group, Main};
+    return {Actor, Surface, Surfaces, surface, config, all, managers, failures, timers, laters, group, Main};
 }
 
 const cases = [];
@@ -215,6 +220,18 @@ test('resources', 'popup scale animation moves the blur with the menu', () => {
         f.pointer.emit(signal);
     }
     assert.equal(synced, 2); f.s.destroy();
+});
+test('resources', 'allocation changes move the blur before the next layout, once', () => {
+    const h = actors(), f = h.surface('notification-banner'); f.s.update(h.config);
+    let synced = 0;
+    f.s._overlay.set_size = () => { synced++; };
+    // Reported during the stage layout: never move the overlay there.
+    for (let i = 0; i < 3; i++) f.actor.emit('notify::allocation');
+    assert.equal(synced, 0); assert.equal(h.laters.size, 1);
+    const [[id, later]] = [...h.laters]; h.laters.delete(id);
+    assert.equal(later(), false); assert.equal(synced, 1);
+    f.actor.emit('notify::allocation'); assert.equal(h.laters.size, 1);
+    f.s.destroy(); assert.equal(h.laters.size, 0, 'destroy drops the pending later');
 });
 test('resources', 'only dynamic blur repairs partial redraws', () => {
     const h = actors(), f = h.surface(); f.s.update(h.config);

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Clutter from 'gi://Clutter';
+import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
@@ -125,6 +126,7 @@ export class ShellBlurSurface {
         this._classes = new Map();
         this._styleMutationDepth = new Map();
         this._borderVisibility = null;
+        this._geometryLater = 0;
         this._dockSlider = this._kind === 'dash-to-dock'
             ? findDockSlider(this.actor)
             : null;
@@ -221,6 +223,14 @@ export class ShellBlurSurface {
         if (this._destroyed)
             return;
         this._destroyed = true;
+        if (this._geometryLater) {
+            try {
+                global.compositor.get_laters().remove(this._geometryLater);
+            } catch (error) {
+                // The callback is inert once the surface is destroyed.
+            }
+            this._geometryLater = 0;
+        }
         for (const [object, id] of this._signals.splice(0)) {
             try {
                 object.disconnect(id);
@@ -408,8 +418,13 @@ export class ShellBlurSurface {
     _connectGeometryHierarchy() {
         let current = this.actor;
         while (current && current !== Main.uiGroup) {
+            // Allocation is reported in the middle of the stage layout. Moving
+            // the overlay then leaves it unallocated until the next frame, and
+            // Clutter warns for every animated frame; follow it before that
+            // frame's layout instead.
+            this._connect(current, 'notify::allocation',
+                () => this._queueGeometryChanged());
             for (const signal of [
-                'notify::allocation',
                 'notify::mapped',
                 'notify::opacity',
                 'notify::visible',
@@ -572,6 +587,17 @@ export class ShellBlurSurface {
         } catch (error) {
             return false;
         }
+    }
+
+    _queueGeometryChanged() {
+        if (this._destroyed || this._geometryLater)
+            return;
+        this._geometryLater = global.compositor.get_laters().add(
+            Meta.LaterType.BEFORE_REDRAW, () => {
+                this._geometryLater = 0;
+                this._geometryChanged();
+                return false;
+            });
     }
 
     _geometryChanged() {
