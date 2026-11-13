@@ -104,6 +104,6 @@ def test_package_replaces_previous_layout_switcher_names():
     pkgbuild = (ROOT / "pkgbuild/PKGBUILD").read_text(encoding="utf-8")
 
     assert "pkgname=big-gnome-center" in pkgbuild
-    assert "conflicts=('layout-switcher' 'gnome-layout-switcher')" in pkgbuild
+    assert "conflicts=('layout-switcher' 'gnome-layout-switcher' 'bigstyle')" in pkgbuild
     assert "provides=('layout-switcher' 'gnome-layout-switcher')" in pkgbuild
     assert "replaces=('layout-switcher' 'gnome-layout-switcher')" in pkgbuild

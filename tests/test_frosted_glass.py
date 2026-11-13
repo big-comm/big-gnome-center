@@ -612,3 +612,18 @@ def test_dynamic_blur_uses_integrated_native_corner_mask():
     assert "new Shell.BlurEffect({mode: Shell.BlurMode.BACKGROUND})" in backend
     assert "this._effect.corner_radius = this._cornerRadius * scale" in surface
     assert "mode === 'static' && this._cornerRadius > 0" in surface
+
+
+def test_package_builds_the_bigstyle_gtk4_module_at_bigstyles_path():
+    pkgbuild = (ROOT / "pkgbuild/PKGBUILD").read_text()
+    module = ROOT / "bigstyle-gtk4-module"
+    makefile = (module / "Makefile").read_text()
+    # One copy only: a second module would request the effect twice and end
+    # every GTK program, so the package must replace, never sit beside, BigStyle.
+    assert "/gtk-4.0/4.0.0/immodules/libbigstyle-gtk4.so" in makefile
+    assert "'bigstyle'" in pkgbuild.split("conflicts=(", 1)[1].split(")", 1)[0]
+    assert "arch=('x86_64')" in pkgbuild
+    assert 'make -C "${pkgsrc}/bigstyle-gtk4-module"' in pkgbuild
+    assert 'install DESTDIR="${pkgdir}"' in pkgbuild
+    for name in ("bigstyle-gtk4.c", "background-effect.c", "window-frame.c"):
+        assert (module / "src" / name).is_file()
