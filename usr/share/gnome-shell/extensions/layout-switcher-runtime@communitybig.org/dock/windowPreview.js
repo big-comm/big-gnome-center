@@ -147,10 +147,12 @@ class WindowPreviewList extends PopupMenu.PopupMenuSection {
 
         let adjustment, delta;
 
+        // St.ScrollView no longer exposes its scroll bars (GNOME 46+);
+        // the adjustments are available as properties.
         if (this.isHorizontal)
-            adjustment = this.actor.get_hscroll_bar().get_adjustment();
+            adjustment = this.actor.hadjustment;
         else
-            adjustment = this.actor.get_vscroll_bar().get_adjustment();
+            adjustment = this.actor.vadjustment;
 
         const increment = adjustment.step_increment;
 
