@@ -89,7 +89,8 @@ open. System / Distribution Info, Python Microphone, BigCam and Driver Manager
 use the same live client: any non-empty managed sheet applies. Other windows
 read the sheet at startup; reopen them after material changes. Disabling empties
 the sheet, but windows still running keep GTK's cached startup stylesheet until
-reopened.
+reopened. A live client that started with the material loads
+`render_reset()` instead, which restores the opaque palette above that cache.
 
 #### Redraw cost and the BigStyle GTK 4 module
 

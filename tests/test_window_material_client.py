@@ -109,3 +109,33 @@ def test_any_managed_sheet_styles_windows_without_a_named_profile(live):
     instance._refresh()
     window.add_css_class.assert_called_once_with("app-without-profile")
     provider.load_from_string.assert_called_with(material.render_css(37).decode())
+
+
+def test_disable_overrides_material_cached_at_startup(tmp_path, monkeypatch):
+    # The app opened with the material, which GTK keeps from gtk.css.
+    material.sync_styles(tmp_path, True, 37)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    monkeypatch.setattr(client, "gtk_supports_blur", lambda: True)
+    provider = Mock()
+    monkeypatch.setattr(client, "Gtk", SimpleNamespace(
+        CssProvider=lambda: provider, StyleContext=Mock(),
+        STYLE_PROVIDER_PRIORITY_USER=800,
+    ))
+    monkeypatch.setattr(client.WindowMaterialClient, "_watch", lambda self: None)
+    window = Mock()
+    instance = client.WindowMaterialClient(window, "big-gnome-center")
+    for enabled in (False, True, False):
+        material.sync_styles(tmp_path, enabled, 37)
+        instance._refresh()
+        expected = material.render_css(37).decode() if enabled else material.render_reset()
+        provider.load_from_string.assert_called_with(expected)
+    instance.close()
+
+
+def test_reset_restores_palette_and_drops_the_blur():
+    reset = material.render_reset()
+    assert f"{material.SELECTORS} {{" in reset
+    assert "--window-bg-color: @window_bg_color;" in reset
+    assert "background-color: @window_bg_color;" in reset
+    assert reset.count("backdrop-filter: none;") == 2
+    assert "prefers-contrast: no-preference" in reset

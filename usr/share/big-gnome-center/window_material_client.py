@@ -10,9 +10,9 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gio, GLib, Gtk
 
 if __package__:
-    from .policy import NAME, OWNER, gtk_supports_blur
+    from .policy import NAME, OWNER, gtk_supports_blur, render_reset
 else:
-    from window_material import NAME, OWNER, gtk_supports_blur
+    from window_material import NAME, OWNER, gtk_supports_blur, render_reset
 
 
 def attach_window_material(window, css_class):
@@ -32,6 +32,8 @@ class WindowMaterialClient:
         self._pending = 0
         self._watched = None
         self._closed = False
+        # Whether GTK cached the material from gtk.css when the app started.
+        self._started_with_material = None
         config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
         self._path = config / "gtk-4.0" / NAME
         window.remove_css_class(css_class)
@@ -72,8 +74,15 @@ class WindowMaterialClient:
             content = ""
         # Any non-empty managed sheet styles every GTK 4 window.
         valid = content.startswith(OWNER.decode()) and content != OWNER.decode()
+        if self._started_with_material is None:
+            self._started_with_material = valid
         self._window.remove_css_class(self._class)
-        self._provider.load_from_string(content if valid else "")
+        if valid:
+            css = content
+        else:
+            # An emptied sheet leaves GTK's startup copy in force; override it.
+            css = render_reset() if self._started_with_material else ""
+        self._provider.load_from_string(css)
         if valid:
             self._window.add_css_class(self._class)
         return GLib.SOURCE_REMOVE

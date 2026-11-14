@@ -102,6 +102,31 @@ def render_css(opacity: int) -> bytes:
 """.encode()
 
 
+def render_reset() -> str:
+    """Opaque rules that override a material GTK cached when the app started.
+
+    GTK reads gtk.css once, so a window opened with the material keeps it
+    after the sheet is emptied; a live provider above it puts the palette back.
+    """
+    return f"""@media (prefers-contrast: no-preference) {{
+    {SELECTORS} {{
+        --window-bg-color: @window_bg_color;
+        --view-bg-color: @view_bg_color;
+        --headerbar-bg-color: @headerbar_bg_color;
+        --headerbar-backdrop-color: @headerbar_backdrop_color;
+        --sidebar-bg-color: @sidebar_bg_color;
+        --sidebar-backdrop-color: @sidebar_backdrop_color;
+        background-color: @window_bg_color;
+        backdrop-filter: none;
+    }}
+    window.ashyterm-window,
+    window.bgc-bigcam {{
+        backdrop-filter: none;
+    }}
+}}
+"""
+
+
 def gtk_supports_blur() -> bool:
     """Check GTK without opening a display or joining the desktop D-Bus."""
     try:
