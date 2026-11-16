@@ -233,6 +233,49 @@ test('resources', 'allocation changes move the blur before the next layout, once
     f.actor.emit('notify::allocation'); assert.equal(h.laters.size, 1);
     f.s.destroy(); assert.equal(h.laters.size, 0, 'destroy drops the pending later');
 });
+test('resources', 'a banner leaving the tray takes no blur over the panel', () => {
+    // The message tray clips banners to the area below a 30 px panel.
+    const h = actors(), f = h.surface('notification-banner');
+    f.pointer.clip_to_allocation = true;
+    f.pointer.get_transformed_position = () => [0, 30];
+    f.pointer.get_transformed_size = () => [1280, 500];
+    let bannerY = 40, clip = null;
+    f.actor.get_transformed_position = () => [100, bannerY];
+    f.s.update(h.config);
+    f.s._overlay.set_clip = (...rect) => { clip = rect; };
+    f.s._overlay.remove_clip = () => { clip = null; };
+    f.s._syncGeometry();
+    assert.deepEqual(clip, [0, 0, 80, 40]);
+    assert.equal(f.s._overlay.visible, true);
+    bannerY = 10;  // sliding up: only the part below the panel remains
+    f.s._syncGeometry();
+    assert.deepEqual(clip, [0, 20, 80, 20]);
+    // Mid-layout the tray reports a stale size; leave the overlay alone
+    // and measure again before the next frame.
+    h.laters.clear();
+    f.pointer.has_allocation = () => false;
+    f.pointer.get_transformed_size = () => [80, 40];
+    bannerY = 5;
+    f.s._syncGeometry();
+    assert.deepEqual(clip, [0, 20, 80, 20]);
+    assert.equal(f.s._overlay.visible, true);
+    assert.equal(h.laters.size, 1);
+    f.pointer.has_allocation = () => true;
+    f.pointer.get_transformed_size = () => [1280, 500];
+    const [[laterId, later]] = [...h.laters]; h.laters.delete(laterId);
+    later();
+    assert.deepEqual(clip, [0, 25, 80, 15]);
+    bannerY = -30;  // wholly behind the panel
+    f.s._syncGeometry();
+    assert.equal(f.s._overlay.visible, false);
+    // A new banner arrives before the empty tray is laid out again.
+    f.pointer.get_transformed_size = () => [0, 0];
+    bannerY = 40;
+    f.s._syncGeometry();
+    assert.equal(f.s._overlay.visible, true);
+    assert.equal(clip, null);
+    f.s.destroy();
+});
 test('resources', 'only dynamic blur repairs partial redraws', () => {
     const h = actors(), f = h.surface(); f.s.update(h.config);
     const overlay = f.s._overlay, guard = f.s._redrawGuard;
@@ -265,6 +308,24 @@ test('resources', 'failed target setup does not prevent other surfaces', () => {
     f.actor.get_parent = () => { if (++calls > 1) throw new Error('bad parent'); return parent.call(f.actor); };
     surfaces.refresh(); assert(surfaces._records.has(good)); assert(!surfaces._records.has(f.actor));
     surfaces.destroy(); f.s.destroy();
+});
+test('resources', 'a new banner is styled before its next frame, not when idle', () => {
+    const h = actors(), bin = new h.Actor({name: 'banner-bin'});
+    h.Main.messageTray = {_bannerBin: bin};
+    const surfaces = new h.Surfaces(() => h.config);
+    let discoveries = 0;
+    surfaces._discover = () => { discoveries++; return new Map(); };
+    surfaces.enable();
+    const idle = h.timers.size, before = discoveries;
+    bin.emit('child-added'); bin.emit('child-added');
+    assert.equal(h.timers.size, idle, 'no idle refresh');
+    assert.equal(h.laters.size, 1, 'one refresh before the next frame');
+    const [[id, later]] = [...h.laters]; h.laters.delete(id);
+    assert.equal(later(), false); assert.equal(discoveries, before + 1);
+    bin.emit('child-removed'); assert.equal(h.laters.size, 1);
+    surfaces.destroy();
+    assert.equal(h.laters.size, 0, 'destroy drops the pending refresh');
+    delete h.Main.messageTray;
 });
 test('resources', 'retired scan and refresh callbacks cannot recreate surfaces', () => {
     const h = actors(), surfaces = new h.Surfaces(() => h.config);

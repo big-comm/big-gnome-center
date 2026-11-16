@@ -522,16 +522,20 @@ export class ShellBlurSurface {
             if (width < 1 || height < 1)
                 return false;
 
-            const x = Math.round(stageX - groupX);
-            const y = Math.round(stageY - groupY);
-            this._overlay.set_position(x, y);
-            this._overlay.set_size(width, height);
-            const visibleClip = this._visibleDockClip({
+            const visibleClip = this._visibleClip({
                 x: stageX,
                 y: stageY,
                 width: stageWidth,
                 height: stageHeight,
             });
+            if (visibleClip === undefined) {
+                this._queueGeometryChanged();
+                return true;
+            }
+            const x = Math.round(stageX - groupX);
+            const y = Math.round(stageY - groupY);
+            this._overlay.set_position(x, y);
+            this._overlay.set_size(width, height);
             if (visibleClip) {
                 this._overlay.set_clip(
                     Math.round(visibleClip.x - stageX),
@@ -565,16 +569,37 @@ export class ShellBlurSurface {
         }
     }
 
-    _visibleDockClip(actorRect) {
-        if (!this._dockSlider)
-            return null;
-        try {
-            const [x, y] = this._dockSlider.get_transformed_position();
-            const [width, height] = this._dockSlider.get_transformed_size();
-            return intersectRect(actorRect, {x, y, width, height});
-        } catch (error) {
-            return null;
+    // The part of the target left on screen by the actors that clip it. The
+    // message tray clips a banner to the area below the panel; an unclipped
+    // overlay follows a closing banner over the panel and hides its icons.
+    _visibleClip(actorRect) {
+        const clips = [];
+        for (let current = this.actor.get_parent?.();
+            current && current !== Main.uiGroup;
+            current = current.get_parent?.()) {
+            if (current.clip_to_allocation)
+                clips.push(current);
         }
+        if (this._dockSlider)
+            clips.push(this._dockSlider);
+        let visible = null;
+        for (const clip of clips) {
+            // Mid-layout, the tray reports its unconstrained size; wait for
+            // the allocation it will clip with.
+            if (clip.has_allocation && !clip.has_allocation())
+                return undefined;
+            try {
+                const [x, y] = clip.get_transformed_position();
+                const [width, height] = clip.get_transformed_size();
+                // A tray that showed no banner keeps its empty size until the
+                // new banner's first layout; it clips nothing yet.
+                if ([x, y, width, height].every(Number.isFinite) && width >= 1 && height >= 1)
+                    visible = intersectRect(visible ?? actorRect, {x, y, width, height});
+            } catch (error) {
+                // A clipping actor may be disposed while the target closes.
+            }
+        }
+        return visible;
     }
 
     _isReady() {

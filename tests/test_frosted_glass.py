@@ -302,7 +302,8 @@ def test_dock_blur_tracks_dash_to_dock_slide_clip():
     assert "findDockSlider" in surface
     assert "typeof current.slideX === 'number'" in surface
     assert "'notify::slide-x'" in surface
-    assert "_visibleDockClip" in surface
+    assert "_visibleClip" in surface
+    assert "current.clip_to_allocation" in surface
     assert "this._overlay.set_clip(" in surface
     assert "this.actor.get_paint_opacity?.()" in surface
 
@@ -407,7 +408,7 @@ def test_calendar_and_notifications_are_an_independent_surface():
     assert "Main.messageTray?._bannerBin" in discovery
     assert "Main.messageTray?._banner" in discovery
     assert "targets.set(banner, 'notification-banner')" in discovery
-    assert "bannerBin.connect(signal, () => this._queueRefresh())" in discovery
+    assert "bannerBin.connect(signal, () => this._queueBannerRefresh())" in discovery
     assert ".frosted-glass-shell-surface.notification-banner" in stylesheet
     assert ".message:second-in-stack" in stylesheet
     assert ".message:lower-in-stack" in stylesheet
