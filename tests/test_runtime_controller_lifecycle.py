@@ -74,7 +74,7 @@ def test_native_panel_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "30 native panel lifecycle scenarios passed" in result.stdout
+    assert "31 native panel lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_panel_lifecycle():
@@ -83,7 +83,7 @@ def test_dock_panel_lifecycle():
         ["node", str(script)], capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "47 dock panel lifecycle scenarios passed" in result.stdout
+    assert "48 dock panel lifecycle scenarios passed" in result.stdout
 
 
 def test_dock_hover_lifecycle():

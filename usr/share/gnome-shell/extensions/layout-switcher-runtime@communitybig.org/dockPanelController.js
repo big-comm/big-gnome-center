@@ -9,6 +9,9 @@ import {PanelAutohide} from './panelAutohide.js';
 import {PanelMenuShortcuts} from './panelMenuShortcuts.js';
 
 const SETTINGS_SCHEMA = 'org.communitybig.panel-and-dock';
+// Frosted Glass marks a panel whose material it paints, tinted from the same
+// panel-opacity setting.
+const FROSTED_PANEL_CLASS = 'frosted-glass-shell-surface';
 const VALID_VISIBILITY = new Set([
     'always-visible',
     'always-hidden',
@@ -119,6 +122,8 @@ export class PanelController {
                 this._queueHide();
             }
         });
+        this._connect(this._panel, 'notify::style-class',
+            () => this._queueOpacityApply());
         this._connect(Main.overview, 'showing', () => {
             this._inOverview = true;
             this._applyVisibility();
@@ -552,6 +557,10 @@ export class PanelController {
 
     _applyOpacity() {
         if (this._destroyed || this._destroyRequested)
+            return;
+        // A second background would undo Frosted Glass's transparent panel on
+        // every overview transition; the theme then fades its black panel in.
+        if (this._panel.has_style_class_name?.(FROSTED_PANEL_CLASS))
             return;
         const opacity = Math.min(100, this._settings.get_uint('panel-opacity')) / 100;
         const original = this._originalStyle?.trim().replace(/;+\s*$/, '') ?? '';

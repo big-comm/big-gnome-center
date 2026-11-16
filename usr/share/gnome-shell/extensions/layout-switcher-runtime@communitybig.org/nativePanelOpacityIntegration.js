@@ -7,6 +7,9 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {PanelAutohide} from './panelAutohide.js';
 import {PanelMenuShortcuts} from './panelMenuShortcuts.js';
 
+// Frosted Glass marks a panel whose material it paints, tinted from the same
+// panel-opacity setting.
+const FROSTED_PANEL_CLASS = 'frosted-glass-shell-surface';
 const VALID_VISIBILITY = new Set([
     'always-visible',
     'always-hidden',
@@ -133,6 +136,7 @@ export class NativePanelOpacityIntegration {
 
         this._styleChangedId = panel.connect(
             'notify::style', this._guard(() => this._onStyleChanged()));
+        this._connect(panel, 'notify::style-class', () => this._applyStyle());
         this._connect(global.display, 'notify::focus-window', () => {
             this._watchFocusWindow();
             this._applyVisibility();
@@ -237,7 +241,15 @@ export class NativePanelOpacityIntegration {
         this._background = [color.red, color.green, color.blue];
     }
 
+    _frostedPanel() {
+        return Boolean(this._panel.has_style_class_name?.(FROSTED_PANEL_CLASS));
+    }
+
     _applyStyle() {
+        // A second background would undo Frosted Glass's transparent panel on
+        // every overview transition; the theme then fades its black panel in.
+        if (this._frostedPanel())
+            return;
         const base = this._originalStyle?.trim() ?? '';
         const separator = base && !base.endsWith(';') ? '; ' : base ? ' ' : '';
         const [red, green, blue] = this._background;
@@ -252,7 +264,7 @@ export class NativePanelOpacityIntegration {
     }
 
     _onStyleChanged() {
-        if (this._applyingStyle || !this._panel)
+        if (this._applyingStyle || !this._panel || this._frostedPanel())
             return;
         const style = this._panel.get_style();
         if (style === this._ownedStyle)
