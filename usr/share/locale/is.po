@@ -2185,3 +2185,87 @@ msgstr "Líma með miðsmelli"
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr "Límir valinn texta með miðhnappi músarinnar eða snertingu með þremur fingrum"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Virkja glugga þegar bendill fer yfir"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Setur fókus á gluggann undir bendlinum án þess að smella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Festa glugga við gluggann sinn"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "Samtalsgluggar haldast yfir glugganum sem opnaði þá og færast með honum"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Lykill til að færa glugga"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "Haltu honum inni og dragðu hvaða hluta glugga sem er til að færa hann"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Breyta stærð með hægri hnapp"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Með lykilinn inni, dragðu með hægri hnapp til að breyta stærð"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Titilstika"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Tvísmella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Miðsmella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Hægrismella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Hámarka"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Hámarka breidd"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Hámarka hæð"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Lágmarka"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Senda aftur fyrir"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Sýna gluggavalmynd"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Gera ekkert"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"

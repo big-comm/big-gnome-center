@@ -2221,3 +2221,87 @@ msgstr "Colar com o botão do meio"
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr "Cola o texto selecionado com o botão do meio do rato ou um toque com três dedos"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Ativar janelas ao passar o rato"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Coloca o foco na janela sob o ponteiro sem ser preciso clicar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Prender diálogos à janela"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "Os diálogos ficam sobre a janela que os abriu e movem-se com ela"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Tecla para mover janelas"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "Mantenha-a premida e arraste qualquer parte de uma janela para a mover"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Redimensionar com o botão direito"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Com essa tecla premida, arraste com o botão direito para redimensionar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Barra de título"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Duplo clique"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Clique do meio"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Clique direito"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maximizar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Maximizar largura"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Maximizar altura"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimizar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Enviar para trás"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Mostrar menu da janela"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Não fazer nada"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"

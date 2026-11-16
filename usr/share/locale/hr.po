@@ -2188,3 +2188,87 @@ msgstr "Lijepljenje srednjim klikom"
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr "Lijepi odabrani tekst srednjom tipkom miša ili dodirom s tri prsta"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Aktiviraj prozore pri prelasku mišem"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Fokusira prozor ispod pokazivača bez klika"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Pričvrsti dijaloge uz njihov prozor"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "Dijalozi ostaju iznad prozora koji ih je otvorio i pomiču se s njim"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Tipka za pomicanje prozora"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "Držite je i povucite bilo koji dio prozora da ga pomaknete"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Promjena veličine desnom tipkom"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Uz držanu tipku povucite desnom tipkom za promjenu veličine"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Naslovna traka"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Dvostruki klik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Srednji klik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Desni klik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maksimiziraj"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Maksimiziraj širinu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Maksimiziraj visinu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimiziraj"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Pošalji u pozadinu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Prikaži izbornik prozora"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Ne radi ništa"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"

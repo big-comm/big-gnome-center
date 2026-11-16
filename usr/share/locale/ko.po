@@ -2179,3 +2179,87 @@ msgstr "가운데 클릭 붙여넣기"
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr "선택한 텍스트를 마우스 가운데 버튼이나 세 손가락 탭으로 붙여넣습니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "마우스를 올리면 창 활성화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "클릭하지 않고 포인터 아래의 창에 초점을 맞춥니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "대화 상자를 해당 창에 붙이기"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "대화 상자가 자신을 연 창 위에 머물며 함께 움직입니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "창 이동 키"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "누른 채로 창의 아무 곳이나 끌어 창을 이동합니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "오른쪽 버튼으로 크기 조절"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "그 키를 누른 채 오른쪽 버튼으로 끌어 크기를 조절합니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "제목 표시줄"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "두 번 클릭"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "가운데 클릭"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "오른쪽 클릭"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "최대화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "너비 최대화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "높이 최대화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "최소화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "뒤로 보내기"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "창 메뉴 표시"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "아무것도 안 함"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"

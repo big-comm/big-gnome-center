@@ -2187,3 +2187,87 @@ msgstr "Orta tıkla yapıştır"
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr "Seçili metni farenin orta tuşuyla veya üç parmakla dokunarak yapıştırır"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Üzerine gelince pencereleri etkinleştir"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Tıklamadan imlecin altındaki pencereye odaklanır"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "İletişim kutularını pencerelerine bağla"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "İletişim kutuları onları açan pencerenin üzerinde kalır ve onunla birlikte hareket eder"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Pencereleri taşıma tuşu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "Basılı tutun ve taşımak için pencerenin herhangi bir yerini sürükleyin"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Sağ tuşla yeniden boyutlandır"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Bu tuş basılıyken yeniden boyutlandırmak için sağ tuşla sürükleyin"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Başlık çubuğu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Çift tıklama"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Orta tıklama"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Sağ tıklama"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Büyüt"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Genişliği büyüt"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Yüksekliği büyüt"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Küçült"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Arkaya gönder"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Pencere menüsünü göster"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Hiçbir şey yapma"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""Middle-click paste: shipped on by default and switchable in Behavior."""
+"""Behavior page: middle-click paste on by default, every switch bound live."""
 
 import shutil
 import subprocess
@@ -12,7 +12,10 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, Gtk
 
-from ui.page_behavior import BehaviorPage, INTERFACE_SCHEMA, PRIMARY_PASTE_KEY
+from ui.page_behavior import (
+    INTERFACE_SCHEMA, MUTTER_SCHEMA, PRIMARY_PASTE_KEY, WM_SCHEMA,
+    BehaviorPage, move_modifiers, titlebar_actions,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 OVERRIDE = ROOT / "usr/share/glib-2.0/schemas/50_big-gnome-center.gschema.override"
@@ -32,23 +35,82 @@ def test_override_turns_middle_click_paste_back_on(tmp_path):
     assert key.get_default_value().unpack() is True
 
 
-def test_switch_follows_and_writes_the_user_setting():
+@pytest.fixture
+def page():
     if not Gtk.init_check() or Gdk.Display.get_default() is None:
         pytest.skip("Requires a GTK display")
     Adw.init()
-    if Gio.SettingsSchemaSource.get_default().lookup(INTERFACE_SCHEMA, True) is None:
-        pytest.skip("Requires the GNOME interface schema")
-    settings = Gio.Settings.new_with_backend(
-        INTERFACE_SCHEMA, Gio.memory_settings_backend_new()
-    )
-    settings.set_boolean(PRIMARY_PASTE_KEY, True)
-    page = BehaviorPage(None, None, settings=settings)
-    row = page.primary_paste_row
+    source = Gio.SettingsSchemaSource.get_default()
+    if any(source.lookup(s, True) is None for s in (INTERFACE_SCHEMA, WM_SCHEMA, MUTTER_SCHEMA)):
+        pytest.skip("Requires the GNOME and Mutter schemas")
+    backend = Gio.memory_settings_backend_new()
+    stores = {}
+
+    def settings_for(schema_id, _key):
+        stores.setdefault(schema_id, Gio.Settings.new_with_backend(schema_id, backend))
+        return stores[schema_id]
+
+    built = BehaviorPage(None, None, settings_for=settings_for)
+    built.stores = stores
+    return built
+
+
+@pytest.mark.parametrize("name, schema_id, key", [
+    ("primary-paste", INTERFACE_SCHEMA, PRIMARY_PASTE_KEY),
+    ("attach-dialogs", MUTTER_SCHEMA, "attach-modal-dialogs"),
+    ("resize-right-button", WM_SCHEMA, "resize-with-right-button"),
+])
+def test_switches_write_and_follow_their_key(page, name, schema_id, key):
+    row, settings = page.rows[name], page.stores[schema_id]
+    assert row.get_active() == settings.get_boolean(key)
+    row.set_active(not row.get_active())
+    assert settings.get_boolean(key) == row.get_active()
+    settings.set_boolean(key, not row.get_active())
+    assert row.get_active() == settings.get_boolean(key)
+
+
+def test_hover_focus_maps_to_sloppy_and_back_to_click(page):
+    row, settings = page.rows["focus-hover"], page.stores[WM_SCHEMA]
+    assert settings.get_string("focus-mode") == "click" and not row.get_active()
+    row.set_active(True)
+    assert settings.get_string("focus-mode") == "sloppy"
+    settings.set_string("focus-mode", "mouse")  # set in GNOME Settings
     assert row.get_active()
+    assert settings.get_string("focus-mode") == "mouse", "kept as chosen elsewhere"
     row.set_active(False)
-    assert settings.get_boolean(PRIMARY_PASTE_KEY) is False
-    settings.set_boolean(PRIMARY_PASTE_KEY, True)
-    assert row.get_active()
+    assert settings.get_string("focus-mode") == "click"
+
+
+@pytest.mark.parametrize("name, key, choices", [
+    ("double-click", "action-double-click-titlebar", titlebar_actions()),
+    ("middle-click", "action-middle-click-titlebar", titlebar_actions()),
+    ("right-click", "action-right-click-titlebar", titlebar_actions()),
+    ("move-modifier", "mouse-button-modifier", move_modifiers()),
+])
+def test_choices_write_and_follow_their_key(page, name, key, choices):
+    row, settings = page.rows[name], page.stores[WM_SCHEMA]
+    values = [value for value, _label in choices]
+    assert values[row.get_selected()] == settings.get_string(key)
+    for index, value in enumerate(values):
+        row.set_selected(index)
+        assert settings.get_string(key) == value
+    settings.set_string(key, values[0])
+    assert row.get_selected() == 0
+
+
+def test_a_value_set_elsewhere_is_shown_not_replaced(page):
+    row, settings = page.rows["move-modifier"], page.stores[WM_SCHEMA]
+    settings.set_string("mouse-button-modifier", "<Control>")
+    assert row.get_model().get_string(row.get_selected()) == "<Control>"
+    assert settings.get_string("mouse-button-modifier") == "<Control>"
+
+
+def test_missing_schema_disables_its_rows():
+    if not Gtk.init_check() or Gdk.Display.get_default() is None:
+        pytest.skip("Requires a GTK display")
+    Adw.init()
+    built = BehaviorPage(None, None, settings_for=lambda _schema, _key: None)
+    assert built.rows and not any(row.get_sensitive() for row in built.rows.values())
 
 
 def test_behavior_page_is_in_the_sidebar():
