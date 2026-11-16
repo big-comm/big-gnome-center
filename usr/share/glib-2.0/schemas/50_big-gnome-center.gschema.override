@@ -1,0 +1,4 @@
+# GNOME 51 turned middle-click paste off by default; keep it on.
+# Users can still turn it off in Big Gnome Center > Behavior.
+[org.gnome.desktop.interface]
+gtk-enable-primary-paste=true

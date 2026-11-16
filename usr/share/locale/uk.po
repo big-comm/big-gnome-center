@@ -2175,3 +2175,15 @@ msgstr "Розташування дока"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Знизу"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Миша та сенсорна панель"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Вставлення середньою кнопкою"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Вставляє виділений текст середньою кнопкою миші або дотиком трьома пальцями"

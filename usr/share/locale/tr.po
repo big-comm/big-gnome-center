@@ -2175,3 +2175,15 @@ msgstr "Rıhtım konumu"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Fare ve dokunmatik yüzey"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Orta tıkla yapıştır"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Seçili metni farenin orta tuşuyla veya üç parmakla dokunarak yapıştırır"

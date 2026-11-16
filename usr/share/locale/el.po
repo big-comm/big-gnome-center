@@ -2201,3 +2201,15 @@ msgstr "Θέση του dock"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Κάτω"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Ποντίκι και touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Επικόλληση με μεσαίο κλικ"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Επικολλά το επιλεγμένο κείμενο με το μεσαίο κουμπί του ποντικιού ή με πάτημα τριών δαχτύλων"

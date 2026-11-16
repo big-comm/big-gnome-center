@@ -2167,3 +2167,15 @@ msgstr "독 위치"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "아래쪽"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "마우스 및 터치패드"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "가운데 클릭 붙여넣기"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "선택한 텍스트를 마우스 가운데 버튼이나 세 손가락 탭으로 붙여넣습니다"

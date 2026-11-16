@@ -2173,3 +2173,15 @@ msgstr "Staðsetning dokku"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Neðst"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Mús og snertiflötur"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Líma með miðsmelli"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Límir valinn texta með miðhnappi músarinnar eða snertingu með þremur fingrum"

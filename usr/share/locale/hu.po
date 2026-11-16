@@ -2188,3 +2188,15 @@ msgstr "Dokk helyzete"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Alul"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Egér és érintőpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Beillesztés középső kattintással"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "A kijelölt szöveget az egér középső gombjával vagy háromujjas koppintással illeszti be"

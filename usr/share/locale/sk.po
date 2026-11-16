@@ -2172,3 +2172,15 @@ msgstr "Umiestnenie doku"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Dole"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Myš a touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Vkladanie stredným tlačidlom"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Vloží vybraný text stredným tlačidlom myši alebo ťuknutím troma prstami"

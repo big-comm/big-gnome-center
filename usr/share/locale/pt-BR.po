@@ -2204,3 +2204,15 @@ msgstr "Redefine o material e as opções de economia de energia."
 #: usr/share/big-gnome-center/ui/frosted_glass.py
 msgid "Effect defaults restored"
 msgstr "Padrões dos efeitos restaurados"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Mouse e touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Colar com o botão do meio"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Cola o texto selecionado com o botão do meio do mouse ou um toque com três dedos"

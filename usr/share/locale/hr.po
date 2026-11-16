@@ -2176,3 +2176,15 @@ msgstr "Položaj docka"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Dolje"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Miš i dodirna pločica"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Lijepljenje srednjim klikom"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Lijepi odabrani tekst srednjom tipkom miša ili dodirom s tri prsta"

@@ -2184,3 +2184,15 @@ msgstr "Poziția docului"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Jos"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Mouse și touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Lipire cu clic de mijloc"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Lipește textul selectat cu butonul din mijloc al mouse-ului sau o atingere cu trei degete"

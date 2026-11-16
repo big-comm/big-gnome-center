@@ -2162,3 +2162,15 @@ msgstr "מיקום המעגן"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "למטה"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "עכבר ומשטח מגע"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "הדבקה בלחיצה אמצעית"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "מדביק את הטקסט הנבחר בלחצן האמצעי של העכבר או בהקשה בשלוש אצבעות"

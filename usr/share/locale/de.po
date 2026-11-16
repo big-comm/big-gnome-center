@@ -2195,3 +2195,15 @@ msgstr "Dock-Position"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Unten"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Maus und Touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Einfügen mit mittlerer Maustaste"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Fügt den markierten Text mit der mittleren Maustaste oder einem Tippen mit drei Fingern ein"

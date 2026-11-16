@@ -2180,3 +2180,15 @@ msgstr "Telakan sijainti"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Alhaalla"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Hiiri ja kosketuslevy"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Liitä keskipainikkeella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Liittää valitun tekstin hiiren keskipainikkeella tai kolmen sormen napautuksella"

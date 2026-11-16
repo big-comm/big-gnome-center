@@ -2156,3 +2156,15 @@ msgstr "程序坞位置"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "底部"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "鼠标和触摸板"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "中键粘贴"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "使用鼠标中键或三指轻点粘贴所选文本"
