@@ -11,6 +11,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {RoundedCornersEffect} from './roundedCorners.js';
 import {createBackgroundEffect} from './roundedBackend.js';
 import {createRedrawGuard} from './redrawGuard.js';
+import {overscanWallpapers} from './wallpaperOverscan.js';
 
 const EFFECT_NAME = 'communitybig-frosted-glass-shell';
 const CORNER_EFFECT_NAME = 'communitybig-frosted-glass-shell-corners';
@@ -488,6 +489,7 @@ export class ShellBlurSurface {
             this._newOverlayChild('_wallpaper');
             this._effect = new Shell.BlurEffect({mode: Shell.BlurMode.ACTOR});
             this._wallpaper.add_effect_with_name(EFFECT_NAME, this._effect);
+            overscanWallpapers(this._wallpaper);
             this._overlay.add_child(this._wallpaper);
             this._manager = new Background.BackgroundManager({
                 container: this._wallpaper,

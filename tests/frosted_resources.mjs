@@ -73,6 +73,7 @@ function actors() {
         Shell: {BlurEffect: Effect, BlurMode: {ACTOR: 0}}, RoundedCornersEffect: Effect,
         createBackgroundEffect() { hit('effect-new'); return new Effect(); },
         createRedrawGuard() { const e = new Effect(); e.redrawGuard = true; return e; },
+        overscanWallpapers: load('wallpaperOverscan.js', 'overscanWallpapers', {}),
         attachBlurRepaint(actor, getEffect) { const e = {getEffect}; actor.add_effect(e); return e; },
         Background: {BackgroundManager: class {
             constructor() { managers.push(this); }
@@ -453,6 +454,24 @@ test('writer', 'stderr warning on successful exit does not force a retry', () =>
     const h = writer(), w = h.styles; w.refresh(true);
     h.processes[0].stderr = 'diagnostic'; h.processes[0].finish(); w.refresh(true);
     assert.equal(h.processes.length, 1); assert.equal(w._applied, JSON.stringify([true, 37]));
+});
+test('resources', 'blurred wallpapers stay one pixel past their container', () => {
+    const overscan = load('wallpaperOverscan.js', 'overscanWallpapers', {});
+    const placed = new Map();
+    const child = name => ({
+        set_position(x, y) { placed.set(name, [x, y, ...(placed.get(name)?.slice(2) ?? [])]); },
+        set_size(w, h) { placed.set(name, [...placed.get(name).slice(0, 2), w, h]); },
+    });
+    const signals = {}, children = [child('old')];
+    const container = {width: 1920, height: 1080, get_children: () => children,
+        connect(signal, callback) { signals[signal] = callback; }};
+    overscan(container);
+    assert.deepEqual(placed.get('old'), [-1, -1, 1922, 1082]);
+    // BackgroundManager swaps in a new actor when the wallpaper changes.
+    signals['child-added'](container, child('new'));
+    assert.deepEqual(placed.get('new'), [-1, -1, 1922, 1082]);
+    container.width = 1280; signals['notify::width']();
+    assert.deepEqual(placed.get('old'), [-1, -1, 1282, 1082]);
 });
 let passed = 0, failed = 0;
 for (const item of cases) {
