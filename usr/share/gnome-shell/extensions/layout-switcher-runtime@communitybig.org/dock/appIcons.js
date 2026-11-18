@@ -155,6 +155,11 @@ export const DockAbstractAppIcon = GObject.registerClass({
 
         this._signalsHandler.add(this.app, 'windows-changed', () => this._updateWindows());
         this._signalsHandler.add(this.app, 'notify::state', () => this._updateRunningState());
+        // A window moving between monitors changes which dock owns it.
+        this._signalsHandler.add(global.display, 'window-entered-monitor',
+            this._onWindowEntered.bind(this));
+        this._signalsHandler.add(global.display, 'window-left-monitor',
+            this._onWindowEntered.bind(this));
         this._signalsHandler.add(global.display, 'window-demands-attention', (_dpy, window) =>
             this._onWindowDemandsAttention(window));
         this._signalsHandler.add(global.display, 'window-marked-urgent', (_dpy, window) =>
@@ -1420,7 +1425,19 @@ function isWindowUrgent(w) {
  * @param monitorIndex
  */
 export function getInterestingWindows(windows, monitorIndex) {
-    return windows.filter(w => !w.skipTaskbar);
+    const isolated = isolatesMonitors();
+    return windows.filter(w => !w.skipTaskbar &&
+        (!isolated || w.get_monitor() === monitorIndex));
+}
+
+/**
+ * Whether each dock shows only the windows on its own monitor. It needs a
+ * dock on every monitor; a single dock keeps showing every window.
+ */
+export function isolatesMonitors() {
+    const {settings} = Docking.DockSurfaceManager;
+    return Boolean(settings?.isolateMonitors && settings.multiMonitor &&
+        Main.layoutManager.monitors.length > 1);
 }
 
 /**

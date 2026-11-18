@@ -2272,3 +2272,15 @@ msgstr "Super"
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Alt"
 msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Separera appar per skärm"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "Varje docka visar bara apparna som är öppna på dess egen skärm"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Dockans appar per skärm uppdaterade"

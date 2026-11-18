@@ -165,6 +165,8 @@ def settings_fixture():
             "autohide": True,
             "running-indicator-style": 0,
             "dash-max-icon-size": 39,
+            "multi-monitor": True,
+            "isolate-monitors": False,
         }
     )
     settings.panel = FakeSettings(
@@ -474,6 +476,33 @@ def test_restore_uses_each_layout_indicator_contract(
 
     assert settings.indicator_style() == expected
     assert (layout, "indicator-style") not in settings.runtime.values
+
+
+def test_dock_monitor_isolation_writes_the_dock_key_and_restores_off():
+    settings = settings_fixture()
+    settings.active_layout = "BigGnome"
+    assert settings.dock_on_every_monitor() is True
+    assert settings.dock_isolates_monitors() is False
+
+    settings.set_dock_isolates_monitors(True)
+    assert settings.dock.values["isolate-monitors"] is True
+
+    settings.restore_layout_defaults()
+    assert settings.dock.values["isolate-monitors"] is False
+
+
+def test_dock_filters_windows_and_running_apps_by_monitor():
+    runtime = ROOT / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org"
+    icons = (runtime / "dock/appIcons.js").read_text()
+    dash = (runtime / "dock/dash.js").read_text()
+    surface = (runtime / "dockSurface.js").read_text()
+    assert "(!isolated || w.get_monitor() === monitorIndex)" in icons
+    assert "settings?.isolateMonitors && settings.multiMonitor" in icons
+    assert icons.count("'window-entered-monitor'") == 1
+    assert icons.count("'window-left-monitor'") == 1
+    assert "running = running.filter(app => AppIcons.getInterestingWindows(" in dash
+    assert "'window-left-monitor'" in dash
+    assert "'changed::isolate-monitors'" in surface
 
 
 def test_classic_restore_does_not_reenable_running_indicators():

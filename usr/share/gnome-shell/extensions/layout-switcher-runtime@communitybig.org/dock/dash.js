@@ -280,6 +280,14 @@ export const DockDash = GObject.registerClass({
             'app-state-changed',
             this._queueRedisplay.bind(this),
         ], [
+            global.display,
+            'window-entered-monitor',
+            this._onWindowMonitorChanged.bind(this),
+        ], [
+            global.display,
+            'window-left-monitor',
+            this._onWindowMonitorChanged.bind(this),
+        ], [
             Main.overview,
             'item-drag-begin',
             this._onItemDragBegin.bind(this),
@@ -369,6 +377,11 @@ export const DockDash = GObject.registerClass({
 
     _appIdListToHash(...args) {
         return Dash.Dash.prototype._appIdListToHash.call(this, ...args);
+    }
+
+    _onWindowMonitorChanged() {
+        if (AppIcons.isolatesMonitors())
+            this._queueRedisplay();
     }
 
     _queueRedisplay(...args) {
@@ -818,6 +831,11 @@ export const DockDash = GObject.registerClass({
             AppFavorites.getAppFavorites().getFavoriteMap();
 
         let running = appModel?.running() ?? this._appSystem.get_running();
+        // Each dock lists only the apps with a window on its own monitor.
+        if (AppIcons.isolatesMonitors()) {
+            running = running.filter(app => AppIcons.getInterestingWindows(
+                app.get_windows(), this._monitorIndex).length);
+        }
         const dockManager = Docking.DockSurfaceManager.getDefault();
         const {settings} = dockManager;
 

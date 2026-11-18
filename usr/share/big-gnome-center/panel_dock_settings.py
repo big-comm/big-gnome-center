@@ -141,6 +141,7 @@ class PanelDockSettings:
                 self.set_dock_hover_effect(defaults["dock-hover"])
                 if self.active_layout == "BigGnome":
                     self.set_dock_menu_side(defaults["dock-menu-side"])
+                self.set_dock_isolates_monitors(False)
             elif self.community_panel_active:
                 self.set_dock_hover_effect(defaults["dock-hover"])
             if (
@@ -259,6 +260,16 @@ class PanelDockSettings:
         if side not in DOCK_MENU_SIDES:
             raise ValueError(f"invalid dock menu side: {side}")
         self._remember("dock-menu-side", side)
+
+    def dock_on_every_monitor(self) -> bool:
+        return self.dock.get_boolean("multi-monitor")
+
+    def dock_isolates_monitors(self) -> bool:
+        return self.dock.get_boolean("isolate-monitors")
+
+    def set_dock_isolates_monitors(self, isolate: bool) -> None:
+        # The dock reads this key live; layouts reset it when they switch.
+        self.dock.set_boolean("isolate-monitors", bool(isolate))
 
     def skip_startup_overview(self) -> bool:
         return bool(

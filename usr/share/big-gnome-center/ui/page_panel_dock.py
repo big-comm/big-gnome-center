@@ -112,6 +112,15 @@ class PanelDockPage(Gtk.Box):
             self._on_dock_visibility_changed,
         )
         self._dock_group.add(self._dock_visibility)
+        self._isolate_monitors = Adw.SwitchRow(
+            title=tr("Separate apps by monitor"),
+            subtitle=tr("Each dock shows only the apps open on its own monitor"),
+        )
+        self._isolate_monitors.connect(
+            "notify::active",
+            self._on_isolate_monitors_changed,
+        )
+        self._dock_group.add(self._isolate_monitors)
         self._indicator_row = self._build_indicator_style_row()
         self._dock_group.add(self._indicator_row)
         content.append(self._dock_group)
@@ -558,6 +567,12 @@ class PanelDockPage(Gtk.Box):
         self._hover_flow.set_max_children_per_line(hover_columns)
         self._magnification.set_visible(False)
         self._dock_visibility.set_visible(not community_panel_active)
+        # Only a dock on every monitor can keep each monitor's apps apart.
+        self._isolate_monitors.set_visible(
+            runtime_active and dock_available and not community_panel_active
+            and active_layout in RUNTIME_DOCK_LAYOUTS
+            and self._settings.dock_on_every_monitor()
+        )
         self._panel_height.set_visible(community_panel_active)
         self._panel_visibility.set_visible(panel_available)
         self._indicator_row.set_sensitive(indicator_available)
@@ -645,6 +660,9 @@ class PanelDockPage(Gtk.Box):
                 self._dock_size_scale,
                 self._dock_size_label,
                 self._settings.dock_size(),
+            )
+            self._isolate_monitors.set_active(
+                self._settings.dock_isolates_monitors()
             )
             if active_layout == "BigGnome":
                 self._menu_side_buttons[
@@ -795,6 +813,12 @@ class PanelDockPage(Gtk.Box):
             return
         self._settings.set_dock_menu_side(side)
         self._toast(tr("Application menu position updated"))
+
+    def _on_isolate_monitors_changed(self, row: Adw.SwitchRow, param) -> None:
+        if self._syncing or not self._settings:
+            return
+        self._settings.set_dock_isolates_monitors(row.get_active())
+        self._toast(tr("Dock monitor apps updated"))
 
     def _on_skip_startup_overview_changed(
         self,
