@@ -322,7 +322,9 @@ find_plane (GskRenderNode *node, double x, double y, const graphene_rect_t *area
 /* What the native's last frame asks to have blurred behind it, in its surface:
  * the backdrops its stylesheet blurs, and the plane of a window it makes
  * translucent. A window that dropped GTK's `background` class is meant to show
- * what lies behind it as it is. */
+ * what lies behind it as it is. NULL when there is no frame to read: GTK drops
+ * a window's frame when a draw is queued, and a frozen surface, as one waiting
+ * for the compositor's frame callback, runs frame cycles without drawing. */
 static cairo_region_t *
 backdrop_shape (GtkWidget *native, gboolean *translucent)
 {
@@ -346,7 +348,10 @@ backdrop_shape (GtkWidget *native, gboolean *translucent)
                           ceilf (bounds.size.height));
   node = gtk_snapshot_free_to_node (snapshot);
   if (node == NULL)
-    return shape;
+    {
+      cairo_region_destroy (shape);
+      return NULL;
+    }
   gtk_native_get_surface_transform (GTK_NATIVE (native), &x, &y);
   x += bounds.origin.x;
   y += bounds.origin.y;
@@ -402,6 +407,8 @@ follow_blurred (GtkWidget *native, gboolean blurred)
   follow_class (native, BLURRED_CLASS, blurred && GTK_IS_WINDOW (native));
 }
 
+static void apply_after_paint (GtkWidget *native);
+
 static void
 apply (GtkWidget *native)
 {
@@ -456,6 +463,13 @@ apply (GtkWidget *native)
    * what the theme keeps opaque stays opaque, blur or not. Elsewhere the
    * module asks for the blur and changes nothing else. */
   shape = backdrop_shape (native, &translucent);
+  /* Nothing drawn says nothing about the blur: keep it and read the next frame. */
+  if (shape == NULL)
+    {
+      if (gdk_surface_get_frame_clock (surface) != NULL)
+        apply_after_paint (native);
+      return;
+    }
   /* The opaque planes the class gives hide the translucent one that asked. */
   asked = !cairo_region_is_empty (shape) || gtk_widget_has_css_class (native, UNBLURRED_CLASS);
   offered = asked && !bigstyle_session && blur_offered (wl_display);
