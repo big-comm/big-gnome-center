@@ -8,6 +8,7 @@ variables: ok, err, out, val, raw, data, info, etc.
 """
 
 import gettext
+import logging
 import os
 import shutil
 import tempfile
@@ -70,8 +71,10 @@ def _migrate_legacy_dir(old: Path, new: Path) -> None:
             shutil.copytree(old, staged, symlinks=True)
             if not new.exists() and not new.is_symlink():
                 staged.rename(new)
-    except OSError:
-        pass
+    except OSError as exc:
+        logging.getLogger("big-gnome-center").warning(
+            "Cannot import the earlier settings from %s: %s", old, exc
+        )
 
 
 def _replace_legacy_desktop_id(apps: List[str]) -> List[str]:

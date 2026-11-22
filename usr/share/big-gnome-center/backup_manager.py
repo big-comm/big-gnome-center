@@ -21,6 +21,8 @@ from typing import List, Optional, Tuple
 from constants import BACKUP_DIR
 from utils import atomic_write_text, run_cmd
 
+log = logging.getLogger("big-gnome-center")
+
 
 def _backup_retention() -> int:
     """Invalid configuration keeps the default retention; zero still keeps one."""
@@ -33,7 +35,7 @@ def _backup_retention() -> int:
             return max(1, count)
     except ValueError:
         pass
-    logging.getLogger("big-gnome-center").warning("Invalid backup retention; using 10")
+    log.warning("Invalid backup retention; using 10")
     return 10
 
 
@@ -121,17 +123,21 @@ class BackupManager:
         """Retorna todos os backups válidos ordenados do mais novo para o mais antigo."""
         try:
             BACKUP_DIR.mkdir(parents=True, exist_ok=True)
-            return sorted(
-                [
-                    p
-                    for p in BACKUP_DIR.glob("backup_*.dconf")
-                    if p.exists() and p.stat().st_size >= cls.MIN_BYTES
-                ],
-                key=lambda p: p.stat().st_mtime,
-                reverse=True,
-            )
-        except Exception:
+            candidates = list(BACKUP_DIR.glob("backup_*.dconf"))
+        except OSError as exc:
+            log.warning("Cannot list backups in %s: %s", BACKUP_DIR, exc)
             return []
+        found = []
+        for path in candidates:
+            # Another process may prune a backup between the scan and the stat.
+            try:
+                status = path.stat()
+            except OSError:
+                continue
+            if status.st_size >= cls.MIN_BYTES:
+                found.append((status.st_mtime, path))
+        found.sort(key=lambda entry: entry[0], reverse=True)
+        return [path for modified, path in found]
 
     # ── Restaurar ─────────────────────────────────────────────────────────────
 
@@ -201,7 +207,7 @@ class BackupManager:
                     continue
                 try:
                     path.unlink()
-                except Exception:
-                    pass
-        except Exception:
-            pass
+                except OSError as exc:
+                    log.warning("Cannot remove old backup %s: %s", path, exc)
+        except OSError as exc:
+            log.warning("Cannot prune backups in %s: %s", BACKUP_DIR, exc)

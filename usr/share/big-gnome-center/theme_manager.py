@@ -2,6 +2,7 @@
 """Manage native accent, color-scheme, GTK, icon, and cursor themes."""
 
 import ast
+import logging
 from pathlib import Path
 from typing import List, Tuple
 
@@ -41,10 +42,12 @@ class ThemeMgr:
         try:
             ThemeMgr._layout_snapshot_marker().unlink(missing_ok=True)
             ThemeMgr._legacy_layout_snapshot_marker().unlink(missing_ok=True)
-        except OSError:
+        except OSError as exc:
             # Theme application must not fail only because persistence
             # bookkeeping is temporarily unavailable.
-            pass
+            logging.getLogger("big-gnome-center").warning(
+                "Cannot mark the layout as modified: %s", exc
+            )
 
     # ── Listar temas disponíveis ──────────────────────────────────────────────
 

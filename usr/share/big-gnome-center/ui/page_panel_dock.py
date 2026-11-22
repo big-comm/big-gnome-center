@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 """Community panel and dock controls."""
 
+import logging
+
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -527,6 +529,9 @@ class PanelDockPage(Gtk.Box):
                 else None
             )
         except Exception:
+            logging.getLogger("big-gnome-center").exception(
+                "Cannot open the panel and dock settings"
+            )
             self._settings = None
         dock_available = self._settings is not None and dock_active
         panel_available = self._settings is not None and (dock_active or community_panel_active)

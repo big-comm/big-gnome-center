@@ -74,6 +74,36 @@ class TestBackupManager:
             assert self.BackupManager.list_all() == []
             assert self.BackupManager.latest() is None
 
+    def test_list_survives_vanished_backup(self):
+        files = [self.backup_dir / f"backup_{index}.dconf" for index in range(3)]
+        for path in files:
+            path.write_text("x" * 100)
+        original_stat = Path.stat
+
+        def vanishing_stat(path, *args, **kwargs):
+            if path == files[1]:
+                raise FileNotFoundError("gone")
+            return original_stat(path, *args, **kwargs)
+
+        with patch.object(Path, "stat", vanishing_stat):
+            listed = self.BackupManager.list_all()
+
+        assert set(listed) == {files[0], files[2]}
+
+    def test_prune_reports_failed_removal(self, caplog):
+        files = [self.backup_dir / f"backup_{index}.dconf" for index in range(3)]
+        for path in files:
+            path.write_text("x" * 100)
+
+        with (
+            patch.object(Path, "unlink", side_effect=PermissionError("denied")),
+            patch.object(self.BackupManager, "N_KEEP", 1),
+            caplog.at_level("WARNING", logger="big-gnome-center"),
+        ):
+            self.BackupManager._prune()
+
+        assert "denied" in caplog.text
+
     def test_latest_with_backup(self):
         f = self.backup_dir / "backup_20250101_120000.dconf"
         f.write_text("x" * 100)
