@@ -1315,7 +1315,7 @@ msgstr "Ikoner"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Markører"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1360,25 +1360,25 @@ msgstr "Aktiv"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Tilføj et opstartsprogram"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Søg efter programmer"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Opstartsprogrammer"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Opstartsprogrammer startes automatisk, når du logger ind."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Ingen opstartsprogrammer"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2168,7 +2168,8 @@ msgstr "Følg systemets accentfarve"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Tilpas markøren til systemets accentfarve og lyse eller mørke udseende."
+msgstr ""
+"Tilpas markøren til systemets accentfarve og lyse eller mørke udseende."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2177,6 +2178,38 @@ msgstr "Dockens placering"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Nederst"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Deaktivér valgfrie udvidelser"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Deaktivér valgfrie udvidelser?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Valgfrie udvidelser bliver deaktiveret. Nødvendige layoutkomponenter "
+"forbliver aktiveret. Du kan genaktivere valgfrie udvidelser enkeltvis."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Valgfrie udvidelser deaktiveret"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Gendan standardindstillinger for effekten"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Nulstil materialet og indstillingerne for strømbesparelse."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Standardindstillinger for effekten gendannet"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
@@ -2187,8 +2220,11 @@ msgid "Middle-click paste"
 msgstr "Indsæt med midterklik"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Indsætter den markerede tekst med den midterste museknap eller et tryk med tre fingre"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Indsætter den markerede tekst med den midterste museknap eller et tryk med "
+"tre fingre"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2212,7 +2248,8 @@ msgstr "Tast til at flytte vinduer"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Hold it and drag any part of a window to move it"
-msgstr "Hold den nede og træk i en vilkårlig del af et vindue for at flytte det"
+msgstr ""
+"Hold den nede og træk i en vilkårlig del af et vindue for at flytte det"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Resize with the right button"
@@ -2285,3 +2322,11 @@ msgstr "Hver dock viser kun de apps, der er åbne på dens egen skærm"
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Dockens apps pr. skærm opdateret"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Ingen visuelle effekter tilgængelige"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Denne GNOME-version understøtter ikke Matteret glas."

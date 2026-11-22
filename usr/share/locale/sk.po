@@ -1313,7 +1313,7 @@ msgstr "Ikony"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Kurzory"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1358,25 +1358,26 @@ msgstr "Aktívne"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Pridať aplikáciu spúšťanú po prihlásení"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Hľadať aplikácie"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Aplikácie spúšťané po prihlásení"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
 msgstr ""
+"Aplikácie spúšťané po prihlásení sa spustia automaticky, keď sa prihlásite."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Žiadne aplikácie spúšťané po prihlásení"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2159,7 +2160,9 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Nainštalujte big-bibata-cursor-theme, aby ste mohli používať zodpovedajúce kurzory."
+msgstr ""
+"Nainštalujte big-bibata-cursor-theme, aby ste mohli používať zodpovedajúce "
+"kurzory."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2167,7 +2170,8 @@ msgstr "Použiť akcentovú farbu systému"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Prispôsobiť kurzor akcentovej farbe systému a svetlému alebo tmavému vzhľadu."
+msgstr ""
+"Prispôsobiť kurzor akcentovej farbe systému a svetlému alebo tmavému vzhľadu."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2176,6 +2180,38 @@ msgstr "Umiestnenie doku"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Dole"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Vypnúť voliteľné rozšírenia"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Vypnúť voliteľné rozšírenia?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Voliteľné rozšírenia budú vypnuté. Povinné súčasti rozloženia zostanú "
+"zapnuté. Voliteľné rozšírenia môžete znova zapnúť jednotlivo."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Voliteľné rozšírenia boli vypnuté"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Obnoviť predvolené nastavenia efektu"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Obnoví materiál a možnosti úspory energie."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Predvolené nastavenia efektu boli obnovené"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
@@ -2186,8 +2222,10 @@ msgid "Middle-click paste"
 msgstr "Vkladanie stredným tlačidlom"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Vloží vybraný text stredným tlačidlom myši alebo ťuknutím troma prstami"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Vloží vybraný text stredným tlačidlom myši alebo ťuknutím troma prstami"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2284,3 +2322,11 @@ msgstr "Každý dok zobrazuje iba aplikácie otvorené na jeho vlastnom monitore
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Aplikácie doku podľa monitora aktualizované"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Nie sú dostupné žiadne vizuálne efekty"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Táto verzia GNOME nepodporuje Matné sklo."

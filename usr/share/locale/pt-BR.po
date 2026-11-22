@@ -663,7 +663,8 @@ msgstr "Mantém um histórico pesquisável do conteúdo copiado."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shares the clipboard between this computer and your phone."
-msgstr "Compartilha a área de transferência entre este computador e o seu celular."
+msgstr ""
+"Compartilha a área de transferência entre este computador e o seu celular."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
@@ -1654,8 +1655,8 @@ msgid ""
 "Apply this layout? A backup of your current configuration will be created "
 "automatically."
 msgstr ""
-"Altura do painelAplicar este layout? Um backup da sua configuração atual "
-"será criado automaticamente."
+"Aplicar este layout? Um backup da sua configuração atual será criado "
+"automaticamente."
 
 #: usr/share/big-gnome-center/ui/page_layouts.py:298
 msgid "Apply"
@@ -2171,7 +2172,9 @@ msgstr "Seguir a cor de realce do sistema"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Combinar o cursor com a cor de realce e a aparência clara ou escura do sistema."
+msgstr ""
+"Combinar o cursor com a cor de realce e a aparência clara ou escura do "
+"sistema."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2190,8 +2193,13 @@ msgid "Disable optional extensions?"
 msgstr "Desativar extensões opcionais?"
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
-msgid "Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."
-msgstr "As extensões opcionais serão desativadas. Os componentes obrigatórios dos layouts permanecerão ativos. Você pode reativar as extensões opcionais individualmente."
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"As extensões opcionais serão desativadas. Os componentes obrigatórios dos "
+"layouts permanecerão ativos. Você pode reativar as extensões opcionais "
+"individualmente."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
 msgid "Optional extensions disabled"
@@ -2218,8 +2226,11 @@ msgid "Middle-click paste"
 msgstr "Colar com o botão do meio"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Cola o texto selecionado com o botão do meio do mouse ou um toque com três dedos"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Cola o texto selecionado com o botão do meio do mouse ou um toque com três "
+"dedos"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2251,7 +2262,8 @@ msgstr "Redimensionar com o botão direito"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "With that key held, drag with the right button to resize"
-msgstr "Com essa tecla pressionada, arraste com o botão direito para redimensionar"
+msgstr ""
+"Com essa tecla pressionada, arraste com o botão direito para redimensionar"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Title bar"
@@ -2316,3 +2328,11 @@ msgstr "Cada dock mostra apenas os aplicativos abertos no próprio monitor"
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Aplicativos da dock por monitor atualizados"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Nenhum efeito visual disponível"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Esta versão do GNOME não oferece suporte ao Vidro fosco."

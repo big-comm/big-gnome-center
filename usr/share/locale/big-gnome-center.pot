@@ -2173,7 +2173,9 @@ msgid "Disable optional extensions?"
 msgstr ""
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
-msgid "Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
 msgstr ""
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
@@ -2201,7 +2203,8 @@ msgid "Middle-click paste"
 msgstr ""
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr ""
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
@@ -2298,4 +2301,12 @@ msgstr ""
 
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr ""
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
 msgstr ""

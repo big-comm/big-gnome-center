@@ -1324,7 +1324,7 @@ msgstr "Ikonok"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Kurzorok"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1370,25 +1370,26 @@ msgstr "Aktív"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Automatikusan induló alkalmazás hozzáadása"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Alkalmazások keresése"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Automatikusan induló alkalmazások"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
 msgstr ""
+"Az automatikusan induló alkalmazások bejelentkezéskor maguktól elindulnak."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Nincsenek automatikusan induló alkalmazások"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2175,7 +2176,9 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Telepítse a big-bibata-cursor-theme csomagot a hozzá illő kurzorok használatához."
+msgstr ""
+"Telepítse a big-bibata-cursor-theme csomagot a hozzá illő kurzorok "
+"használatához."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2183,7 +2186,9 @@ msgstr "Rendszer kiemelő színének követése"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "A kurzor igazítása a rendszer kiemelő színéhez és világos vagy sötét megjelenéséhez."
+msgstr ""
+"A kurzor igazítása a rendszer kiemelő színéhez és világos vagy sötét "
+"megjelenéséhez."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2192,6 +2197,39 @@ msgstr "Dokk helyzete"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Alul"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Nem kötelező kiterjesztések letiltása"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Letiltja a nem kötelező kiterjesztéseket?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"A nem kötelező kiterjesztések le lesznek tiltva. Az elrendezéshez szükséges "
+"összetevők engedélyezve maradnak. A nem kötelező kiterjesztéseket egyenként "
+"újra engedélyezheti."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Nem kötelező kiterjesztések letiltva"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Effektus alapértékeinek visszaállítása"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Visszaállítja az anyagot és az energiatakarékossági beállításokat."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Az effektus alapértékei visszaállítva"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
@@ -2202,8 +2240,11 @@ msgid "Middle-click paste"
 msgstr "Beillesztés középső kattintással"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "A kijelölt szöveget az egér középső gombjával vagy háromujjas koppintással illeszti be"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"A kijelölt szöveget az egér középső gombjával vagy háromujjas koppintással "
+"illeszti be"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2219,7 +2260,9 @@ msgstr "Párbeszédablakok csatolása az ablakukhoz"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Dialogs stay over the window that opened them and move with it"
-msgstr "A párbeszédablakok az őket megnyitó ablak felett maradnak, és vele együtt mozognak"
+msgstr ""
+"A párbeszédablakok az őket megnyitó ablak felett maradnak, és vele együtt "
+"mozognak"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Key to move windows"
@@ -2300,3 +2343,11 @@ msgstr "Minden dokk csak a saját monitorán megnyitott alkalmazásokat mutatja"
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "A dokk monitoronkénti alkalmazásai frissítve"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Nincs elérhető vizuális effektus"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Ez a GNOME-verzió nem támogatja az Opálüveget."

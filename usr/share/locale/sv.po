@@ -1318,7 +1318,7 @@ msgstr "Ikoner"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Markörer"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1363,25 +1363,25 @@ msgstr "Aktiv"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Lägg till ett uppstartsprogram"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Sök program"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Uppstartsprogram"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Uppstartsprogram startas automatiskt när du loggar in."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Inga uppstartsprogram"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2163,7 +2163,9 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Installera paketet big-bibata-cursor-theme för att använda matchande muspekare."
+msgstr ""
+"Installera paketet big-bibata-cursor-theme för att använda matchande "
+"muspekare."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2171,7 +2173,8 @@ msgstr "Följ systemets accentfärg"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Anpassa muspekaren efter systemets accentfärg och ljusa eller mörka utseende."
+msgstr ""
+"Anpassa muspekaren efter systemets accentfärg och ljusa eller mörka utseende."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2180,6 +2183,38 @@ msgstr "Dockans placering"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Nederst"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Inaktivera valfria tillägg"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Inaktivera valfria tillägg?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Valfria tillägg inaktiveras. Nödvändiga layoutkomponenter förblir "
+"aktiverade. Du kan aktivera valfria tillägg igen ett i taget."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Valfria tillägg inaktiverade"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Återställ effektens standardvärden"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Återställer materialet och alternativen för strömsparläge."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Effektens standardvärden återställda"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
@@ -2190,8 +2225,11 @@ msgid "Middle-click paste"
 msgstr "Klistra in med mittenklick"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Klistrar in den markerade texten med mittenknappen på musen eller ett tryck med tre fingrar"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Klistrar in den markerade texten med mittenknappen på musen eller ett tryck "
+"med tre fingrar"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2223,7 +2261,8 @@ msgstr "Ändra storlek med högerknappen"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "With that key held, drag with the right button to resize"
-msgstr "Håll tangenten nedtryckt och dra med högerknappen för att ändra storlek"
+msgstr ""
+"Håll tangenten nedtryckt och dra med högerknappen för att ändra storlek"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Title bar"
@@ -2288,3 +2327,11 @@ msgstr "Varje docka visar bara apparna som är öppna på dess egen skärm"
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Dockans appar per skärm uppdaterade"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Inga visuella effekter tillgängliga"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Den här GNOME-versionen stöder inte Frostat glas."

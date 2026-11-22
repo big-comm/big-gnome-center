@@ -1316,7 +1316,7 @@ msgstr "Значки"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Курсоры"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1361,25 +1361,26 @@ msgstr "Активен"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Добавить автозапускаемое приложение"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Поиск приложений"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Автозапускаемые приложения"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
 msgstr ""
+"Автозапускаемые приложения автоматически запускаются при входе в систему."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Нет автозапускаемых приложений"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2163,7 +2164,8 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Установите big-bibata-cursor-theme, чтобы использовать подходящие курсоры."
+msgstr ""
+"Установите big-bibata-cursor-theme, чтобы использовать подходящие курсоры."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2171,7 +2173,9 @@ msgstr "Следовать системному акцентному цвету"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Подстраивать курсор под системный акцентный цвет и светлое или тёмное оформление."
+msgstr ""
+"Подстраивать курсор под системный акцентный цвет и светлое или тёмное "
+"оформление."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2180,6 +2184,39 @@ msgstr "Расположение дока"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Снизу"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Отключить необязательные расширения"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Отключить необязательные расширения?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Необязательные расширения будут отключены. Обязательные компоненты "
+"компоновки останутся включёнными. Необязательные расширения можно снова "
+"включить по отдельности."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Необязательные расширения отключены"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Восстановить значения эффекта по умолчанию"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Сбрасывает материал и параметры энергосбережения."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Значения эффекта по умолчанию восстановлены"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
@@ -2190,8 +2227,10 @@ msgid "Middle-click paste"
 msgstr "Вставка средней кнопкой"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Вставляет выделенный текст средней кнопкой мыши или касанием тремя пальцами"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Вставляет выделенный текст средней кнопкой мыши или касанием тремя пальцами"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2215,7 +2254,8 @@ msgstr "Клавиша для перемещения окон"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Hold it and drag any part of a window to move it"
-msgstr "Удерживайте её и перетаскивайте окно за любую часть, чтобы переместить его"
+msgstr ""
+"Удерживайте её и перетаскивайте окно за любую часть, чтобы переместить его"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Resize with the right button"
@@ -2223,7 +2263,8 @@ msgstr "Изменять размер правой кнопкой"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "With that key held, drag with the right button to resize"
-msgstr "Удерживая клавишу, перетаскивайте правой кнопкой, чтобы изменить размер"
+msgstr ""
+"Удерживая клавишу, перетаскивайте правой кнопкой, чтобы изменить размер"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Title bar"
@@ -2288,3 +2329,11 @@ msgstr "Каждый док показывает только приложени
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Приложения дока по мониторам обновлены"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Нет доступных визуальных эффектов"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Эта версия GNOME не поддерживает эффект матового стекла."

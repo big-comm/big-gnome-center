@@ -1310,7 +1310,7 @@ msgstr "אייקונים"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "סמנים"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1355,25 +1355,25 @@ msgstr "פעיל"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "הוספת יישום הפעלה"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "חיפוש יישומים"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "יישומי הפעלה"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "יישומי הפעלה מופעלים אוטומטית בעת הכניסה למערכת."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "אין יישומי הפעלה"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2167,6 +2167,38 @@ msgstr "מיקום המעגן"
 msgid "Bottom"
 msgstr "למטה"
 
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "השבתת תוספים אופציונליים"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "להשבית תוספים אופציונליים?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"התוספים האופציונליים יושבתו. רכיבי הפריסה הנדרשים יישארו פעילים. ניתן להפעיל "
+"מחדש תוספים אופציונליים אחד אחד."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "התוספים האופציונליים הושבתו"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "שחזור ברירות המחדל של האפקט"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "מאפס את החומר ואת אפשרויות החיסכון בחשמל."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "ברירות המחדל של האפקט שוחזרו"
+
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
 msgstr "עכבר ומשטח מגע"
@@ -2176,7 +2208,8 @@ msgid "Middle-click paste"
 msgstr "הדבקה בלחיצה אמצעית"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr "מדביק את הטקסט הנבחר בלחצן האמצעי של העכבר או בהקשה בשלוש אצבעות"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
@@ -2274,3 +2307,11 @@ msgstr "כל מעגן מציג רק את היישומים הפתוחים בצג 
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "יישומי המעגן לפי צג עודכנו"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "אין אפקטים חזותיים זמינים"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "גרסה זו של GNOME אינה תומכת בזכוכית מחוסמת."

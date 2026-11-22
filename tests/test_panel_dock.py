@@ -12,7 +12,7 @@ from runtime_settings import LAYOUT_DEFAULTS, RuntimeSettings
 ROOT = Path(__file__).resolve().parents[1]
 APP_LOCALES = (
     "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he",
-    "hr", "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt",
+    "hr", "hu", "is", "it", "ja", "ko", "nb", "nl", "pl", "pt_BR", "pt",
     "ro", "ru", "sk", "sv", "tr", "uk", "zh",
 )
 

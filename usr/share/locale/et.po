@@ -1313,7 +1313,7 @@ msgstr "Ikoonid"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Kursorid"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1359,25 +1359,25 @@ msgstr "Aktiivne"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Lisa automaatselt käivituv rakendus"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Otsi rakendusi"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Automaatselt käivituvad rakendused"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Automaatselt käivituvad rakendused käivitatakse sisselogimisel."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Automaatselt käivituvaid rakendusi pole"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2153,8 +2153,7 @@ msgstr "Tekstitöötlus"
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
 msgstr ""
-"Sinu kohandatud pilt säilib, kuni rakendad kujunduse või taastad "
-"vaikeikooni."
+"Sinu kohandatud pilt säilib, kuni rakendad kujunduse või taastad vaikeikooni."
 
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
@@ -2177,6 +2176,38 @@ msgstr "Doki asukoht"
 msgid "Bottom"
 msgstr "All"
 
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Keela valikulised laiendused"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Kas keelata valikulised laiendused?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Valikulised laiendused keelatakse. Paigutuse nõutavad osad jäävad lubatuks. "
+"Valikulisi laiendusi saab ükshaaval uuesti lubada."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Valikulised laiendused on keelatud"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Taasta efekti vaikeväärtused"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Lähtestab materjali ja energiasäästu valikud."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Efekti vaikeväärtused on taastatud"
+
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
 msgstr "Hiir ja puuteplaat"
@@ -2186,8 +2217,10 @@ msgid "Middle-click paste"
 msgstr "Keskklõpsuga kleepimine"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Kleebib valitud teksti hiire keskmise nupuga või kolme sõrmega puudutusega"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Kleebib valitud teksti hiire keskmise nupuga või kolme sõrmega puudutusega"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2284,3 +2317,11 @@ msgstr "Iga dokk näitab ainult oma monitoril avatud rakendusi"
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Doki rakendused monitori kaupa uuendatud"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Visuaalseid efekte pole saadaval"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "See GNOME'i versioon ei toeta matthägu efekti."

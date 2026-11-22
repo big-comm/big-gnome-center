@@ -665,7 +665,8 @@ msgstr "Mantém um histórico pesquisável do conteúdo copiado."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shares the clipboard between this computer and your phone."
-msgstr "Partilha a área de transferência entre este computador e o seu telemóvel."
+msgstr ""
+"Partilha a área de transferência entre este computador e o seu telemóvel."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
@@ -1232,8 +1233,7 @@ msgstr "Disponível quando o Dock da Comunidade está ativo."
 #: usr/share/big-gnome-center/ui/page_panel_dock.py:574
 msgid "Available when Community Dock or Community Panel is active."
 msgstr ""
-"Altura do painelDisponível quando o Dock da Comunidade ou o Painel da "
-"Comunidade está ativo."
+"Disponível quando o Dock da Comunidade ou o Painel da Comunidade está ativo."
 
 #: usr/share/big-gnome-center/ui/page_panel_dock.py:578
 msgid "Configure the Community Panel appearance and visibility."
@@ -1370,7 +1370,7 @@ msgstr "Adicionar uma aplicação de arranque"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Pesquisar aplicações"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
@@ -2176,7 +2176,8 @@ msgstr "Seguir a cor de destaque do sistema"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Adaptar o cursor à cor de destaque e ao aspeto claro ou escuro do sistema."
+msgstr ""
+"Adaptar o cursor à cor de destaque e ao aspeto claro ou escuro do sistema."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2195,8 +2196,13 @@ msgid "Disable optional extensions?"
 msgstr "Desativar extensões opcionais?"
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
-msgid "Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."
-msgstr "As extensões opcionais serão desativadas. Os componentes obrigatórios dos layouts permanecerão ativos. Você pode reativar as extensões opcionais individualmente."
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"As extensões opcionais serão desativadas. Os componentes obrigatórios dos "
+"layouts permanecerão ativos. Você pode reativar as extensões opcionais "
+"individualmente."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
 msgid "Optional extensions disabled"
@@ -2223,8 +2229,11 @@ msgid "Middle-click paste"
 msgstr "Colar com o botão do meio"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Cola o texto selecionado com o botão do meio do rato ou um toque com três dedos"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Cola o texto selecionado com o botão do meio do rato ou um toque com três "
+"dedos"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2321,3 +2330,11 @@ msgstr "Cada dock mostra apenas as aplicações abertas no seu próprio monitor"
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Aplicações da dock por monitor atualizadas"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Nenhum efeito visual disponível"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Esta versão do GNOME não suporta o Vidro fosco."

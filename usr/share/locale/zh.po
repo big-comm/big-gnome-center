@@ -1308,7 +1308,7 @@ msgstr "图标"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "光标"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1353,25 +1353,25 @@ msgstr "活跃"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "添加自启动应用程序"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "搜索应用程序"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "自启动应用程序"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "自启动应用程序会在您登录时自动启动。"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "没有自启动应用程序"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2161,6 +2161,37 @@ msgstr "程序坞位置"
 msgid "Bottom"
 msgstr "底部"
 
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "禁用可选扩展"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "要禁用可选扩展吗？"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"可选扩展将被禁用。布局所需的组件将保持启用。您可以逐个重新启用可选扩展。"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "可选扩展已禁用"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "恢复效果默认值"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "重置材质和省电选项。"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "效果默认值已恢复"
+
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
 msgstr "鼠标和触摸板"
@@ -2170,7 +2201,8 @@ msgid "Middle-click paste"
 msgstr "中键粘贴"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
 msgstr "使用鼠标中键或三指轻点粘贴所选文本"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
@@ -2268,3 +2300,11 @@ msgstr "每个程序坞只显示在其所在显示器上打开的应用"
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "已更新按显示器显示的程序坞应用"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "没有可用的视觉效果"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "此 GNOME 版本不支持毛玻璃效果。"

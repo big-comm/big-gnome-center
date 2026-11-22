@@ -19,7 +19,7 @@ SCHEMA_FILE = (
 )
 SUPPORTED_LOCALES = (
     "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
-    "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt", "ro", "ru",
+    "hu", "is", "it", "ja", "ko", "nb", "nl", "pl", "pt_BR", "pt", "ro", "ru",
     "sk", "sv", "tr", "uk", "zh",
 )
 

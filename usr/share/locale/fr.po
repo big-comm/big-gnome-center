@@ -1334,7 +1334,7 @@ msgstr "Icônes"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Curseurs"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1381,25 +1381,27 @@ msgstr "Actif"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Ajouter une application au démarrage"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Rechercher des applications"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Applications au démarrage"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
 msgstr ""
+"Les applications au démarrage sont lancées automatiquement à l’ouverture de "
+"session."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Aucune application au démarrage"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2179,13 +2181,15 @@ msgstr "Traitement de texte"
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
 msgstr ""
-"Votre image personnalisée est conservée jusqu’à l’application d’un dessin ou"
-" au rétablissement de l’icône par défaut."
+"Votre image personnalisée est conservée jusqu’à l’application d’un dessin ou "
+"au rétablissement de l’icône par défaut."
 
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Installez le paquet big-bibata-cursor-theme pour utiliser des curseurs assortis."
+msgstr ""
+"Installez le paquet big-bibata-cursor-theme pour utiliser des curseurs "
+"assortis."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2193,7 +2197,9 @@ msgstr "Suivre la couleur d’accent du système"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Adapter le curseur à la couleur d’accent et à l’apparence claire ou sombre du système."
+msgstr ""
+"Adapter le curseur à la couleur d’accent et à l’apparence claire ou sombre "
+"du système."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2202,6 +2208,39 @@ msgstr "Position du dock"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "En bas"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Désactiver les extensions facultatives"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Désactiver les extensions facultatives ?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Les extensions facultatives seront désactivées. Les composants requis par la "
+"mise en page resteront activés. Vous pourrez réactiver les extensions "
+"facultatives une par une."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Extensions facultatives désactivées"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Restaurer les valeurs par défaut de l’effet"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Réinitialise le matériau et les options d’économie d’énergie."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Valeurs par défaut de l’effet restaurées"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Mouse and touchpad"
@@ -2212,8 +2251,11 @@ msgid "Middle-click paste"
 msgstr "Coller avec le clic du milieu"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
-msgid "Paste the selected text with the middle mouse button or a three-finger tap"
-msgstr "Colle le texte sélectionné avec le bouton du milieu de la souris ou un appui à trois doigts"
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Colle le texte sélectionné avec le bouton du milieu de la souris ou un appui "
+"à trois doigts"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Activate windows on hover"
@@ -2229,7 +2271,9 @@ msgstr "Attacher les dialogues à leur fenêtre"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Dialogs stay over the window that opened them and move with it"
-msgstr "Les dialogues restent au-dessus de la fenêtre qui les a ouverts et se déplacent avec elle"
+msgstr ""
+"Les dialogues restent au-dessus de la fenêtre qui les a ouverts et se "
+"déplacent avec elle"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Key to move windows"
@@ -2237,7 +2281,9 @@ msgstr "Touche pour déplacer les fenêtres"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Hold it and drag any part of a window to move it"
-msgstr "Maintenez-la et faites glisser n’importe quelle partie d’une fenêtre pour la déplacer"
+msgstr ""
+"Maintenez-la et faites glisser n’importe quelle partie d’une fenêtre pour la "
+"déplacer"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Resize with the right button"
@@ -2245,7 +2291,9 @@ msgstr "Redimensionner avec le bouton droit"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "With that key held, drag with the right button to resize"
-msgstr "Avec cette touche maintenue, faites glisser avec le bouton droit pour redimensionner"
+msgstr ""
+"Avec cette touche maintenue, faites glisser avec le bouton droit pour "
+"redimensionner"
 
 #: usr/share/big-gnome-center/ui/page_behavior.py
 msgid "Title bar"
@@ -2305,8 +2353,17 @@ msgstr "Séparer les applications par écran"
 
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Each dock shows only the apps open on its own monitor"
-msgstr "Chaque dock n’affiche que les applications ouvertes sur son propre écran"
+msgstr ""
+"Chaque dock n’affiche que les applications ouvertes sur son propre écran"
 
 #: usr/share/big-gnome-center/ui/page_panel_dock.py
 msgid "Dock monitor apps updated"
 msgstr "Applications du dock par écran mises à jour"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Aucun effet visuel disponible"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Cette version de GNOME ne prend pas en charge le Verre dépoli."
