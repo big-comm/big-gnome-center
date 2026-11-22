@@ -5,8 +5,13 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 PANEL = ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org"
+TASKBAR = ROOT / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar"
+# The Shell loads the runtime taskbar; the Community Panel copy is kept for rollback.
+both_renderers = pytest.mark.parametrize("renderer", [TASKBAR, PANEL], ids=["runtime", "rollback"])
 LAYOUTS = ROOT / "usr/share/big-gnome-center/layouts"
 
 
@@ -42,15 +47,17 @@ def test_community_panel_pins_the_reviewed_dash_to_panel_73_core():
         assert hashlib.sha256(payload).hexdigest() == digest
 
 
-def test_community_panel_matches_desk_ux_indicator_geometry():
-    source = (PANEL / "appIcons.js").read_text()
+@both_renderers
+def test_indicator_matches_dock_geometry(renderer):
+    source = (renderer / "appIcons.js").read_text()
 
     assert "Keep custom indicator geometry aligned with Community Dock." in source
     assert "communityStyle == 'hybrid' ? 18 : isFocused ? 18 : 8" in source
 
 
-def test_community_panel_keeps_hybrid_indicator_at_fixed_length():
-    source = (PANEL / "appIcons.js").read_text()
+@both_renderers
+def test_hybrid_indicator_keeps_fixed_length(renderer):
+    source = (renderer / "appIcons.js").read_text()
 
     assert "DOT_STYLE.SEGMENTED" in source
     assert "_getCommunityIndicatorStyle()" in source
@@ -65,16 +72,18 @@ def test_community_panel_keeps_hybrid_indicator_at_fixed_length():
     assert "area.set_pivot_point(0.5, 0.5)" in source
 
 
-def test_runtime_indicator_suppresses_legacy_grouped_window_edge():
-    source = (PANEL / "appIcons.js").read_text()
+@both_renderers
+def test_indicator_hides_grouped_window_edge(renderer):
+    source = (renderer / "appIcons.js").read_text()
     stacked = source[source.index("let bgSvg = '/img/highlight_stacked_bg'") - 260:]
 
     assert "!this._getCommunityIndicatorStyle()" in stacked
     assert "this._nWindows > 1" in stacked
 
 
-def test_intellihide_restores_actor_before_enabling_panel_strut():
-    source = (PANEL / "intellihide.js").read_text()
+@both_renderers
+def test_intellihide_reveals_before_strut(renderer):
+    source = (renderer / "intellihide.js").read_text()
     disable = source[source.index("  disable(reset) {"):source.index("  destroy() {")]
 
     assert disable.index("this._revealPanel(!reset)") < disable.index(
@@ -93,17 +102,18 @@ def test_community_panel_preserves_license_provenance_schema_and_translations():
     assert (PANEL / "locale/pt_BR/LC_MESSAGES/dash-to-panel.mo").is_file()
 
 
-def test_community_panel_runtime_does_not_require_an_active_extension_record():
-    i18n = (PANEL / "i18n.js").read_text()
+@both_renderers
+def test_renderer_binds_its_own_translations(renderer):
+    i18n = (renderer / "i18n.js").read_text()
 
     assert "Gettext.domain('dash-to-panel')" in i18n
     for name in ("appIcons.js", "panel.js", "windowPreview.js"):
-        source = (PANEL / name).read_text()
+        source = (renderer / name).read_text()
         assert "gettext as _ } from './i18n.js'" in source or (
             name == "appIcons.js" and "gettext as _, ngettext } from './i18n.js'" in source
         )
         assert "gettext as _" not in source.split("./i18n.js", 1)[-1]
-    assert not (PANEL / "desktopIconsIntegration.js").exists()
+    assert not (renderer / "desktopIconsIntegration.js").exists()
 
 
 def test_taskbar_layouts_use_only_unified_runtime():
@@ -179,8 +189,9 @@ def test_desk_ux_offers_the_gentle_hover_lift_without_enabling_it_by_default():
         assert setting in panel
 
 
-def test_desk_ux_unfocused_indicator_is_neutral_gray():
-    app_icons = (PANEL / "appIcons.js").read_text()
+@both_renderers
+def test_unfocused_indicator_is_neutral_gray(renderer):
+    app_icons = (renderer / "appIcons.js").read_text()
 
     color_method = app_icons.split("    _getRunningIndicatorColor(isFocused) {", 1)[1]
     color_method = color_method.split("    _getFocusHighlightColor() {", 1)[0]
@@ -204,8 +215,9 @@ def test_panel_style_is_owned_by_runtime():
     assert "_restoreStyle(actor, refresh)" in integration
 
 
-def test_community_panel_context_menu_has_no_runtime_configuration():
-    app_icons = (PANEL / "appIcons.js").read_text()
+@both_renderers
+def test_context_menu_omits_panel_settings(renderer):
+    app_icons = (renderer / "appIcons.js").read_text()
 
     assert "Dash to Panel Settings" not in app_icons
     assert "DTP_EXTENSION.openPreferences()" not in app_icons
