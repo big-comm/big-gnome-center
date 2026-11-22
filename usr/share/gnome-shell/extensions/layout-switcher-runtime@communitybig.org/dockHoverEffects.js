@@ -92,6 +92,16 @@ export class DockHoverEffects {
         });
     }
 
+    // The actor an icon is drawn through: its magnified copy while that is shown.
+    shownActor(actor) {
+        for (const record of this._records.values()) {
+            const clone = record.states.get(actor)?.clone;
+            if (clone?.visible)
+                return clone;
+        }
+        return actor;
+    }
+
     releaseAll() {
         for (const [actor, state] of this._liftStates) {
             this._liftStates.delete(actor);

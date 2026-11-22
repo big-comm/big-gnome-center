@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-import Shell from 'gi://Shell';
-
 import * as AppFavorites from 'resource:///org/gnome/shell/ui/appFavorites.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -17,8 +15,7 @@ export class DockAppMenuActions {
     }
 
     openNewWindow(icon) {
-        if (icon.app.state === Shell.AppState.STOPPED)
-            icon.animateLaunch();
+        icon.animateLaunch();
         icon.app.open_new_window(-1);
         return true;
     }

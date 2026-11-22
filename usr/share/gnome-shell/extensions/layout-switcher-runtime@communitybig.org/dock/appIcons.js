@@ -6,6 +6,7 @@ import {
     Gio,
     GLib,
     GObject,
+    Graphene,
     Meta,
     Mtk,
     Shell,
@@ -51,6 +52,13 @@ const Labels = Object.freeze({
 });
 
 const COMMUNITY_INDICATOR_SCHEMA = 'org.communitybig.panel-and-dock';
+// A launched icon hops once toward the screen, by a share of its size, and
+// settles back.
+const LAUNCH_BOUNCE_HEIGHT = 0.35;
+const LAUNCH_BOUNCE_RISE_MS = 300;
+const LAUNCH_BOUNCE_FALL_MS = 370;
+const LAUNCH_BOUNCE_FALL_START = new Graphene.Point({x: 0.5, y: 0});
+const LAUNCH_BOUNCE_FALL_END = new Graphene.Point({x: 0.3, y: 1});
 const COMMUNITY_INDICATOR_CLASSES = new Map([
     ['dot', 'community-indicator-dot'],
     ['hybrid', 'community-indicator-hybrid'],
@@ -250,6 +258,9 @@ export const DockAbstractAppIcon = GObject.registerClass({
 
     _onDestroy() {
         super._onDestroy();
+        const launchBounceImage = this._launchBounceImage;
+        this._launchBounceImage = null;
+        launchBounceImage?.destroy();
         this._signalsHandler?.destroy();
         this._communityIndicatorSettings = null;
 
@@ -803,6 +814,79 @@ export const DockAbstractAppIcon = GObject.registerClass({
         return false;
     }
 
+    // The dock clips its icons, so the hop is drawn by a copy of the image
+    // above the dock while the image itself is hidden.
+    animateLaunch() {
+        if (this._launchBounceImage)
+            return;
+
+        const source = this.icon._iconBin;
+        const image = new Clutter.Clone({source, reactive: false});
+        const position = Utils.getPosition();
+        const vertical = position === St.Side.LEFT || position === St.Side.RIGHT;
+        const property = vertical ? 'translation_x' : 'translation_y';
+        const transition = vertical ? 'translation-x' : 'translation-y';
+
+        Main.uiGroup.add_child(image);
+        const distance = Math.round(
+            this._placeLaunchBounceImage(image) * LAUNCH_BOUNCE_HEIGHT);
+        const towardScreen = position === St.Side.BOTTOM || position === St.Side.RIGHT
+            ? -distance : distance;
+        const sourceOpacity = source.opacity;
+        source.opacity = 0;
+        image.connect(`notify::${transition}`,
+            () => this._placeLaunchBounceImage(image));
+        this._launchBounceImage = image;
+
+        image.ease({
+            [property]: towardScreen,
+            duration: LAUNCH_BOUNCE_RISE_MS,
+            mode: Clutter.AnimationMode.EASE_OUT_CUBIC,
+            onStopped: () => {
+                if (this._launchBounceImage !== image)
+                    return;
+                image.ease({
+                    [property]: 0,
+                    duration: LAUNCH_BOUNCE_FALL_MS,
+                    onStopped: () => {
+                        if (this._launchBounceImage !== image)
+                            return;
+                        this._launchBounceImage = null;
+                        source.opacity = sourceOpacity;
+                        image.destroy();
+                    },
+                });
+                // Absent when animations are off and the value was set at once.
+                image.get_transition(transition)
+                    ?.set_cubic_bezier_progress(
+                        LAUNCH_BOUNCE_FALL_START, LAUNCH_BOUNCE_FALL_END);
+            },
+        });
+    }
+
+    // The hover lift moves the icon and magnification draws it through a scaled
+    // copy, so the place of the image is read again on every frame. Returns the
+    // height the image is shown at.
+    _placeLaunchBounceImage(image) {
+        const source = this.icon._iconBin;
+        const shown = Docking.DockSurfaceManager.extension.hoverEffects
+            ?.shownActor(this) ?? this;
+        const [shownX, shownY] = shown.get_transformed_position();
+        const [shownWidth] = shown.get_transformed_size();
+        const [iconX, iconY] = this.get_transformed_position();
+        const [iconWidth] = this.get_transformed_size();
+        const [sourceX, sourceY] = source.get_transformed_position();
+        const [sourceWidth, sourceHeight] = source.get_transformed_size();
+        if (iconWidth === 0)
+            return 0;
+
+        const scale = shownWidth / iconWidth;
+        image.set_position(
+            shownX + (sourceX - iconX) * scale, shownY + (sourceY - iconY) * scale);
+        image.set_size(sourceWidth * scale, sourceHeight * scale);
+        return sourceHeight * scale;
+    }
+
     // Try to do the right thing when attempting to launch a new window of an app. In
     // particular, if the application doesn't allow to launch a new window, activate
     // the existing window instead.
@@ -1180,8 +1264,7 @@ const DockAppIconMenu = class DockAppIconMenu extends PopupMenu.PopupMenu {
                 newMenuItem.connect('activate', () => {
                     if (!Docking.DockSurfaceManager.extension.appMenuActions
                         ?.openNewWindow(this.sourceActor)) {
-                        if (app.state === Shell.AppState.STOPPED)
-                            this.sourceActor.animateLaunch();
+                        this.sourceActor.animateLaunch();
                         app.open_new_window(-1);
                     }
                     this.emit('activate-window', null);
