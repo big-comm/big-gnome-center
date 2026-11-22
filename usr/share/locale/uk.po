@@ -665,6 +665,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Зберігає доступну для пошуку історію скопійованого вмісту."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Ділиться буфером обміну між цим комп’ютером і вашим телефоном."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "Показує знімні пристрої та дає змогу безпечно їх вийняти."
 

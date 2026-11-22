@@ -59,6 +59,9 @@ _CURATED_EXTENSION_DESCRIPTIONS = {
     "big-clipboard@communitybig.org": tr(
         "Keeps a searchable history of copied content."
     ),
+    "biglace@biglinux.com.br": tr(
+        "Shares the clipboard between this computer and your phone."
+    ),
     "copyous@boerdereinar.dev": tr(
         "Keeps a searchable history of copied content."
     ),

@@ -666,6 +666,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Kereshető előzményeket vezet a másolt tartalomról."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Megosztja a vágólapot a számítógép és a telefonja között."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr ""
 "Megjeleníti a cserélhető eszközöket, és biztonságos leválasztást tesz "

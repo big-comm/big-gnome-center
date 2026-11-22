@@ -666,6 +666,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Säilyttää haettavan historian kopioidusta sisällöstä."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Jakaa leikepöydän tämän tietokoneen ja puhelimesi välillä."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr ""
 "Näyttää siirrettävät laitteet ja mahdollistaa niiden turvallisen poistamisen."
