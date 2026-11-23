@@ -418,7 +418,7 @@ class ExtDetailView(Adw.NavigationPage):
                 if mode == "update":
                     ok, msg = ExtMgr.update(uuid, pk)
                 else:
-                    ok, msg = ExtMgr.install(uuid, pk, "")
+                    ok, msg = ExtMgr.install(uuid, pk)
                     if ok:
                         ExtMgr.enable_after_install(uuid)
                 GLib.idle_add(self._on_action_done, ok, msg, mode)

@@ -580,11 +580,7 @@ class ExtensionsPage(Gtk.Box):
             GLib.idle_add(self._show_spinner, card, tr("Installing…"))
 
             def task():
-                ok, method = ExtMgr.install(
-                    ext["uuid"],
-                    ext.get("ego_id", 0),
-                    ext.get("pkg", ""),
-                )
+                ok, method = ExtMgr.install(ext["uuid"], ext.get("ego_id", 0))
                 if ok:
                     ExtMgr.enable_after_install(ext["uuid"])
                     GLib.idle_add(self.rebuild_featured)
