@@ -65,7 +65,10 @@ class TestBackupManager:
                 raise error
             return original_stat(path, *args, **kwargs)
 
-        with patch.object(Path, "stat", failing_stat), patch.object(self.BackupManager, "N_KEEP", 1):
+        with (
+            patch.object(Path, "stat", failing_stat),
+            patch.object(self.BackupManager, "N_KEEP", 1),
+        ):
             self.BackupManager._prune()
         assert all(path.exists() for path in files)
 

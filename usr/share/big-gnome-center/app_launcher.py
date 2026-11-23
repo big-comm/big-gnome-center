@@ -62,6 +62,7 @@ def launch_command(
 
 def launch_uri(uri: str, on_error: ErrorCallback = None) -> None:
     """Let GIO activate the default handler without waiting for its exit."""
+
     def finished(source, result) -> None:
         try:
             Gio.AppInfo.launch_default_for_uri_finish(result)

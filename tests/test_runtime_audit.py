@@ -75,16 +75,22 @@ def _snapshot(**changes) -> Snapshot:
         }[layout]
         dock_opacity = {"BigGnome": 77, "G-Unity": 70}.get(layout)
         dock_size = 39 if surface == "dock" else None
-        dock_actors = ([{
-            "monitor": 0,
-            "edge": edge,
-            "width": 420,
-            "height": 48,
-            "opacity": dock_opacity,
-            "iconSize": dock_size,
-            "menuX": 470 if layout == "BigGnome" else 20,
-            "menuSide": "right" if layout == "BigGnome" else "left",
-        }] if surface == "dock" else [])
+        dock_actors = (
+            [
+                {
+                    "monitor": 0,
+                    "edge": edge,
+                    "width": 420,
+                    "height": 48,
+                    "opacity": dock_opacity,
+                    "iconSize": dock_size,
+                    "menuX": 470 if layout == "BigGnome" else 20,
+                    "menuSide": "right" if layout == "BigGnome" else "left",
+                }
+            ]
+            if surface == "dock"
+            else []
+        )
         actor_height = {"Hybrid": 38, "Desk UX": 46, "Classic": 38}.get(layout)
         outer_size = {"Hybrid": 38, "Desk UX": 40, "Classic": 38}.get(layout)
         panel_opacity = {
@@ -93,17 +99,23 @@ def _snapshot(**changes) -> Snapshot:
             "Classic": 70,
             "Minimal": 65,
         }.get(layout)
-        taskbar_actors = ([{
-            "monitor": 0,
-            "edge": edge,
-            "width": 1920,
-            "height": actor_height,
-            "outerSize": outer_size,
-            "grouped": layout != "Classic",
-            "opacity": panel_opacity,
-            "intellihideEnabled": False,
-            "affectsStruts": True,
-        }] if surface == "taskbar" else [])
+        taskbar_actors = (
+            [
+                {
+                    "monitor": 0,
+                    "edge": edge,
+                    "width": 1920,
+                    "height": actor_height,
+                    "outerSize": outer_size,
+                    "grouped": layout != "Classic",
+                    "opacity": panel_opacity,
+                    "intellihideEnabled": False,
+                    "affectsStruts": True,
+                }
+            ]
+            if surface == "taskbar"
+            else []
+        )
         values["runtime_diagnostics"] = {
             "monitors": [{"index": 0, "x": 0, "y": 0, "width": 1920, "height": 1080}],
             "primaryMonitor": 0,
@@ -168,8 +180,7 @@ def _snapshot(**changes) -> Snapshot:
                     "layout": layout,
                     "colorScheme": values["color_scheme"],
                     "lightRequested": (
-                        layout != "Minimal"
-                        and values["color_scheme"] != "prefer-dark"
+                        layout != "Minimal" and values["color_scheme"] != "prefer-dark"
                     ),
                     "menusAvailable": True,
                     "kinds": {
@@ -179,10 +190,7 @@ def _snapshot(**changes) -> Snapshot:
                     },
                     "ownedActors": 4,
                     "classActors": (
-                        4
-                        if layout != "Minimal"
-                        and values["color_scheme"] != "prefer-dark"
-                        else 0
+                        4 if layout != "Minimal" and values["color_scheme"] != "prefer-dark" else 0
                     ),
                     "actorDestroyCount": 0,
                     "refreshPending": False,
@@ -228,19 +236,13 @@ def _snapshot(**changes) -> Snapshot:
                     }.get(layout),
                     "menuSide": "right" if layout == "BigGnome" else None,
                     "desktopBridge": {
-                        "implementation": (
-                            "layout-switcher-runtime"
-                            if surface == "dock" else ""
-                        ),
-                        "ownerUuid": (
-                            COMMUNITY_DOCK_UUID if surface == "dock" else ""
-                        ),
+                        "implementation": ("layout-switcher-runtime" if surface == "dock" else ""),
+                        "ownerUuid": (COMMUNITY_DOCK_UUID if surface == "dock" else ""),
                         "connected": surface == "dock",
                         "pending": False,
                         "recipientUuids": (
                             [DESKTOP_ICONS_UUID]
-                            if surface == "dock"
-                            and values["desktop_icons_state"] == 1
+                            if surface == "dock" and values["desktop_icons_state"] == 1
                             else []
                         ),
                     },
@@ -257,8 +259,7 @@ def _snapshot(**changes) -> Snapshot:
                     "lifecycle": {
                         "managerOwned": surface == "taskbar",
                         "rendererImplementation": (
-                            "layout-switcher-runtime"
-                            if surface == "taskbar" else ""
+                            "layout-switcher-runtime" if surface == "taskbar" else ""
                         ),
                         "rendererModules": 13 if surface == "taskbar" else 0,
                         "globalOwned": surface == "taskbar",
@@ -288,16 +289,14 @@ def _snapshot(**changes) -> Snapshot:
                             "overviewActive": surface == "taskbar",
                             "overviewIntegration": {
                                 "implementation": (
-                                    "layout-switcher-runtime"
-                                    if surface == "taskbar" else ""
+                                    "layout-switcher-runtime" if surface == "taskbar" else ""
                                 ),
                                 "connected": surface == "taskbar",
                                 "active": surface == "taskbar",
                                 "signalsOwned": 14 if surface == "taskbar" else 0,
                                 "hooksOwned": 1 if surface == "taskbar" else 0,
                                 "hookLabels": (
-                                    ["overview-allocation"]
-                                    if surface == "taskbar" else []
+                                    ["overview-allocation"] if surface == "taskbar" else []
                                 ),
                                 "allocationHookOwned": surface == "taskbar",
                                 "workspaceIsolationOwned": False,
@@ -305,9 +304,7 @@ def _snapshot(**changes) -> Snapshot:
                                 "hotkeysEnabled": surface == "taskbar",
                                 "configuredHotkeys": surface == "taskbar",
                                 "keybindingsOwned": 61 if surface == "taskbar" else 0,
-                                "nativeKeybindingsSuppressed": (
-                                    18 if surface == "taskbar" else 0
-                                ),
+                                "nativeKeybindingsSuppressed": (18 if surface == "taskbar" else 0),
                                 "clickToExitOwned": surface == "taskbar",
                                 "configuredClickToExit": surface == "taskbar",
                                 "dashVisible": False,
@@ -337,8 +334,7 @@ def _snapshot(**changes) -> Snapshot:
                             "notificationApps": 0,
                             "notificationMonitor": {
                                 "implementation": (
-                                    "layout-switcher-runtime"
-                                    if surface == "taskbar" else ""
+                                    "layout-switcher-runtime" if surface == "taskbar" else ""
                                 ),
                                 "connected": surface == "taskbar",
                                 "launcherSubscriptionOwned": surface == "taskbar",
@@ -352,30 +348,28 @@ def _snapshot(**changes) -> Snapshot:
                             },
                             "desktopIconsOwned": surface == "taskbar",
                             "desktopMargins": (
-                                {"0": {
-                                    "top": 0,
-                                    "bottom": outer_size,
-                                    "left": 0,
-                                    "right": 0,
-                                }}
-                                if surface == "taskbar" else {}
+                                {
+                                    "0": {
+                                        "top": 0,
+                                        "bottom": outer_size,
+                                        "left": 0,
+                                        "right": 0,
+                                    }
+                                }
+                                if surface == "taskbar"
+                                else {}
                             ),
                             "desktopMarginsPending": False,
                             "desktopBridge": {
                                 "implementation": (
-                                    "layout-switcher-runtime"
-                                    if surface == "taskbar" else ""
+                                    "layout-switcher-runtime" if surface == "taskbar" else ""
                                 ),
-                                "ownerUuid": (
-                                    COMMUNITY_PANEL_UUID
-                                    if surface == "taskbar" else ""
-                                ),
+                                "ownerUuid": (COMMUNITY_PANEL_UUID if surface == "taskbar" else ""),
                                 "connected": surface == "taskbar",
                                 "pending": False,
                                 "recipientUuids": (
                                     [DESKTOP_ICONS_UUID]
-                                    if surface == "taskbar"
-                                    and values["desktop_icons_state"] == 1
+                                    if surface == "taskbar" and values["desktop_icons_state"] == 1
                                     else []
                                 ),
                             },
@@ -404,53 +398,61 @@ def _snapshot(**changes) -> Snapshot:
                                     "message-banner-offset",
                                     "shutdown-cleanup",
                                 ]
-                                if surface == "taskbar" else []
+                                if surface == "taskbar"
+                                else []
                             ),
                         },
-                        "statusFullscreen": ({
-                            "implementation": "layout-switcher-runtime",
-                            "active": True,
-                            "connected": True,
-                            "panelsOwned": len(taskbar_actors),
-                            "styledPanels": len(taskbar_actors),
-                            "signalsOwned": 5,
-                            "styledActors": 3,
-                            "orphanStyles": 0,
-                            "restorationPending": surface == "taskbar",
-                            "restoreConflicts": 0,
-                            "lastConflict": "",
-                            "fullscreenEvents": 0,
-                            "overviewEntries": 0,
-                            "overviewExits": 0,
-                            "visibilityUpdates": 1,
-                            "trackMutations": 1,
-                            "fullscreenSurface": {
-                                "focusWindowConnected": True,
-                                "windowSignalsOwned": 4,
-                                "windowActorSignalsOwned": 0,
-                                "surfaceSignalsOwned": 0,
-                                "surfaceChildSignalsOwned": 0,
-                                "repairPending": False,
-                                "repairCount": 0,
-                                "surfaceReady": False,
-                            },
-                            "panels": [{
-                                "monitor": 0,
-                                "monitorFullscreen": False,
-                                "visible": True,
-                                "mapped": True,
-                                "affectsStruts": True,
-                                "trackFullscreen": True,
-                                "intellihideEnabled": False,
-                            }],
-                        } if surface == "taskbar" else {}),
+                        "statusFullscreen": (
+                            {
+                                "implementation": "layout-switcher-runtime",
+                                "active": True,
+                                "connected": True,
+                                "panelsOwned": len(taskbar_actors),
+                                "styledPanels": len(taskbar_actors),
+                                "signalsOwned": 5,
+                                "styledActors": 3,
+                                "orphanStyles": 0,
+                                "restorationPending": surface == "taskbar",
+                                "restoreConflicts": 0,
+                                "lastConflict": "",
+                                "fullscreenEvents": 0,
+                                "overviewEntries": 0,
+                                "overviewExits": 0,
+                                "visibilityUpdates": 1,
+                                "trackMutations": 1,
+                                "fullscreenSurface": {
+                                    "focusWindowConnected": True,
+                                    "windowSignalsOwned": 4,
+                                    "windowActorSignalsOwned": 0,
+                                    "surfaceSignalsOwned": 0,
+                                    "surfaceChildSignalsOwned": 0,
+                                    "repairPending": False,
+                                    "repairCount": 0,
+                                    "surfaceReady": False,
+                                },
+                                "panels": [
+                                    {
+                                        "monitor": 0,
+                                        "monitorFullscreen": False,
+                                        "visible": True,
+                                        "mapped": True,
+                                        "affectsStruts": True,
+                                        "trackFullscreen": True,
+                                        "intellihideEnabled": False,
+                                    }
+                                ],
+                            }
+                            if surface == "taskbar"
+                            else {}
+                        ),
                         "statusArea": {
                             "hostOwned": surface == "taskbar",
                             "nativeMenuManagerPreserved": True,
                             "restorationPending": surface == "taskbar",
                             "adoptedRoles": (
                                 ["activities", "quickSettings", "dateMenu"]
-                                if surface == "taskbar" else []
+                                if surface == "taskbar"
+                                else []
                             ),
                             "roleCount": 9,
                             "orphanRoles": [],
@@ -523,12 +525,14 @@ def test_strict_menu_audit_accepts_explicit_user_choices(tmp_path):
     for layout in ("BigGnome", "G-Unity", "Minimal", "Classic", "Desk UX", "Hybrid"):
         for enabled in (False, True):
             extensions = (RUNTIME_UUID, HELPER_UUID) + ((COMMUNITY_MENU_UUID,) if enabled else ())
-            snapshot = _snapshot(active_layout=layout, enabled_extensions=extensions,
-                                 menu_override=enabled)
+            snapshot = _snapshot(
+                active_layout=layout, enabled_extensions=extensions, menu_override=enabled
+            )
             checks = audit_snapshot(snapshot, tmp_path, strict_layout=True)
             assert next(check for check in checks if check.name == "layout-menu").status == "PASS"
-            invalid = _snapshot(active_layout=layout, enabled_extensions=extensions,
-                                menu_override=not enabled)
+            invalid = _snapshot(
+                active_layout=layout, enabled_extensions=extensions, menu_override=not enabled
+            )
             assert "layout-menu" in _failures(audit_snapshot(invalid, tmp_path, strict_layout=True))
 
 
@@ -645,7 +649,9 @@ def test_audit_accepts_clone_magnification_lifecycle(tmp_path, native_tracking):
     )
     if native_tracking:
         runtime["dock"]["hoverState"].update(
-            pointerWatches=1, pollSources=0, animationSources=0,
+            pointerWatches=1,
+            pollSources=0,
+            animationSources=0,
         )
     diagnostics["runtime"] = runtime
 
@@ -714,18 +720,19 @@ def test_audit_rejects_missing_light_shell_popover_style(tmp_path):
     snapshot = _snapshot(active_layout="Hybrid", color_scheme="prefer-light")
     diagnostics = dict(snapshot.runtime_diagnostics)
     runtime = dict(diagnostics["runtime"])
-    runtime["shellPopoverTheme"] = dict(
-        runtime["shellPopoverTheme"], classActors=0)
+    runtime["shellPopoverTheme"] = dict(runtime["shellPopoverTheme"], classActors=0)
     diagnostics["runtime"] = runtime
 
-    failures = _failures(audit_snapshot(
-        _snapshot(
-            active_layout="Hybrid",
-            color_scheme="prefer-light",
-            runtime_diagnostics=diagnostics,
-        ),
-        tmp_path,
-    ))
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(
+                active_layout="Hybrid",
+                color_scheme="prefer-light",
+                runtime_diagnostics=diagnostics,
+            ),
+            tmp_path,
+        )
+    )
 
     assert "shell-popover-theme-ownership" in failures
 
@@ -742,14 +749,16 @@ def test_audit_rejects_light_shell_popover_style_in_minimal(tmp_path):
     )
     diagnostics["runtime"] = runtime
 
-    failures = _failures(audit_snapshot(
-        _snapshot(
-            active_layout="Minimal",
-            color_scheme="prefer-light",
-            runtime_diagnostics=diagnostics,
-        ),
-        tmp_path,
-    ))
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(
+                active_layout="Minimal",
+                color_scheme="prefer-light",
+                runtime_diagnostics=diagnostics,
+            ),
+            tmp_path,
+        )
+    )
 
     assert "shell-popover-theme-state" in failures
     assert "shell-popover-theme-ownership" in failures
@@ -760,7 +769,8 @@ def test_audit_owns_minimal_native_panel_opacity_and_visibility(tmp_path):
     snapshot = _snapshot(active_layout="Minimal")
 
     assert not {
-        name for name in _failures(audit_snapshot(snapshot, tmp_path))
+        name
+        for name in _failures(audit_snapshot(snapshot, tmp_path))
         if name.startswith("native-panel-")
     }
 
@@ -779,10 +789,12 @@ def test_audit_owns_minimal_native_panel_opacity_and_visibility(tmp_path):
         lastConflict="changed externally",
     )
     diagnostics["runtime"] = runtime
-    failures = _failures(audit_snapshot(
-        _snapshot(active_layout="Minimal", runtime_diagnostics=diagnostics),
-        tmp_path,
-    ))
+    failures = _failures(
+        audit_snapshot(
+            _snapshot(active_layout="Minimal", runtime_diagnostics=diagnostics),
+            tmp_path,
+        )
+    )
 
     assert "native-panel-opacity-lifecycle" in failures
     assert "native-panel-opacity-signals" in failures
@@ -835,9 +847,7 @@ def test_audit_accepts_zero_opacity_for_hidden_intelligent_dock(tmp_path):
     runtime["dock"] = dock
     diagnostics["runtime"] = runtime
 
-    failures = _failures(
-        audit_snapshot(_snapshot(runtime_diagnostics=diagnostics), tmp_path)
-    )
+    failures = _failures(audit_snapshot(_snapshot(runtime_diagnostics=diagnostics), tmp_path))
 
     assert "dock-opacity" not in failures
 
@@ -1024,10 +1034,13 @@ def test_audit_rejects_inherited_or_disconnected_dock_desktop_bridge(tmp_path):
     diagnostics["runtime"] = runtime
 
     failures = _failures(
-        audit_snapshot(_snapshot(
-            enabled_extensions=(RUNTIME_UUID, HELPER_UUID, DESKTOP_ICONS_UUID),
-            runtime_diagnostics=diagnostics,
-        ), tmp_path)
+        audit_snapshot(
+            _snapshot(
+                enabled_extensions=(RUNTIME_UUID, HELPER_UUID, DESKTOP_ICONS_UUID),
+                runtime_diagnostics=diagnostics,
+            ),
+            tmp_path,
+        )
     )
 
     assert "dock-desktop-bridge-implementation" in failures
@@ -1338,9 +1351,7 @@ def test_audit_rejects_null_and_duplicate_shell_stylesheets(tmp_path):
         "customStylesheets": ["file:///panel.css", "file:///panel.css", "<null>"],
     }
 
-    failures = _failures(
-        audit_snapshot(_snapshot(runtime_diagnostics=diagnostics), tmp_path)
-    )
+    failures = _failures(audit_snapshot(_snapshot(runtime_diagnostics=diagnostics), tmp_path))
 
     assert "shell-theme-stylesheets" in failures
     assert "shell-theme-stylesheet-uniqueness" in failures

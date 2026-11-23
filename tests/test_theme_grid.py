@@ -48,8 +48,7 @@ def test_cursor_columns_survive_selection_and_long_names():
             for width, columns in ((640, 3), (660, 3), (900, 3), (400, 2), (320, 1)):
                 grid.allocate(width, 1000, -1, None)
                 bounds = [
-                    grid.get_child_at_index(i).compute_bounds(grid)[1]
-                    for i in range(len(names))
+                    grid.get_child_at_index(i).compute_bounds(grid)[1] for i in range(len(names))
                 ]
                 assert sum(rect.origin.y == bounds[0].origin.y for rect in bounds) == columns
                 assert all(rect.origin.x + rect.size.width <= width for rect in bounds)

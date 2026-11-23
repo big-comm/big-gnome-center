@@ -57,7 +57,7 @@ def test_hybrid_indicator_keeps_fixed_length():
 
 def test_indicator_hides_grouped_window_edge():
     source = (TASKBAR / "appIcons.js").read_text()
-    stacked = source[source.index("let bgSvg = '/img/highlight_stacked_bg'") - 260:]
+    stacked = source[source.index("let bgSvg = '/img/highlight_stacked_bg'") - 260 :]
 
     assert "!this._getCommunityIndicatorStyle()" in stacked
     assert "this._nWindows > 1" in stacked
@@ -65,11 +65,9 @@ def test_indicator_hides_grouped_window_edge():
 
 def test_intellihide_reveals_before_strut():
     source = (TASKBAR / "intellihide.js").read_text()
-    disable = source[source.index("  disable(reset) {"):source.index("  destroy() {")]
+    disable = source[source.index("  disable(reset) {") : source.index("  destroy() {")]
 
-    assert disable.index("this._revealPanel(!reset)") < disable.index(
-        "this._setTrackPanel(false)"
-    )
+    assert disable.index("this._revealPanel(!reset)") < disable.index("this._setTrackPanel(false)")
 
 
 def test_community_panel_preserves_license_provenance_schema_and_translations():
@@ -183,8 +181,7 @@ def test_unfocused_indicator_is_neutral_gray():
 
 def test_panel_style_is_owned_by_runtime():
     integration = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/"
         "taskbarStatusFullscreenIntegration.js"
     ).read_text()

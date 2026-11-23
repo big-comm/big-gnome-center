@@ -11,9 +11,35 @@ from runtime_settings import LAYOUT_DEFAULTS, RuntimeSettings
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_LOCALES = (
-    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he",
-    "hr", "hu", "is", "it", "ja", "ko", "nb", "nl", "pl", "pt_BR", "pt",
-    "ro", "ru", "sk", "sv", "tr", "uk", "zh",
+    "bg",
+    "cs",
+    "da",
+    "de",
+    "el",
+    "en",
+    "es",
+    "et",
+    "fi",
+    "fr",
+    "he",
+    "hr",
+    "hu",
+    "is",
+    "it",
+    "ja",
+    "ko",
+    "nb",
+    "nl",
+    "pl",
+    "pt_BR",
+    "pt",
+    "ro",
+    "ru",
+    "sk",
+    "sv",
+    "tr",
+    "uk",
+    "zh",
 )
 
 
@@ -519,8 +545,7 @@ def test_classic_restore_does_not_reenable_running_indicators():
 
 def test_runtime_schema_declares_typed_per_layout_overrides():
     schema = (
-        ROOT
-        / "usr/share/glib-2.0/schemas/org.communitybig.layout-switcher.runtime.gschema.xml"
+        ROOT / "usr/share/glib-2.0/schemas/org.communitybig.layout-switcher.runtime.gschema.xml"
     ).read_text()
 
     assert 'id="org.communitybig.layout-switcher.runtime"' in schema
@@ -582,10 +607,16 @@ def test_dock_hover_effect_is_validated_and_mirrored_per_layout():
     assert settings.runtime.values[("G-Unity", "dock-hover")] == "lift"
 
 
-@pytest.mark.parametrize("layout,position", [
-    ("BigGnome", "bottom"), ("BigGnome", "left"), ("BigGnome", "right"),
-    ("G-Unity", "left"), ("G-Unity", "right"),
-])
+@pytest.mark.parametrize(
+    "layout,position",
+    [
+        ("BigGnome", "bottom"),
+        ("BigGnome", "left"),
+        ("BigGnome", "right"),
+        ("G-Unity", "left"),
+        ("G-Unity", "right"),
+    ],
+)
 def test_dock_position_is_owned_per_layout(layout, position):
     settings = settings_fixture()
     settings.runtime_active = True
@@ -596,9 +627,14 @@ def test_dock_position_is_owned_per_layout(layout, position):
     assert not settings.dock.calls
 
 
-@pytest.mark.parametrize("layout,position", [
-    ("BigGnome", "top"), ("G-Unity", "bottom"), ("Hybrid", "right"),
-])
+@pytest.mark.parametrize(
+    "layout,position",
+    [
+        ("BigGnome", "top"),
+        ("G-Unity", "bottom"),
+        ("Hybrid", "right"),
+    ],
+)
 def test_dock_position_rejects_unsupported_edges(layout, position):
     settings = settings_fixture()
     settings.runtime_active = True
@@ -613,9 +649,10 @@ def test_original_position_reset_preserves_other_layout():
     runtime = RuntimeSettings(backend)
     runtime.set("BigGnome", "dock-position", "left")
     runtime.set("G-Unity", "dock-position", "right")
-    assert "'BigGnome'" not in runtime.serialized_overrides_without_layout(
-        "BigGnome"
-    )["dock-position-overrides"]
+    assert (
+        "'BigGnome'"
+        not in runtime.serialized_overrides_without_layout("BigGnome")["dock-position-overrides"]
+    )
     runtime.reset_layout("BigGnome")
     assert runtime.get("BigGnome", "dock-position") == "bottom"
     assert runtime.get("G-Unity", "dock-position") == "right"
@@ -696,21 +733,12 @@ def test_taskbar_hover_effect_uses_the_same_curated_lift_profile():
     assert settings.community_panel.values["animate-appicon-hover"] is True
     assert settings.community_panel.values["animate-appicon-hover-animation-type"] == "SIMPLE"
     assert (
-        settings.community_panel.values["animate-appicon-hover-animation-duration"][
-            "SIMPLE"
-        ]
-        == 220
+        settings.community_panel.values["animate-appicon-hover-animation-duration"]["SIMPLE"] == 220
     )
     assert (
-        settings.community_panel.values["animate-appicon-hover-animation-travel"][
-            "SIMPLE"
-        ]
-        == 0.08
+        settings.community_panel.values["animate-appicon-hover-animation-travel"]["SIMPLE"] == 0.08
     )
-    assert (
-        settings.community_panel.values["animate-appicon-hover-animation-zoom"]["SIMPLE"]
-        == 1.08
-    )
+    assert settings.community_panel.values["animate-appicon-hover-animation-zoom"]["SIMPLE"] == 1.08
     assert settings.runtime.values[("Desk UX", "dock-hover")] == "lift"
 
 
@@ -1046,14 +1074,12 @@ def test_magnification_ui_is_translated_for_all_app_locales():
 
 def test_runtime_leaves_dock_fullscreen_tracking_to_native_engine():
     controller = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/dockPanelController.js"
     ).read_text()
 
     native_dock = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
 

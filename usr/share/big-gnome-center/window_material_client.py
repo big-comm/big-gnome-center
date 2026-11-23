@@ -98,9 +98,7 @@ class WindowMaterialClient:
             self._monitor.cancel()
             self._monitor = None
         if self._provider:
-            Gtk.StyleContext.remove_provider_for_display(
-                self._display, self._provider
-            )
+            Gtk.StyleContext.remove_provider_for_display(self._display, self._provider)
             self._provider = None
         if remove_class:
             self._window.remove_css_class(self._class)

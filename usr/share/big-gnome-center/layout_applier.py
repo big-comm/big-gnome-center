@@ -49,9 +49,7 @@ from utils import atomic_write_text, gnome_shell_version, run_cmd
 log = logging.getLogger("big-gnome-center")
 
 _LAYOUT_MUTATION_LOCK_PATH = SETTINGS_GNOME.with_name("big-gnome-center-layout.lock")
-_LAYOUT_HASH_FILE = SETTINGS_GNOME.parent / (
-    SETTINGS_GNOME.name + ".big-gnome-center.sha256"
-)
+_LAYOUT_HASH_FILE = SETTINGS_GNOME.parent / (SETTINGS_GNOME.name + ".big-gnome-center.sha256")
 _DCONF_BATCH_HELPER = Path(__file__).with_name("dconf_batch.py")
 SYNC_SERVICE = "dconf-sync-gnome.service"
 
@@ -225,6 +223,7 @@ _NO_DISABLE = frozenset()
 
 def _serialized_layout_switch(method):
     """Reject overlapping application writers before preflight or mutation."""
+
     @wraps(method)
     def guarded(*args, **kwargs):
         try:
@@ -241,6 +240,7 @@ def _serialized_layout_switch(method):
             except OSError as exc:
                 return False, f"cannot acquire layout mutation lock: {exc}"
             return method(*args, **kwargs)
+
     return guarded
 
 
@@ -310,9 +310,7 @@ class LayoutApplier:
     @classmethod
     def _refresh_sync_monitor(cls) -> None:
         """Retire pre-upgrade writers before capturing or changing any settings."""
-        ok, detail = run_cmd(
-            ["systemctl", "--user", "try-restart", SYNC_SERVICE], timeout=15
-        )
+        ok, detail = run_cmd(["systemctl", "--user", "try-restart", SYNC_SERVICE], timeout=15)
         if not ok:
             raise OSError(f"cannot refresh dconf synchronization: {detail}")
 
@@ -321,9 +319,7 @@ class LayoutApplier:
         """Pause or resume the persistence monitor around the live mutation."""
         if not cls._has_user_unit(SYNC_SERVICE):
             return False
-        ok, detail = run_cmd(
-            ["systemctl", "--user", action, SYNC_SERVICE], timeout=15
-        )
+        ok, detail = run_cmd(["systemctl", "--user", action, SYNC_SERVICE], timeout=15)
         if not ok:
             raise OSError(f"cannot {action} dconf synchronization: {detail}")
         return True
@@ -549,8 +545,11 @@ class LayoutApplier:
         target_enabled = [
             uuid
             for uuid in target_enabled
-            if uuid not in {
-                _LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID,
+            if uuid
+            not in {
+                _LEGACY_LIGHT_STYLE_UUID,
+                _LEGACY_USER_THEME_UUID,
+                _LEGACY_GTK_THEME_UUID,
             }
         ]
 
@@ -745,9 +744,7 @@ class LayoutApplier:
                 HelperClient.reload_extension(uuid)
         states = ShellReloader.list_extensions_state()
         failed = [
-            uuid
-            for uuid in target
-            if uuid in _STRUCTURAL_EXTENSION_UUIDS and states.get(uuid) != 1
+            uuid for uuid in target if uuid in _STRUCTURAL_EXTENSION_UUIDS and states.get(uuid) != 1
         ]
         if failed:
             return False, "layout components failed after helper handoff: " + ", ".join(failed)
@@ -796,8 +793,11 @@ class LayoutApplier:
         target_enabled = [
             uuid
             for uuid in target_enabled
-            if uuid not in {
-                _LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID,
+            if uuid
+            not in {
+                _LEGACY_LIGHT_STYLE_UUID,
+                _LEGACY_USER_THEME_UUID,
+                _LEGACY_GTK_THEME_UUID,
             }
         ]
 
@@ -813,11 +813,7 @@ class LayoutApplier:
         # everything else the Shell's rebase cascade can never touch it.
         target_enabled = [
             HELPER_UUID,
-            *[
-                u
-                for u in target_enabled
-                if u not in {HELPER_UUID, LEGACY_HELPER_UUID}
-            ],
+            *[u for u in target_enabled if u not in {HELPER_UUID, LEGACY_HELPER_UUID}],
         ]
 
         # Capture values before teardown; failed reads must not authorize resets.
@@ -1198,7 +1194,8 @@ class LayoutApplier:
     @staticmethod
     def _read_clipboard_settings() -> str:
         ok, dump = run_cmd(
-            ["dconf", "dump", "/org/gnome/shell/extensions/copyous/"], timeout=15,
+            ["dconf", "dump", "/org/gnome/shell/extensions/copyous/"],
+            timeout=15,
         )
         if not ok:
             raise RuntimeError(f"cannot preserve clipboard settings: {dump}")
@@ -1214,10 +1211,18 @@ class LayoutApplier:
         }
         presentation = cls._dconf_dump_values(data)
         for key in (
-            "clipboard-orientation", "clipboard-position-horizontal",
-            "clipboard-position-vertical", "show-at-pointer", "show-at-cursor",
-            "item-width", "item-height", "dynamic-item-height", "show-header",
-            "header-controls-visibility", "auto-hide-search", "file-item/file-preview-visibility",
+            "clipboard-orientation",
+            "clipboard-position-horizontal",
+            "clipboard-position-vertical",
+            "show-at-pointer",
+            "show-at-cursor",
+            "item-width",
+            "item-height",
+            "dynamic-item-height",
+            "show-header",
+            "header-controls-visibility",
+            "auto-hide-search",
+            "file-item/file-preview-visibility",
             "link-item/link-preview-orientation",
         ):
             path = prefix + key
@@ -1567,10 +1572,12 @@ class LayoutApplier:
             sections.setdefault(section.lstrip("/"), []).append(f"{key}={value}")
         if not sections:
             return ""
-        return "\n\n".join(
-            f"[{section or '/'}]\n" + "\n".join(lines)
-            for section, lines in sections.items()
-        ) + "\n"
+        return (
+            "\n\n".join(
+                f"[{section or '/'}]\n" + "\n".join(lines) for section, lines in sections.items()
+            )
+            + "\n"
+        )
 
     @staticmethod
     def _dconf_delta(
@@ -1579,20 +1586,13 @@ class LayoutApplier:
         managed_subdirs: Iterable[str],
     ) -> Tuple[List[str], Dict[str, str]]:
         """Return the exact minimum reset/write set for a layout target."""
-        prefixes = tuple(
-            f"/org/gnome/shell/extensions/{subdir}/"
-            for subdir in managed_subdirs
-        )
+        prefixes = tuple(f"/org/gnome/shell/extensions/{subdir}/" for subdir in managed_subdirs)
         resets = sorted(
             path
             for path in previous
             if prefixes and path.startswith(prefixes) and path not in target
         )
-        changed = {
-            path: value
-            for path, value in target.items()
-            if previous.get(path) != value
-        }
+        changed = {path: value for path, value in target.items() if previous.get(path) != value}
         return resets, changed
 
     @classmethod
@@ -1640,10 +1640,13 @@ class LayoutApplier:
                 errors.append(f"{path}: {message}")
 
         if sections:
-            text = "\n\n".join(
-                f"[{section or '/'}]\n" + "\n".join(lines)
-                for section, lines in sections.items()
-            ) + "\n"
+            text = (
+                "\n\n".join(
+                    f"[{section or '/'}]\n" + "\n".join(lines)
+                    for section, lines in sections.items()
+                )
+                + "\n"
+            )
             try:
                 ok, message = run_cmd(["dconf", "load", "/"], stdin_text=text, timeout=30)
             except Exception as exc:
@@ -1727,8 +1730,7 @@ class LayoutApplier:
         orphans = {
             p
             for p in (live_paths - target_paths)
-            if p.startswith(managed_prefixes)
-            and not any(p.startswith(skip) for skip in skipped)
+            if p.startswith(managed_prefixes) and not any(p.startswith(skip) for skip in skipped)
         }
         if not orphans:
             return 0
@@ -2443,9 +2445,7 @@ class LayoutApplier:
                         log.exception("could not mark persistence recovery required")
                     # An incomplete journal remains guarded, including on disk-full.
                 if not result[0]:
-                    recovery_notice = (
-                        "automatic saving paused; reapply a layout or log in again"
-                    )
+                    recovery_notice = "automatic saving paused; reapply a layout or log in again"
                     log.warning(recovery_notice)
                     if not exception:
                         result = False, f"{result[1]}; {recovery_notice}"
@@ -2539,14 +2539,16 @@ class LayoutApplier:
             helper_version = HelperClient.helper_version()
             if helper_version >= _HELPER_CLEANROOM_VERSION:
                 progress("Applying layout…")
-                return finish(cls._apply_via_helper_v7(
-                    data,
-                    layout_label=layout_label,
-                    layout_label_from=layout_label_from,
-                    layouts_dir=layouts_dir,
-                    icon_from=icon_from,
-                    icon_to=icon_to,
-                ))
+                return finish(
+                    cls._apply_via_helper_v7(
+                        data,
+                        layout_label=layout_label,
+                        layout_label_from=layout_label_from,
+                        layouts_dir=layouts_dir,
+                        icon_from=icon_from,
+                        icon_to=icon_to,
+                    )
+                )
             if helper_version > 0:
                 progress("Applying layout…")
                 return finish(cls._apply_via_helper(data, layouts_dir=layouts_dir))
@@ -2590,8 +2592,11 @@ class LayoutApplier:
             target_enabled_order = [
                 uuid
                 for uuid in target_enabled_order
-                if uuid not in {
-                    _LEGACY_LIGHT_STYLE_UUID, _LEGACY_USER_THEME_UUID, _LEGACY_GTK_THEME_UUID,
+                if uuid
+                not in {
+                    _LEGACY_LIGHT_STYLE_UUID,
+                    _LEGACY_USER_THEME_UUID,
+                    _LEGACY_GTK_THEME_UUID,
                 }
             ]
             live_target_enabled = set(target_enabled)
@@ -2667,9 +2672,7 @@ class LayoutApplier:
                     for subdir in (cls._extension_settings_subdir(uuid),)
                     if subdir
                 )
-            cls._reset_orphan_keys(
-                data, skip_subdirs=skip_orphan_subdirs, layouts_dir=layouts_dir
-            )
+            cls._reset_orphan_keys(data, skip_subdirs=skip_orphan_subdirs, layouts_dir=layouts_dir)
             settings_data, extension_switch_data = cls._split_shell_extension_switch_keys(data)
             post_dtp_enabled: List[str] = []
             if target_uses_dtp:

@@ -13,8 +13,13 @@ gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, Gtk
 
 from ui.page_behavior import (
-    INTERFACE_SCHEMA, MUTTER_SCHEMA, PRIMARY_PASTE_KEY, WM_SCHEMA,
-    BehaviorPage, move_modifiers, titlebar_actions,
+    INTERFACE_SCHEMA,
+    MUTTER_SCHEMA,
+    PRIMARY_PASTE_KEY,
+    WM_SCHEMA,
+    BehaviorPage,
+    move_modifiers,
+    titlebar_actions,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,11 +60,14 @@ def page():
     return built
 
 
-@pytest.mark.parametrize("name, schema_id, key", [
-    ("primary-paste", INTERFACE_SCHEMA, PRIMARY_PASTE_KEY),
-    ("attach-dialogs", MUTTER_SCHEMA, "attach-modal-dialogs"),
-    ("resize-right-button", WM_SCHEMA, "resize-with-right-button"),
-])
+@pytest.mark.parametrize(
+    "name, schema_id, key",
+    [
+        ("primary-paste", INTERFACE_SCHEMA, PRIMARY_PASTE_KEY),
+        ("attach-dialogs", MUTTER_SCHEMA, "attach-modal-dialogs"),
+        ("resize-right-button", WM_SCHEMA, "resize-with-right-button"),
+    ],
+)
 def test_switches_write_and_follow_their_key(page, name, schema_id, key):
     row, settings = page.rows[name], page.stores[schema_id]
     assert row.get_active() == settings.get_boolean(key)
@@ -81,12 +89,15 @@ def test_hover_focus_maps_to_sloppy_and_back_to_click(page):
     assert settings.get_string("focus-mode") == "click"
 
 
-@pytest.mark.parametrize("name, key, choices", [
-    ("double-click", "action-double-click-titlebar", titlebar_actions()),
-    ("middle-click", "action-middle-click-titlebar", titlebar_actions()),
-    ("right-click", "action-right-click-titlebar", titlebar_actions()),
-    ("move-modifier", "mouse-button-modifier", move_modifiers()),
-])
+@pytest.mark.parametrize(
+    "name, key, choices",
+    [
+        ("double-click", "action-double-click-titlebar", titlebar_actions()),
+        ("middle-click", "action-middle-click-titlebar", titlebar_actions()),
+        ("right-click", "action-right-click-titlebar", titlebar_actions()),
+        ("move-modifier", "mouse-button-modifier", move_modifiers()),
+    ],
+)
 def test_choices_write_and_follow_their_key(page, name, key, choices):
     row, settings = page.rows[name], page.stores[WM_SCHEMA]
     values = [value for value, _label in choices]

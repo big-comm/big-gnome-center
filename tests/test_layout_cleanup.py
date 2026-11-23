@@ -72,7 +72,10 @@ def test_managed_branches_come_from_all_profiles_and_exclude_protected_data(tmp_
         section("second") + "".join(section(branch) for branch in PROTECTED[1:])
     )
     assert LayoutApplier._managed_extension_subdirs(tmp_path) == [
-        "arcmenu", "blur-my-shell", "first", "second"
+        "arcmenu",
+        "blur-my-shell",
+        "first",
+        "second",
     ]
 
 
@@ -113,16 +116,19 @@ def test_helper_cleanup_uses_profiles_not_snapshot_ownership(tmp_path, modern):
             ("LayoutApplier._enabled_extensions", []),
         ):
             stack.enter_context(patch("layout_applier." + method, return_value=result))
-        command = stack.enter_context(patch(
-            "layout_applier.run_cmd",
-            side_effect=run,
-        ))
+        command = stack.enter_context(
+            patch(
+                "layout_applier.run_cmd",
+                side_effect=run,
+            )
+        )
         apply = LayoutApplier._apply_via_helper_v7 if modern else LayoutApplier._apply_via_helper
         ok, message = apply(target, layouts_dir=tmp_path)
         assert ok, message
     if modern:
         batches = [
-            call.args[0] for call in command.call_args_list
+            call.args[0]
+            for call in command.call_args_list
             if len(call.args[0]) > 1 and call.args[0][1].endswith("dconf_batch.py")
         ]
         assert len(batches) == 1
@@ -136,7 +142,8 @@ def test_helper_cleanup_uses_profiles_not_snapshot_ownership(tmp_path, modern):
         assert not any("personal-extension" in path for path in reset_paths)
     else:
         resets = [
-            call.args[0] for call in command.call_args_list
+            call.args[0]
+            for call in command.call_args_list
             if call.args[0][:2] == ["dconf", "reset"]
         ]
         assert ["dconf", "reset", "-f", BASE + "owned/"] in resets

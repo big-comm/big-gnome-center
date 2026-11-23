@@ -29,15 +29,30 @@ def test_compatible_version_requires_a_known_target(target):
 
 @pytest.mark.parametrize("target,expected", [("50", 4), ("51", 2)])
 def test_only_the_target_entry_controls_update_version(target, expected):
-    detail = SimpleNamespace(shell_version_map={
-        "49": {"version": 99}, "50": {"version": 4}, "51": {"version": "2"},
-    })
+    detail = SimpleNamespace(
+        shell_version_map={
+            "49": {"version": 99},
+            "50": {"version": 4},
+            "51": {"version": "2"},
+        }
+    )
     assert ego_client.version_from_info(detail, target) == expected
 
 
-@pytest.mark.parametrize("entry", [None, [], "99", {}, {"version": True},
-                                   {"version": 2.8}, {"version": 0},
-                                   {"version": -1}, {"version": "invalid"}])
+@pytest.mark.parametrize(
+    "entry",
+    [
+        None,
+        [],
+        "99",
+        {},
+        {"version": True},
+        {"version": 2.8},
+        {"version": 0},
+        {"version": -1},
+        {"version": "invalid"},
+    ],
+)
 def test_invalid_target_entry_does_not_fall_back(entry):
     detail = SimpleNamespace(shell_version_map={"50": entry, "51": {"version": 99}})
     assert ego_client.version_from_info(detail, "50") is None
@@ -50,9 +65,9 @@ def test_malformed_compatibility_map_is_not_an_update(versions):
 
 def test_unknown_shell_does_not_report_a_successful_check(monkeypatch):
     monkeypatch.setattr(update_checker, "gnome_shell_version", lambda: (0, 0))
-    monkeypatch.setattr(manager.ExtMgr, "list_installed", lambda: [
-        {"uuid": "compat@example.org", "user": True}
-    ])
+    monkeypatch.setattr(
+        manager.ExtMgr, "list_installed", lambda: [{"uuid": "compat@example.org", "user": True}]
+    )
     request = Mock()
     monkeypatch.setattr(ego_client, "info", request)
     with pytest.raises(update_checker.UpdateCheckError) as error:
@@ -64,13 +79,15 @@ def test_unknown_shell_does_not_report_a_successful_check(monkeypatch):
 @pytest.mark.parametrize("target,other", [(50, "51"), (51, "50")])
 def test_check_all_ignores_incompatible_release(monkeypatch, target, other):
     monkeypatch.setattr(update_checker, "gnome_shell_version", lambda: (target, 0))
-    monkeypatch.setattr(manager.ExtMgr, "list_installed", lambda: [
-        {"uuid": "compat@example.org", "user": True}
-    ])
+    monkeypatch.setattr(
+        manager.ExtMgr, "list_installed", lambda: [{"uuid": "compat@example.org", "user": True}]
+    )
     monkeypatch.setattr(manager.ExtMgr, "installed_version", lambda uuid: 1)
-    monkeypatch.setattr(ego_client, "info", lambda *args, **kwargs: SimpleNamespace(
-        pk=1, shell_version_map={other: {"version": 99}}
-    ))
+    monkeypatch.setattr(
+        ego_client,
+        "info",
+        lambda *args, **kwargs: SimpleNamespace(pk=1, shell_version_map={other: {"version": 99}}),
+    )
     progress = []
     assert update_checker.check_all(lambda done, total: progress.append((done, total))) == {}
     assert progress == [(1, 1)]
@@ -79,9 +96,16 @@ def test_check_all_ignores_incompatible_release(monkeypatch, target, other):
 def bundle(supported):
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w") as archive:
-        archive.writestr("metadata.json", json.dumps({
-            "uuid": "compat@example.org", "shell-version": supported, "version": 2,
-        }))
+        archive.writestr(
+            "metadata.json",
+            json.dumps(
+                {
+                    "uuid": "compat@example.org",
+                    "shell-version": supported,
+                    "version": 2,
+                }
+            ),
+        )
         archive.writestr("extension.js", "export default class Extension {}")
     return stream.getvalue()
 
@@ -176,10 +200,14 @@ def test_real_schema_compiler_validates_before_publication(installed, monkeypatc
     output = io.BytesIO(bundle(["50"]))
     with zipfile.ZipFile(output, "a") as archive:
         schema = (
-            '<schemalist><schema id="org.example.compat" path="/org/example/compat/">'
-            '<key name="enabled" type="b"><default>false</default></key>'
-            '</schema></schemalist>'
-        ) if valid_schema else '<invalid schema>'
+            (
+                '<schemalist><schema id="org.example.compat" path="/org/example/compat/">'
+                '<key name="enabled" type="b"><default>false</default></key>'
+                "</schema></schemalist>"
+            )
+            if valid_schema
+            else "<invalid schema>"
+        )
         archive.writestr("schemas/org.example.compat.gschema.xml", schema)
     response = io.BytesIO(output.getvalue())
     response.headers = {"Content-Type": "application/zip"}

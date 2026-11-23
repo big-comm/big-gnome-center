@@ -1,8 +1,10 @@
 """Pre-Shell identity migration must preserve desktop preferences."""
+
 from pathlib import Path
 
-from session_migration import IDENTITIES, HelperClient, migrate_dump, migrate_lists
 import pytest
+
+from session_migration import IDENTITIES, HelperClient, migrate_dump, migrate_lists
 
 
 def test_enabled_disabled_and_duplicate_identities():
@@ -10,7 +12,9 @@ def test_enabled_disabled_and_duplicate_identities():
     old = list(IDENTITIES)
     new = list(IDENTITIES.values())
     assert migrate_lists(old + [new[1], "custom"], [old[1], "disabled"], installed) == (
-        new + ["custom"], ["disabled"])
+        new + ["custom"],
+        ["disabled"],
+    )
     assert migrate_lists([], old, installed) == ([], new)
 
 
@@ -25,7 +29,9 @@ def test_preserves_layout_engines_and_disabled_bigshot():
     enabled = ["dash-to-dock@micxgx.gmail.com", "blur-my-shell@aunetx", "custom"]
     disabled = ["big-shot@bigcommunity.org"]
     assert migrate_lists(enabled, disabled, set(IDENTITIES.values())) == (
-        enabled, ["big-shot@communitybig.org"])
+        enabled,
+        ["big-shot@communitybig.org"],
+    )
 
 
 def test_saved_preferences_migrate_without_applying_original():
@@ -38,9 +44,11 @@ autohide=true
 
 [custom]
 value='preserve me'
-"""
+"""  # noqa: E501
     result = migrate_dump(text, set(IDENTITIES.values()))
-    assert result == text.replace("layout-switcher-helper@bigcommunity.org", "layout-switcher-helper@communitybig.org").replace("big-shot@bigcommunity.org", "big-shot@communitybig.org")
+    assert result == text.replace(
+        "layout-switcher-helper@bigcommunity.org", "layout-switcher-helper@communitybig.org"
+    ).replace("big-shot@bigcommunity.org", "big-shot@communitybig.org")
     assert migrate_dump(result, set(IDENTITIES.values())) == result
 
 
@@ -50,36 +58,49 @@ enabled-extensions=['layout-switcher-helper@communitybig.org', 'layout-switcher-
 
 [org/communitybig/layout-switcher/runtime]
 active-layout='Classic'
-"""
+"""  # noqa: E501
     assert migrate_dump(text, set(IDENTITIES.values())) == text
 
 
 def test_systemd_orders_migration_before_shell_and_fails_open():
     root = Path(__file__).resolve().parents[1]
-    unit = (root / "usr/lib/systemd/user/org.gnome.Shell@.service.d/50-big-gnome-center-migration.conf").read_text()
+    unit = (
+        root / "usr/lib/systemd/user/org.gnome.Shell@.service.d/50-big-gnome-center-migration.conf"
+    ).read_text()
     assert "ExecStartPre=-/usr/bin/timeout 15s" in unit
     assert "session_migration.py %i" in unit
 
 
 def test_refuses_live_shell_before_writing(monkeypatch):
-    from gi.repository import Gio, GLib
     from types import SimpleNamespace
+
+    from gi.repository import Gio, GLib
+
     import session_migration
 
-    monkeypatch.setattr(Gio, "bus_get_sync", lambda *args: SimpleNamespace(
-        call_sync=lambda *args: GLib.Variant("(b)", (True,))))
-    monkeypatch.setattr(HelperClient, "installed_extension_uuids", lambda: pytest.fail("must not inspect or write settings"))
+    monkeypatch.setattr(
+        Gio,
+        "bus_get_sync",
+        lambda *args: SimpleNamespace(call_sync=lambda *args: GLib.Variant("(b)", (True,))),
+    )
+    monkeypatch.setattr(
+        HelperClient,
+        "installed_extension_uuids",
+        lambda: pytest.fail("must not inspect or write settings"),
+    )
     with pytest.raises(RuntimeError, match="Shell is running"):
         session_migration.run()
 
 
 def test_prestart_migrates_saved_and_live_lists_via_locked_store(monkeypatch, tmp_path):
-    from gi.repository import Gio, GLib
     from types import SimpleNamespace
-    import layout_applier
-    import session_migration
-    import layout_persistence
     from unittest.mock import MagicMock
+
+    from gi.repository import Gio, GLib
+
+    import layout_applier
+    import layout_persistence
+    import session_migration
 
     installed = set(IDENTITIES.values())
     values = {"enabled-extensions": list(IDENTITIES), "disabled-extensions": ["unrelated"]}
@@ -89,89 +110,124 @@ def test_prestart_migrates_saved_and_live_lists_via_locked_store(monkeypatch, tm
     store = MagicMock()
     store.read.return_value = {}
     store.candidates.side_effect = [iter([before]), iter([migrate_dump(before, installed)])]
-    monkeypatch.setattr(layout_persistence, 'open_store', lambda path: store)
+    monkeypatch.setattr(layout_persistence, "open_store", lambda path: store)
     monkeypatch.setattr(layout_applier, "SETTINGS_GNOME", saved)
     monkeypatch.setattr(layout_applier, "_LAYOUT_HASH_FILE", tmp_path / "layout.sha256")
     monkeypatch.setattr(HelperClient, "installed_extension_uuids", lambda: installed)
-    monkeypatch.setattr(Gio, "bus_get_sync", lambda *args: SimpleNamespace(
-        call_sync=lambda *args: GLib.Variant("(b)", (False,))))
+    monkeypatch.setattr(
+        Gio,
+        "bus_get_sync",
+        lambda *args: SimpleNamespace(call_sync=lambda *args: GLib.Variant("(b)", (False,))),
+    )
+
     def set_values(key, value):
         values[key] = value
         return True
-    settings = SimpleNamespace(get_strv=lambda key: values[key], delay=lambda: None,
-        set_strv=set_values, apply=lambda: None, revert=lambda: pytest.fail("unexpected revert"))
+
+    settings = SimpleNamespace(
+        get_strv=lambda key: values[key],
+        delay=lambda: None,
+        set_strv=set_values,
+        apply=lambda: None,
+        revert=lambda: pytest.fail("unexpected revert"),
+    )
     monkeypatch.setattr(Gio.Settings, "new", lambda schema: settings)
     monkeypatch.setattr(Gio.Settings, "sync", lambda: None)
     session_migration.run()
     assert values["enabled-extensions"] == list(IDENTITIES.values())
     assert values["disabled-extensions"] == ["unrelated"]
-    store.publish.assert_called_once_with(migrate_dump(before, installed), managed=True, staged=False)
+    store.publish.assert_called_once_with(
+        migrate_dump(before, installed), managed=True, staged=False
+    )
     store.lock.assert_called_once()
     assert saved.read_text() == before  # No writer bypasses the store.
     session_migration.run()
     store.publish.assert_called_once()
 
 
-@pytest.mark.parametrize('enabled,disabled', [
-    (['copyous@boerdereinar.dev'], []),
-    ([], ['copyous@boerdereinar.dev']),
-    (['copyous@boerdereinar.dev'], ['copyous@boerdereinar.dev']),
-    (['copyous@boerdereinar.dev', 'big-clipboard@communitybig.org'], []),
-])
+@pytest.mark.parametrize(
+    "enabled,disabled",
+    [
+        (["copyous@boerdereinar.dev"], []),
+        ([], ["copyous@boerdereinar.dev"]),
+        (["copyous@boerdereinar.dev"], ["copyous@boerdereinar.dev"]),
+        (["copyous@boerdereinar.dev", "big-clipboard@communitybig.org"], []),
+    ],
+)
 def test_clipboard_identity_preserves_disabled_state_and_data(enabled, disabled):
     from helper_client import BIG_CLIPBOARD_UUID, LEGACY_COPYOUS_UUID
     from layout_applier import LayoutApplier
+
     installed = {BIG_CLIPBOARD_UUID}
     expected_enabled = [BIG_CLIPBOARD_UUID] if enabled and not disabled else []
     expected_disabled = [BIG_CLIPBOARD_UUID] if disabled else []
     text = (
-        f'[org/gnome/shell]\nenabled-extensions={enabled!r}\n'
-        f'disabled-extensions={disabled!r}\ndisable-user-extensions=true\n\n'
+        f"[org/gnome/shell]\nenabled-extensions={enabled!r}\n"
+        f"disabled-extensions={disabled!r}\ndisable-user-extensions=true\n\n"
         "[org/gnome/shell/extensions/copyous]\nhistory-length=5000\n"
         "database-location='/custom/history.db'\n"
     )
     for migrate in (migrate_dump, LayoutApplier._migrate_layout_component_uuids):
         result = migrate(text, installed)
-        assert f'enabled-extensions={expected_enabled!r}' in result
-        assert f'disabled-extensions={expected_disabled!r}' in result
-        assert result[result.index('disable-user-extensions'): ] == text[text.index('disable-user-extensions'): ]
+        assert f"enabled-extensions={expected_enabled!r}" in result
+        assert f"disabled-extensions={expected_disabled!r}" in result
+        assert (
+            result[result.index("disable-user-extensions") :]
+            == text[text.index("disable-user-extensions") :]
+        )
         assert LEGACY_COPYOUS_UUID not in result
         assert migrate(result, installed) == result
-    assert HelperClient.required_extension_lists(enabled, disabled, installed)[1] == expected_disabled
-    assert HelperClient.resolve_component_uuid(BIG_CLIPBOARD_UUID, {LEGACY_COPYOUS_UUID}) == LEGACY_COPYOUS_UUID
+    assert (
+        HelperClient.required_extension_lists(enabled, disabled, installed)[1] == expected_disabled
+    )
+    assert (
+        HelperClient.resolve_component_uuid(BIG_CLIPBOARD_UUID, {LEGACY_COPYOUS_UUID})
+        == LEGACY_COPYOUS_UUID
+    )
     assert HelperClient.resolve_component_uuid(LEGACY_COPYOUS_UUID, installed) == BIG_CLIPBOARD_UUID
 
 
-@pytest.mark.parametrize('enabled,disabled,active', [
-    (['big-clipboard@communitybig.org'], ['copyous@boerdereinar.dev'], True),
-    (['copyous@boerdereinar.dev', 'big-clipboard@communitybig.org'], ['copyous@boerdereinar.dev'], True),
-    (['copyous@boerdereinar.dev'], ['big-clipboard@communitybig.org'], False),
-    (['big-clipboard@communitybig.org'], ['copyous@boerdereinar.dev', 'big-clipboard@communitybig.org'], False),
-])
+@pytest.mark.parametrize(
+    "enabled,disabled,active",
+    [
+        (["big-clipboard@communitybig.org"], ["copyous@boerdereinar.dev"], True),
+        (
+            ["copyous@boerdereinar.dev", "big-clipboard@communitybig.org"],
+            ["copyous@boerdereinar.dev"],
+            True,
+        ),
+        (["copyous@boerdereinar.dev"], ["big-clipboard@communitybig.org"], False),
+        (
+            ["big-clipboard@communitybig.org"],
+            ["copyous@boerdereinar.dev", "big-clipboard@communitybig.org"],
+            False,
+        ),
+    ],
+)
 def test_current_clipboard_choice_overrides_legacy_state(enabled, disabled, active):
     from helper_client import BIG_CLIPBOARD_UUID, LEGACY_COPYOUS_UUID
     from layout_applier import LayoutApplier
 
     installed = {BIG_CLIPBOARD_UUID}
-    enabled = ['custom'] + enabled
-    disabled = ['other'] + disabled
+    enabled = ["custom"] + enabled
+    disabled = ["other"] + disabled
     expected = (
-        ['custom'] + ([BIG_CLIPBOARD_UUID] if active else []),
-        ['other'] + ([] if active else [BIG_CLIPBOARD_UUID]),
+        ["custom"] + ([BIG_CLIPBOARD_UUID] if active else []),
+        ["other"] + ([] if active else [BIG_CLIPBOARD_UUID]),
     )
     assert migrate_lists(enabled, disabled, installed) == expected
     required = HelperClient.required_extension_lists(enabled, disabled, installed)
     assert (BIG_CLIPBOARD_UUID in required[0]) is active
     assert required[1] == expected[1]
     data = (
-        f'[org/gnome/shell]\nenabled-extensions={enabled!r}\n'
-        f'disabled-extensions={disabled!r}\n\n'
-        '[org/gnome/shell/extensions/copyous]\nhistory-length=5000\n'
+        f"[org/gnome/shell]\nenabled-extensions={enabled!r}\n"
+        f"disabled-extensions={disabled!r}\n\n"
+        "[org/gnome/shell/extensions/copyous]\nhistory-length=5000\n"
     )
     for convert in (migrate_dump, LayoutApplier._migrate_layout_component_uuids):
         result = convert(data, installed)
-        assert f'enabled-extensions={expected[0]!r}' in result
-        assert f'disabled-extensions={expected[1]!r}' in result
+        assert f"enabled-extensions={expected[0]!r}" in result
+        assert f"disabled-extensions={expected[1]!r}" in result
         assert LEGACY_COPYOUS_UUID not in result
-        assert 'history-length=5000' in result
+        assert "history-length=5000" in result
         assert convert(result, installed) == result

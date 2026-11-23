@@ -189,7 +189,10 @@ def test_controls_restore_material_defaults_only():
         and any(getattr(target, "id", "") == "_MATERIAL_KEYS" for target in node.targets)
     )
     assert set(keys) == {
-        "blur-mode", "blur-strength", "glass-opacity", "use-accent-color",
+        "blur-mode",
+        "blur-strength",
+        "glass-opacity",
+        "use-accent-color",
         "power-save-behavior",
     }
     # Both the full and the overview-only page offer the restore row.

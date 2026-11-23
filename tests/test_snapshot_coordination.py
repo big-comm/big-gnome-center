@@ -64,10 +64,18 @@ def test_canonical_paths_keep_existing_snapshots(isolated, layout_id):
     assert module.SnapshotManager.read(layout_id) == DATA
 
 
-@pytest.mark.parametrize("left,right", [
-    ("custom one", "customone"), ("a.b", "ab"), ("../classic", "classic"),
-    ("A", "a"), ("!!!", "???"), ("á", "a"), ("x" * 400, "x" * 401),
-])
+@pytest.mark.parametrize(
+    "left,right",
+    [
+        ("custom one", "customone"),
+        ("a.b", "ab"),
+        ("../classic", "classic"),
+        ("A", "a"),
+        ("!!!", "???"),
+        ("á", "a"),
+        ("x" * 400, "x" * 401),
+    ],
+)
 def test_distinct_ids_never_alias(isolated, left, right):
     data = DATA.replace("Desk UX", "Classic") if right == "classic" else DATA
     module.run_cmd.return_value = True, data

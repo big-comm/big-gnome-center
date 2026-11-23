@@ -12,9 +12,9 @@ from pathlib import Path
 OWNER = b"/* Big Gnome Center window material. */\n"
 NAME = "big-gnome-center-windows.css"
 IMPORT = (
-    '/* BEGIN Big Gnome Center windows */\n'
+    "/* BEGIN Big Gnome Center windows */\n"
     f'@import url("{NAME}");\n'
-    '/* END Big Gnome Center windows */\n'
+    "/* END Big Gnome Center windows */\n"
 ).encode()
 # GTK gives every window the "background" class; windows meant to be see-through
 # drop it. User CSS outranks application CSS regardless of specificity, so the
@@ -25,9 +25,15 @@ IMPORT = (
 # - Chromium browsers read GTK colors through a "window.background.chromium"
 #   node to paint their own frame; a transparent one leaves the tab strip clear.
 EXCLUDED = (
-    ".dialog", ".messagedialog",
-    "#desktopwindow", "#testwindow", "#errorstate", ".ding-widget-window",
-    ".ashyterm-window", ".bgc-bigcam", ".chromium",
+    ".dialog",
+    ".messagedialog",
+    "#desktopwindow",
+    "#testwindow",
+    "#errorstate",
+    ".ding-widget-window",
+    ".ashyterm-window",
+    ".bgc-bigcam",
+    ".chromium",
 )
 SELECTORS = "window.background" + "".join(f":not({name})" for name in EXCLUDED)
 DIALOG_SELECTORS = f"{SELECTORS} dialog"
@@ -36,7 +42,9 @@ DIALOG_SELECTORS = f"{SELECTORS} dialog"
 def render_css(opacity: int) -> bytes:
     """Tint backgrounds only; keep foreground and widget states untouched."""
     alpha = (60 + max(0, min(100, opacity)) * 0.4) / 100
-    return OWNER + f"""@media (prefers-contrast: no-preference) {{
+    return (
+        OWNER
+        + f"""@media (prefers-contrast: no-preference) {{
     {SELECTORS} {{
         --window-bg-color: transparent;
         --view-bg-color: transparent;
@@ -100,6 +108,7 @@ def render_css(opacity: int) -> bytes:
     }}
 }}
 """.encode()
+    )
 
 
 def render_reset() -> str:
@@ -194,7 +203,7 @@ def sync_styles(config_dir: Path, enabled: bool, opacity: int = 37) -> None:
         if IMPORT not in user_css:
             # Preserve a UTF-8 BOM and all user bytes after our import.
             bom = b"\xef\xbb\xbf" if user_css.startswith(b"\xef\xbb\xbf") else b""
-            replace_checked(entry, bom + IMPORT + user_css[len(bom):], original)
+            replace_checked(entry, bom + IMPORT + user_css[len(bom) :], original)
     else:
         # Empty our sheet first so stale imports stay harmless.
         if material is not None:

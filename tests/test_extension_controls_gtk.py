@@ -14,8 +14,8 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
-from ui.page_extensions import ExtensionsPage
 from extension_policy import REQUIRED_EXTENSION_UUIDS
+from ui.page_extensions import ExtensionsPage
 
 
 def _switch_in(widget):
@@ -67,8 +67,11 @@ def test_native_switch_repeated_completion_and_rollback(monkeypatch, featured, o
 
     with ThreadPoolExecutor(max_workers=1) as pool:
         page = SimpleNamespace(
-            _pool=pool, _updates={}, _toast=on_ui,
-            rebuild_featured=on_ui, refresh_installed=on_ui,
+            _pool=pool,
+            _updates={},
+            _toast=on_ui,
+            rebuild_featured=on_ui,
+            refresh_installed=on_ui,
         )
         page._toggle_feat = MethodType(ExtensionsPage._toggle_feat, page)
         page._toggle_extension = MethodType(ExtensionsPage._toggle_extension, page)
@@ -132,14 +135,20 @@ def test_lists_follow_settings_committed_after_operation_completion(monkeypatch)
     monkeypatch.setattr("ui.page_extensions.ExtMgr.is_installed", lambda value: True)
     monkeypatch.setattr("ui.page_extensions.ExtMgr.is_user_dir", lambda value: False)
     monkeypatch.setattr("ui.page_extensions.ExtMgr.can_remove", lambda value: False)
-    monkeypatch.setattr("ui.page_extensions.ExtMgr.is_enabled",
-                        lambda value: value in settings.get_strv("enabled-extensions"))
-    monkeypatch.setattr("ui.page_extensions.ExtMgr.enabled_list",
-                        lambda: settings.get_strv("enabled-extensions"))
+    monkeypatch.setattr(
+        "ui.page_extensions.ExtMgr.is_enabled",
+        lambda value: value in settings.get_strv("enabled-extensions"),
+    )
+    monkeypatch.setattr(
+        "ui.page_extensions.ExtMgr.enabled_list", lambda: settings.get_strv("enabled-extensions")
+    )
     monkeypatch.setattr("ui.page_extensions.ExtMgr.all_globally_enabled", lambda: True)
-    monkeypatch.setattr("ui.page_extensions.ExtMgr.list_installed", lambda: [
-        {**ext, "user": False, "enabled": uuid in settings.get_strv("enabled-extensions")},
-    ])
+    monkeypatch.setattr(
+        "ui.page_extensions.ExtMgr.list_installed",
+        lambda: [
+            {**ext, "user": False, "enabled": uuid in settings.get_strv("enabled-extensions")},
+        ],
+    )
     with ThreadPoolExecutor(max_workers=1) as pool:
         page = ExtensionsPage(pool, lambda message: None)
         window = Adw.Window()
@@ -158,8 +167,10 @@ def test_lists_follow_settings_committed_after_operation_completion(monkeypatch)
             context = GLib.MainContext.default()
             while time.monotonic() < deadline:
                 context.iteration(False)
-                if (_switch_in(page._feat_cards[uuid]).get_active()
-                        and _switch_in(page._inst_container).get_active()):
+                if (
+                    _switch_in(page._feat_cards[uuid]).get_active()
+                    and _switch_in(page._inst_container).get_active()
+                ):
                     break
                 time.sleep(0.001)
             assert _switch_in(page._feat_cards[uuid]).get_active()

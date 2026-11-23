@@ -90,22 +90,14 @@ class PanelDockSettings:
         return (
             self.runtime_active
             and self.runtime.supports_layout(self.active_layout)
-            and (
-                self.dock_active
-                or
-                self.community_panel_active
-                or self.active_layout == "Minimal"
-            )
+            and (self.dock_active or self.community_panel_active or self.active_layout == "Minimal")
         )
 
     def _runtime_owns_panel_visibility(self) -> bool:
         return (
             self.runtime_active
             and self.runtime.supports_layout(self.active_layout)
-            and (
-                self.community_panel_active
-                or self.active_layout == "Minimal"
-            )
+            and (self.community_panel_active or self.active_layout == "Minimal")
         )
 
     def restore_layout_defaults(self) -> None:
@@ -144,17 +136,9 @@ class PanelDockSettings:
                 self.set_dock_isolates_monitors(False)
             elif self.community_panel_active:
                 self.set_dock_hover_effect(defaults["dock-hover"])
-            if (
-                self.dock_active
-                or self.community_panel_active
-                or self.active_layout == "Minimal"
-            ):
+            if self.dock_active or self.community_panel_active or self.active_layout == "Minimal":
                 self.set_panel_opacity(defaults["panel-opacity"])
-            if (
-                self.dock_active
-                or self.community_panel_active
-                or self.active_layout == "Minimal"
-            ):
+            if self.dock_active or self.community_panel_active or self.active_layout == "Minimal":
                 self.set_panel_visibility(defaults["panel-visibility"])
             if self.active_layout != "Classic" and (
                 self.dock_active or self.community_panel_active
@@ -294,9 +278,7 @@ class PanelDockSettings:
     def _legacy_dock_hover_effect(self) -> str:
         if self.community_panel_active:
             return (
-                "lift"
-                if self.community_panel.get_boolean("animate-appicon-hover")
-                else "default"
+                "lift" if self.community_panel.get_boolean("animate-appicon-hover") else "default"
             )
         effect = self.panel.get_string("dock-hover-effect")
         return effect if effect in DOCK_HOVER_EFFECTS else "default"
@@ -357,9 +339,7 @@ class PanelDockSettings:
 
     def dock_visibility(self) -> str:
         if self._runtime_owns_dock():
-            mode = self.runtime.get(
-                self.active_layout, "dock-visibility", "intelligent"
-            )
+            mode = self.runtime.get(self.active_layout, "dock-visibility", "intelligent")
             return mode if mode in VISIBILITY_MODES else "intelligent"
         return self._legacy_dock_visibility()
 
@@ -491,9 +471,7 @@ class PanelDockSettings:
 
     def panel_visibility(self) -> str:
         if self._runtime_owns_panel_visibility():
-            mode = self.runtime.get(
-                self.active_layout, "panel-visibility", "always-visible"
-            )
+            mode = self.runtime.get(self.active_layout, "panel-visibility", "always-visible")
             return mode if mode in VISIBILITY_MODES else "always-visible"
         return self._legacy_panel_visibility()
 

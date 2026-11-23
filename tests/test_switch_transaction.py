@@ -15,7 +15,9 @@ import layout_applier
 def test_switch_transaction_scenarios():
     result = subprocess.run(
         ["node", str(Path(__file__).with_name("switch_transaction.mjs"))],
-        capture_output=True, text=True, timeout=20,
+        capture_output=True,
+        text=True,
+        timeout=20,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "33 switch transaction scenarios passed" in result.stdout
@@ -59,10 +61,15 @@ def test_owned_switch_batches_each_dconf_mutation_phase():
 
 def test_python_ignores_in_shell_writer_advertisement(monkeypatch):
     client = layout_applier.HelperClient
-    monkeypatch.setattr(client, "ping_info", lambda: {
-        "ownedSwitch": True, "allowInShellDconf": True,
-        "uuid": helper_client.HELPER_UUID,
-    })
+    monkeypatch.setattr(
+        client,
+        "ping_info",
+        lambda: {
+            "ownedSwitch": True,
+            "allowInShellDconf": True,
+            "uuid": helper_client.HELPER_UUID,
+        },
+    )
     monkeypatch.setattr(layout_applier.LayoutApplier, "_enabled_extensions", lambda: [])
     monkeypatch.setattr(
         layout_applier.LayoutApplier, "_managed_extension_subdirs", lambda _: ["owned"]
@@ -93,10 +100,17 @@ def test_python_ignores_in_shell_writer_advertisement(monkeypatch):
     assert not any(c.args[0][:2] == ["dconf", "load"] for c in command.call_args_list)
 
 
-@pytest.mark.parametrize("reply", [
-    None, "garbage", "[]", '{"ok":"yes"}', '{"ok":true,"steps":null}',
-    '{"ok":true,"steps":[1]}',
-])
+@pytest.mark.parametrize(
+    "reply",
+    [
+        None,
+        "garbage",
+        "[]",
+        '{"ok":"yes"}',
+        '{"ok":true,"steps":null}',
+        '{"ok":true,"steps":[1]}',
+    ],
+)
 def test_ambiguous_reply_requests_owned_recovery(monkeypatch, reply):
     monkeypatch.setattr(helper_client.HelperClient, "_call", Mock(return_value=reply))
     abort = Mock(return_value=True)
@@ -108,9 +122,15 @@ def test_ambiguous_reply_requests_owned_recovery(monkeypatch, reply):
 
 @pytest.mark.parametrize("ok", [True, False])
 def test_owned_reply_preserves_failure(monkeypatch, ok):
-    call = Mock(return_value=json.dumps({
-        "ok": ok, "steps": ["done"], "error": "recovery incomplete",
-    }))
+    call = Mock(
+        return_value=json.dumps(
+            {
+                "ok": ok,
+                "steps": ["done"],
+                "error": "recovery incomplete",
+            }
+        )
+    )
     monkeypatch.setattr(helper_client.HelperClient, "_call", call)
     abort = Mock(side_effect=AssertionError("second recovery would race"))
     monkeypatch.setattr(helper_client.HelperClient, "abort_switch", abort)

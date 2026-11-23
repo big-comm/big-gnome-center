@@ -12,11 +12,22 @@ import pytest
 import backup_manager
 
 
-@pytest.mark.parametrize("primary,legacy,expected", [
-    (None, None, 10), ("broken", "3", 10), ("", None, 10), ("-2", None, 10),
-    ("0", None, 1), ("+3", None, 3), (" 4 ", None, 4), (None, "bad", 10),
-    (None, "2", 2), ("5", "2", 5), ("1.5", None, 10),
-])
+@pytest.mark.parametrize(
+    "primary,legacy,expected",
+    [
+        (None, None, 10),
+        ("broken", "3", 10),
+        ("", None, 10),
+        ("-2", None, 10),
+        ("0", None, 1),
+        ("+3", None, 3),
+        (" 4 ", None, 4),
+        (None, "bad", 10),
+        (None, "2", 2),
+        ("5", "2", 5),
+        ("1.5", None, 10),
+    ],
+)
 def test_import_and_retention_are_safe(tmp_path, primary, legacy, expected):
     env = os.environ.copy()
     for key, value in (("BIG_GNOME_CENTER_N_KEEP", primary), ("LAYOUT_SWITCHER_N_KEEP", legacy)):
@@ -38,8 +49,13 @@ backup_manager.BackupManager._prune()
 print(json.dumps([backup_manager.BackupManager.N_KEEP,
                   sorted(path.name for path in root.iterdir())]))
 """
-    result = subprocess.run([sys.executable, "-c", script, str(tmp_path)], env=env,
-                            capture_output=True, text=True, timeout=5)
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(tmp_path)],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
     assert result.returncode == 0, result.stderr
     count, remaining = json.loads(result.stdout)
     assert count == expected

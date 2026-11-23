@@ -166,11 +166,13 @@ class MainWindow(Adw.ApplicationWindow):
         )
         for key in ("cursor-theme", "color-scheme"):
             self._monitor.watch(
-                "org.gnome.desktop.interface", key,
+                "org.gnome.desktop.interface",
+                key,
                 lambda: self._schedule_refresh("theme", self._on_theme_changed),
             )
         self._monitor.watch(
-            "org.communitybig.big-gnome-center.themes", "cursor-follow-accent",
+            "org.communitybig.big-gnome-center.themes",
+            "cursor-follow-accent",
             lambda: self._schedule_refresh("theme", self._on_theme_changed),
         )
 

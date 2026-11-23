@@ -73,8 +73,11 @@ def test_native_confirmation_and_undo(monkeypatch, tmp_path, response, backup_ok
     monkeypatch.setattr(module, "find_file", lambda *args: tmp_path / "desk-ux.txt")
     monkeypatch.setattr(module.SnapshotManager, "has", lambda value: response != "Apply")
     monkeypatch.setattr(module.SnapshotManager, "read", lambda value: "snapshot")
-    monkeypatch.setattr(module.BackupManager, "create",
-                        lambda: (True, str(own)) if backup_ok else (False, "disk full"))
+    monkeypatch.setattr(
+        module.BackupManager,
+        "create",
+        lambda: (True, str(own)) if backup_ok else (False, "disk full"),
+    )
     latest = Mock(return_value=later)
     monkeypatch.setattr(module.BackupManager, "latest", latest)
     monkeypatch.setattr(module.LayoutApplier, "apply", backend)
@@ -86,10 +89,16 @@ def test_native_confirmation_and_undo(monkeypatch, tmp_path, response, backup_ok
     try:
         with ThreadPoolExecutor(max_workers=1) as pool:
             page = SimpleNamespace(
-                _pool=pool, _active_layout="BigGnome", get_root=lambda: window,
-                _layout_id=lambda cfg: Path(cfg).stem, _icon_path_for=lambda name: None,
-                _toast=Mock(), _set_status=Mock(), rebuild_grid=Mock(),
-                _save_current_snapshot=Mock(), _undo_layout=Mock(),
+                _pool=pool,
+                _active_layout="BigGnome",
+                get_root=lambda: window,
+                _layout_id=lambda cfg: Path(cfg).stem,
+                _icon_path_for=lambda name: None,
+                _toast=Mock(),
+                _set_status=Mock(),
+                rebuild_grid=Mock(),
+                _save_current_snapshot=Mock(),
+                _undo_layout=Mock(),
                 _prefs=Mock(last_error=""),
             )
             page._prefs.set.return_value = True

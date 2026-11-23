@@ -229,9 +229,7 @@ class PanelDockPage(Gtk.Box):
     def _build_menu_side_button(self, value: str, label: str) -> Gtk.ToggleButton:
         button = Gtk.ToggleButton()
         button.add_css_class("dock-menu-side-card")
-        button.set_tooltip_text(
-            tr("Place the application menu on the {side}").format(side=label)
-        )
+        button.set_tooltip_text(tr("Place the application menu on the {side}").format(side=label))
         button.update_property([Gtk.AccessibleProperty.LABEL], [label])
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
         box.set_margin_top(10)
@@ -328,9 +326,7 @@ class PanelDockPage(Gtk.Box):
             icon.add_css_class("dock-hover-preview-icon")
             icon.set_size_request(size, size)
             icon.set_valign(Gtk.Align.END)
-            if (value == "lift" and index == 1) or (
-                value == "magnify" and index == 2
-            ):
+            if (value == "lift" and index == 1) or (value == "magnify" and index == 2):
                 icon.add_css_class("dock-hover-preview-raised")
                 if value == "lift":
                     icon.set_margin_bottom(8)
@@ -536,16 +532,12 @@ class PanelDockPage(Gtk.Box):
         dock_available = self._settings is not None and dock_active
         panel_available = self._settings is not None and (dock_active or community_panel_active)
         indicator_available = self._settings is not None and (dock_active or community_panel_active)
-        hover_available = self._settings is not None and (
-            dock_active or community_panel_active
-        )
+        hover_available = self._settings is not None and (dock_active or community_panel_active)
         magnification_available = (
             runtime_active and dock_available and active_layout in RUNTIME_DOCK_LAYOUTS
         )
         native_panel_available = (
-            self._settings is not None
-            and runtime_active
-            and active_layout == "Minimal"
+            self._settings is not None and runtime_active and active_layout == "Minimal"
         )
         panel_available = panel_available or native_panel_available
         self._dock_group.set_visible(
@@ -557,12 +549,12 @@ class PanelDockPage(Gtk.Box):
         self._panel_opacity.set_visible(panel_available)
         self._dock_opacity.set_visible(not community_panel_active)
         self._dock_size.set_visible(dock_available and not community_panel_active)
-        position_available = (
-            runtime_active and dock_available and active_layout in DOCK_POSITIONS
-        )
+        position_available = runtime_active and dock_available and active_layout in DOCK_POSITIONS
         self._dock_position.set_visible(position_available)
         self._menu_side_row.set_visible(
-            runtime_active and dock_available and active_layout == "BigGnome"
+            runtime_active
+            and dock_available
+            and active_layout == "BigGnome"
             and self._settings.dock_position() == "bottom"
         )
         self._hover_row.set_visible(hover_available and active_layout != "Classic")
@@ -574,7 +566,9 @@ class PanelDockPage(Gtk.Box):
         self._dock_visibility.set_visible(not community_panel_active)
         # Only a dock on every monitor can keep each monitor's apps apart.
         self._isolate_monitors.set_visible(
-            runtime_active and dock_available and not community_panel_active
+            runtime_active
+            and dock_available
+            and not community_panel_active
             and active_layout in RUNTIME_DOCK_LAYOUTS
             and self._settings.dock_on_every_monitor()
         )
@@ -666,19 +660,13 @@ class PanelDockPage(Gtk.Box):
                 self._dock_size_label,
                 self._settings.dock_size(),
             )
-            self._isolate_monitors.set_active(
-                self._settings.dock_isolates_monitors()
-            )
+            self._isolate_monitors.set_active(self._settings.dock_isolates_monitors())
             if active_layout == "BigGnome":
-                self._menu_side_buttons[
-                    self._settings.dock_menu_side()
-                ].set_active(True)
+                self._menu_side_buttons[self._settings.dock_menu_side()].set_active(True)
         if hover_available:
             hover_effect = self._settings.dock_hover_effect()
             self._hover_buttons[hover_effect].set_active(True)
-            self._magnification.set_visible(
-                magnification_available and hover_effect == "magnify"
-            )
+            self._magnification.set_visible(magnification_available and hover_effect == "magnify")
         if magnification_available:
             value = self._settings.dock_magnification()
             self._magnification_scale.set_value(value)
@@ -701,21 +689,13 @@ class PanelDockPage(Gtk.Box):
                     self._settings.panel_height(),
                 )
         if session_available:
-            self._skip_startup_overview.set_active(
-                self._settings.skip_startup_overview()
-            )
+            self._skip_startup_overview.set_active(self._settings.skip_startup_overview())
 
     def _settings_for_write(self):
         active_layout = Settings().get("active_layout", "")
-        if (
-            self._settings is None
-            or self._settings.active_layout != active_layout
-        ):
+        if self._settings is None or self._settings.active_layout != active_layout:
             self.refresh()
-        if (
-            self._settings is not None
-            and self._settings.active_layout == active_layout
-        ):
+        if self._settings is not None and self._settings.active_layout == active_layout:
             return self._settings
         return None
 

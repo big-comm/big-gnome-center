@@ -39,9 +39,14 @@ def test_blur_support_rejects_missing_gtk(monkeypatch):
     assert material.gtk_supports_blur() is False
 
 
-@pytest.mark.parametrize("original", [
-    b"", b"/* User theme */\r\nlabel { color: red; }", b"\xef\xbb\xbf/* UTF-8 */",
-])
+@pytest.mark.parametrize(
+    "original",
+    [
+        b"",
+        b"/* User theme */\r\nlabel { color: red; }",
+        b"\xef\xbb\xbf/* UTF-8 */",
+    ],
+)
 def test_round_trip_preserves_user_css(tmp_path, original):
     entry, target = paths(tmp_path)
     entry.write_bytes(original)
@@ -160,10 +165,20 @@ def test_every_native_gtk4_window_gets_the_material():
     assert "picture" not in css
 
 
-@pytest.mark.parametrize("excluded", [
-    ".dialog", ".messagedialog", "#desktopwindow", "#testwindow", "#errorstate",
-    ".ding-widget-window", ".ashyterm-window", ".bgc-bigcam", ".chromium",
-])
+@pytest.mark.parametrize(
+    "excluded",
+    [
+        ".dialog",
+        ".messagedialog",
+        "#desktopwindow",
+        "#testwindow",
+        "#errorstate",
+        ".ding-widget-window",
+        ".ashyterm-window",
+        ".bgc-bigcam",
+        ".chromium",
+    ],
+)
 def test_see_through_and_self_styled_windows_are_never_tinted(excluded):
     assert f":not({excluded})" in material.SELECTORS
 
@@ -188,8 +203,12 @@ def test_embedded_dialogs_restore_background_palette():
     assert material.DIALOG_SELECTORS == f"{material.SELECTORS} dialog"
     dialog = css.split(material.DIALOG_SELECTORS + " {", 1)[1].split("}", 1)[0]
     for variable in (
-        "window-bg-color", "view-bg-color", "headerbar-bg-color",
-        "headerbar-backdrop-color", "sidebar-bg-color", "sidebar-backdrop-color",
+        "window-bg-color",
+        "view-bg-color",
+        "headerbar-bg-color",
+        "headerbar-backdrop-color",
+        "sidebar-bg-color",
+        "sidebar-backdrop-color",
     ):
         assert f"--{variable}: @{variable.replace('-', '_')};" in dialog
     assert "background-color:" not in dialog

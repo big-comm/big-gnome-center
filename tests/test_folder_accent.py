@@ -142,8 +142,9 @@ def test_native_lookup_preserves_artwork_and_sizes(tmp_path, icons, accent):
         theme = Gtk.IconTheme.new()
         theme.set_search_path([str(output), str(icons)])
         theme.set_theme_name(theme_name)
-        found = theme.lookup_icon(icon, [], size, scale, Gtk.TextDirection.LTR,
-                                  Gtk.IconLookupFlags.FORCE_REGULAR)
+        found = theme.lookup_icon(
+            icon, [], size, scale, Gtk.TextDirection.LTR, Gtk.IconLookupFlags.FORCE_REGULAR
+        )
         return Path(found.get_file().get_path())
 
     for size in (16, 24, 48, 64):
@@ -164,8 +165,10 @@ def test_overlay_is_presented_as_base(tmp_path, icons, monkeypatch):
     monkeypatch.setattr(ThemeMgr, "_theme_roots", lambda kind: [output])
     assert ThemeMgr.current("icons") == BASES[0]
     assert ThemeMgr.list_themes("icons") == []
-    text = ("[org/gnome/desktop/interface]\n"
-            f"icon-theme='{result['theme']}'\ncolor-scheme='prefer-dark'\n")
+    text = (
+        "[org/gnome/desktop/interface]\n"
+        f"icon-theme='{result['theme']}'\ncolor-scheme='prefer-dark'\n"
+    )
     adjusted = LayoutApplier._adjust_icon_theme_for_scheme(text)
     assert "icon-theme='bigicons-papient-dark'" in adjusted
 

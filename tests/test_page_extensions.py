@@ -33,7 +33,9 @@ def test_bulk_button_only_shown_when_action_is_available(monkeypatch, tab, block
 
 
 def test_stale_bulk_click_does_not_open_empty_confirmation(monkeypatch):
-    monkeypatch.setattr("ui.page_extensions.ExtMgr.enabled_list", lambda: sorted(REQUIRED_EXTENSION_UUIDS))
+    monkeypatch.setattr(
+        "ui.page_extensions.ExtMgr.enabled_list", lambda: sorted(REQUIRED_EXTENSION_UUIDS)
+    )
     monkeypatch.setattr("ui.page_extensions.ExtMgr.all_globally_enabled", lambda: True)
     dialog = Mock()
     monkeypatch.setattr("ui.page_extensions.Adw.AlertDialog", dialog)
@@ -51,10 +53,7 @@ def test_installed_list_hides_system_runtime_and_legacy_duplicates():
         "layout-switcher-helper@bigcommunity.org",
         "pamac-updates@manjaro.org",
     }
-    extensions = [
-        {"uuid": uuid, "user": False}
-        for uuid in sorted(hidden_uuids)
-    ] + [
+    extensions = [{"uuid": uuid, "user": False} for uuid in sorted(hidden_uuids)] + [
         {"uuid": "community-menu@communitybig.org", "user": False},
         {"uuid": "gtk4-ding@smedius.gitlab.com", "user": False},
     ]
@@ -116,9 +115,7 @@ def test_external_extension_description_uses_its_first_paragraph():
 def test_missing_extension_description_has_a_clear_fallback():
     ext = {"uuid": "example@example.org", "description": ""}
 
-    assert _installed_extension_description(ext) == tr(
-        "Description not provided by the developer."
-    )
+    assert _installed_extension_description(ext) == tr("Description not provided by the developer.")
 
 
 def test_featured_extensions_keep_the_approved_compact_grid():
@@ -139,8 +136,10 @@ def test_featured_toggle_failure_restores_once_without_new_operation(monkeypatch
         jobs.append(work)
 
     page = SimpleNamespace(
-        _pool=SimpleNamespace(submit=submit), _toast=Mock(),
-        rebuild_featured=Mock(), refresh_installed=Mock(),
+        _pool=SimpleNamespace(submit=submit),
+        _toast=Mock(),
+        rebuild_featured=Mock(),
+        refresh_installed=Mock(),
     )
     if hasattr(ExtensionsPage, "_toggle_extension"):
         page._toggle_extension = MethodType(ExtensionsPage._toggle_extension, page)
@@ -185,7 +184,8 @@ def test_settings_refresh_coalesces_changes_and_preserves_pending_controls(monke
     idle_add = Mock(return_value=123)
     monkeypatch.setattr("ui.page_extensions.GLib.idle_add", idle_add)
     page = SimpleNamespace(
-        _pending_extension_toggles=0, _shell_refresh_source=0,
+        _pending_extension_toggles=0,
+        _shell_refresh_source=0,
         _refresh_shell_settings=Mock(),
     )
     ExtensionsPage._on_shell_settings_changed(page, "favorite-apps")
@@ -204,9 +204,11 @@ def test_settings_refresh_coalesces_changes_and_preserves_pending_controls(monke
 @pytest.mark.parametrize("pending,attached", [(1, True), (0, False), (0, True)])
 def test_settings_refresh_skips_busy_or_detached_pages(pending, attached):
     page = SimpleNamespace(
-        _pending_extension_toggles=pending, _shell_refresh_source=123,
+        _pending_extension_toggles=pending,
+        _shell_refresh_source=123,
         get_root=lambda: object() if attached else None,
-        rebuild_featured=Mock(), refresh_installed=Mock(),
+        rebuild_featured=Mock(),
+        refresh_installed=Mock(),
     )
     assert ExtensionsPage._refresh_shell_settings(page) is False
     assert page._shell_refresh_source == 0

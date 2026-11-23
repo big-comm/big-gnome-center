@@ -17,13 +17,21 @@ SPEC.loader.exec_module(dconf_batch)
 
 def test_batch_commits_resets_and_values_as_one_changeset():
     keyfile = "[org/gnome/shell/extensions/test]\nvalue=true\n"
-    with patch.object(dconf_batch, "_atomic_change") as change, patch(
-        "sys.stdin", io.StringIO(keyfile)
+    with (
+        patch.object(dconf_batch, "_atomic_change") as change,
+        patch("sys.stdin", io.StringIO(keyfile)),
     ):
-        assert dconf_batch.main([
-            "--reset-tree", "/org/gnome/shell/extensions/test/",
-            "--reset", "/org/gnome/shell/extensions/test/value",
-        ]) == 0
+        assert (
+            dconf_batch.main(
+                [
+                    "--reset-tree",
+                    "/org/gnome/shell/extensions/test/",
+                    "--reset",
+                    "/org/gnome/shell/extensions/test/value",
+                ]
+            )
+            == 0
+        )
 
     change.assert_called_once_with(
         [
@@ -43,11 +51,14 @@ def test_batch_can_dump_to_a_file(tmp_path):
     assert output.read_text() == "[/]\nkey=true\n"
 
 
-@pytest.mark.parametrize("arguments", [
-    ["--reset-tree", "/org/gnome/shell/"],
-    ["--reset", "org/gnome/shell/key"],
-    ["--reset", "/org/gnome/shell/key;touch /tmp/bad"],
-])
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        ["--reset-tree", "/org/gnome/shell/"],
+        ["--reset", "org/gnome/shell/key"],
+        ["--reset", "/org/gnome/shell/key;touch /tmp/bad"],
+    ],
+)
 def test_batch_rejects_untrusted_paths(arguments):
     with patch("sys.stdin", io.StringIO("")), pytest.raises(SystemExit):
         dconf_batch.main(arguments)

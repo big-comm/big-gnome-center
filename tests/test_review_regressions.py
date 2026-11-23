@@ -41,9 +41,13 @@ def test_xdg_migration_preserves_existing_and_imports_previous_path(tmp_path, mo
 def test_incomplete_check_preserves_successful_results():
     detail = SimpleNamespace(pk=12)
     with (
-        patch("update_checker.ExtMgr.list_installed", return_value=[
-            {"uuid": "good", "user": True}, {"uuid": "bad", "user": True},
-        ]),
+        patch(
+            "update_checker.ExtMgr.list_installed",
+            return_value=[
+                {"uuid": "good", "user": True},
+                {"uuid": "bad", "user": True},
+            ],
+        ),
         patch("update_checker.ExtMgr.installed_version", return_value=1),
         patch("update_checker._shell_version_str", return_value="50"),
         patch("update_checker.ego_client.info", side_effect=[detail, OSError("offline")]),
@@ -77,7 +81,10 @@ def test_notification_save_failure_does_not_preview_or_report_success(tmp_path, 
     prefs = settings_store.Settings()
     prefs.set("notification_positions", {"Classic": "top-center"})
     page = SimpleNamespace(
-        _prefs=prefs, _active_layout="Classic", _toast=Mock(), refresh=Mock(),
+        _prefs=prefs,
+        _active_layout="Classic",
+        _toast=Mock(),
+        refresh=Mock(),
         _send_notification_preview=Mock(),
     )
     page._save_preference = lambda key, value: DesktopPage._save_preference(page, key, value)
@@ -85,7 +92,9 @@ def test_notification_save_failure_does_not_preview_or_report_success(tmp_path, 
         patch("settings_store.atomic_write_text", side_effect=PermissionError("denied")),
         patch("ui.page_desktop.GLib.timeout_add") as timer,
     ):
-        DesktopPage._finish_notification_position_change(page, True, "", "bottom-right", "Bottom right")
+        DesktopPage._finish_notification_position_change(
+            page, True, "", "bottom-right", "Bottom right"
+        )
     timer.assert_not_called()
     assert "denied" in page._toast.call_args.args[0]
     assert prefs.get("notification_positions") == {"Classic": "top-center"}
@@ -96,13 +105,18 @@ def test_failed_manual_check_does_not_claim_up_to_date():
     from ui.window import MainWindow
 
     page = SimpleNamespace(
-        _update_check_running=True, _pending_updates={"known": object()},
-        _pages={}, _toast=Mock(),
+        _update_check_running=True,
+        _pending_updates={"known": object()},
+        _pages={},
+        _toast=Mock(),
     )
     MainWindow._on_update_check_done(page, {}, True, True)
     assert not page._update_check_running
     assert "known" in page._pending_updates
-    assert page._toast.call_args.args[0] == f"{constants.tr('Check for updates')}: {constants.tr('Operation failed')}"
+    assert (
+        page._toast.call_args.args[0]
+        == f"{constants.tr('Check for updates')}: {constants.tr('Operation failed')}"
+    )
 
 
 def test_auto_update_toggle_does_not_change_state_on_save_failure():
@@ -123,7 +137,9 @@ def test_window_worker_does_not_mark_failed_check(error):
     from ui.window import MainWindow
 
     page = SimpleNamespace(
-        _update_check_running=False, _prefs=Mock(), _on_update_check_done=Mock(),
+        _update_check_running=False,
+        _prefs=Mock(),
+        _on_update_check_done=Mock(),
         _pool=SimpleNamespace(submit=lambda task: task()),
     )
     with (
@@ -144,5 +160,5 @@ def test_audit_uses_same_settings_path_and_rejects_non_object_json(tmp_path, mon
     monkeypatch.setattr(constants, "SETTINGS_FILE", path)
     path.write_text('{"active_layout":"Classic"}')
     assert _application_preferences()["active_layout"] == "Classic"
-    path.write_text('[]')
+    path.write_text("[]")
     assert _application_preferences() == {}

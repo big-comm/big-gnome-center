@@ -10,7 +10,9 @@ import pytest
 def test_frosted_resources(group):
     result = subprocess.run(
         ["node", str(Path(__file__).with_name("frosted_resources.mjs")), group],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
@@ -27,6 +29,8 @@ def test_frosted_quick_submenus_forget_disposed_actors():
 def test_frosted_redraw_guard_repairs_partial_redraws_without_loops():
     result = subprocess.run(
         ["node", str(Path(__file__).with_name("frosted_redraw_guard.mjs"))],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr

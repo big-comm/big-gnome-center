@@ -28,7 +28,8 @@ def drain_until(predicate, timeout=10):
 def test_native_command_completion_once(status):
     errors, successes = [], []
     launcher.launch_command(
-        [sys.executable, "-c", f"raise SystemExit({status})"], errors.append,
+        [sys.executable, "-c", f"raise SystemExit({status})"],
+        errors.append,
         on_success=lambda: successes.append(True),
     )
     drain_until(lambda: errors or successes)
@@ -38,8 +39,9 @@ def test_native_command_completion_once(status):
 
 def test_missing_command_reports_error_once(tmp_path):
     errors, successes = [], []
-    launcher.launch_command([str(tmp_path / "missing")], errors.append,
-                            on_success=lambda: successes.append(True))
+    launcher.launch_command(
+        [str(tmp_path / "missing")], errors.append, on_success=lambda: successes.append(True)
+    )
     assert len(errors) == 1
     assert not successes
 
@@ -49,12 +51,18 @@ def test_native_argv_is_literal(tmp_path):
     marker = tmp_path / "must-not-exist"
     arguments = ["a b", f"$(touch {marker})", "quotes'\"", "https://example.org/?a=1&b=2"]
     errors, done = [], []
-    launcher.launch_command([
-        sys.executable, "-c",
-        "import json,sys; from pathlib import Path; "
-        "Path(sys.argv[1]).write_text(json.dumps(sys.argv[2:]))",
-        str(destination), *arguments,
-    ], errors.append, on_success=lambda: done.append(True))
+    launcher.launch_command(
+        [
+            sys.executable,
+            "-c",
+            "import json,sys; from pathlib import Path; "
+            "Path(sys.argv[1]).write_text(json.dumps(sys.argv[2:]))",
+            str(destination),
+            *arguments,
+        ],
+        errors.append,
+        on_success=lambda: done.append(True),
+    )
     drain_until(lambda: done or errors)
     assert not errors
     assert json.loads(destination.read_text()) == arguments
@@ -67,7 +75,8 @@ def test_running_application_survives_five_seconds_and_keeps_loop_responsive():
     start = time.monotonic()
     try:
         launcher.launch_command(
-            [sys.executable, "-c", "import time; time.sleep(6)"], errors.append,
+            [sys.executable, "-c", "import time; time.sleep(6)"],
+            errors.append,
             on_success=lambda: done.append(True),
         )
         assert time.monotonic() - start < 1
@@ -83,8 +92,10 @@ def test_running_application_survives_five_seconds_and_keeps_loop_responsive():
 def test_only_bounded_preparation_times_out_once():
     errors, successes = [], []
     launcher.launch_command(
-        [sys.executable, "-c", "import time; time.sleep(4)"], errors.append,
-        on_success=lambda: successes.append(True), timeout=1,
+        [sys.executable, "-c", "import time; time.sleep(4)"],
+        errors.append,
+        on_success=lambda: successes.append(True),
+        timeout=1,
     )
     drain_until(lambda: errors)
     # Reap delivery must not report a second error after force_exit().
@@ -202,9 +213,11 @@ def test_native_schema_preparation_gates_preferences(tmp_path, monkeypatch, vali
     monkeypatch.setattr(manager.shutil, "which", lambda command: command)
     schemas = tmp_path / "test@example.org" / "schemas"
     schemas.mkdir(parents=True)
-    xml = ('<schemalist><schema id="org.bgc.test" path="/org/bgc/test/">'
-           '<key name="enabled" type="b"><default>false</default></key>'
-           '</schema></schemalist>')
+    xml = (
+        '<schemalist><schema id="org.bgc.test" path="/org/bgc/test/">'
+        '<key name="enabled" type="b"><default>false</default></key>'
+        "</schema></schemalist>"
+    )
     (schemas / "test.gschema.xml").write_text(xml if valid else "<invalid>")
     opened, errors = [], []
 
@@ -231,8 +244,10 @@ def test_extensions_page_has_no_gnome_extensions_shortcut():
     assert not hasattr(launcher, "launch_extensions_app")
 
 
-@pytest.mark.parametrize("module,cls", [("ui.page_extensions", "ExtensionsPage"),
-                                      ("ui.ext_detail_view", "ExtDetailView")])
+@pytest.mark.parametrize(
+    "module,cls",
+    [("ui.page_extensions", "ExtensionsPage"), ("ui.ext_detail_view", "ExtDetailView")],
+)
 def test_pages_surface_launch_errors(module, cls):
     import importlib
 

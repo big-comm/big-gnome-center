@@ -287,7 +287,8 @@ class ExtDetailView(Adw.NavigationPage):
             link.connect(
                 "clicked",
                 lambda b: launch_uri(
-                    f"{EGO_BASE_URL}/extension/{self._pk}/", self._launch_error,
+                    f"{EGO_BASE_URL}/extension/{self._pk}/",
+                    self._launch_error,
                 ),
             )
             box.append(link)

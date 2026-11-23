@@ -94,7 +94,9 @@ class ShellReloader:
 
     @staticmethod
     def _request_extension_state(
-        uuid: str, enable: bool, timeout: int = 8,
+        uuid: str,
+        enable: bool,
+        timeout: int = 8,
     ) -> Tuple[Optional[bool], str]:
         """Return None for transport failure, False for rejection/invalid replies."""
         from gi.repository import GLib
@@ -120,8 +122,11 @@ class ShellReloader:
         if not ok:
             return None, out
         try:
-            accepted, = GLib.Variant.parse(
-                GLib.VariantType.new("(b)"), out, None, None,
+            (accepted,) = GLib.Variant.parse(
+                GLib.VariantType.new("(b)"),
+                out,
+                None,
+                None,
             ).unpack()
         except GLib.Error:
             return False, f"{tr('Operation failed')}: {out}"

@@ -7,12 +7,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DOCK = ROOT / "usr/share/gnome-shell/extensions/community-dock@communitybig.org"
 DOCK_MODULES = ROOT / (
-    "usr/share/gnome-shell/extensions/"
-    "layout-switcher-runtime@communitybig.org/dock"
+    "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock"
 )
 DOCK_SURFACE = ROOT / (
-    "usr/share/gnome-shell/extensions/"
-    "layout-switcher-runtime@communitybig.org/dockSurface.js"
+    "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockSurface.js"
 )
 
 

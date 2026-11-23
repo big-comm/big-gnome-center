@@ -11,9 +11,35 @@ RUNTIME_UUID = "layout-switcher-runtime@communitybig.org"
 RUNTIME = ROOT / f"usr/share/gnome-shell/extensions/{RUNTIME_UUID}"
 LAYOUTS = ROOT / "usr/share/big-gnome-center/layouts"
 SUPPORTED_LOCALES = (
-    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
-    "hu", "is", "it", "ja", "ko", "nb", "nl", "pl", "pt_BR", "pt", "ro", "ru",
-    "sk", "sv", "tr", "uk", "zh",
+    "bg",
+    "cs",
+    "da",
+    "de",
+    "el",
+    "en",
+    "es",
+    "et",
+    "fi",
+    "fr",
+    "he",
+    "hr",
+    "hu",
+    "is",
+    "it",
+    "ja",
+    "ko",
+    "nb",
+    "nl",
+    "pl",
+    "pt_BR",
+    "pt",
+    "ro",
+    "ru",
+    "sk",
+    "sv",
+    "tr",
+    "uk",
+    "zh",
 )
 
 
@@ -151,10 +177,8 @@ def test_unified_runtime_applies_profile_or_override_indicator_before_activation
 
 def test_native_profile_explicitly_releases_all_managed_surfaces():
     controller = (RUNTIME / "runtimeController.js").read_text()
-    branch_start = controller.index(
-        "profile.surface === RuntimeSurface.NATIVE")
-    native = controller[branch_start:controller.index(
-        "    _indicatorForProfile", branch_start)]
+    branch_start = controller.index("profile.surface === RuntimeSurface.NATIVE")
+    native = controller[branch_start : controller.index("    _indicatorForProfile", branch_start)]
 
     assert "this._dock.deactivate();" in native
     assert "this._taskbar.deactivate();" in native
@@ -216,7 +240,8 @@ def test_runtime_owns_startup_overview_for_every_surface():
     assert "new StartupOverviewIntegration()" in controller
     assert "this._startupOverview.apply(skipStartupOverview)" in controller
     synchronous_apply = controller.index(
-        "this._startupOverview.apply(\n            this._skipStartupOverviewForProfile(startupProfile))"
+        "this._startupOverview.apply(\n"
+        "            this._skipStartupOverviewForProfile(startupProfile))"
     )
     assert synchronous_apply < controller.index("this._queueSync();")
     assert "Main.sessionMode.hasOverview = value" in integration
@@ -274,7 +299,7 @@ def test_runtime_applies_owned_dock_settings_without_rebuilding_active_surface()
     assert "set_int('dash-max-icon-size', iconSize)" in dock
     assert "managerGeneration: this._managerGeneration" in dock
     assert "this._managerGeneration++" in dock
-    active_branch = dock[dock.index("if (this._active) {"):]
+    active_branch = dock[dock.index("if (this._active) {") :]
     for application in (
         "this._applyIndicator(indicator)",
         "this._applyHover(hover, magnificationIntensity)",
@@ -290,8 +315,7 @@ def test_runtime_owns_dock_visibility_modes():
     runtime = (RUNTIME / "dockVisibilityModes.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
     engine = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
 
@@ -414,9 +438,7 @@ def test_runtime_leaves_surface_borders_to_frosted_glass():
     dock_theme = (RUNTIME / "dock/theming.js").read_text()
     taskbar_transparency = (RUNTIME / "taskbar/transparency.js").read_text()
     glass_surface = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
-        "frosted-glass@communitybig.org/shellBlurSurface.js"
+        ROOT / "usr/share/gnome-shell/extensions/frosted-glass@communitybig.org/shellBlurSurface.js"
     ).read_text()
 
     assert "const borderlessStyle = 'border: 0 solid transparent;'" in dock_theme
@@ -433,9 +455,9 @@ def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
     controller = (RUNTIME / "runtimeController.js").read_text()
     runtime = (RUNTIME / "taskbarRuntime.js").read_text()
     branch_start = controller.index("profile.surface === RuntimeSurface.TASKBAR")
-    taskbar_branch = controller[branch_start:controller.index(
-        "profile.surface === RuntimeSurface.NATIVE", branch_start
-    )]
+    taskbar_branch = controller[
+        branch_start : controller.index("profile.surface === RuntimeSurface.NATIVE", branch_start)
+    ]
 
     assert taskbar_branch.count("taskbar.deactivate()") == 1
     assert "generation !== this._syncGeneration" in taskbar_branch
@@ -444,22 +466,19 @@ def test_runtime_keeps_taskbar_surface_alive_between_taskbar_profiles():
     assert taskbar_branch.index("await taskbar.activate(") < taskbar_branch.index(
         "taskbar.deactivate()"
     )
-    active_branch = runtime[runtime.index("if (this._active) {"):]
+    active_branch = runtime[runtime.index("if (this._active) {") :]
     assert active_branch.index("this._applyIndicator(indicator)") < active_branch.index("return;")
     assert active_branch.index("this._applyHover(hover)") < active_branch.index("return;")
-    assert active_branch.index("this._applyOpacity(opacity)") < active_branch.index(
+    assert active_branch.index("this._applyOpacity(opacity)") < active_branch.index("return;")
+    assert active_branch.index("this._visibilityModes.apply(visibility)") < active_branch.index(
         "return;"
     )
-    assert active_branch.index("this._visibilityModes.apply(visibility)") < active_branch.index("return;")
 
 
 def test_runtime_owns_accepted_dock_placement():
     runtime = (RUNTIME / "dockPlacement.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    utils = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/utils.js"
-    ).read_text()
+    utils = (RUNTIME / "dock/utils.js").read_text()
 
     assert "new DockPlacement(" in dock
     assert "['bottom', St.Side.BOTTOM]" in runtime
@@ -517,8 +536,7 @@ def test_taskbar_lifecycle_is_owned_by_the_unified_runtime():
     taskbar = (RUNTIME / "taskbarRuntime.js").read_text()
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     adapter = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/extension.js"
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/extension.js"
     ).read_text()
     context = (RUNTIME / "taskbar/runtimeContext.js").read_text()
 
@@ -624,9 +642,7 @@ def test_taskbar_layout_indicators_are_runtime_rendered_with_fallbacks():
 def test_taskbar_owns_native_panel_host_and_preserves_shell_status_actors():
     surface = (RUNTIME / "taskbarSurface.js").read_text()
     status = (RUNTIME / "taskbarStatusArea.js").read_text()
-    status_fullscreen = (
-        RUNTIME / "taskbarStatusFullscreenIntegration.js"
-    ).read_text()
+    status_fullscreen = (RUNTIME / "taskbarStatusFullscreenIntegration.js").read_text()
     host = (RUNTIME / "taskbarPanelHost.js").read_text()
     panel = (RUNTIME / "taskbar/panel.js").read_text()
     manager = (RUNTIME / "taskbar/panelManager.js").read_text()
@@ -755,8 +771,7 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
     assert "./taskbarOverviewIntegration.js" in services
     assert "../community-panel@communitybig.org/overview.js" not in services
     assert not (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/overview.js"
+        ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org/overview.js"
     ).exists()
     assert "overviewIntegration" in services
     assert "implementation: 'layout-switcher-runtime'" in overview
@@ -813,9 +828,7 @@ def test_taskbar_manager_services_have_owned_transactional_lifecycle():
         / "usr/share/gnome-shell/extensions/community-panel@communitybig.org"
         / "desktopIconsIntegration.js"
     ).exists()
-    assert "desktopIconsUsableArea?.diagnostics()" in (
-        RUNTIME / "dockRuntime.js"
-    ).read_text()
+    assert "desktopIconsUsableArea?.diagnostics()" in (RUNTIME / "dockRuntime.js").read_text()
     assert "desktopBridge" in services
     assert "INTELLIHIDE_KEYBINDING" in services
     assert "GLib.Source.remove(this._desktopMarginsIdleId)" in services
@@ -868,18 +881,14 @@ def test_dock_lifecycle_is_owned_by_the_unified_runtime():
     assert "panel?.destroy()" in dock
     assert "indicators?.destroy()" in dock
     assert "manager?.destroy()" in dock
-    assert dock.index("panel?.destroy()") < dock.index(
-        "manager?.destroy()"
-    )
+    assert dock.index("panel?.destroy()") < dock.index("manager?.destroy()")
     assert "CommunityDockRuntime" not in dock
 
 
 def test_runtime_owns_dock_actor_construction():
     runtime = (RUNTIME / "dockRuntime.js").read_text()
-    factory = (RUNTIME / "dockActorFactory.js").read_text()
     engine = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
 
@@ -930,10 +939,7 @@ def test_runtime_owns_native_panel_controller_for_dock_layouts():
 def test_runtime_owns_the_accepted_primary_dock_app_actions():
     actions = (RUNTIME / "dockAppActions.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    app_icons = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
-    ).read_text()
+    app_icons = (RUNTIME / "dock/appIcons.js").read_text()
 
     assert "new DockAppActions()" in dock
     assert "appActions?.activate(this, button)" in app_icons
@@ -948,14 +954,7 @@ def test_runtime_owns_the_accepted_primary_dock_app_actions():
 def test_runtime_owns_dock_favorites_and_running_app_order():
     model = (RUNTIME / "dockAppModel.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    dash = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/dash.js"
-    ).read_text()
-    app_icons = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
-    ).read_text()
+    dash = (RUNTIME / "dock/dash.js").read_text()
 
     assert "new DockAppModel()" in dock
     assert "appModel?.favorites()" in dash
@@ -972,14 +971,10 @@ def test_runtime_owns_dock_notification_monitor_and_badge_count():
     monitor = (RUNTIME / "dockNotificationMonitor.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
     manager = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
-    indicators = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIconIndicators.js"
-    ).read_text()
+    indicators = (RUNTIME / "dock/appIconIndicators.js").read_text()
 
     assert "new DockNotificationMonitor(" in dock
     assert "this._host.notificationsMonitor" in dock
@@ -999,10 +994,7 @@ def test_runtime_owns_dock_notification_monitor_and_badge_count():
 def test_runtime_owns_dock_notification_badge_actor_and_text():
     badges = (RUNTIME / "dockNotificationBadges.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    indicators = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIconIndicators.js"
-    ).read_text()
+    indicators = (RUNTIME / "dock/appIconIndicators.js").read_text()
 
     assert "new DockNotificationBadges()" in dock
     assert "textForCount(count)" in badges
@@ -1016,10 +1008,7 @@ def test_runtime_owns_dock_notification_badge_actor_and_text():
 def test_runtime_owns_dock_running_indicator_renderers():
     runtime = (RUNTIME / "dockRunningIndicators.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    icons = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
-    ).read_text()
+    icons = (RUNTIME / "dock/appIcons.js").read_text()
 
     assert "new DockRunningIndicators(" in dock
     assert "this._host.createIndicatorController" in dock
@@ -1038,17 +1027,10 @@ def test_runtime_owns_dock_running_indicator_renderers():
 def test_runtime_owns_dock_hover_effects():
     runtime = (RUNTIME / "dockHoverEffects.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    dash = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/dash.js"
-    ).read_text()
-    app_icons = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
-    ).read_text()
+    dash = (RUNTIME / "dock/dash.js").read_text()
+    app_icons = (RUNTIME / "dock/appIcons.js").read_text()
     stylesheet = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/stylesheet.css"
+        ROOT / "usr/share/gnome-shell/extensions/community-dock@communitybig.org/stylesheet.css"
     ).read_text()
 
     assert "new DockHoverEffects(" in dock
@@ -1093,10 +1075,7 @@ def test_magnification_waits_until_the_dock_is_fully_shown():
 def test_runtime_owns_core_dock_context_menu_actions():
     actions = (RUNTIME / "dockAppMenuActions.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    app_icons = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
-    ).read_text()
+    app_icons = (RUNTIME / "dock/appIcons.js").read_text()
 
     assert "new DockAppMenuActions()" in dock
     assert "appMenuActions?.activateWindow(window)" in app_icons
@@ -1116,10 +1095,7 @@ def test_runtime_owns_core_dock_context_menu_actions():
 def test_runtime_owns_dock_context_menu_construction():
     runtime = (RUNTIME / "dockAppIconMenu.js").read_text()
     dock = (RUNTIME / "dockRuntime.js").read_text()
-    app_icons = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock/appIcons.js"
-    ).read_text()
+    app_icons = (RUNTIME / "dock/appIcons.js").read_text()
 
     assert "class DockAppIconMenu extends PopupMenu.PopupMenu" in runtime
     assert "new DockAppMenuFactory()" in dock
@@ -1132,8 +1108,7 @@ def test_runtime_owns_dock_context_menu_construction():
 def test_unified_runtime_preserves_helper_fault_isolation():
     metadata = json.loads((RUNTIME / "metadata.json").read_text())
     helper = ROOT / (
-        "usr/share/gnome-shell/extensions/"
-        "layout-switcher-helper@communitybig.org/metadata.json"
+        "usr/share/gnome-shell/extensions/layout-switcher-helper@communitybig.org/metadata.json"
     )
 
     assert helper.is_file()

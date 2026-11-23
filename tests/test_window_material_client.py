@@ -15,10 +15,15 @@ def live(tmp_path, monkeypatch):
     monkeypatch.setattr(client, "gtk_supports_blur", lambda: True)
     provider = Mock()
     style = Mock()
-    monkeypatch.setattr(client, "Gtk", SimpleNamespace(
-        CssProvider=lambda: provider, StyleContext=style,
-        STYLE_PROVIDER_PRIORITY_USER=800,
-    ))
+    monkeypatch.setattr(
+        client,
+        "Gtk",
+        SimpleNamespace(
+            CssProvider=lambda: provider,
+            StyleContext=style,
+            STYLE_PROVIDER_PRIORITY_USER=800,
+        ),
+    )
     monkeypatch.setattr(client.WindowMaterialClient, "_watch", lambda self: None)
     window = Mock()
     instance = client.WindowMaterialClient(window, "big-gnome-center")
@@ -117,10 +122,15 @@ def test_disable_overrides_material_cached_at_startup(tmp_path, monkeypatch):
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
     monkeypatch.setattr(client, "gtk_supports_blur", lambda: True)
     provider = Mock()
-    monkeypatch.setattr(client, "Gtk", SimpleNamespace(
-        CssProvider=lambda: provider, StyleContext=Mock(),
-        STYLE_PROVIDER_PRIORITY_USER=800,
-    ))
+    monkeypatch.setattr(
+        client,
+        "Gtk",
+        SimpleNamespace(
+            CssProvider=lambda: provider,
+            StyleContext=Mock(),
+            STYLE_PROVIDER_PRIORITY_USER=800,
+        ),
+    )
     monkeypatch.setattr(client.WindowMaterialClient, "_watch", lambda self: None)
     window = Mock()
     instance = client.WindowMaterialClient(window, "big-gnome-center")

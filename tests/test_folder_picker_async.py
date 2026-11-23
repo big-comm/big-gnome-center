@@ -32,8 +32,10 @@ def drain():
 
 
 def icons(count=65, prefix="folder"):
-    return [FolderIcon(f"{prefix}-{i}", f"Design {i}", Path(f"/{prefix}-{i}.svg"),
-                       (f"{prefix}-{i}",)) for i in range(count)]
+    return [
+        FolderIcon(f"{prefix}-{i}", f"Design {i}", Path(f"/{prefix}-{i}.svg"), (f"{prefix}-{i}",))
+        for i in range(count)
+    ]
 
 
 @pytest.fixture(scope="module")
@@ -41,8 +43,9 @@ def picker_app():
     if not Gtk.init_check() or Gdk.Display.get_default() is None:
         pytest.skip("Requires a GTK display")
     Adw.init()
-    app = Adw.Application(application_id="org.communitybig.FolderAsyncTest",
-                          flags=Gio.ApplicationFlags.NON_UNIQUE)
+    app = Adw.Application(
+        application_id="org.communitybig.FolderAsyncTest", flags=Gio.ApplicationFlags.NON_UNIQUE
+    )
     app.register(None)
     return app
 
@@ -74,8 +77,11 @@ def test_initial_disk_work_keeps_gtk_responsive(ui, monkeypatch, operation):
     make, releases = ui
     entered, release = threading.Event(), threading.Event()
     releases.append(release)
-    names = {"metadata": "read_metadata", "catalog": "available_icons",
-             "recognition": "selected_icon"}
+    names = {
+        "metadata": "read_metadata",
+        "catalog": "available_icons",
+        "recognition": "selected_icon",
+    }
     original = getattr(picker, names[operation])
     worker_threads = []
 
@@ -191,8 +197,9 @@ def test_load_failure_is_visible_and_cannot_save(ui, monkeypatch, operation):
     def unavailable(*args, **kwargs):
         raise OSError("unavailable test location")
 
-    monkeypatch.setattr(picker, "read_metadata" if operation == "metadata" else "available_icons",
-                        unavailable)
+    monkeypatch.setattr(
+        picker, "read_metadata" if operation == "metadata" else "available_icons", unavailable
+    )
     window = make()
     spin(lambda: not window._loading)
     assert "unavailable" in window.message.get_label()
@@ -216,8 +223,9 @@ def test_new_folder_uses_its_metadata_selection(ui, monkeypatch, tmp_path):
     window = make()
     spin(lambda: not window._loading)
     window.grid.select_child(window.grid.get_child_at_index(10))
-    monkeypatch.setattr(picker, "read_metadata",
-                        lambda *_: {CUSTOM_URI: None, CUSTOM_NAME: "folder-50"})
+    monkeypatch.setattr(
+        picker, "read_metadata", lambda *_: {CUSTOM_URI: None, CUSTOM_NAME: "folder-50"}
+    )
     window.folder = Gio.File.new_for_path(str(tmp_path / "another"))
     window._reload()
     spin(lambda: not window._loading)

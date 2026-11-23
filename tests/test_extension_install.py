@@ -72,6 +72,7 @@ def test_no_available_package_manager_reports_failure(monkeypatch):
     download = Mock()
     monkeypatch.setattr(manager.ExtMgr, "_install_from_ego", download)
     assert manager.ExtMgr.install("remote@example.org", 0, "distro-extension") == (
-        False, "no installation method succeeded"
+        False,
+        "no installation method succeeded",
     )
     download.assert_not_called()

@@ -35,19 +35,24 @@ def test_native_monitor_contract(tmp_path, backend):
     profile = tmp_path / "dconf-profile"
     profile.write_text("user-db:bgc_monitor_test\n")
     env = os.environ.copy()
-    env.update({
-        "GSETTINGS_SCHEMA_DIR": str(tmp_path),
-        "GSETTINGS_BACKEND": backend,
-        "DCONF_PROFILE": str(profile),
-        "XDG_CONFIG_HOME": str(tmp_path / "config"),
-        "XDG_CACHE_HOME": str(tmp_path / "cache"),
-        "XDG_DATA_HOME": str(tmp_path / "data"),
-        "PYTHONPATH": str(Path(settings_store.__file__).parent),
-        "G_DEBUG": "fatal-warnings",
-    })
+    env.update(
+        {
+            "GSETTINGS_SCHEMA_DIR": str(tmp_path),
+            "GSETTINGS_BACKEND": backend,
+            "DCONF_PROFILE": str(profile),
+            "XDG_CONFIG_HOME": str(tmp_path / "config"),
+            "XDG_CACHE_HOME": str(tmp_path / "cache"),
+            "XDG_DATA_HOME": str(tmp_path / "data"),
+            "PYTHONPATH": str(Path(settings_store.__file__).parent),
+            "G_DEBUG": "fatal-warnings",
+        }
+    )
     result = subprocess.run(
         ["dbus-run-session", "--", sys.executable, __file__, backend],
-        env=env, capture_output=True, text=True, timeout=30,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "native monitor contract passed" in result.stdout
@@ -96,7 +101,9 @@ def native_probe(backend):
         if backend == "dconf":
             result = subprocess.run(
                 ["gsettings", "set", SCHEMA, key, value.print_(False)],
-                capture_output=True, text=True, timeout=5,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             assert result.returncode == 0, result.stdout + result.stderr
         else:
@@ -117,9 +124,11 @@ def native_probe(backend):
         text_changes = 0
         for number in range(1, 31):
             key, value = (
-                ("text", GLib.Variant("s", f"change-{number}")) if number % 3 == 1 else
-                ("enabled", GLib.Variant("b", (number // 3) % 2 == 0)) if number % 3 == 2 else
-                ("count", GLib.Variant("i", number))
+                ("text", GLib.Variant("s", f"change-{number}"))
+                if number % 3 == 1
+                else ("enabled", GLib.Variant("b", (number // 3) % 2 == 0))
+                if number % 3 == 2
+                else ("count", GLib.Variant("i", number))
             )
             text_changes += int(key == "text")
             write(key, value)

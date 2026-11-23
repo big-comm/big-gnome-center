@@ -5,9 +5,16 @@ import logging
 import sys
 
 from helper_client import (
-    BIG_SHOT_UUID, COMMUNITY_MENU_UUID, HELPER_UUID,
-    LEGACY_BIG_SHOT_UUID, LEGACY_COMMUNITY_MENU_UUID, LEGACY_HELPER_UUID,
-    BIG_CLIPBOARD_UUID, LEGACY_COPYOUS_UUID, HelperClient, clipboard_migration_disabled,
+    BIG_CLIPBOARD_UUID,
+    BIG_SHOT_UUID,
+    COMMUNITY_MENU_UUID,
+    HELPER_UUID,
+    LEGACY_BIG_SHOT_UUID,
+    LEGACY_COMMUNITY_MENU_UUID,
+    LEGACY_COPYOUS_UUID,
+    LEGACY_HELPER_UUID,
+    HelperClient,
+    clipboard_migration_disabled,
 )
 
 IDENTITIES = {
@@ -20,6 +27,7 @@ IDENTITIES = {
 
 def migrate_lists(enabled, disabled, installed):
     """Rename installed identities; do not activate a different layout engine."""
+
     def convert(values):
         result = []
         for value in values:
@@ -49,20 +57,29 @@ def migrate_dump(text, installed):
     for key, old, new in zip(keys, before, after):
         if key in values and old != new:
             text = LayoutApplier._replace_or_add_dconf_key(
-                text, section, key, LayoutApplier._quote_string_list(new))
+                text, section, key, LayoutApplier._quote_string_list(new)
+            )
     return text
 
 
 def run():
     from gi.repository import Gio, GLib
+
     from layout_applier import SETTINGS_GNOME
     from layout_persistence import open_store
 
     bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     reply = bus.call_sync(
-        "org.freedesktop.DBus", "/org/freedesktop/DBus", "org.freedesktop.DBus",
-        "NameHasOwner", GLib.Variant("(s)", ("org.gnome.Shell",)),
-        GLib.VariantType("(b)"), Gio.DBusCallFlags.NONE, 2000, None)
+        "org.freedesktop.DBus",
+        "/org/freedesktop/DBus",
+        "org.freedesktop.DBus",
+        "NameHasOwner",
+        GLib.Variant("(s)", ("org.gnome.Shell",)),
+        GLib.VariantType("(b)"),
+        Gio.DBusCallFlags.NONE,
+        2000,
+        None,
+    )
     if reply.unpack()[0]:
         raise RuntimeError("Refusing helper migration while Shell is running")
 
@@ -83,9 +100,9 @@ def run():
         if original is not None:
             migrated = migrate_dump(original, installed)
             if original != migrated:
-                if state.get('transaction'):
-                    raise RuntimeError('Pending persistence recovery; defer identity migration')
-                store.publish(migrated, managed=True, staged=state.get('staged', False))
+                if state.get("transaction"):
+                    raise RuntimeError("Pending persistence recovery; defer identity migration")
+                store.publish(migrated, managed=True, staged=state.get("staged", False))
 
     settings.delay()
     for key, old, new in zip(keys, before, after):

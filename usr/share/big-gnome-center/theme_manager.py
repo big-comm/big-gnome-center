@@ -96,8 +96,11 @@ class ThemeMgr:
             except PermissionError:
                 continue
             for d in entries:
-                if (not d.is_dir() or d.name.startswith((".", FOLDER_ACCENT_PREFIX))
-                        or d.name in seen):
+                if (
+                    not d.is_dir()
+                    or d.name.startswith((".", FOLDER_ACCENT_PREFIX))
+                    or d.name in seen
+                ):
                     continue
                 if ThemeMgr._is_valid_theme(d, kind):
                     seen[d.name] = True

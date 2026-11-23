@@ -336,6 +336,7 @@ class FrostedGlassControls(Gtk.Box):
             lambda widget, label=value: label.set_label(f"{round(widget.get_value())}%"),
         )
         box.append(value)
+
         def sync(settings: Gio.Settings, changed: str) -> None:
             if round(scale.get_value()) != settings.get_int(changed):
                 scale.set_value(settings.get_int(changed))

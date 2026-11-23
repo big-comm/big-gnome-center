@@ -62,6 +62,7 @@ class TestListThemes:
         with patch.object(ThemeMgr, "_theme_roots", return_value=[tmp_path]):
             assert ThemeMgr.list_themes("cursors") == ["Bibata"]
 
+
 class TestApply:
     @patch("theme_manager.gsettings_set", return_value=(True, ""))
     def test_apply_removes_layout_snapshot_marker(self, mock_gs, _isolate_layout_snapshot_marker):

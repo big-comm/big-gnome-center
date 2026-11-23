@@ -59,6 +59,7 @@ ICON_NAME = "big-gnome-center"
 DESKTOP_ID = "br.com.biglinux.BigGnomeCenter.desktop"
 LEGACY_DESKTOP_ID = "org.communitybig.layout-switcher.desktop"
 
+
 # ── Diretórios de dados ───────────────────────────────────────────────────────
 def _migrate_legacy_dir(old: Path, new: Path) -> None:
     """Copy pre-rebrand user data once, without deleting or replacing it."""
@@ -124,6 +125,7 @@ _SHARE_DIRS = [
     Path("/usr/share/big-gnome-center"),
     Path("/usr/local/share/big-gnome-center"),
 ]
+
 
 def _xdg_home(variable: str, fallback: str) -> Path:
     value = Path(os.environ.get(variable, ""))

@@ -18,9 +18,35 @@ SCHEMA_FILE = (
     ROOT / "usr/share/glib-2.0/schemas/org.gnome.shell.extensions.community-menu.gschema.xml"
 )
 SUPPORTED_LOCALES = (
-    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
-    "hu", "is", "it", "ja", "ko", "nb", "nl", "pl", "pt_BR", "pt", "ro", "ru",
-    "sk", "sv", "tr", "uk", "zh",
+    "bg",
+    "cs",
+    "da",
+    "de",
+    "el",
+    "en",
+    "es",
+    "et",
+    "fi",
+    "fr",
+    "he",
+    "hr",
+    "hu",
+    "is",
+    "it",
+    "ja",
+    "ko",
+    "nb",
+    "nl",
+    "pl",
+    "pt_BR",
+    "pt",
+    "ro",
+    "ru",
+    "sk",
+    "sv",
+    "tr",
+    "uk",
+    "zh",
 )
 
 
@@ -79,30 +105,44 @@ def test_menu_defaults_and_migration_behavior():
         pytest.skip("node is required for menu behavior tests")
     subprocess.run(
         ["node", str(ROOT / "tests/community_menu_defaults.mjs")],
-        check=True, capture_output=True, text=True,
+        check=True,
+        capture_output=True,
+        text=True,
     )
 
 
 def test_native_folder_operations():
     if shutil.which("node") is None:
         pytest.skip("node is required for folder model tests")
-    subprocess.run(["node", str(ROOT / "tests/community_menu_folders.mjs")],
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["node", str(ROOT / "tests/community_menu_folders.mjs")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_native_folder_settings():
     if shutil.which("gjs") is None:
         pytest.skip("gjs is required for native folder settings tests")
-    subprocess.run(["gjs", "-m", str(ROOT / "tests/community_menu_folder_settings.js")],
-                   env={**os.environ, "GSETTINGS_BACKEND": "memory"},
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["gjs", "-m", str(ROOT / "tests/community_menu_folder_settings.js")],
+        env={**os.environ, "GSETTINGS_BACKEND": "memory"},
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_desk_ux_search_scope():
     if shutil.which("node") is None:
         pytest.skip("node is required for search scope tests")
-    subprocess.run(["node", str(ROOT / "tests/community_menu_search_scope.mjs")],
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["node", str(ROOT / "tests/community_menu_search_scope.mjs")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_menu_settings_ownership(tmp_path):
@@ -112,9 +152,11 @@ def test_menu_settings_ownership(tmp_path):
     subprocess.run(["glib-compile-schemas", "--strict", str(tmp_path)], check=True)
     result = subprocess.run(
         ["gjs", "-m", str(ROOT / "tests/community_menu_settings_lifetime.js")],
-        env={**os.environ, "GSETTINGS_BACKEND": "memory",
-             "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
-        check=True, capture_output=True, text=True, timeout=60,
+        env={**os.environ, "GSETTINGS_BACKEND": "memory", "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
     )
     assert '"passed":true' in result.stdout
     assert "disposed" not in result.stderr.lower()
@@ -125,13 +167,19 @@ def test_independent_menu_pins(tmp_path):
         pytest.skip("gjs and glib-compile-schemas are required")
     shutil.copy2(SCHEMA_FILE, tmp_path / SCHEMA_FILE.name)
     subprocess.run(["glib-compile-schemas", "--strict", str(tmp_path)], check=True)
-    subprocess.run(["gjs", "-m", str(ROOT / "tests/community_menu_pins.js")],
-                   env={**os.environ, "GSETTINGS_BACKEND": "memory",
-                        "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["gjs", "-m", str(ROOT / "tests/community_menu_pins.js")],
+        env={**os.environ, "GSETTINGS_BACKEND": "memory", "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
-    schema = ET.parse(SCHEMA_FILE).getroot().find(
-        "schema[@id='org.gnome.shell.extensions.community-menu.pins']")
+    schema = (
+        ET.parse(SCHEMA_FILE)
+        .getroot()
+        .find("schema[@id='org.gnome.shell.extensions.community-menu.pins']")
+    )
     assert schema.attrib["path"] == "/org/communitybig/community-menu/pins/"
     source = (EXTENSION_DIR / "widgets/deskUxApps.js").read_text()
     assert "AppFavorites" not in source
@@ -141,8 +189,12 @@ def test_independent_menu_pins(tmp_path):
 def test_independent_menu_pins_ui():
     if shutil.which("node") is None:
         pytest.skip("node is required for menu pin interaction tests")
-    subprocess.run(["node", str(ROOT / "tests/community_menu_pins_ui.mjs")],
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["node", str(ROOT / "tests/community_menu_pins_ui.mjs")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_menu_schema_catalog_after_package_upgrade(tmp_path):
@@ -157,19 +209,34 @@ def test_menu_schema_catalog_after_package_upgrade(tmp_path):
     old.write(directory / "community-menu.gschema.xml")
     subprocess.run(["glib-compile-schemas", "--strict", str(directory)], check=True)
     subprocess.run(
-        ["gjs", "-m", str(ROOT / "tests/community_menu_schema_upgrade.js"),
-         str(SCHEMA_FILE), str(directory)],
-        env={**os.environ, "GSETTINGS_BACKEND": "memory", "XDG_DATA_DIRS": str(tmp_path),
-             "GSETTINGS_SCHEMA_DIR": str(directory)},
-        check=True, capture_output=True, text=True,
+        [
+            "gjs",
+            "-m",
+            str(ROOT / "tests/community_menu_schema_upgrade.js"),
+            str(SCHEMA_FILE),
+            str(directory),
+        ],
+        env={
+            **os.environ,
+            "GSETTINGS_BACKEND": "memory",
+            "XDG_DATA_DIRS": str(tmp_path),
+            "GSETTINGS_SCHEMA_DIR": str(directory),
+        },
+        check=True,
+        capture_output=True,
+        text=True,
     )
 
 
 def test_explicit_logout_button_respects_policy_and_confirms():
     if not shutil.which("node"):
         pytest.skip("node is required")
-    subprocess.run(["node", str(ROOT / "tests/community_menu_logout.mjs")],
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["node", str(ROOT / "tests/community_menu_logout.mjs")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_desk_ux_folder_colors(tmp_path):
@@ -177,17 +244,24 @@ def test_desk_ux_folder_colors(tmp_path):
         pytest.skip("gjs and glib-compile-schemas are required")
     shutil.copy2(SCHEMA_FILE, tmp_path / SCHEMA_FILE.name)
     subprocess.run(["glib-compile-schemas", "--strict", str(tmp_path)], check=True)
-    subprocess.run(["gjs", "-m", str(ROOT / "tests/community_menu_colors.js")],
-                   env={**os.environ, "GSETTINGS_BACKEND": "memory",
-                        "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["gjs", "-m", str(ROOT / "tests/community_menu_colors.js")],
+        env={**os.environ, "GSETTINGS_BACKEND": "memory", "GSETTINGS_SCHEMA_DIR": str(tmp_path)},
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_desk_ux_list_colors_and_navigation():
     if shutil.which("node") is None:
         pytest.skip("node is required for Desk UX presentation tests")
-    subprocess.run(["node", str(ROOT / "tests/community_menu_refinements.mjs")],
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["node", str(ROOT / "tests/community_menu_refinements.mjs")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
     model = (EXTENSION_DIR / "deskUxModel.js").read_text()
     labels = re.findall(r"\['[a-z]+', '#[a-f0-9]+', '([^']+)'\]", model)
@@ -201,8 +275,12 @@ def test_desk_ux_list_colors_and_navigation():
 def test_desk_ux_presentation_model():
     if shutil.which("node") is None:
         pytest.skip("node is required for presentation tests")
-    subprocess.run(["node", str(ROOT / "tests/community_menu_presentation.mjs")],
-                   check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["node", str(ROOT / "tests/community_menu_presentation.mjs")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 def test_desk_ux_destination_picker_and_fixed_controls():
@@ -323,9 +401,16 @@ def test_desk_ux_translations_are_compiled(locale, tmp_path):
         pytest.skip("msgfmt is required for catalog validation")
     compiled = tmp_path / "community-menu.mo"
     subprocess.run(
-        ["msgfmt", "--check", "--output-file", str(compiled),
-         str(EXTENSION_DIR / f"po/{locale}.po")],
-        check=True, capture_output=True, text=True,
+        [
+            "msgfmt",
+            "--check",
+            "--output-file",
+            str(compiled),
+            str(EXTENSION_DIR / f"po/{locale}.po"),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
     )
     packaged = ROOT / f"usr/share/locale/{locale}/LC_MESSAGES/community-menu.mo"
     assert compiled.read_bytes() == packaged.read_bytes()
@@ -602,9 +687,9 @@ def test_app_grid_uses_responsive_header_and_session_footer():
     assert "new SessionButtons.PowerButton" in layout
     assert "new SessionButtons.PowerMenuButton" not in layout
     assert "style_class: 'session-actions-box'" in layout
-    footer_style = stylesheet.split(
-        ".community-menu .grid-layout-box .session-box {", 1
-    )[1].split("}", 1)[0]
+    footer_style = stylesheet.split(".community-menu .grid-layout-box .session-box {", 1)[1].split(
+        "}", 1
+    )[0]
     assert "border-radius: 14px;" in footer_style
     assert ".community-menu .grid-layout-box .grid-header-box {" in stylesheet
     assert "Main.layoutManager.getWorkAreaForMonitor(this._monitorIndex)" in layout
@@ -628,9 +713,9 @@ def test_app_grid_uses_responsive_header_and_session_footer():
     assert ".apps-menu StScrollBar" in stylesheet
     assert "min-width: 6px" in stylesheet
     assert ".session-actions-box" in stylesheet
-    light_action = stylesheet.split(
-        ".community-menu.community-menu-light .desk-ux-action {", 1
-    )[1].split("}", 1)[0]
+    light_action = stylesheet.split(".community-menu.community-menu-light .desk-ux-action {", 1)[
+        1
+    ].split("}", 1)[0]
     assert "color: #222226" in light_action
     assert "background-color: rgba(46,46,51,0.10)" in light_action
 

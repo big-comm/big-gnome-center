@@ -56,27 +56,17 @@ _CURATED_EXTENSION_DESCRIPTIONS = {
     "community-panel@communitybig.org": tr(
         "Provides the taskbar and system panel used by desktop layouts."
     ),
-    "big-clipboard@communitybig.org": tr(
-        "Keeps a searchable history of copied content."
-    ),
-    "biglace@biglinux.com.br": tr(
-        "Shares the clipboard between this computer and your phone."
-    ),
-    "copyous@boerdereinar.dev": tr(
-        "Keeps a searchable history of copied content."
-    ),
+    "big-clipboard@communitybig.org": tr("Keeps a searchable history of copied content."),
+    "biglace@biglinux.com.br": tr("Shares the clipboard between this computer and your phone."),
+    "copyous@boerdereinar.dev": tr("Keeps a searchable history of copied content."),
     "drive-menu@gnome-shell-extensions.gcampax.github.com": tr(
         "Shows removable devices and lets you safely eject them."
     ),
-    "frosted-glass@communitybig.org": tr(
-        "Adds controlled blur and transparency to the desktop."
-    ),
+    "frosted-glass@communitybig.org": tr("Adds controlled blur and transparency to the desktop."),
     "gsconnect@andyholmes.github.io": tr(
         "Connects phones to share files, notifications and other features."
     ),
-    "gtk4-ding@smedius.gitlab.com": tr(
-        "Shows files and folders on the desktop."
-    ),
+    "gtk4-ding@smedius.gitlab.com": tr("Shows files and folders on the desktop."),
     "layout-switcher-helper@communitybig.org": tr(
         "Applies layout changes safely inside GNOME Shell."
     ),
@@ -144,7 +134,9 @@ class ExtensionsPage(Gtk.Box):
         self._build()
         self._shell_settings = Gio.Settings.new("org.gnome.shell")
         self._shell_settings.connect_object(
-            "changed", ExtensionsPage._on_shell_settings_changed, self,
+            "changed",
+            ExtensionsPage._on_shell_settings_changed,
+            self,
         )
         # Read watched keys to enable GSettings change notifications.
         for key in ("enabled-extensions", "disabled-extensions", "disable-user-extensions"):
@@ -511,7 +503,8 @@ class ExtensionsPage(Gtk.Box):
             ego_btn.connect(
                 "clicked",
                 lambda b, _id=ego_id: launch_uri(
-                    f"https://extensions.gnome.org/extension/{_id}/", self._launch_error,
+                    f"https://extensions.gnome.org/extension/{_id}/",
+                    self._launch_error,
                 ),
             )
             inner.append(ego_btn)
@@ -527,7 +520,12 @@ class ExtensionsPage(Gtk.Box):
         self._toggle_extension(uuid, enable, switch, featured=True)
 
     def _toggle_extension(
-        self, uuid: str, enable: bool, switch: Gtk.Switch, *, featured: bool = False,
+        self,
+        uuid: str,
+        enable: bool,
+        switch: Gtk.Switch,
+        *,
+        featured: bool = False,
     ) -> None:
         """Suppress rollback notifications and allow one request per control."""
         if getattr(switch, "_bgc_toggle_pending", False):
@@ -1030,9 +1028,7 @@ class ExtensionsPage(Gtk.Box):
     def _refresh_global_btn(self) -> None:
         on = ExtMgr.all_globally_enabled()
         has_optional = bool(set(ExtMgr.enabled_list()) - REQUIRED_EXTENSION_UUIDS)
-        self._global_btn.set_visible(
-            self._ext_sub == "installed" and (not on or has_optional)
-        )
+        self._global_btn.set_visible(self._ext_sub == "installed" and (not on or has_optional))
         label = tr("Disable optional extensions") if on else tr("Enable All")
         self._global_btn.set_label(label)
         self._global_btn.update_property([Gtk.AccessibleProperty.LABEL], [label])
@@ -1051,7 +1047,10 @@ class ExtensionsPage(Gtk.Box):
             parent = self.get_root()
             d = Adw.AlertDialog(
                 heading=tr("Disable optional extensions?"),
-                body=tr("Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."),
+                body=tr(
+                    "Optional extensions will be disabled. Required layout components will "
+                    "remain enabled. You can re-enable optional extensions individually."
+                ),
             )
             d.add_response("cancel", tr("Cancel"))
             d.add_response("disable", tr("Disable optional extensions"))
@@ -1075,15 +1074,22 @@ class ExtensionsPage(Gtk.Box):
             self.rebuild_featured()
             self._global_btn.set_sensitive(True)
             if ok:
-                self._toast(tr("Optional extensions disabled") if currently_on else tr("All extensions enabled"))
+                self._toast(
+                    tr("Optional extensions disabled")
+                    if currently_on
+                    else tr("All extensions enabled")
+                )
             else:
                 self._toast(tr("Error") + f": {err}")
             return GLib.SOURCE_REMOVE
 
         def task():
             try:
-                ok, err = (ExtMgr.disable_optional_extensions() if currently_on
-                           else ExtMgr.enable_extensions_globally())
+                ok, err = (
+                    ExtMgr.disable_optional_extensions()
+                    if currently_on
+                    else ExtMgr.enable_extensions_globally()
+                )
             except Exception as error:
                 ok, err = False, str(error)
             GLib.idle_add(complete, ok, err)

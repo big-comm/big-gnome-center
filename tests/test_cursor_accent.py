@@ -84,13 +84,18 @@ def test_accent_family_prevents_neutral_blue_and_purple_matches():
 
 @pytest.fixture
 def follower():
-    interface = Settings(**{"accent-color": "blue", "color-scheme": "prefer-dark",
-                            "cursor-theme": "Bibata-Modern-Classic"})
+    interface = Settings(
+        **{
+            "accent-color": "blue",
+            "color-scheme": "prefer-dark",
+            "cursor-theme": "Bibata-Modern-Classic",
+        }
+    )
     prefs = Settings(**{ca.KEY: True})
     stopped = Mock()
-    follower = ca.CursorAccentFollower(interface, prefs, stopped,
-                                      palette_loader=lambda: PALETTES,
-                                      theme_loader=lambda: INSTALLED)
+    follower = ca.CursorAccentFollower(
+        interface, prefs, stopped, palette_loader=lambda: PALETTES, theme_loader=lambda: INSTALLED
+    )
     follower.start()
     yield follower, interface, prefs, stopped
     follower.stop()

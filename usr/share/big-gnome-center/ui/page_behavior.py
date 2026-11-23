@@ -109,34 +109,49 @@ class BehaviorPage(Gtk.Box):
         grp = Adw.PreferencesGroup()
         grp.set_title(tr("Mouse and touchpad"))
         # GNOME 51 turned this off by default; Big Gnome Center ships it on.
-        grp.add(self._switch_row(
-            "primary-paste", INTERFACE_SCHEMA, PRIMARY_PASTE_KEY,
-            tr("Middle-click paste"),
-            tr("Paste the selected text with the middle mouse button "
-               "or a three-finger tap"),
-        ))
+        grp.add(
+            self._switch_row(
+                "primary-paste",
+                INTERFACE_SCHEMA,
+                PRIMARY_PASTE_KEY,
+                tr("Middle-click paste"),
+                tr("Paste the selected text with the middle mouse button or a three-finger tap"),
+            )
+        )
         grp.add(self._focus_row())
         return grp
 
     def _build_windows_group(self) -> Adw.PreferencesGroup:
         grp = Adw.PreferencesGroup()
         grp.set_title(tr("Windows"))
-        grp.add(self._switch_row(
-            "attach-dialogs", MUTTER_SCHEMA, "attach-modal-dialogs",
-            tr("Attach dialogs to their window"),
-            tr("Dialogs stay over the window that opened them and move with it"),
-        ))
-        grp.add(self._choice_row(
-            "move-modifier", WM_SCHEMA, "mouse-button-modifier",
-            tr("Key to move windows"),
-            tr("Hold it and drag any part of a window to move it"),
-            move_modifiers(),
-        ))
-        grp.add(self._switch_row(
-            "resize-right-button", WM_SCHEMA, "resize-with-right-button",
-            tr("Resize with the right button"),
-            tr("With that key held, drag with the right button to resize"),
-        ))
+        grp.add(
+            self._switch_row(
+                "attach-dialogs",
+                MUTTER_SCHEMA,
+                "attach-modal-dialogs",
+                tr("Attach dialogs to their window"),
+                tr("Dialogs stay over the window that opened them and move with it"),
+            )
+        )
+        grp.add(
+            self._choice_row(
+                "move-modifier",
+                WM_SCHEMA,
+                "mouse-button-modifier",
+                tr("Key to move windows"),
+                tr("Hold it and drag any part of a window to move it"),
+                move_modifiers(),
+            )
+        )
+        grp.add(
+            self._switch_row(
+                "resize-right-button",
+                WM_SCHEMA,
+                "resize-with-right-button",
+                tr("Resize with the right button"),
+                tr("With that key held, drag with the right button to resize"),
+            )
+        )
         return grp
 
     def _build_titlebar_group(self) -> Adw.PreferencesGroup:

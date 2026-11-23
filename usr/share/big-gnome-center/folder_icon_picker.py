@@ -127,9 +127,15 @@ class FolderIconWindow(Adw.ApplicationWindow):
         self._ready = metadata is not None
         self._update_actions()
         self._show_message(tr("Loading…"))
-        request = (self._generation, self.folder, folder_uri,
-                   self._theme.get_property("gtk-icon-theme-name"),
-                   metadata, self._wanted, self._load_cancel)
+        request = (
+            self._generation,
+            self.folder,
+            folder_uri,
+            self._theme.get_property("gtk-icon-theme-name"),
+            metadata,
+            self._wanted,
+            self._load_cancel,
+        )
         with self._request_lock:
             for source in self._completion_sources:
                 GLib.source_remove(source)
@@ -193,8 +199,9 @@ class FolderIconWindow(Adw.ApplicationWindow):
             self._show_message(error, error=True)
             self._update_actions()
             return
-        (self._metadata_folder, self._metadata, self.choices,
-         self._wanted, self._recognized) = result
+        (self._metadata_folder, self._metadata, self.choices, self._wanted, self._recognized) = (
+            result
+        )
         self._ready = True
         self._build_index = 0
         self._clearing = True

@@ -23,15 +23,15 @@ def test_failed_second_download_preserves_entire_family(tmp_path, existing):
         dest.mkdir(parents=True)
         for name, data in original.items():
             (dest / name).write_bytes(data)
-    css = " ".join(
-        f"url(https://fonts.gstatic.com/{name})" for name in original
-    )
+    css = " ".join(f"url(https://fonts.gstatic.com/{name})" for name in original)
     with (
         patch.object(google_fonts, "USER_FONT_DIR", root),
         patch.object(google_fonts, "_fetch_css", return_value=css),
-        patch.object(google_fonts, "_download_font", side_effect=[
-            b"new regular", google_fonts.GoogleFontError("network")
-        ]),
+        patch.object(
+            google_fonts,
+            "_download_font",
+            side_effect=[b"new regular", google_fonts.GoogleFontError("network")],
+        ),
         patch.object(google_fonts, "run_cmd", return_value=(True, "Roboto")),
     ):
         assert google_fonts.install_for_user("Roboto") == (False, "network")

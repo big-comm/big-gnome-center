@@ -20,24 +20,37 @@ from utils import dconf_read, gsettings_get, gsettings_set, run_cmd
 @pytest.mark.parametrize("stdout", ["", "payload\n"])
 def test_success_returns_stdout_only(stdout, caplog):
     with caplog.at_level(logging.DEBUG, logger="big-gnome-center"):
-        result = run_cmd([
-            sys.executable, "-c",
-            f"import sys; sys.stdout.write({stdout!r}); sys.stderr.write('diagnostic')",
-        ])
+        result = run_cmd(
+            [
+                sys.executable,
+                "-c",
+                f"import sys; sys.stdout.write({stdout!r}); sys.stderr.write('diagnostic')",
+            ]
+        )
     assert result == (True, stdout.strip())
     assert "diagnostic" in caplog.text
 
 
 @pytest.mark.parametrize("stderr,expected", [("error", "error"), ("", "output")])
 def test_failure_returns_diagnostics(stderr, expected):
-    assert run_cmd([
-        sys.executable, "-c",
-        f"import sys; print('output'); sys.stderr.write({stderr!r}); sys.exit(7)",
-    ]) == (False, expected)
+    assert run_cmd(
+        [
+            sys.executable,
+            "-c",
+            f"import sys; print('output'); sys.stderr.write({stderr!r}); sys.exit(7)",
+        ]
+    ) == (False, expected)
 
 
-STRINGS = ["", "  spaced  ", "'quoted'", '"quoted"', "C:\\themes\\new",
-           "line\nnext\tcolumn", "ação 日本語"]
+STRINGS = [
+    "",
+    "  spaced  ",
+    "'quoted'",
+    '"quoted"',
+    "C:\\themes\\new",
+    "line\nnext\tcolumn",
+    "ação 日本語",
+]
 
 
 @pytest.mark.parametrize("value", STRINGS)
@@ -52,8 +65,9 @@ def test_gsettings_decodes_annotated_string():
         assert gsettings_get("test.schema", "text") == "  text  "
 
 
-@pytest.mark.parametrize("serialized", ["true", "false", "1.25", "uint32 4",
-                                       "['one', 'two']", "@as []"])
+@pytest.mark.parametrize(
+    "serialized", ["true", "false", "1.25", "uint32 4", "['one', 'two']", "@as []"]
+)
 def test_gsettings_preserves_nonstring_serialization(serialized):
     with patch("utils.run_cmd", return_value=(True, serialized)):
         assert gsettings_get("test.schema", "value") == serialized
@@ -126,7 +140,7 @@ def isolated_gsettings(tmp_path, monkeypatch):
         '<key name="scale" type="d"><default>1.0</default></key>'
         '<key name="apps" type="as"><default>[]</default></key>'
         '<key name="count" type="u"><default>0</default></key>'
-        '</schema></schemalist>'
+        "</schema></schemalist>"
     )
     subprocess.run(["glib-compile-schemas", "--strict", str(tmp_path)], check=True)
     monkeypatch.setenv("GSETTINGS_SCHEMA_DIR", str(tmp_path))
@@ -141,11 +155,16 @@ def test_native_gsettings_string_roundtrip(isolated_gsettings, value):
     assert gsettings_get(isolated_gsettings, "text") == value
 
 
-@pytest.mark.parametrize("key,signature,value", [
-    ("enabled", "b", True), ("scale", "d", 1.25),
-    ("apps", "as", ["one.desktop", "two.desktop"]), ("apps", "as", []),
-    ("count", "u", 4),
-])
+@pytest.mark.parametrize(
+    "key,signature,value",
+    [
+        ("enabled", "b", True),
+        ("scale", "d", 1.25),
+        ("apps", "as", ["one.desktop", "two.desktop"]),
+        ("apps", "as", []),
+        ("count", "u", 4),
+    ],
+)
 def test_native_gsettings_nonstring_contract(isolated_gsettings, key, signature, value):
     assert gsettings_set(isolated_gsettings, key, GLib.Variant(signature, value).print_(True))[0]
     output = gsettings_get(isolated_gsettings, key)

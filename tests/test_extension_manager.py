@@ -492,9 +492,7 @@ class TestRemove:
             patch("extension_manager._PKEXEC", pkexec),
             patch("extension_manager._SYSTEM_EXTENSION_REMOVER", remover),
             patch("extension_manager.run_cmd", return_value=(False, "")),
-            patch(
-                "shell_reloader.ShellReloader.apply_extension_state"
-            ) as mock_apply,
+            patch("shell_reloader.ShellReloader.apply_extension_state") as mock_apply,
         ):
             ok, msg = ExtMgr.remove("test-ext@foo.com")
 
