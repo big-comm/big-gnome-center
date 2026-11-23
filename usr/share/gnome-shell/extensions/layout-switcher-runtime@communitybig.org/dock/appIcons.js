@@ -856,7 +856,9 @@ export const DockAbstractAppIcon = GObject.registerClass({
                         image.destroy();
                     },
                 });
-                // Absent when animations are off and the value was set at once.
+                // With animations off the fall has ended and destroyed the image.
+                if (this._launchBounceImage !== image)
+                    return;
                 image.get_transition(transition)
                     ?.set_cubic_bezier_progress(
                         LAUNCH_BOUNCE_FALL_START, LAUNCH_BOUNCE_FALL_END);
