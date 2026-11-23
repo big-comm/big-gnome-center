@@ -6,9 +6,11 @@ Baseline: runtime build 80
 ## Scope
 
 Map the internalized Community Panel renderer modules loaded by the unified
-runtime. The standalone Community Panel `extension.js` and matching source
-copies are dormant rollback assets. `TaskbarSurfaceManager` constructs the
-runtime-owned `taskbar/panelManager.js` directly.
+runtime. The standalone Community Panel `extension.js` is a thin adapter over
+the same runtime, and its directory hosts the schema, images, stylesheet and
+translations. It carries no renderer modules of its own.
+`TaskbarSurfaceManager` constructs the runtime-owned `taskbar/panelManager.js`
+directly.
 
 Per-layout login Overview policy is also runtime-owned. The Taskbar renderer no
 longer reads or mutates its inherited startup-Overview key.
