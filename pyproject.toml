@@ -1,9 +1,3 @@
-[project]
-name = "big-gnome-center"
-version = "3.0.0"
-description = "BigLinux GNOME desktop configuration center"
-requires-python = ">=3.10"
-
 [tool.ruff]
 target-version = "py310"
 line-length = 100
