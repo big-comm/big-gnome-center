@@ -232,8 +232,8 @@ the outer highlight near seven-percent opacity and control edges near five
 percent so light wallpapers do not turn them into visible frames.
 
 Dynamic Shell blur defaults to native `Shell.BlurEffect`. Rounded dynamic
-corners require the optional `gnome-rounded-blur` library; it is not bundled
-or built by this package. Earlier documentation incorrectly called it bundled.
+corners require the `gnome-rounded-blur` library, a separate package this one
+depends on; it is not bundled or built here.
 Its `Blur.BlurEffect` applies the rounded mask in the native paint-node pipeline.
 Separate stacked Clutter effects cannot provide the same result: an inner mask
 is blurred back into a rectangle, while an outer offscreen mask prevents

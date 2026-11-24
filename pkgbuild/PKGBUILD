@@ -19,6 +19,8 @@ depends=(
     'gnome-shell-extension-appindicator'
     'gnome-shell-extension-big-clipboard'
     'gnome-shell-extension-gtk4-desktop-icons-ng'
+    # Rounded corners of the Frosted Glass blur
+    'gnome-rounded-blur'
 )
 makedepends=('git' 'gtk4' 'wayland' 'wayland-protocols')
 checkdepends=('python-pytest')
