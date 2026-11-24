@@ -28,9 +28,15 @@ def test_config_home_requires_absolute_path(configured, monkeypatch, tmp_path):
 
 @pytest.mark.parametrize(
     ("configured", "expected"),
-    [(None, ["/etc/xdg"]), ("", ["/etc/xdg"]), ("relative", []),
-     ("~/config", []), (":/one:relative:/two::", ["/one", "/two"]),
-     ("/one:/one:/two", ["/one", "/two"]), ("/trailing ", ["/trailing "])],
+    [
+        (None, ["/etc/xdg"]),
+        ("", ["/etc/xdg"]),
+        ("relative", []),
+        ("~/config", []),
+        (":/one:relative:/two::", ["/one", "/two"]),
+        ("/one:/one:/two", ["/one", "/two"]),
+        ("/trailing ", ["/trailing "]),
+    ],
 )
 def test_config_dirs_defaults_and_precedence(configured, expected, monkeypatch):
     if configured is None:
@@ -71,8 +77,15 @@ def test_tryexec_decodes_filename_without_shell_expansion(tmp_path, monkeypatch)
 
 
 @pytest.mark.parametrize(
-    "name", ["Normal", "Português", r"Literal\nText", "Line\nHidden=false\n[Injected]",
-             "Tab\tReturn\r", " leading and trailing "]
+    "name",
+    [
+        "Normal",
+        "Português",
+        r"Literal\nText",
+        "Line\nHidden=false\n[Injected]",
+        "Tab\tReturn\r",
+        " leading and trailing ",
+    ],
 )
 def test_hidden_override_roundtrips_name_with_glib(name, tmp_path, monkeypatch):
     monkeypatch.setenv("LANGUAGE", "pt_BR")

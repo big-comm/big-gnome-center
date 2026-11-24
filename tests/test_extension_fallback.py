@@ -37,10 +37,12 @@ def test_fallback_reconciles_both_lists_without_losing_other_entries(backend, en
     enabled = ["keep'enabled@example.org", "slash\\name@example.org", "日本語@example.org"]
     disabled = ["keep'disabled@example.org", "other@example.org"]
     settings.set_strv(
-        "enabled-extensions", enabled + ([target] if present in ("enabled", "both") else []),
+        "enabled-extensions",
+        enabled + ([target] if present in ("enabled", "both") else []),
     )
     settings.set_strv(
-        "disabled-extensions", disabled + ([target] if present in ("disabled", "both") else []),
+        "disabled-extensions",
+        disabled + ([target] if present in ("disabled", "both") else []),
     )
     settings.set_boolean("disable-user-extensions", True)
     ok, message = ExtMgr._set_enabled_gsettings(target, enable)
@@ -84,9 +86,13 @@ def test_concurrent_fallback_updates_preserve_each_uuid(backend):
     targets = [f"test-{index}@example.org" for index in range(24)]
     settings.set_strv("disabled-extensions", targets + ["keep@example.org"])
     with ThreadPoolExecutor(max_workers=4) as pool:
-        assert all(ok for ok, message in pool.map(
-            lambda uuid: ExtMgr._set_enabled_gsettings(uuid, True), targets,
-        ))
+        assert all(
+            ok
+            for ok, message in pool.map(
+                lambda uuid: ExtMgr._set_enabled_gsettings(uuid, True),
+                targets,
+            )
+        )
     assert set(create().get_strv("enabled-extensions")) == set(targets)
     assert create().get_strv("disabled-extensions") == ["keep@example.org"]
 
@@ -110,7 +116,9 @@ def test_unavailable_schema_does_not_construct_settings(backend, monkeypatch):
 
 @pytest.mark.parametrize("enable", [True, False])
 def test_idempotent_fallback_preserves_order_without_rewriting_locked_keys(
-    backend, monkeypatch, enable,
+    backend,
+    monkeypatch,
+    enable,
 ):
     settings, create = backend
     target = "target@example.org"

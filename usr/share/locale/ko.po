@@ -661,6 +661,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "복사한 콘텐츠의 검색 가능한 기록을 유지합니다."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "이 컴퓨터와 휴대폰 간에 클립보드를 공유합니다."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "이동식 장치를 표시하고 안전하게 꺼낼 수 있습니다."
 
@@ -1308,7 +1312,7 @@ msgstr "아이콘"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "커서"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1353,25 +1357,25 @@ msgstr "활성"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "시작 프로그램 추가"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "프로그램 검색"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "시작 프로그램"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "시작 프로그램은 로그인할 때 자동으로 실행됩니다."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "시작 프로그램 없음"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2145,7 +2149,8 @@ msgstr "워드 프로세싱"
 #: usr/share/big-gnome-center/folder_icon_picker.py:118
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
-msgstr "사용자 지정 이미지는 디자인을 적용하거나 기본값을 복원할 때까지 유지됩니다."
+msgstr ""
+"사용자 지정 이미지는 디자인을 적용하거나 기본값을 복원할 때까지 유지됩니다."
 
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
@@ -2167,3 +2172,152 @@ msgstr "독 위치"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "아래쪽"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "선택 확장 기능 사용 안 함"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "선택 확장 기능을 사용하지 않겠습니까?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"선택 확장 기능이 꺼집니다. 레이아웃에 필요한 구성 요소는 계속 켜져 있습니다. "
+"선택 확장 기능은 하나씩 다시 켤 수 있습니다."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "선택 확장 기능을 껐습니다"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "효과 기본값 복원"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "재질과 전력 절약 옵션을 재설정합니다."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "효과 기본값을 복원했습니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "마우스 및 터치패드"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "가운데 클릭 붙여넣기"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "선택한 텍스트를 마우스 가운데 버튼이나 세 손가락 탭으로 붙여넣습니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "마우스를 올리면 창 활성화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "클릭하지 않고 포인터 아래의 창에 초점을 맞춥니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "대화 상자를 해당 창에 붙이기"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "대화 상자가 자신을 연 창 위에 머물며 함께 움직입니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "창 이동 키"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "누른 채로 창의 아무 곳이나 끌어 창을 이동합니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "오른쪽 버튼으로 크기 조절"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "그 키를 누른 채 오른쪽 버튼으로 끌어 크기를 조절합니다"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "제목 표시줄"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "두 번 클릭"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "가운데 클릭"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "오른쪽 클릭"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "최대화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "너비 최대화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "높이 최대화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "최소화"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "뒤로 보내기"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "창 메뉴 표시"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "아무것도 안 함"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "모니터별로 앱 분리"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "각 독에는 해당 모니터에서 열린 앱만 표시됩니다"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "모니터별 독 앱이 업데이트됨"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "사용할 수 있는 시각 효과가 없습니다"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "이 GNOME 버전은 프로스트드 글라스를 지원하지 않습니다."

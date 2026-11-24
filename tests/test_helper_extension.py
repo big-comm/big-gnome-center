@@ -97,9 +97,7 @@ def test_transition_content_is_centered_on_the_primary_monitor():
     assert "width: primaryMonitor.width" in source
     assert "height: primaryMonitor.height" in source
     assert "layout_manager: new Clutter.BinLayout()" in source
-    assert source.index("monitorBin.add_child(box)") < source.index(
-        "curtain.add_child(monitorBin)"
-    )
+    assert source.index("monitorBin.add_child(box)") < source.index("curtain.add_child(monitorBin)")
 
 
 def test_hybrid_light_panel_keeps_overview_icon_contrast():
@@ -226,9 +224,7 @@ def test_desktop_entry_layouts_close_inherited_overview_before_success():
     assert "DESKTOP_ENTRY_LAYOUTS.has(this._activeLayoutLabel)" in complete
     assert "Main.overview.visible || Main.overview.visibleTarget" in complete
     assert "Main.overview.hide();" in complete
-    assert complete.index("Main.overview.hide();") < complete.index(
-        "this._curtainCheckmark();"
-    )
+    assert complete.index("Main.overview.hide();") < complete.index("this._curtainCheckmark();")
 
 
 def test_appindicator_refresh_uses_only_shared_icon_cache_and_actor_redraw():
@@ -251,9 +247,7 @@ def test_unavailable_optional_extensions_do_not_consume_settle_timeout():
 
     assert "const STATE_OUT_OF_DATE = 4" in source
     assert "if (state === STATE_OUT_OF_DATE || state === STATE_ERROR)" in complete
-    unavailable = complete.index(
-        "if (state === STATE_OUT_OF_DATE || state === STATE_ERROR)"
-    )
+    unavailable = complete.index("if (state === STATE_OUT_OF_DATE || state === STATE_ERROR)")
     assert unavailable < complete.index("mgr.enableExtension(uuid)")
 
 
@@ -292,13 +286,11 @@ def test_icon_theme_change_refreshes_appindicator_cache():
     assert "destroyDefaultTheme?.()" not in source
     assert "refreshAllProperties?.()" not in source
     assert "new appIndicatorModule.IconActor" not in source
-    complete = source[source.index("async _completeSwitch"):source.index(
-        "AbortSwitchAsync"
-    )]
-    legacy = source[source.index("async _applyLayout"):]
-    follower = source[source.index("async _followColorScheme"):source.index(
-        "async _refreshIconThemeConsumers"
-    )]
+    complete = source[source.index("async _completeSwitch") : source.index("AbortSwitchAsync")]
+    legacy = source[source.index("async _applyLayout") :]
+    follower = source[
+        source.index("async _followColorScheme") : source.index("async _refreshIconThemeConsumers")
+    ]
     assert "await this._refreshIconThemeConsumers()" in complete
     assert "_refreshIconThemeConsumers" not in legacy
     assert "await this._refreshIconThemeConsumers()" in follower
@@ -306,9 +298,9 @@ def test_icon_theme_change_refreshes_appindicator_cache():
 
 def test_live_color_switch_supports_runtime_hosted_panel():
     source = HELPER.read_text()
-    follower = source[source.index("async _followColorScheme"):source.index(
-        "async _refreshIconThemeConsumers"
-    )]
+    follower = source[
+        source.index("async _followColorScheme") : source.index("async _refreshIconThemeConsumers")
+    ]
 
     assert "const panelWillRun = this._panelWillRun();" in follower
     assert "live.has(KIWI_UUID) || !panelWillRun" in follower
@@ -318,9 +310,9 @@ def test_live_color_switch_supports_runtime_hosted_panel():
 
 def test_live_color_switch_refreshes_tray_icons_after_shell_theme():
     source = HELPER.read_text()
-    follower = source[source.index("async _followColorScheme"):source.index(
-        "async _refreshIconThemeConsumers"
-    )]
+    follower = source[
+        source.index("async _followColorScheme") : source.index("async _refreshIconThemeConsumers")
+    ]
 
     assert follower.index("Main.loadTheme()") < follower.index(
         "await this._refreshIconThemeConsumers()"
@@ -359,18 +351,16 @@ def test_native_unread_dot_follows_accent_except_minimal():
     source = HELPER.read_text()
     stylesheet = HELPER_STYLESHEET.read_text()
 
-    sync = source.split("    _syncNotificationAccentClass() {", 1)[1].split(
-        "\n    }\n", 1
-    )[0]
+    sync = source.split("    _syncNotificationAccentClass() {", 1)[1].split("\n    }\n", 1)[0]
     assert "this._activeLayoutLabel !== 'Minimal'" in sync
     assert "Main.layoutManager.uiGroup" in sync
     assert source.count("this._syncNotificationAccentClass();") == source.count(
         "this._syncMinimalPanelClass();"
     )
     assert "this._clearNotificationAccentClass();" in source
-    rule = stylesheet.split(
-        ".layout-switcher-accent-notifications .messages-indicator {", 1
-    )[1].split("}", 1)[0]
+    rule = stylesheet.split(".layout-switcher-accent-notifications .messages-indicator {", 1)[
+        1
+    ].split("}", 1)[0]
     assert "color: -st-accent-color;" in rule
 
 
@@ -419,9 +409,9 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert "_syncGUnityNotificationIndicator" in source
     assert "notification-added" in source
     assert "notification-removed" in source
-    g_unity_indicator = stylesheet.split(
-        ".layout-switcher-g-unity-notification-indicator {", 1
-    )[1].split("}", 1)[0]
+    g_unity_indicator = stylesheet.split(".layout-switcher-g-unity-notification-indicator {", 1)[
+        1
+    ].split("}", 1)[0]
     assert "background-color: -st-accent-color;" in g_unity_indicator
     assert "width: 8" in source
     assert "height: 8" in source
@@ -429,9 +419,9 @@ def test_g_unity_uses_helper_owned_borderless_panel_and_dock():
     assert ".dash-background" in stylesheet
     assert "background-color: transparent" in stylesheet
     assert "#panel.layout-switcher-g-unity-panel .panel-button" in stylesheet
-    g_unity_buttons = stylesheet.split(
-        "#panel.layout-switcher-g-unity-panel .panel-button {", 1
-    )[1].split("}", 1)[0]
+    g_unity_buttons = stylesheet.split("#panel.layout-switcher-g-unity-panel .panel-button {", 1)[
+        1
+    ].split("}", 1)[0]
     assert "color: #fafafb;" in g_unity_buttons
     assert "-natural-hpadding: 8px" in stylesheet
     assert "Gjs_ui_dateMenu_DateMenuButton.panel-button" in stylesheet
@@ -447,9 +437,7 @@ def test_fixed_dark_layouts_resolve_the_shell_stylesheet_before_enable():
 
     assert "const FIXED_DARK_LAYOUTS = new Set([" in source
     for layout in ("BigGnome", "Desk UX", "G-Unity", "Minimal"):
-        assert f"'{layout}'" in source.split("const FIXED_DARK_LAYOUTS", 1)[1].split(
-            "]);", 1
-        )[0]
+        assert f"'{layout}'" in source.split("const FIXED_DARK_LAYOUTS", 1)[1].split("]);", 1)[0]
     assert "desired = 'force-dark'" in source
     assert "LEGACY_LIGHT_STYLE_UUID" in source
     assert "target.has(LIGHT_STYLE_UUID)" not in source

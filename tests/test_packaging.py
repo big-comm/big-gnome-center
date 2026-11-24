@@ -14,13 +14,27 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_package_preserves_legacy_directories(tmp_path):
-    for command in ("bash", "glib-compile-schemas", "msgfmt", "realpath"):
+    for command in (
+        "bash",
+        "glib-compile-schemas",
+        "msgfmt",
+        "realpath",
+        "make",
+        "cc",
+        "pkg-config",
+        "wayland-scanner",
+    ):
         if shutil.which(command) is None:
             pytest.skip(f"{command} is required for package validation")
     source = tmp_path / "src"
     source.mkdir()
     payload = source / "big-gnome-center"
     shutil.copytree(ROOT / "usr", payload / "usr", symlinks=True)
+    shutil.copytree(
+        ROOT / "bigstyle-gtk4-module",
+        payload / "bigstyle-gtk4-module",
+        ignore=shutil.ignore_patterns("build"),
+    )
     locale_source = payload / "usr/share/locale"
     catalogs = {
         path.name: path.read_bytes()
@@ -35,12 +49,20 @@ def test_package_preserves_legacy_directories(tmp_path):
     package.mkdir()
     subprocess.run(
         [
-            "bash", "-c",
-            'set -e; source "$1"; srcdir="$2"; pkgdir="$3"; package',
-            "package-test", str(ROOT / "pkgbuild/PKGBUILD"), str(source), str(package),
+            "bash",
+            "-c",
+            'set -e; source "$1"; srcdir="$2"; pkgdir="$3"; build; package',
+            "package-test",
+            str(ROOT / "pkgbuild/PKGBUILD"),
+            str(source),
+            str(package),
         ],
-        check=True, capture_output=True, text=True,
+        check=True,
+        capture_output=True,
+        text=True,
     )
+    module = package / "usr/lib/gtk-4.0/4.0.0/immodules/libbigstyle-gtk4.so"
+    assert module.is_file() and module.read_bytes()[:4] == b"\x7fELF"
     locale_package = package / "usr/share/locale"
     assert not list(locale_package.glob("*.po"))
     assert not list(locale_package.glob("*.pot"))
@@ -54,8 +76,10 @@ def test_package_preserves_legacy_directories(tmp_path):
         with installed.open("rb") as stream:
             gettext.GNUTranslations(stream)
     menu_locales = (
-        payload / "usr/share/gnome-shell/extensions/community-menu@communitybig.org/po/LINGUAS"
-    ).read_text().split()
+        (payload / "usr/share/gnome-shell/extensions/community-menu@communitybig.org/po/LINGUAS")
+        .read_text()
+        .split()
+    )
     assert menu_locales
     for locale in menu_locales:
         with (locale_package / locale / "LC_MESSAGES/community-menu.mo").open("rb") as stream:
@@ -70,14 +94,24 @@ def test_package_preserves_legacy_directories(tmp_path):
     ).read_bytes()
     python_site = package / Path(sysconfig.get_path("purelib")).relative_to("/")
     integration = python_site / "big_gnome_center_material"
-    assert (integration / "__init__.py").read_bytes() == (primary / "window_material_client.py").read_bytes()
+    assert (integration / "__init__.py").read_bytes() == (
+        primary / "window_material_client.py"
+    ).read_bytes()
     assert (integration / "policy.py").read_bytes() == (primary / "window_material.py").read_bytes()
-    subprocess.run([
-        sys.executable, "-B", "-c",
-        "import sys; sys.path.insert(0, sys.argv[1]); "
-        "from big_gnome_center_material import attach_window_material; "
-        "assert callable(attach_window_material)", str(python_site),
-    ], check=True, capture_output=True, text=True)
+    subprocess.run(
+        [
+            sys.executable,
+            "-B",
+            "-c",
+            "import sys; sys.path.insert(0, sys.argv[1]); "
+            "from big_gnome_center_material import attach_window_material; "
+            "assert callable(attach_window_material)",
+            str(python_site),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
     policy = Path("usr/share/polkit-1/actions/br.com.biglinux.BigGnomeCenter.policy")
     assert (package / policy).read_bytes() == (ROOT / policy).read_bytes()
     assert (package / policy).stat().st_mode & 0o022 == 0

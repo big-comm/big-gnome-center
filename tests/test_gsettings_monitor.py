@@ -70,8 +70,9 @@ def monitor():
         Settings=SimpleNamespace(new_full=Mock(side_effect=create)),
     )
     monitor._Gio = gio
-    yield SimpleNamespace(monitor=monitor, definition=definition, source=source,
-                          gio=gio, created=created)
+    yield SimpleNamespace(
+        monitor=monitor, definition=definition, source=source, gio=gio, created=created
+    )
     monitor.disconnect_all()
 
 
@@ -88,8 +89,9 @@ def test_rejects_invalid_registration_before_construction(monitor, any_key, inva
     else:
         callback = None
     target = monitor.monitor
-    assert not (target.watch_any("test", callback) if any_key else
-                target.watch("test", "text", callback))
+    assert not (
+        target.watch_any("test", callback) if any_key else target.watch("test", "text", callback)
+    )
     monitor.gio.Settings.new_full.assert_not_called()
     assert target._watchers == []
 
@@ -115,8 +117,7 @@ def test_primes_connected_keys_without_initial_callback(monitor, any_key):
     monitor.gio.Settings.new_full.return_value = settings
     callback = Mock()
     target = monitor.monitor
-    assert (target.watch_any("test", callback) if any_key else
-            target.watch("test", "text", callback))
+    assert target.watch_any("test", callback) if any_key else target.watch("test", "text", callback)
     assert settings.reads == (["text", "enabled"] if any_key else ["text"])
     callback.assert_not_called()
     settings.emit("enabled")
@@ -141,8 +142,9 @@ def test_partial_registration_is_cleaned_and_deactivated(monitor, any_key, disco
     monitor.gio.Settings.new_full.return_value = settings
     callback = Mock()
     target = monitor.monitor
-    assert not (target.watch_any("test", callback) if any_key else
-                target.watch("test", "text", callback))
+    assert not (
+        target.watch_any("test", callback) if any_key else target.watch("test", "text", callback)
+    )
     assert target._watchers == []
     assert settings.disconnected == [1]
     settings.history[0](settings, "text")

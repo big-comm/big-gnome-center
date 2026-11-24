@@ -48,11 +48,17 @@ def catalog_server(tmp_path, monkeypatch):
         server.server_close()
 
 
-@pytest.mark.parametrize("body", [
-    b"not JSON", b"[]", b'{"extensions":false}',
-    b'{"nested":' + b"[" * 2000 + b"0" + b"]" * 2000 + b"}",
-    b'{"number":' + b"9" * 5000 + b"}",
-], ids=["syntax", "array", "wrong-field", "deep-nesting", "huge-integer"])
+@pytest.mark.parametrize(
+    "body",
+    [
+        b"not JSON",
+        b"[]",
+        b'{"extensions":false}',
+        b'{"nested":' + b"[" * 2000 + b"0" + b"]" * 2000 + b"}",
+        b'{"number":' + b"9" * 5000 + b"}",
+    ],
+    ids=["syntax", "array", "wrong-field", "deep-nesting", "huge-integer"],
+)
 def test_real_http_invalid_payloads_fail_without_losing_font_cache(catalog_server, body):
     catalog_server.body = body
     assert ego_client.search("test", use_cache=False) is None
@@ -67,9 +73,17 @@ def test_real_http_invalid_payloads_fail_without_losing_font_cache(catalog_serve
 
 
 def test_real_http_filters_entries_and_then_uses_cache(catalog_server):
-    catalog_server.body = json.dumps({"extensions": [
-        False, ["invalid"], {"uuid": "test@example.org", "name": "Valid", "rating": []},
-    ], "page": 1, "numpages": "bad"}).encode()
+    catalog_server.body = json.dumps(
+        {
+            "extensions": [
+                False,
+                ["invalid"],
+                {"uuid": "test@example.org", "name": "Valid", "rating": []},
+            ],
+            "page": 1,
+            "numpages": "bad",
+        }
+    ).encode()
     result = ego_client.search("Valid")
     assert result is not None and result.extensions[0].name == "Valid"
     assert result.extensions[0].rating == 0
@@ -80,11 +94,15 @@ def test_real_http_filters_entries_and_then_uses_cache(catalog_server):
 
 
 def test_real_http_detail_sanitizes_metadata_without_guessing_compatibility(catalog_server):
-    catalog_server.body = json.dumps({
-        "uuid": "test@example.org", "name": {}, "screenshots": [None, {"url": 4}],
-        "comments": [{"text": 5}, {"text": "Valid", "rating": "NaN"}],
-        "shell_version_map": ["50", "51"],
-    }).encode()
+    catalog_server.body = json.dumps(
+        {
+            "uuid": "test@example.org",
+            "name": {},
+            "screenshots": [None, {"url": 4}],
+            "comments": [{"text": 5}, {"text": "Valid", "rating": "NaN"}],
+            "shell_version_map": ["50", "51"],
+        }
+    ).encode()
     detail = ego_client.info("test@example.org")
     assert detail.name == "test@example.org"
     assert detail.screenshots == [] and detail.comments[0].text == "Valid"
@@ -93,9 +111,15 @@ def test_real_http_detail_sanitizes_metadata_without_guessing_compatibility(cata
 
 
 def test_real_http_font_catalog_keeps_valid_entries(catalog_server):
-    catalog_server.body = json.dumps({"familyMetadataList": [
-        False, {"family": 5}, {"family": "Valid", "category": [], "popularity": {}},
-    ]}).encode()
+    catalog_server.body = json.dumps(
+        {
+            "familyMetadataList": [
+                False,
+                {"family": 5},
+                {"family": "Valid", "category": [], "popularity": {}},
+            ]
+        }
+    ).encode()
     ok, entries, error = google_fonts.load_catalog(force_refresh=True)
     assert ok and not error
     assert entries == [google_fonts.FontFamily("Valid", "sans-serif")]

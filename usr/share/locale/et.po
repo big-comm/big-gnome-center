@@ -663,6 +663,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Säilitab kopeeritud sisu otsitava ajaloo."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Jagab lõikelauda selle arvuti ja teie telefoni vahel."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "Kuvab eemaldatavad seadmed ja võimaldab need ohutult väljutada."
 
@@ -1309,7 +1313,7 @@ msgstr "Ikoonid"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Kursorid"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1355,25 +1359,25 @@ msgstr "Aktiivne"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Lisa automaatselt käivituv rakendus"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Otsi rakendusi"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Automaatselt käivituvad rakendused"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Automaatselt käivituvad rakendused käivitatakse sisselogimisel."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Automaatselt käivituvaid rakendusi pole"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2149,8 +2153,7 @@ msgstr "Tekstitöötlus"
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
 msgstr ""
-"Sinu kohandatud pilt säilib, kuni rakendad kujunduse või taastad "
-"vaikeikooni."
+"Sinu kohandatud pilt säilib, kuni rakendad kujunduse või taastad vaikeikooni."
 
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
@@ -2172,3 +2175,153 @@ msgstr "Doki asukoht"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "All"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Keela valikulised laiendused"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Kas keelata valikulised laiendused?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Valikulised laiendused keelatakse. Paigutuse nõutavad osad jäävad lubatuks. "
+"Valikulisi laiendusi saab ükshaaval uuesti lubada."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Valikulised laiendused on keelatud"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Taasta efekti vaikeväärtused"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Lähtestab materjali ja energiasäästu valikud."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Efekti vaikeväärtused on taastatud"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Hiir ja puuteplaat"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Keskklõpsuga kleepimine"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Kleebib valitud teksti hiire keskmise nupuga või kolme sõrmega puudutusega"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Aktiveeri aknad hiirega üle liikudes"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Fookustab kursori all oleva akna ilma klõpsamata"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Kinnita dialoogid nende aknale"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "Dialoogid jäävad neid avanud akna kohale ja liiguvad koos sellega"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Klahv akende liigutamiseks"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "Hoia seda all ja lohista akna mis tahes osa, et akent liigutada"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Suuruse muutmine parema nupuga"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Hoia klahvi all ja lohista parema nupuga suuruse muutmiseks"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Tiitliriba"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Topeltklõps"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Keskklõps"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Paremklõps"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maksimeeri"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Maksimeeri laius"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Maksimeeri kõrgus"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimeeri"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Saada taha"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Näita akna menüüd"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Ära tee midagi"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Eralda rakendused monitori järgi"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "Iga dokk näitab ainult oma monitoril avatud rakendusi"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Doki rakendused monitori kaupa uuendatud"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Visuaalseid efekte pole saadaval"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "See GNOME'i versioon ei toeta matthägu efekti."

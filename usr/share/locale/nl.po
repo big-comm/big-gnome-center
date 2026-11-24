@@ -667,6 +667,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Houdt een doorzoekbare geschiedenis van gekopieerde inhoud bij."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Deelt het klembord tussen deze computer en je telefoon."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "Toont verwisselbare apparaten en laat je ze veilig uitwerpen."
 
@@ -1318,7 +1322,7 @@ msgstr "Pictogrammen"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Cursors"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1364,25 +1368,25 @@ msgstr "Actief"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Opstarttoepassing toevoegen"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Toepassingen zoeken"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Opstarttoepassingen"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Opstarttoepassingen worden automatisch gestart wanneer je inlogt."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Geen opstarttoepassingen"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2166,7 +2170,9 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Installeer het pakket big-bibata-cursor-theme om bijpassende cursors te gebruiken."
+msgstr ""
+"Installeer het pakket big-bibata-cursor-theme om bijpassende cursors te "
+"gebruiken."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2174,7 +2180,8 @@ msgstr "Systeemaccentkleur volgen"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Cursor afstemmen op de systeemaccentkleur en de lichte of donkere weergave."
+msgstr ""
+"Cursor afstemmen op de systeemaccentkleur en de lichte of donkere weergave."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2183,3 +2190,159 @@ msgstr "Dockpositie"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Onder"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Optionele extensies uitschakelen"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Optionele extensies uitschakelen?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Optionele extensies worden uitgeschakeld. Vereiste onderdelen van de "
+"indeling blijven ingeschakeld. Je kunt optionele extensies één voor één weer "
+"inschakelen."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Optionele extensies uitgeschakeld"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Standaardwaarden van het effect herstellen"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Zet het materiaal en de opties voor energiebesparing terug."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Standaardwaarden van het effect hersteld"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Muis en touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Plakken met middelste muisknop"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Plakt de geselecteerde tekst met de middelste muisknop of een tik met drie "
+"vingers"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Vensters activeren bij aanwijzen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Geeft het venster onder de aanwijzer focus zonder te klikken"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Dialoogvensters aan hun venster koppelen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "Dialoogvensters blijven boven het venster dat ze opende en bewegen mee"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Toets om vensters te verplaatsen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr ""
+"Houd deze ingedrukt en sleep een willekeurig deel van een venster om het te "
+"verplaatsen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Grootte wijzigen met de rechterknop"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr ""
+"Sleep met de toets ingedrukt met de rechterknop om de grootte te wijzigen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Titelbalk"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Dubbelklik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Middelklik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Rechtsklik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maximaliseren"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Breedte maximaliseren"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Hoogte maximaliseren"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimaliseren"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Naar achteren"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Venstermenu tonen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Niets doen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Apps per beeldscherm scheiden"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr ""
+"Elk dock toont alleen de apps die op het eigen beeldscherm geopend zijn"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Dock-apps per beeldscherm bijgewerkt"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Geen visuele effecten beschikbaar"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Deze GNOME-versie ondersteunt Gematteerd glas niet."

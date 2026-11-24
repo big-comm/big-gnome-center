@@ -673,8 +673,8 @@ are unchanged. Final local/GNOME 50/GNOME 51 SHA-256 values match:
 
 Build 75 internalizes the 13 active Taskbar renderer modules under
 `layout-switcher-runtime@communitybig.org/taskbar/`. Every runtime import now
-stays inside the unified runtime. Community Panel keeps an identical dormant
-copy for the upgrade/rollback gate; it is not the active renderer.
+stays inside the unified runtime. Community Panel kept a dormant copy for the
+upgrade/rollback gate; that copy is removed, since no entry point loaded it.
 
 GNOME 50.4 and GNOME 51.beta passed fresh-session activation, Hybrid strict
 audit, Minimal teardown, Hybrid re-entry, exact actor/style restoration, and

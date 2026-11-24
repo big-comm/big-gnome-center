@@ -180,8 +180,12 @@ def test_clipboard_defaults_and_layout_placement():
         "clipboard-position-vertical": "'top'",
         "show-at-pointer": "false",
         "show-at-cursor": "false",
-        "item-width": "250", "item-height": "210", "dynamic-item-height": "false",
-        "show-header": "true", "header-controls-visibility": "'visible'", "auto-hide-search": "false",
+        "item-width": "250",
+        "item-height": "210",
+        "dynamic-item-height": "false",
+        "show-header": "true",
+        "header-controls-visibility": "'visible'",
+        "auto-hide-search": "false",
     }
     for layout_file in LAYOUT_DIR.glob("*.txt"):
         values = _section_key_values(layout_file.read_text(), COPYOUS_SECTION)

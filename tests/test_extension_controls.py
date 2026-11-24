@@ -41,7 +41,9 @@ def test_bulk_disable_preserves_required_components_and_reports_refusals():
     write.assert_not_called()
 
 
-@pytest.mark.parametrize("enabled", [[], sorted(REQUIRED_EXTENSION_UUIDS), ["optional@example.org"]])
+@pytest.mark.parametrize(
+    "enabled", [[], sorted(REQUIRED_EXTENSION_UUIDS), ["optional@example.org"]]
+)
 def test_bulk_disable_never_sets_global_block(enabled):
     with (
         patch.object(ExtMgr, "enabled_list", return_value=enabled),
@@ -126,10 +128,17 @@ def test_metadata_cannot_redirect_identity_or_publish_non_text_fields(tmp_path):
     uuid = "test@example.org"
     extension = tmp_path / uuid
     extension.mkdir()
-    (extension / "metadata.json").write_text(json.dumps({
-        "uuid": "different@example.org", "name": [], "description": {},
-        "url": 4, "version": [],
-    }))
+    (extension / "metadata.json").write_text(
+        json.dumps(
+            {
+                "uuid": "different@example.org",
+                "name": [],
+                "description": {},
+                "url": 4,
+                "version": [],
+            }
+        )
+    )
     (tmp_path / ".test@example.org.staging").mkdir()
     with (
         patch("extension_manager.EXT_USER_DIR", tmp_path),
@@ -139,6 +148,12 @@ def test_metadata_cannot_redirect_identity_or_publish_non_text_fields(tmp_path):
         result = ExtMgr.list_installed()
     assert len(result) == 1
     assert result[0] == {
-        "uuid": uuid, "name": uuid, "description": "", "url": "", "version": "",
-        "enabled": True, "user": True, "has_prefs": False,
+        "uuid": uuid,
+        "name": uuid,
+        "description": "",
+        "url": "",
+        "version": "",
+        "enabled": True,
+        "user": True,
+        "has_prefs": False,
     }

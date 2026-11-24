@@ -246,8 +246,9 @@ def _parse_summary(item: dict) -> Optional[ExtensionSummary]:
         downloads=_integer(item.get("downloads")),
         rating=_rating(item.get("rating")),
         rating_count=_integer(item.get("rating_count")),
-        shell_version_map=(item["shell_version_map"]
-                           if isinstance(item.get("shell_version_map"), dict) else {}),
+        shell_version_map=(
+            item["shell_version_map"] if isinstance(item.get("shell_version_map"), dict) else {}
+        ),
     )
 
 

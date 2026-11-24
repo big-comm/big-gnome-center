@@ -359,8 +359,12 @@ class LayoutsPage(Gtk.Box):
                 return
 
     def _apply(
-        self, name: str, cfg: str, use_snapshot: bool = False,
-        *, backup_path: Optional[Path] = None,
+        self,
+        name: str,
+        cfg: str,
+        use_snapshot: bool = False,
+        *,
+        backup_path: Optional[Path] = None,
     ) -> None:
         """Aplica layout. use_snapshot=True carrega a versao modificada."""
         self._set_status(f"{tr('Applying')} {name}…", "dim-label")

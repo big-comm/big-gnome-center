@@ -89,7 +89,46 @@ open. System / Distribution Info, Python Microphone, BigCam and Driver Manager
 use the same live client: any non-empty managed sheet applies. Other windows
 read the sheet at startup; reopen them after material changes. Disabling empties
 the sheet, but windows still running keep GTK's cached startup stylesheet until
-reopened.
+reopened. A live client that started with the material loads
+`render_reset()` instead, which restores the opaque palette above that cache.
+
+#### Redraw cost and the BigStyle GTK 4 module
+
+`backdrop-filter` asks Mutter for the blur, but GTK also wraps the window in a
+filter chain that copies and redraws the backdrop on every frame. Scrolling a
+list then costs the client far more than the compositor's blur. BigStyle's
+GTK 4 module (`/usr/lib/gtk-4.0/4.0.0/immodules/libbigstyle-gtk4.so`) takes the
+effect object from GTK, asks for the same blur region itself and sets
+`backdrop-filter: none` on the windows it blurs. Outside big-compositor and KDE
+sessions it changes no colors, frames or opacity.
+
+The stylesheet needs no change and keeps `backdrop-filter`: it is the signal
+the module reads, and Ashyterm and BigCam receive nothing else.
+
+The `bigstyle` package cannot be installed in BigCommunity yet, so the module
+is vendored in `bigstyle-gtk4-module/` (see its `UPSTREAM.md`) and built into
+this package, which is therefore `x86_64`. It installs at BigStyle's path and
+the package conflicts with `bigstyle`: two copies would each create an effect
+object for the same surface, a protocol error that ends the program. Replace
+the copy with a dependency on `bigstyle` once that package is published.
+
+GNOME 51.1 VM (GTK 4.24.1, software rendering), self-scrolling list over the
+default material, 20 s samples:
+
+| | Without module | With module |
+|---|---|---|
+| Frames per second | ~5 | ~36 |
+| Client CPU | ~330 % | ~30 % |
+| gnome-shell CPU | ~37 % | ~226 % |
+
+With both paced at 5 updates per second the client drops from ~270 % to ~11 %
+CPU while gnome-shell rises from ~37 % to ~68 %: about 79 % in total against
+~307 %. The VM blurs in software; on hardware the compositor's blur runs on
+the GPU. Screenshots of the blurred area were identical.
+Nautilus, Text Editor, Calculator, Ashyterm, Mahjongg, Settings, Big Gnome
+Center and the file chooser kept their material; maximize and restore follow
+the region; the DING desktop stays clear. A `~/.config/bigstyle/blur.ini`, which
+the BigStyle app writes, makes the module blur every whole window.
 
 The package exposes optional Python integration:
 

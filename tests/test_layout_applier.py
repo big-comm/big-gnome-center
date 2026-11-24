@@ -31,10 +31,7 @@ def test_pamac_updates_is_not_preserved_across_layout_switches():
 
 def test_retired_extensions_are_not_preserved_across_layout_switches():
     assert "gsconnect@andyholmes.github.io" not in _HELPER_PERSIST_UUIDS
-    assert (
-        "drive-menu@gnome-shell-extensions.gcampax.github.com"
-        not in _HELPER_PERSIST_UUIDS
-    )
+    assert "drive-menu@gnome-shell-extensions.gcampax.github.com" not in _HELPER_PERSIST_UUIDS
 
 
 def test_only_external_stateful_components_stay_live_during_switches():
@@ -102,10 +99,13 @@ def required_helper_available(tmp_path):
         patch("layout_applier._LAYOUT_HASH_FILE", tmp_path / "settings.sha256"),
         patch("layout_applier._LAYOUT_MUTATION_LOCK_PATH", tmp_path / "mutation.lock"),
         patch("layout_applier._SYNC_LOCK_PATH", tmp_path / "sync.lock"),
-        patch("layout_applier.Settings", return_value=SimpleNamespace(
-            get=lambda key, default=None: default,
-            delete=lambda key: True,
-        )),
+        patch(
+            "layout_applier.Settings",
+            return_value=SimpleNamespace(
+                get=lambda key, default=None: default,
+                delete=lambda key: True,
+            ),
+        ),
         patch("layout_applier.HelperClient.ensure_available", return_value=(True, "")),
         patch("layout_applier.HelperClient.helper_version", return_value=0),
         patch("layout_applier.HelperClient._call", return_value=None),
@@ -116,7 +116,9 @@ def required_helper_available(tmp_path):
 
 
 class TestLayoutApplier:
-    @pytest.mark.parametrize("filename", ["biggnome", "desk-ux", "hybrid", "g-unity", "classic", "minimal"])
+    @pytest.mark.parametrize(
+        "filename", ["biggnome", "desk-ux", "hybrid", "g-unity", "classic", "minimal"]
+    )
     def test_layout_preserves_live_clipboard_history_preferences(self, filename):
         data = (ROOT / "usr/share/big-gnome-center/layouts" / f"{filename}.txt").read_text()
         live = (
@@ -131,20 +133,32 @@ class TestLayoutApplier:
             out = LayoutApplier._preserve_clipboard_settings(data)
         values = LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous")
         expected = LayoutApplier._section_key_values(live, "/")
-        expected.update({
-            "clipboard-orientation": "'horizontal'",
-            "clipboard-position-horizontal": "'fill'",
-            "clipboard-position-vertical": "'bottom'" if filename in {"desk-ux", "hybrid", "classic"} else "'top'",
-            "show-at-pointer": "false",
-            "show-at-cursor": "false",
-            "item-width": "250", "item-height": "210", "dynamic-item-height": "false",
-            "show-header": "true", "header-controls-visibility": "'visible'", "auto-hide-search": "false",
-        })
+        expected.update(
+            {
+                "clipboard-orientation": "'horizontal'",
+                "clipboard-position-horizontal": "'fill'",
+                "clipboard-position-vertical": "'bottom'"
+                if filename in {"desk-ux", "hybrid", "classic"}
+                else "'top'",
+                "show-at-pointer": "false",
+                "show-at-cursor": "false",
+                "item-width": "250",
+                "item-height": "210",
+                "dynamic-item-height": "false",
+                "show-header": "true",
+                "header-controls-visibility": "'visible'",
+                "auto-hide-search": "false",
+            }
+        )
         assert values == expected
-        assert LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous/file-item") == {
+        assert LayoutApplier._section_key_values(
+            out, "/org/gnome/shell/extensions/copyous/file-item"
+        ) == {
             "file-preview-visibility": "'file-preview-or-file-info'",
         }
-        assert LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous/link-item") == {
+        assert LayoutApplier._section_key_values(
+            out, "/org/gnome/shell/extensions/copyous/link-item"
+        ) == {
             "link-preview-orientation": "'vertical'",
         }
         assert "history-length=70" not in out
@@ -153,7 +167,10 @@ class TestLayoutApplier:
         )
 
     def test_saved_layout_restores_placement_without_restoring_history(self):
-        live = "[/]\nhistory-length=500\nclipboard-position-vertical='top'\ncompact-type-filters=true\n"
+        live = (
+            "[/]\nhistory-length=500\nclipboard-position-vertical='top'\n"
+            "compact-type-filters=true\n"
+        )
         snapshot = (
             "[org/gnome/shell/extensions/copyous]\nhistory-length=70\n"
             "clipboard-orientation='vertical'\nclipboard-position-horizontal='bottom'\n"
@@ -163,8 +180,10 @@ class TestLayoutApplier:
             out = LayoutApplier._preserve_clipboard_settings(snapshot)
         values = LayoutApplier._section_key_values(out, "/org/gnome/shell/extensions/copyous")
         assert values == {
-            "history-length": "500", "compact-type-filters": "true",
-            "clipboard-orientation": "'vertical'", "clipboard-position-horizontal": "'bottom'",
+            "history-length": "500",
+            "compact-type-filters": "true",
+            "clipboard-orientation": "'vertical'",
+            "clipboard-position-horizontal": "'bottom'",
             "clipboard-position-vertical": "'fill'",
         }
 
@@ -182,7 +201,9 @@ class TestLayoutApplier:
             patch("layout_applier.run_cmd", return_value=(False, "read failed")),
             patch.object(LayoutApplier, "_preserve_layout_independent_settings") as later,
         ):
-            ok, detail = LayoutApplier.load_dconf_safely("[org/gnome/shell]\nenabled-extensions=[]\n")
+            ok, detail = LayoutApplier.load_dconf_safely(
+                "[org/gnome/shell]\nenabled-extensions=[]\n"
+            )
         assert not ok
         assert "cannot preserve clipboard settings" in detail
         later.assert_not_called()
@@ -195,16 +216,27 @@ class TestLayoutApplier:
             patch("layout_applier.Settings") as settings,
             patch.object(LayoutApplier, "_read_dtp_monitor_keys", return_value={}),
             patch.object(LayoutApplier, "_enabled_extensions", return_value=[]),
-            patch.object(LayoutApplier, "_reset_original_runtime_overrides",
-                         side_effect=lambda data, _layout: data),
-            patch.object(LayoutApplier, "_preserve_user_color_scheme",
-                         side_effect=lambda data, **_kwargs: data),
-            patch.object(LayoutApplier, "_adjust_gtk_theme_for_scheme",
-                         side_effect=lambda data: data),
-            patch.object(LayoutApplier, "_adjust_icon_theme_for_scheme",
-                         side_effect=lambda data, **_kwargs: data),
-            patch.object(LayoutApplier, "load_dconf_safely",
-                         return_value=(success, "test")) as load,
+            patch.object(
+                LayoutApplier,
+                "_reset_original_runtime_overrides",
+                side_effect=lambda data, _layout: data,
+            ),
+            patch.object(
+                LayoutApplier,
+                "_preserve_user_color_scheme",
+                side_effect=lambda data, **_kwargs: data,
+            ),
+            patch.object(
+                LayoutApplier, "_adjust_gtk_theme_for_scheme", side_effect=lambda data: data
+            ),
+            patch.object(
+                LayoutApplier,
+                "_adjust_icon_theme_for_scheme",
+                side_effect=lambda data, **_kwargs: data,
+            ),
+            patch.object(
+                LayoutApplier, "load_dconf_safely", return_value=(success, "test")
+            ) as load,
         ):
             assert LayoutApplier.apply(layout) == (success, "test")
         assert load.call_args.kwargs["layout_id"] == "biggnome"
@@ -287,16 +319,18 @@ enabled-extensions=['community-menu@communitybig.org']
         assert out == data
 
     @pytest.mark.parametrize(
-        "layout_id", ["biggnome", "minimal", "g-unity", "classic", "desk-ux", "hybrid"],
+        "layout_id",
+        ["biggnome", "minimal", "g-unity", "classic", "desk-ux", "hybrid"],
     )
     @pytest.mark.parametrize("override", [None, False, True])
     def test_menu_defaults_and_explicit_choices_across_all_layouts(self, layout_id, override):
         data = (ROOT / f"usr/share/big-gnome-center/layouts/{layout_id}.txt").read_text()
-        expected = (override if override is not None
-                    else layout_id in {"classic", "desk-ux", "hybrid"})
+        expected = (
+            override if override is not None else layout_id in {"classic", "desk-ux", "hybrid"}
+        )
         with patch("layout_applier.Settings") as settings:
-            settings.return_value.get.side_effect = (
-                lambda key: override if key == "community_menu_enabled" else None
+            settings.return_value.get.side_effect = lambda key: (
+                override if key == "community_menu_enabled" else None
             )
             result = LayoutApplier._apply_user_component_overrides(data)
         shell = LayoutApplier._section_key_values(result, "/org/gnome/shell")
@@ -313,8 +347,8 @@ enabled-extensions=['community-menu@communitybig.org']
     def test_original_native_layout_ignores_inherited_menu(self, layout_id, override):
         data = (ROOT / f"usr/share/big-gnome-center/layouts/{layout_id}.txt").read_text()
         with patch("layout_applier.Settings") as settings:
-            settings.return_value.get.side_effect = (
-                lambda key: override if key == "community_menu_enabled" else None
+            settings.return_value.get.side_effect = lambda key: (
+                override if key == "community_menu_enabled" else None
             )
             result = LayoutApplier._apply_user_component_overrides(data, original=True)
         assert result == data
@@ -327,8 +361,8 @@ enabled-extensions=['community-menu@communitybig.org']
     def test_original_menu_layout_ignores_inherited_disabled_menu(self, layout_id):
         data = (ROOT / f"usr/share/big-gnome-center/layouts/{layout_id}.txt").read_text()
         with patch("layout_applier.Settings") as settings:
-            settings.return_value.get.side_effect = (
-                lambda key: False if key == "community_menu_enabled" else None
+            settings.return_value.get.side_effect = lambda key: (
+                False if key == "community_menu_enabled" else None
             )
             result = LayoutApplier._apply_user_component_overrides(data, original=True)
         assert result == data
@@ -392,8 +426,14 @@ disabled-extensions=['community-menu@communitybig.org']
 
     @pytest.mark.parametrize(
         ("label", "menu_expected"),
-        [("BigGnome", True), ("Minimal", True), ("G-Unity", True),
-         ("Classic", True), ("Desk UX", True), ("Hybrid", True)],
+        [
+            ("BigGnome", True),
+            ("Minimal", True),
+            ("G-Unity", True),
+            ("Classic", True),
+            ("Desk UX", True),
+            ("Hybrid", True),
+        ],
     )
     def test_snapshot_menu_override_uses_saved_layout_identity(self, label, menu_expected):
         data = (
@@ -404,8 +444,8 @@ disabled-extensions=['community-menu@communitybig.org']
             f"active-layout='{label}'\n"
         )
         with patch("layout_applier.Settings") as settings:
-            settings.return_value.get.side_effect = (
-                lambda key: True if key == "community_menu_enabled" else None
+            settings.return_value.get.side_effect = lambda key: (
+                True if key == "community_menu_enabled" else None
             )
             restored = LayoutApplier._apply_user_component_overrides(data)
         shell = LayoutApplier._section_key_values(restored, "/org/gnome/shell")
@@ -817,22 +857,14 @@ disabled-extensions=['community-menu@communitybig.org']
         assert "icon-theme='bigicons-papient'" in out
 
     def test_light_mode_selects_light_adw_gtk3_variant(self):
-        data = (
-            "[org/gnome/desktop/interface]\n"
-            "color-scheme='default'\n"
-            "gtk-theme='adw-gtk3-dark'\n"
-        )
+        data = "[org/gnome/desktop/interface]\ncolor-scheme='default'\ngtk-theme='adw-gtk3-dark'\n"
 
         out = LayoutApplier._adjust_gtk_theme_for_scheme(data)
 
         assert "gtk-theme='adw-gtk3'" in out
 
     def test_dark_mode_selects_dark_adw_gtk3_variant(self):
-        data = (
-            "[org/gnome/desktop/interface]\n"
-            "color-scheme='prefer-dark'\n"
-            "gtk-theme='adw-gtk3'\n"
-        )
+        data = "[org/gnome/desktop/interface]\ncolor-scheme='prefer-dark'\ngtk-theme='adw-gtk3'\n"
 
         out = LayoutApplier._adjust_gtk_theme_for_scheme(data)
 
@@ -1276,8 +1308,9 @@ disabled-extensions=['community-menu@communitybig.org']
         assert (
             "enabled-extensions=['layout-switcher-helper@communitybig.org', 'stay@ext']"
         ) in switch_data
-        assert "[org/gnome/shell/extensions/user-theme]" not in (
-            mock_run.call_args_list[0].kwargs["stdin_text"]
+        assert (
+            "[org/gnome/shell/extensions/user-theme]"
+            not in (mock_run.call_args_list[0].kwargs["stdin_text"])
         )
 
     @patch("layout_applier.time.sleep")
@@ -1491,9 +1524,7 @@ disabled-extensions=['community-menu@communitybig.org']
         _enable_after_load.assert_not_called()
         switch_data = _mock_run.call_args_list[1].kwargs["stdin_text"]
         shell = LayoutApplier._section_key_values(switch_data, "/org/gnome/shell")
-        assert light_style not in LayoutApplier._string_list(
-            shell["enabled-extensions"]
-        )
+        assert light_style not in LayoutApplier._string_list(shell["enabled-extensions"])
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._enable_extensions_after_load", return_value=True)
@@ -1719,9 +1750,12 @@ disabled-extensions=['community-menu@communitybig.org']
         assert mock_disable.call_args.args[0] == ["leave@ext", user_theme]
         assert mock_disable.call_args.kwargs == {"sort": False}
         switch_data = mock_run.call_args_list[1].kwargs["stdin_text"]
-        assert f"'{user_theme}'" not in LayoutApplier._section_key_values(
-            switch_data, "/org/gnome/shell"
-        )["enabled-extensions"]
+        assert (
+            f"'{user_theme}'"
+            not in LayoutApplier._section_key_values(switch_data, "/org/gnome/shell")[
+                "enabled-extensions"
+            ]
+        )
 
     @patch("layout_applier.time.sleep")
     @patch("layout_applier.LayoutApplier._wait_extension_live", return_value=True)
@@ -2161,15 +2195,14 @@ class TestHelperIntegration:
             "layout-switcher-helper@communitybig.org",
         }
         batches = [
-            call for call in run.call_args_list
+            call
+            for call in run.call_args_list
             if len(call.args[0]) > 1 and call.args[0][1].endswith("dconf_batch.py")
         ]
         assert len(batches) == 1
         command = batches[0].args[0]
         assert "/org/gnome/shell/extensions/copyous/history-length" not in command
-        assert "[org/gnome/shell/extensions/appindicator]" in (
-            batches[0].kwargs["stdin_text"]
-        )
+        assert "[org/gnome/shell/extensions/appindicator]" in (batches[0].kwargs["stdin_text"])
 
     def test_inject_helper_uuid_adds(self):
         from helper_client import HELPER_UUID
@@ -2373,8 +2406,7 @@ class TestHelperIntegration:
     )
     def test_gnome50_overview_default_is_owned_by_three_original_layouts(self, layout_id, expected):
         data = (
-            "[org/gnome/shell]\n"
-            "enabled-extensions=['stay@ext', 'frosted-glass@communitybig.org']\n"
+            "[org/gnome/shell]\nenabled-extensions=['stay@ext', 'frosted-glass@communitybig.org']\n"
         )
 
         out = LayoutApplier._apply_gnome50_overview_default(data, layout_id)
@@ -2473,7 +2505,8 @@ class TestHelperIntegration:
         mock_v7.assert_called_once()
         assert mock_v7.call_args.kwargs["layout_label"] == "G-Unity"
         runtime = LayoutApplier._section_key_values(
-            mock_v7.call_args.args[0], "/org/communitybig/layout-switcher/runtime",
+            mock_v7.call_args.args[0],
+            "/org/communitybig/layout-switcher/runtime",
         )
         assert runtime["active-layout"] == "'G-Unity'"
         assert runtime["panel-opacity-overrides"] == "{'G-Unity': 42}"
@@ -2484,14 +2517,15 @@ class TestHelperIntegration:
             ("layout-switcher-helper@bigcommunity.org", 43),
             ("layout-switcher-helper@communitybig.org", 112),
         ):
-            source = (
-                root / "usr/share/gnome-shell/extensions" / uuid / "extension.js"
-            ).read_text()
+            source = (root / "usr/share/gnome-shell/extensions" / uuid / "extension.js").read_text()
             assert f"const HELPER_BUILD = {build};" in source
             assert '<method name="DiscoverExtensions">' in source
             assert "extends HelperLifecycle" in source
-        shared = (root / "usr/share/gnome-shell/extensions"
-                  / "layout-switcher-helper@communitybig.org/helperLifecycle.js").read_text()
+        shared = (
+            root
+            / "usr/share/gnome-shell/extensions"
+            / "layout-switcher-helper@communitybig.org/helperLifecycle.js"
+        ).read_text()
         assert "DISCOVERABLE_UUIDS.has(uuid)" in shared
         assert "ExtensionType.SYSTEM" in shared
 

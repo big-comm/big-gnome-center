@@ -8,6 +8,7 @@ variables: ok, err, out, val, raw, data, info, etc.
 """
 
 import gettext
+import logging
 import os
 import shutil
 import tempfile
@@ -51,12 +52,13 @@ tr = gettext.translation(_DOMAIN, _LOCALE_DIR, fallback=True).gettext  # purpose
 
 # ── Aplicação ─────────────────────────────────────────────────────────────────
 APP_ID = "br.com.biglinux.BigGnomeCenter"
-APP_VERSION = "3.2.2"
+APP_VERSION = "3.4.2"
 APP_LICENSE = "MIT"
 APP_NAME = "Big Gnome Center"
 ICON_NAME = "big-gnome-center"
 DESKTOP_ID = "br.com.biglinux.BigGnomeCenter.desktop"
 LEGACY_DESKTOP_ID = "org.communitybig.layout-switcher.desktop"
+
 
 # ── Diretórios de dados ───────────────────────────────────────────────────────
 def _migrate_legacy_dir(old: Path, new: Path) -> None:
@@ -70,8 +72,10 @@ def _migrate_legacy_dir(old: Path, new: Path) -> None:
             shutil.copytree(old, staged, symlinks=True)
             if not new.exists() and not new.is_symlink():
                 staged.rename(new)
-    except OSError:
-        pass
+    except OSError as exc:
+        logging.getLogger("big-gnome-center").warning(
+            "Cannot import the earlier settings from %s: %s", old, exc
+        )
 
 
 def _replace_legacy_desktop_id(apps: List[str]) -> List[str]:
@@ -121,6 +125,7 @@ _SHARE_DIRS = [
     Path("/usr/share/big-gnome-center"),
     Path("/usr/local/share/big-gnome-center"),
 ]
+
 
 def _xdg_home(variable: str, fallback: str) -> Path:
     value = Path(os.environ.get(variable, ""))
@@ -215,7 +220,6 @@ FEATURED_EXTENSIONS: List[Dict] = [
         "description": tr("Rotate workspaces on a 3D cube"),
         "uuid": "desktop-cube@schneegans.github.com",
         "ego_id": 4648,
-        "pkg": "gnome-shell-extension-desktop-cube",
         "icon": "layout-effect-cube-symbolic",
         "author": "Simon Schneegans",
         "has_settings": False,
@@ -226,7 +230,6 @@ FEATURED_EXTENSIONS: List[Dict] = [
         "description": tr("Genie effect when minimizing windows"),
         "uuid": "compiz-alike-magic-lamp-effect@hermes83.github.com",
         "ego_id": 3740,
-        "pkg": "gnome-shell-extension-compiz-alike-magic-lamp-effect",
         "icon": "layout-effect-genie-lamp-symbolic",
         "author": "hermes83",
         "has_settings": False,
@@ -237,7 +240,6 @@ FEATURED_EXTENSIONS: List[Dict] = [
         "description": tr("Wobbly windows and extra animations"),
         "uuid": "compiz-windows-effect@hermes83.github.com",
         "ego_id": 3210,
-        "pkg": "gnome-shell-extension-compiz-windows-effect",
         "icon": "layout-effect-wobbly-symbolic",
         "author": "hermes83",
         "has_settings": False,

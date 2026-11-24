@@ -63,10 +63,13 @@ class StartupManager:
     @staticmethod
     def _default_system_dirs() -> list[Path]:
         configured = os.environ.get("XDG_CONFIG_DIRS") or "/etc/xdg"
-        return list(dict.fromkeys(
-            Path(value) / "autostart"
-            for value in configured.split(":") if Path(value).is_absolute()
-        ))
+        return list(
+            dict.fromkeys(
+                Path(value) / "autostart"
+                for value in configured.split(":")
+                if Path(value).is_absolute()
+            )
+        )
 
     @staticmethod
     def _parser(path: Path) -> Optional[configparser.RawConfigParser]:

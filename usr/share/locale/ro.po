@@ -663,6 +663,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Păstrează un istoric care poate fi căutat al conținutului copiat."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Partajează clipboardul între acest calculator și telefonul tău."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr ""
 "Afișează dispozitivele detașabile și permite ejectarea lor în siguranță."
@@ -1317,7 +1321,7 @@ msgstr "Pictograme"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Cursoare"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1362,25 +1366,25 @@ msgstr "Activ"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Adaugă o aplicație de pornire"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Caută aplicații"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Aplicații de pornire"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Aplicațiile de pornire sunt lansate automat când te autentifici."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Nicio aplicație de pornire"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2110,8 +2114,7 @@ msgstr "Caută pictograme de dosare"
 
 #: usr/share/big-gnome-center/folder_icon_picker.py:116
 msgid "Select the BigIcons Papient icon theme to choose a design."
-msgstr ""
-"Selectați tema de pictograme BigIcons Papient pentru a alege un desen."
+msgstr "Selectați tema de pictograme BigIcons Papient pentru a alege un desen."
 
 #: usr/share/big-gnome-center/folder_icons.py:62
 msgid "Synchronization"
@@ -2167,7 +2170,8 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Instalați pachetul big-bibata-cursor-theme pentru a folosi cursoare asortate."
+msgstr ""
+"Instalați pachetul big-bibata-cursor-theme pentru a folosi cursoare asortate."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2175,7 +2179,9 @@ msgstr "Urmează culoarea de accent a sistemului"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Potrivește cursorul cu culoarea de accent a sistemului și cu aspectul luminos sau întunecat."
+msgstr ""
+"Potrivește cursorul cu culoarea de accent a sistemului și cu aspectul "
+"luminos sau întunecat."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2184,3 +2190,156 @@ msgstr "Poziția docului"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Jos"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Dezactivează extensiile opționale"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Dezactivezi extensiile opționale?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Extensiile opționale vor fi dezactivate. Componentele necesare pentru layout "
+"vor rămâne activate. Poți reactiva extensiile opționale una câte una."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Extensii opționale dezactivate"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Restaurează valorile implicite ale efectului"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Resetează materialul și opțiunile de economisire a energiei."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Valorile implicite ale efectului au fost restaurate"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Mouse și touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Lipire cu clic de mijloc"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Lipește textul selectat cu butonul din mijloc al mouse-ului sau o atingere "
+"cu trei degete"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Activează ferestrele la survolare"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Focalizează fereastra de sub cursor fără clic"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Atașează dialogurile la fereastra lor"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr ""
+"Dialogurile rămân deasupra ferestrei care le-a deschis și se mută odată cu ea"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Tastă pentru mutarea ferestrelor"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr ""
+"Țineți-o apăsată și trageți orice parte a unei ferestre pentru a o muta"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Redimensionare cu butonul drept"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Cu tasta apăsată, trageți cu butonul drept pentru a redimensiona"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Bară de titlu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Dublu clic"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Clic de mijloc"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Clic dreapta"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maximizează"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Maximizează lățimea"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Maximizează înălțimea"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimizează"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Trimite în spate"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Arată meniul ferestrei"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Nu face nimic"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Separă aplicațiile pe monitoare"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "Fiecare dock arată doar aplicațiile deschise pe propriul monitor"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Aplicațiile dock-ului pe monitor au fost actualizate"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Niciun efect vizual disponibil"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Această versiune de GNOME nu acceptă Sticlă mată."

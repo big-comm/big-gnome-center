@@ -9,6 +9,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import {ConnectionManager} from './connectionManager.js';
 import {OverviewMaterialStylesheet} from './overviewMaterial.js';
+import {overscanWallpapers} from './wallpaperOverscan.js';
 
 const EFFECT_NAME = 'communitybig-frosted-glass-overview';
 const STYLE_CLASS = 'frosted-glass-overview';
@@ -71,6 +72,7 @@ export class OverviewController {
             });
             const effect = new Shell.BlurEffect({mode: Shell.BlurMode.ACTOR});
             actor.add_effect_with_name(EFFECT_NAME, effect);
+            overscanWallpapers(actor);
             const manager = new Background.BackgroundManager({
                 container: actor,
                 monitorIndex: monitor.index,

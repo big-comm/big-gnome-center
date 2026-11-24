@@ -122,7 +122,8 @@ class TestSettings:
         self.settings_file.write_text(json.dumps(value))
         s.set("intro_shown", True)
         assert json.loads(self.settings_file.read_text()) == {
-            "layout": "biggnome", "intro_shown": True,
+            "layout": "biggnome",
+            "intro_shown": True,
         }
 
     def test_unwritable_config_directory(self):

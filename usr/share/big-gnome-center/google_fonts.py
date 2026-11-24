@@ -372,12 +372,10 @@ def _rename_family(source: Path, destination: Path, *, exchange: bool) -> None:
     rename = getattr(libc, "renameat2", None)
     if rename is None:
         raise OSError(errno.ENOSYS, "Atomic font publication is unavailable")
-    rename.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
-                       ctypes.c_char_p, ctypes.c_uint]
+    rename.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
     rename.restype = ctypes.c_int
     # AT_FDCWD; RENAME_EXCHANGE or RENAME_NOREPLACE. Never fall back to removal.
-    if rename(-100, os.fsencode(source), -100, os.fsencode(destination),
-              2 if exchange else 1):
+    if rename(-100, os.fsencode(source), -100, os.fsencode(destination), 2 if exchange else 1):
         code = ctypes.get_errno()
         raise OSError(code, os.strerror(code), str(destination))
 

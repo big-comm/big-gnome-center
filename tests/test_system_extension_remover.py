@@ -81,7 +81,9 @@ def test_removal_policy_retains_only_active_admin_authorization():
 def test_privileged_helper_requires_exactly_one_uuid(monkeypatch, args):
     monkeypatch.setattr(os, "geteuid", lambda: 0)
     monkeypatch.setattr(
-        system_extension_remover, "remove_extension", lambda uuid: pytest.fail(uuid),
+        system_extension_remover,
+        "remove_extension",
+        lambda uuid: pytest.fail(uuid),
     )
     assert system_extension_remover.main(args) == 64
 
@@ -89,7 +91,9 @@ def test_privileged_helper_requires_exactly_one_uuid(monkeypatch, args):
 def test_privileged_helper_requires_root(monkeypatch):
     monkeypatch.setattr(os, "geteuid", lambda: 1000)
     monkeypatch.setattr(
-        system_extension_remover, "remove_extension", lambda uuid: pytest.fail(uuid),
+        system_extension_remover,
+        "remove_extension",
+        lambda uuid: pytest.fail(uuid),
     )
     assert system_extension_remover.main(["example@test.org"]) == 77
 
@@ -104,6 +108,6 @@ def test_package_replaces_previous_layout_switcher_names():
     pkgbuild = (ROOT / "pkgbuild/PKGBUILD").read_text(encoding="utf-8")
 
     assert "pkgname=big-gnome-center" in pkgbuild
-    assert "conflicts=('layout-switcher' 'gnome-layout-switcher')" in pkgbuild
+    assert "conflicts=('layout-switcher' 'gnome-layout-switcher' 'bigstyle')" in pkgbuild
     assert "provides=('layout-switcher' 'gnome-layout-switcher')" in pkgbuild
     assert "replaces=('layout-switcher' 'gnome-layout-switcher')" in pkgbuild

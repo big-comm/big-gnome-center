@@ -38,8 +38,11 @@ def values(text):
     parser = configparser.RawConfigParser(strict=False, delimiters=("=",))
     parser.optionxform = str
     parser.read_string(text)
-    return {f"/{section}/{key}": value
-            for section in parser.sections() for key, value in parser.items(section)}
+    return {
+        f"/{section}/{key}": value
+        for section in parser.sections()
+        for key, value in parser.items(section)
+    }
 
 
 @pytest.fixture
@@ -106,8 +109,8 @@ def test_failed_phase_restores_values_before_abort(session, monkeypatch, raises)
         return result
 
     expected = {**OLD, "/org/example/untouched": "'external update'"}
-    mocks["abort_switch"].side_effect = lambda: state == expected or pytest.fail(
-        "Extensions resumed before settings recovery"
+    mocks["abort_switch"].side_effect = lambda: (
+        state == expected or pytest.fail("Extensions resumed before settings recovery")
     )
     monkeypatch.setattr(module, "run_cmd", fail)
     ok, message = module.LayoutApplier._apply_via_helper_v7(TARGET)
@@ -166,11 +169,7 @@ def test_recovery_failure_is_reported_and_abort_still_attempted(
                 raise OSError("recovery unavailable")
             return False, "recovery unavailable"
         result = run(argv, **kwargs)
-        if (
-            len(argv) > 1
-            and argv[1].endswith("dconf_batch.py")
-            and not loading_failed
-        ):
+        if len(argv) > 1 and argv[1].endswith("dconf_batch.py") and not loading_failed:
             loading_failed = True
             return False, "original load failed"
         return result
@@ -220,12 +219,14 @@ def test_helper_failure_leaves_persistence_to_caller(session, monkeypatch, point
     if point in {"begin", "complete"}:
         mocks[point + "_switch"].return_value = False, "failed"
     else:
+
         def fail(argv, **kwargs):
             if point == "delta" and len(argv) > 1 and argv[1].endswith("dconf_batch.py"):
                 return False, "failed"
             if argv[:2] == ["dconf", point]:
                 return False, "failed"
             return run(argv, **kwargs)
+
         monkeypatch.setattr(module, "run_cmd", fail)
     ok, message = module.LayoutApplier._apply_via_helper_v7(TARGET)
     assert not ok

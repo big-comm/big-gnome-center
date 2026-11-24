@@ -39,10 +39,15 @@ def _data_home() -> Path:
 
 def icon_roots() -> list[Path]:
     dirs = (os.environ.get("XDG_DATA_DIRS") or "/usr/local/share:/usr/share").split(":")
-    return list(dict.fromkeys([
-        Path.home() / ".icons", _data_home() / "icons",
-        *[Path(d) / "icons" for d in dirs if Path(d).is_absolute()],
-    ]))
+    return list(
+        dict.fromkeys(
+            [
+                Path.home() / ".icons",
+                _data_home() / "icons",
+                *[Path(d) / "icons" for d in dirs if Path(d).is_absolute()],
+            ]
+        )
+    )
 
 
 def _read_regular(path, limit=MAX_FILE_BYTES, *, dir_fd=None, nofollow=False) -> bytes:
@@ -92,8 +97,7 @@ def _publish_directory(source: Path, target: Path) -> None:
     rename = getattr(libc, "renameat2", None)
     if rename is None:
         raise OSError(errno.ENOSYS, "Atomic icon theme publication is unavailable")
-    rename.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
-                       ctypes.c_char_p, ctypes.c_uint]
+    rename.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
     rename.restype = ctypes.c_int
     if rename(-100, os.fsencode(source), -100, os.fsencode(target), 1):
         code = ctypes.get_errno()

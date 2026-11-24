@@ -7,7 +7,7 @@ msgstr ""
 "PO-Revision-Date: 2026-08-20 22:26-0300\n"
 "Last-Translator: Translation Automator <auto@translator.ai>\n"
 "Language-Team: Norwegian <no@li.org>\n"
-"Language: no\n"
+"Language: nb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -662,6 +662,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Beholder en søkbar historikk over kopiert innhold."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Deler utklippstavlen mellom denne datamaskinen og telefonen din."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "Viser flyttbare enheter og lar deg løse dem ut på en trygg måte."
 
@@ -1309,7 +1313,7 @@ msgstr "Ikoner"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Markører"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1354,25 +1358,25 @@ msgstr "Aktiv"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Legg til et oppstartsprogram"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Søk etter programmer"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Oppstartsprogrammer"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Oppstartsprogrammer startes automatisk når du logger inn."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Ingen oppstartsprogrammer"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2149,8 +2153,8 @@ msgstr "Tekstbehandling"
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
 msgstr ""
-"Det egendefinerte bildet beholdes til du bruker et motiv eller gjenoppretter"
-" standardikonet."
+"Det egendefinerte bildet beholdes til du bruker et motiv eller gjenoppretter "
+"standardikonet."
 
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
@@ -2163,7 +2167,8 @@ msgstr "Følg systemets aksentfarge"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Tilpass pekeren til systemets aksentfarge og lyse eller mørke utseende."
+msgstr ""
+"Tilpass pekeren til systemets aksentfarge og lyse eller mørke utseende."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2172,3 +2177,156 @@ msgstr "Dokkens plassering"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Nederst"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Slå av valgfrie utvidelser"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Slå av valgfrie utvidelser?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Valgfrie utvidelser blir slått av. Nødvendige komponenter i oppsettet "
+"forblir på. Du kan slå på valgfrie utvidelser igjen én om gangen."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Valgfrie utvidelser er slått av"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Gjenopprett standardverdier for effekten"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Tilbakestiller materialet og valgene for strømsparing."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Standardverdier for effekten er gjenopprettet"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Mus og styreflate"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Lim inn med midtklikk"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Limer inn den markerte teksten med den midtre museknappen eller et trykk med "
+"tre fingre"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Aktiver vinduer ved pekerhold"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Gir fokus til vinduet under pekeren uten å klikke"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Fest dialoger til vinduet sitt"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr ""
+"Dialoger blir liggende over vinduet som åpnet dem og flytter seg med det"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Tast for å flytte vinduer"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr ""
+"Hold den nede og dra i en hvilken som helst del av et vindu for å flytte det"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Endre størrelse med høyre knapp"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Hold tasten nede og dra med høyre knapp for å endre størrelse"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Tittellinje"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Dobbeltklikk"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Midtklikk"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Høyreklikk"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maksimer"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Maksimer bredde"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Maksimer høyde"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimer"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Send bakover"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Vis vindusmeny"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Ikke gjør noe"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Skill apper etter skjerm"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "Hver dokk viser bare appene som er åpne på sin egen skjerm"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Dokkens apper per skjerm oppdatert"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Ingen visuelle effekter tilgjengelig"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Denne GNOME-versjonen støtter ikke Frosted Glass."

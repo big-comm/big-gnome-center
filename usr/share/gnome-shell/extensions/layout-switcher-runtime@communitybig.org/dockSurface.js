@@ -1789,6 +1789,10 @@ export class DockSurfaceManager {
             this._toggle.bind(this),
         ], [
             this._settings,
+            'changed::isolate-monitors',
+            this._toggle.bind(this),
+        ], [
+            this._settings,
             'changed::preferred-monitor',
             this._toggle.bind(this),
         ], [

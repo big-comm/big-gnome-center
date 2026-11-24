@@ -19,11 +19,19 @@ def page(monkeypatch):
     monkeypatch.setattr(module.LayoutApplier, "last_apply_cleanroom", True)
     root = SimpleNamespace(_toast_overlay=Mock())
     page = SimpleNamespace(
-        _active_layout="BigGnome", get_root=lambda: root,
-        _layout_id=lambda cfg: Path(cfg).stem, _icon_path_for=lambda name: None,
-        _toast=Mock(), _set_status=Mock(), rebuild_grid=Mock(),
-        _save_current_snapshot=Mock(), _apply=Mock(), _undo_layout=Mock(),
-        _prefs=Mock(last_error=""), _pool=Mock(), _done=Mock(),
+        _active_layout="BigGnome",
+        get_root=lambda: root,
+        _layout_id=lambda cfg: Path(cfg).stem,
+        _icon_path_for=lambda name: None,
+        _toast=Mock(),
+        _set_status=Mock(),
+        rebuild_grid=Mock(),
+        _save_current_snapshot=Mock(),
+        _apply=Mock(),
+        _undo_layout=Mock(),
+        _prefs=Mock(last_error=""),
+        _pool=Mock(),
+        _done=Mock(),
     )
     page._prefs.set.return_value = True
     return page
@@ -75,7 +83,9 @@ def test_confirmation_passes_its_backup_and_preserves_snapshot_policy(
     monkeypatch.setattr(module.BackupManager, "create", lambda: (True, str(backup)))
     respond(page, response)
     page._apply.assert_called_once_with(
-        "Desk UX", "desk-ux.txt", use_snapshot=response == "Resume my changes",
+        "Desk UX",
+        "desk-ux.txt",
+        use_snapshot=response == "Resume my changes",
         backup_path=backup,
     )
     assert page._save_current_snapshot.call_count == (0 if reapply else 1)
@@ -87,10 +97,12 @@ def test_worker_retains_operation_backup(page, monkeypatch, tmp_path, snapshot, 
     backup = tmp_path / "own.dconf"
     page._pool.submit.side_effect = lambda task: task()
     monkeypatch.setattr(module.GLib, "idle_add", lambda callback, *args: callback(*args))
-    monkeypatch.setattr(module, "find_file",
-                        lambda *args: None if outcome == "missing" else tmp_path)
-    monkeypatch.setattr(module.SnapshotManager, "read",
-                        lambda layout: "" if outcome == "missing" else "snapshot")
+    monkeypatch.setattr(
+        module, "find_file", lambda *args: None if outcome == "missing" else tmp_path
+    )
+    monkeypatch.setattr(
+        module.SnapshotManager, "read", lambda layout: "" if outcome == "missing" else "snapshot"
+    )
     monkeypatch.setattr(module.LayoutApplier, "_enabled_extensions", lambda: [])
     backend = Mock(return_value=(outcome == "success", "result"))
     if outcome == "exception":

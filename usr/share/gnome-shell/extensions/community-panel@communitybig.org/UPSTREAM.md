@@ -50,6 +50,10 @@ Local runtime changes:
   through current clean-install validation and one testing-repository cycle.
 - The unified runtime now owns per-layout login Overview policy. The dormant
   Taskbar renderer no longer controls startup Overview state.
+- The 13 renderer modules kept here as rollback copies are removed: no entry
+  point loaded them, `extension.js` included, and they had drifted from the
+  runtime's `taskbar/` modules. This directory keeps `extension.js`, the
+  schema, images, stylesheet, translations and license.
 - Build 79 internalizes the v73 compiled gettext catalogs and binds them before
   the runtime constructs Taskbar actors.
 

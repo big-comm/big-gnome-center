@@ -7,6 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PANEL = ROOT / "usr/share/gnome-shell/extensions/community-panel@communitybig.org"
+TASKBAR = ROOT / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/taskbar"
 LAYOUTS = ROOT / "usr/share/big-gnome-center/layouts"
 
 
@@ -25,32 +26,21 @@ def test_community_panel_has_distinct_identity_and_shell_support():
     assert metadata["fork-version"] == 1
 
 
-def test_community_panel_pins_the_reviewed_dash_to_panel_73_core():
-    expected = {
-        "panel.js": "55acb37af5480ca127cdf7121667a9afee0995addfe8422901add742cd9160ae",
-        "panelManager.js": "62d5ee247ded77568b634758adc2958e685015a9660d3da84187665670af07c5",
-        "taskbar.js": "3b70a094b701291c2b6360d0105e8801610fe841c2120076e94fd1d5091fe427",
-        "windowPreview.js": "0b61a11adad74464800bc63cefd2846faddb4bb969096a6dd99f2df1f4f92fb7",
-        "stylesheet.css": "be6dbf8d2d8247a29200a7c8279e647018dfe501b713ec3e3c32a8204d512165",
-    }
+def test_community_panel_pins_reviewed_stylesheet():
+    digest = "be6dbf8d2d8247a29200a7c8279e647018dfe501b713ec3e3c32a8204d512165"
 
-    for name, digest in expected.items():
-        payload = (PANEL / name).read_bytes().replace(
-            b"./runtimeContext.js",
-            b"./extension.js",
-        )
-        assert hashlib.sha256(payload).hexdigest() == digest
+    assert hashlib.sha256((PANEL / "stylesheet.css").read_bytes()).hexdigest() == digest
 
 
-def test_community_panel_matches_desk_ux_indicator_geometry():
-    source = (PANEL / "appIcons.js").read_text()
+def test_indicator_matches_dock_geometry():
+    source = (TASKBAR / "appIcons.js").read_text()
 
     assert "Keep custom indicator geometry aligned with Community Dock." in source
     assert "communityStyle == 'hybrid' ? 18 : isFocused ? 18 : 8" in source
 
 
-def test_community_panel_keeps_hybrid_indicator_at_fixed_length():
-    source = (PANEL / "appIcons.js").read_text()
+def test_hybrid_indicator_keeps_fixed_length():
+    source = (TASKBAR / "appIcons.js").read_text()
 
     assert "DOT_STYLE.SEGMENTED" in source
     assert "_getCommunityIndicatorStyle()" in source
@@ -65,21 +55,19 @@ def test_community_panel_keeps_hybrid_indicator_at_fixed_length():
     assert "area.set_pivot_point(0.5, 0.5)" in source
 
 
-def test_runtime_indicator_suppresses_legacy_grouped_window_edge():
-    source = (PANEL / "appIcons.js").read_text()
-    stacked = source[source.index("let bgSvg = '/img/highlight_stacked_bg'") - 260:]
+def test_indicator_hides_grouped_window_edge():
+    source = (TASKBAR / "appIcons.js").read_text()
+    stacked = source[source.index("let bgSvg = '/img/highlight_stacked_bg'") - 260 :]
 
     assert "!this._getCommunityIndicatorStyle()" in stacked
     assert "this._nWindows > 1" in stacked
 
 
-def test_intellihide_restores_actor_before_enabling_panel_strut():
-    source = (PANEL / "intellihide.js").read_text()
-    disable = source[source.index("  disable(reset) {"):source.index("  destroy() {")]
+def test_intellihide_reveals_before_strut():
+    source = (TASKBAR / "intellihide.js").read_text()
+    disable = source[source.index("  disable(reset) {") : source.index("  destroy() {")]
 
-    assert disable.index("this._revealPanel(!reset)") < disable.index(
-        "this._setTrackPanel(false)"
-    )
+    assert disable.index("this._revealPanel(!reset)") < disable.index("this._setTrackPanel(false)")
 
 
 def test_community_panel_preserves_license_provenance_schema_and_translations():
@@ -93,17 +81,17 @@ def test_community_panel_preserves_license_provenance_schema_and_translations():
     assert (PANEL / "locale/pt_BR/LC_MESSAGES/dash-to-panel.mo").is_file()
 
 
-def test_community_panel_runtime_does_not_require_an_active_extension_record():
-    i18n = (PANEL / "i18n.js").read_text()
+def test_renderer_binds_its_own_translations():
+    i18n = (TASKBAR / "i18n.js").read_text()
 
     assert "Gettext.domain('dash-to-panel')" in i18n
     for name in ("appIcons.js", "panel.js", "windowPreview.js"):
-        source = (PANEL / name).read_text()
+        source = (TASKBAR / name).read_text()
         assert "gettext as _ } from './i18n.js'" in source or (
             name == "appIcons.js" and "gettext as _, ngettext } from './i18n.js'" in source
         )
         assert "gettext as _" not in source.split("./i18n.js", 1)[-1]
-    assert not (PANEL / "desktopIconsIntegration.js").exists()
+    assert not (TASKBAR / "desktopIconsIntegration.js").exists()
 
 
 def test_taskbar_layouts_use_only_unified_runtime():
@@ -179,8 +167,8 @@ def test_desk_ux_offers_the_gentle_hover_lift_without_enabling_it_by_default():
         assert setting in panel
 
 
-def test_desk_ux_unfocused_indicator_is_neutral_gray():
-    app_icons = (PANEL / "appIcons.js").read_text()
+def test_unfocused_indicator_is_neutral_gray():
+    app_icons = (TASKBAR / "appIcons.js").read_text()
 
     color_method = app_icons.split("    _getRunningIndicatorColor(isFocused) {", 1)[1]
     color_method = color_method.split("    _getFocusHighlightColor() {", 1)[0]
@@ -193,8 +181,7 @@ def test_desk_ux_unfocused_indicator_is_neutral_gray():
 
 def test_panel_style_is_owned_by_runtime():
     integration = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/"
         "taskbarStatusFullscreenIntegration.js"
     ).read_text()
@@ -204,8 +191,8 @@ def test_panel_style_is_owned_by_runtime():
     assert "_restoreStyle(actor, refresh)" in integration
 
 
-def test_community_panel_context_menu_has_no_runtime_configuration():
-    app_icons = (PANEL / "appIcons.js").read_text()
+def test_context_menu_omits_panel_settings():
+    app_icons = (TASKBAR / "appIcons.js").read_text()
 
     assert "Dash to Panel Settings" not in app_icons
     assert "DTP_EXTENSION.openPreferences()" not in app_icons
@@ -215,7 +202,7 @@ def test_community_panel_context_menu_has_no_runtime_configuration():
 
 def test_community_panel_has_no_independent_preferences_ui():
     extension = (PANEL / "extension.js").read_text()
-    panel_settings = (PANEL / "panelSettings.js").read_text()
+    panel_settings = (TASKBAR / "panelSettings.js").read_text()
 
     assert not (PANEL / "prefs.js").exists()
     assert not any((PANEL / "ui").glob("*"))

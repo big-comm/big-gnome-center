@@ -287,7 +287,8 @@ class ExtDetailView(Adw.NavigationPage):
             link.connect(
                 "clicked",
                 lambda b: launch_uri(
-                    f"{EGO_BASE_URL}/extension/{self._pk}/", self._launch_error,
+                    f"{EGO_BASE_URL}/extension/{self._pk}/",
+                    self._launch_error,
                 ),
             )
             box.append(link)
@@ -417,7 +418,7 @@ class ExtDetailView(Adw.NavigationPage):
                 if mode == "update":
                     ok, msg = ExtMgr.update(uuid, pk)
                 else:
-                    ok, msg = ExtMgr.install(uuid, pk, "")
+                    ok, msg = ExtMgr.install(uuid, pk)
                     if ok:
                         ExtMgr.enable_after_install(uuid)
                 GLib.idle_add(self._on_action_done, ok, msg, mode)

@@ -96,15 +96,15 @@ def test_desktop_entry_overview_check_requires_a_closed_overview():
         )
 
     for layout in ("Hybrid", "Desk UX", "Classic"):
-        assert runtime_baseline._desktop_entry_overview_check(
-            snapshot(False, False), layout
-        ).status == "PASS"
-        assert runtime_baseline._desktop_entry_overview_check(
-            snapshot(True, True), layout
-        ).status == "FAIL"
-    assert runtime_baseline._desktop_entry_overview_check(
-        snapshot(True, True), "BigGnome"
-    ) is None
+        assert (
+            runtime_baseline._desktop_entry_overview_check(snapshot(False, False), layout).status
+            == "PASS"
+        )
+        assert (
+            runtime_baseline._desktop_entry_overview_check(snapshot(True, True), layout).status
+            == "FAIL"
+        )
+    assert runtime_baseline._desktop_entry_overview_check(snapshot(True, True), "BigGnome") is None
 
 
 def test_transition_run_reuses_the_previous_verified_target(monkeypatch, tmp_path):

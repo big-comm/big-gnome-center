@@ -11,9 +11,35 @@ from runtime_settings import LAYOUT_DEFAULTS, RuntimeSettings
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_LOCALES = (
-    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he",
-    "hr", "hu", "is", "it", "ja", "ko", "nl", "no", "pl", "pt_BR", "pt",
-    "ro", "ru", "sk", "sv", "tr", "uk", "zh",
+    "bg",
+    "cs",
+    "da",
+    "de",
+    "el",
+    "en",
+    "es",
+    "et",
+    "fi",
+    "fr",
+    "he",
+    "hr",
+    "hu",
+    "is",
+    "it",
+    "ja",
+    "ko",
+    "nb",
+    "nl",
+    "pl",
+    "pt_BR",
+    "pt",
+    "ro",
+    "ru",
+    "sk",
+    "sv",
+    "tr",
+    "uk",
+    "zh",
 )
 
 
@@ -165,6 +191,8 @@ def settings_fixture():
             "autohide": True,
             "running-indicator-style": 0,
             "dash-max-icon-size": 39,
+            "multi-monitor": True,
+            "isolate-monitors": False,
         }
     )
     settings.panel = FakeSettings(
@@ -476,6 +504,33 @@ def test_restore_uses_each_layout_indicator_contract(
     assert (layout, "indicator-style") not in settings.runtime.values
 
 
+def test_dock_monitor_isolation_writes_the_dock_key_and_restores_off():
+    settings = settings_fixture()
+    settings.active_layout = "BigGnome"
+    assert settings.dock_on_every_monitor() is True
+    assert settings.dock_isolates_monitors() is False
+
+    settings.set_dock_isolates_monitors(True)
+    assert settings.dock.values["isolate-monitors"] is True
+
+    settings.restore_layout_defaults()
+    assert settings.dock.values["isolate-monitors"] is False
+
+
+def test_dock_filters_windows_and_running_apps_by_monitor():
+    runtime = ROOT / "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org"
+    icons = (runtime / "dock/appIcons.js").read_text()
+    dash = (runtime / "dock/dash.js").read_text()
+    surface = (runtime / "dockSurface.js").read_text()
+    assert "(!isolated || w.get_monitor() === monitorIndex)" in icons
+    assert "settings?.isolateMonitors && settings.multiMonitor" in icons
+    assert icons.count("'window-entered-monitor'") == 1
+    assert icons.count("'window-left-monitor'") == 1
+    assert "running = running.filter(app => AppIcons.getInterestingWindows(" in dash
+    assert "'window-left-monitor'" in dash
+    assert "'changed::isolate-monitors'" in surface
+
+
 def test_classic_restore_does_not_reenable_running_indicators():
     settings = settings_fixture()
     settings.active_layout = "Classic"
@@ -490,8 +545,7 @@ def test_classic_restore_does_not_reenable_running_indicators():
 
 def test_runtime_schema_declares_typed_per_layout_overrides():
     schema = (
-        ROOT
-        / "usr/share/glib-2.0/schemas/org.communitybig.layout-switcher.runtime.gschema.xml"
+        ROOT / "usr/share/glib-2.0/schemas/org.communitybig.layout-switcher.runtime.gschema.xml"
     ).read_text()
 
     assert 'id="org.communitybig.layout-switcher.runtime"' in schema
@@ -553,10 +607,16 @@ def test_dock_hover_effect_is_validated_and_mirrored_per_layout():
     assert settings.runtime.values[("G-Unity", "dock-hover")] == "lift"
 
 
-@pytest.mark.parametrize("layout,position", [
-    ("BigGnome", "bottom"), ("BigGnome", "left"), ("BigGnome", "right"),
-    ("G-Unity", "left"), ("G-Unity", "right"),
-])
+@pytest.mark.parametrize(
+    "layout,position",
+    [
+        ("BigGnome", "bottom"),
+        ("BigGnome", "left"),
+        ("BigGnome", "right"),
+        ("G-Unity", "left"),
+        ("G-Unity", "right"),
+    ],
+)
 def test_dock_position_is_owned_per_layout(layout, position):
     settings = settings_fixture()
     settings.runtime_active = True
@@ -567,9 +627,14 @@ def test_dock_position_is_owned_per_layout(layout, position):
     assert not settings.dock.calls
 
 
-@pytest.mark.parametrize("layout,position", [
-    ("BigGnome", "top"), ("G-Unity", "bottom"), ("Hybrid", "right"),
-])
+@pytest.mark.parametrize(
+    "layout,position",
+    [
+        ("BigGnome", "top"),
+        ("G-Unity", "bottom"),
+        ("Hybrid", "right"),
+    ],
+)
 def test_dock_position_rejects_unsupported_edges(layout, position):
     settings = settings_fixture()
     settings.runtime_active = True
@@ -584,9 +649,10 @@ def test_original_position_reset_preserves_other_layout():
     runtime = RuntimeSettings(backend)
     runtime.set("BigGnome", "dock-position", "left")
     runtime.set("G-Unity", "dock-position", "right")
-    assert "'BigGnome'" not in runtime.serialized_overrides_without_layout(
-        "BigGnome"
-    )["dock-position-overrides"]
+    assert (
+        "'BigGnome'"
+        not in runtime.serialized_overrides_without_layout("BigGnome")["dock-position-overrides"]
+    )
     runtime.reset_layout("BigGnome")
     assert runtime.get("BigGnome", "dock-position") == "bottom"
     assert runtime.get("G-Unity", "dock-position") == "right"
@@ -667,21 +733,12 @@ def test_taskbar_hover_effect_uses_the_same_curated_lift_profile():
     assert settings.community_panel.values["animate-appicon-hover"] is True
     assert settings.community_panel.values["animate-appicon-hover-animation-type"] == "SIMPLE"
     assert (
-        settings.community_panel.values["animate-appicon-hover-animation-duration"][
-            "SIMPLE"
-        ]
-        == 220
+        settings.community_panel.values["animate-appicon-hover-animation-duration"]["SIMPLE"] == 220
     )
     assert (
-        settings.community_panel.values["animate-appicon-hover-animation-travel"][
-            "SIMPLE"
-        ]
-        == 0.08
+        settings.community_panel.values["animate-appicon-hover-animation-travel"]["SIMPLE"] == 0.08
     )
-    assert (
-        settings.community_panel.values["animate-appicon-hover-animation-zoom"]["SIMPLE"]
-        == 1.08
-    )
+    assert settings.community_panel.values["animate-appicon-hover-animation-zoom"]["SIMPLE"] == 1.08
     assert settings.runtime.values[("Desk UX", "dock-hover")] == "lift"
 
 
@@ -1017,14 +1074,12 @@ def test_magnification_ui_is_translated_for_all_app_locales():
 
 def test_runtime_leaves_dock_fullscreen_tracking_to_native_engine():
     controller = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/dockPanelController.js"
     ).read_text()
 
     native_dock = (
-        ROOT
-        / "usr/share/gnome-shell/extensions/"
+        ROOT / "usr/share/gnome-shell/extensions/"
         "layout-switcher-runtime@communitybig.org/dockSurface.js"
     ).read_text()
 

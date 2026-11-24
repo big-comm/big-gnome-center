@@ -662,6 +662,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "コピーしたコンテンツの検索可能な履歴を保持します。"
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "このコンピューターとスマートフォンの間でクリップボードを共有します。"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "リムーバブルデバイスを表示し、安全に取り外せるようにします。"
 
@@ -1309,7 +1313,7 @@ msgstr "アイコン"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "カーソル"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1354,25 +1358,25 @@ msgstr "有効"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "自動起動アプリケーションを追加"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "アプリケーションを検索"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "自動起動アプリケーション"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "自動起動アプリケーションは、ログイン時に自動的に起動します。"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "自動起動アプリケーションはありません"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -1946,7 +1950,9 @@ msgstr "カメラ"
 
 #: usr/share/big-gnome-center/folder_icon_picker.py:46
 msgid "Choose a design. The folder color follows your system theme."
-msgstr "デザインを選択してください。フォルダーの色はシステムのテーマに合わせて変わります。"
+msgstr ""
+"デザインを選択してください。フォルダーの色はシステムのテーマに合わせて変わり"
+"ます。"
 
 #: usr/share/nautilus-python/extensions/big_gnome_center_folder_icons.py:30
 msgid "Choose a folder design that follows the theme color"
@@ -2101,7 +2107,9 @@ msgstr "フォルダーアイコンを検索"
 
 #: usr/share/big-gnome-center/folder_icon_picker.py:116
 msgid "Select the BigIcons Papient icon theme to choose a design."
-msgstr "デザインを選択するには、アイコンテーマを BigIcons Papient に設定してください。"
+msgstr ""
+"デザインを選択するには、アイコンテーマを BigIcons Papient に設定してくださ"
+"い。"
 
 #: usr/share/big-gnome-center/folder_icons.py:62
 msgid "Synchronization"
@@ -2122,7 +2130,9 @@ msgstr "テキスト"
 
 #: usr/share/big-gnome-center/folder_icons.py:189
 msgid "The folder icon changed. Close this window and try again."
-msgstr "フォルダーアイコンが変更されました。このウィンドウを閉じて、もう一度お試しください。"
+msgstr ""
+"フォルダーアイコンが変更されました。このウィンドウを閉じて、もう一度お試しく"
+"ださい。"
 
 #: usr/share/big-gnome-center/folder_icons.py:68
 msgid "Unlocked"
@@ -2153,7 +2163,9 @@ msgstr "カスタム画像は、デザインを適用するか標準に戻すま
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "カーソルの色を合わせるには、big-bibata-cursor-theme をインストールしてください。"
+msgstr ""
+"カーソルの色を合わせるには、big-bibata-cursor-theme をインストールしてくださ"
+"い。"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2161,7 +2173,8 @@ msgstr "システムのアクセントカラーに合わせる"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "カーソルをシステムのアクセントカラーとライト／ダークの外観に合わせます。"
+msgstr ""
+"カーソルをシステムのアクセントカラーとライト／ダークの外観に合わせます。"
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2170,3 +2183,152 @@ msgstr "ドックの位置"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "下"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "任意の拡張機能を無効化"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "任意の拡張機能を無効にしますか？"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"任意の拡張機能が無効になります。レイアウトに必要なコンポーネントは有効のまま"
+"です。任意の拡張機能は個別に再度有効にできます。"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "任意の拡張機能を無効にしました"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "エフェクトの既定値に戻す"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "マテリアルと省電力のオプションをリセットします。"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "エフェクトの既定値に戻しました"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "マウスとタッチパッド"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "中クリックで貼り付け"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "選択したテキストをマウスの中ボタンまたは3本指タップで貼り付けます"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "ポインターを重ねてウィンドウをアクティブにする"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "クリックせずにポインターの下のウィンドウにフォーカスします"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "ダイアログを元のウィンドウに結合する"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "ダイアログは開いたウィンドウの上に留まり、一緒に移動します"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "ウィンドウを移動するキー"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "押したままウィンドウの任意の部分をドラッグすると移動できます"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "右ボタンでサイズ変更"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "そのキーを押したまま右ボタンでドラッグするとサイズを変更できます"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "タイトルバー"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "ダブルクリック"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "中クリック"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "右クリック"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "最大化"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "幅を最大化"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "高さを最大化"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "最小化"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "背面に送る"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "ウィンドウメニューを表示"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "何もしない"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "モニターごとにアプリを分ける"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "各ドックには、そのモニターで開いているアプリだけが表示されます"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "モニターごとのドックアプリを更新しました"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "利用できる視覚効果はありません"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "このバージョンの GNOME は、すりガラス効果に対応していません。"

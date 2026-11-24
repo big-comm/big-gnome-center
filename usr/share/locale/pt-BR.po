@@ -662,6 +662,11 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Mantém um histórico pesquisável do conteúdo copiado."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr ""
+"Compartilha a área de transferência entre este computador e o seu celular."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "Exibe dispositivos removíveis e permite ejetá-los com segurança."
 
@@ -1650,8 +1655,8 @@ msgid ""
 "Apply this layout? A backup of your current configuration will be created "
 "automatically."
 msgstr ""
-"Altura do painelAplicar este layout? Um backup da sua configuração atual "
-"será criado automaticamente."
+"Aplicar este layout? Um backup da sua configuração atual será criado "
+"automaticamente."
 
 #: usr/share/big-gnome-center/ui/page_layouts.py:298
 msgid "Apply"
@@ -2167,7 +2172,9 @@ msgstr "Seguir a cor de realce do sistema"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Combinar o cursor com a cor de realce e a aparência clara ou escura do sistema."
+msgstr ""
+"Combinar o cursor com a cor de realce e a aparência clara ou escura do "
+"sistema."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2186,8 +2193,13 @@ msgid "Disable optional extensions?"
 msgstr "Desativar extensões opcionais?"
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
-msgid "Optional extensions will be disabled. Required layout components will remain enabled. You can re-enable optional extensions individually."
-msgstr "As extensões opcionais serão desativadas. Os componentes obrigatórios dos layouts permanecerão ativos. Você pode reativar as extensões opcionais individualmente."
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"As extensões opcionais serão desativadas. Os componentes obrigatórios dos "
+"layouts permanecerão ativos. Você pode reativar as extensões opcionais "
+"individualmente."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py
 msgid "Optional extensions disabled"
@@ -2204,3 +2216,123 @@ msgstr "Redefine o material e as opções de economia de energia."
 #: usr/share/big-gnome-center/ui/frosted_glass.py
 msgid "Effect defaults restored"
 msgstr "Padrões dos efeitos restaurados"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Mouse e touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Colar com o botão do meio"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Cola o texto selecionado com o botão do meio do mouse ou um toque com três "
+"dedos"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Ativar janelas ao passar o mouse"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Coloca o foco na janela sob o ponteiro sem precisar clicar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Prender diálogos à janela"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "Os diálogos ficam sobre a janela que os abriu e se movem junto com ela"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Tecla para mover janelas"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "Segure-a e arraste qualquer parte de uma janela para movê-la"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Redimensionar com o botão direito"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr ""
+"Com essa tecla pressionada, arraste com o botão direito para redimensionar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Barra de título"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Duplo clique"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Clique do meio"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Clique direito"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maximizar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Maximizar largura"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Maximizar altura"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimizar"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Enviar para trás"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Mostrar menu da janela"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Não fazer nada"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Separar aplicativos por monitor"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "Cada dock mostra apenas os aplicativos abertos no próprio monitor"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Aplicativos da dock por monitor atualizados"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Nenhum efeito visual disponível"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Esta versão do GNOME não oferece suporte ao Vidro fosco."

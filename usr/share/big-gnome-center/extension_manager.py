@@ -36,7 +36,11 @@ _SYSTEM_EXTENSION_REMOVER = Path("/usr/bin/big-gnome-center-remove-extension")
 
 from app_launcher import launch_command, report_launch_error
 from constants import CONFIG_DIR, EXT_SYS_DIR, EXT_USER_DIR, tr
-from extension_policy import BUNDLED_EXTENSION_UUIDS, BUNDLED_REMOVAL_ERROR, REQUIRED_EXTENSION_UUIDS
+from extension_policy import (
+    BUNDLED_EXTENSION_UUIDS,
+    BUNDLED_REMOVAL_ERROR,
+    REQUIRED_EXTENSION_UUIDS,
+)
 from utils import dconf_read, dconf_write, gnome_shell_version, gsettings_get, run_cmd
 
 
@@ -217,8 +221,10 @@ class ExtMgr:
                 after = {key: [entry for entry in before[key] if entry != uuid] for key in keys}
                 selected = keys[0] if enable else keys[1]
                 # Preserve existing order when the target already occurs once.
-                after[selected] = before[selected] if before[selected].count(uuid) == 1 else (
-                    after[selected] + [uuid]
+                after[selected] = (
+                    before[selected]
+                    if before[selected].count(uuid) == 1
+                    else (after[selected] + [uuid])
                 )
                 changed = [key for key in keys if before[key] != after[key]]
                 if not changed:
@@ -281,39 +287,15 @@ class ExtMgr:
     # ── Instalar ──────────────────────────────────────────────────────────────
 
     @staticmethod
-    def install(uuid: str, ego_id: int, pkg: str) -> Tuple[bool, str]:
-        """Install a remote UUID through validation, or a named distro package."""
+    def install(uuid: str, ego_id: int) -> Tuple[bool, str]:
+        """Install a remote UUID through the validated download."""
         if not isinstance(uuid, str) or not _EXTENSION_UUID_RE.fullmatch(uuid):
             return False, "invalid extension UUID"
 
-        # The EGO download endpoint needs only the UUID. The CLI expects a local ZIP.
-        # Keep package-only entries independent of EGO availability.
-        if ego_id > 0 or not pkg:
-            ok, out = ExtMgr._install_from_ego(uuid, ego_id)
-            if ok:
-                return True, "ego-download"
-            if not pkg:
-                return False, out
-
-        # Never invoke a package manager with an empty package name.
-        if pkg:
-            for cmd in [
-                ["pkcon", "install", "-y", pkg],
-                ["apt-get", "install", "-y", pkg],
-                ["apt", "install", "-y", pkg],
-                ["dnf", "install", "-y", pkg],
-                ["pacman", "-S", "--noconfirm", pkg],
-                ["zypper", "install", "-y", pkg],
-            ]:
-                if shutil.which(cmd[0]):
-                    ok, out = run_cmd(cmd, timeout=180)
-                    if ok:
-                        schema_ok, schema_msg = ExtMgr._compile_user_schemas(uuid)
-                        if not schema_ok:
-                            return False, f"schema compile failed: {schema_msg}"
-                        return True, cmd[0]
-
-        return False, "no installation method succeeded"
+        ok, out = ExtMgr._install_from_ego(uuid, ego_id)
+        if ok:
+            return True, "ego-download"
+        return False, out
 
     @staticmethod
     def _install_from_ego(uuid: str, ego_id: int) -> Tuple[bool, str]:
@@ -422,7 +404,9 @@ class ExtMgr:
                         shutil.rmtree(previous)
                     except OSError as exc:
                         logging.getLogger("big-gnome-center").warning(
-                            "Cannot remove extension backup %s: %s", previous, exc,
+                            "Cannot remove extension backup %s: %s",
+                            previous,
+                            exc,
                         )
             return True, url
 
@@ -551,9 +535,18 @@ class ExtMgr:
         def open_dbus(detail=None):
             launch_command(
                 [
-                    "gdbus", "call", "--session", "--dest", DBUS_SHELL_NAME,
-                    "--object-path", DBUS_EXT_PATH,
-                    "--method", f"{DBUS_EXT_IFACE}.OpenExtensionPrefs", uuid, "", "{}",
+                    "gdbus",
+                    "call",
+                    "--session",
+                    "--dest",
+                    DBUS_SHELL_NAME,
+                    "--object-path",
+                    DBUS_EXT_PATH,
+                    "--method",
+                    f"{DBUS_EXT_IFACE}.OpenExtensionPrefs",
+                    uuid,
+                    "",
+                    "{}",
                 ],
                 on_error,
             )
@@ -570,7 +563,9 @@ class ExtMgr:
             if schema_dir.is_dir() and any(schema_dir.glob("*.gschema.xml")):
                 launch_command(
                     ["glib-compile-schemas", "--strict", str(schema_dir)],
-                    on_error, on_success=open_window, timeout=20,
+                    on_error,
+                    on_success=open_window,
+                    timeout=20,
                 )
                 return
         except OSError as exc:

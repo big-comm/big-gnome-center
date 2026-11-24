@@ -665,6 +665,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Čuva pretraživu povijest kopiranog sadržaja."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Dijeli međuspremnik između ovog računala i vašeg telefona."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "Prikazuje prijenosne uređaje i omogućuje njihovo sigurno izbacivanje."
 
@@ -1313,7 +1317,7 @@ msgstr "Ikone"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Pokazivači"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1358,25 +1362,26 @@ msgstr "Aktivno"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Dodaj aplikaciju za automatsko pokretanje"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Pretraži aplikacije"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Aplikacije za automatsko pokretanje"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
 msgstr ""
+"Aplikacije za automatsko pokretanje pokreću se automatski kada se prijavite."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Nema aplikacija za automatsko pokretanje"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2125,8 +2130,7 @@ msgstr "Tekst"
 
 #: usr/share/big-gnome-center/folder_icons.py:189
 msgid "The folder icon changed. Close this window and try again."
-msgstr ""
-"Ikona mape je promijenjena. Zatvorite ovaj prozor i pokušajte ponovno."
+msgstr "Ikona mape je promijenjena. Zatvorite ovaj prozor i pokušajte ponovno."
 
 #: usr/share/big-gnome-center/folder_icons.py:68
 msgid "Unlocked"
@@ -2153,13 +2157,14 @@ msgstr "Obrada teksta"
 msgid ""
 "Your custom image is kept until you apply a design or restore the default."
 msgstr ""
-"Vaša prilagođena slika ostaje sačuvana dok ne primijenite izgled ili vratite"
-" zadanu ikonu."
+"Vaša prilagođena slika ostaje sačuvana dok ne primijenite izgled ili vratite "
+"zadanu ikonu."
 
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Instalirajte big-bibata-cursor-theme za korištenje odgovarajućih pokazivača."
+msgstr ""
+"Instalirajte big-bibata-cursor-theme za korištenje odgovarajućih pokazivača."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2167,7 +2172,9 @@ msgstr "Prati naglašenu boju sustava"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Uskladite pokazivač s naglašenom bojom sustava i svijetlim ili tamnim izgledom."
+msgstr ""
+"Uskladite pokazivač s naglašenom bojom sustava i svijetlim ili tamnim "
+"izgledom."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2176,3 +2183,152 @@ msgstr "Položaj docka"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Dolje"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Onemogući neobavezne ekstenzije"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Onemogućiti neobavezne ekstenzije?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Neobavezne ekstenzije bit će onemogućene. Obavezne komponente izgleda ostat "
+"će omogućene. Neobavezne ekstenzije možete ponovno omogućiti pojedinačno."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Neobavezne ekstenzije su onemogućene"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Vrati zadane postavke efekta"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Resetira materijal i opcije uštede energije."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Zadane postavke efekta su vraćene"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Miš i dodirna pločica"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Lijepljenje srednjim klikom"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr "Lijepi odabrani tekst srednjom tipkom miša ili dodirom s tri prsta"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Aktiviraj prozore pri prelasku mišem"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Fokusira prozor ispod pokazivača bez klika"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Pričvrsti dijaloge uz njihov prozor"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr "Dijalozi ostaju iznad prozora koji ih je otvorio i pomiču se s njim"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Tipka za pomicanje prozora"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr "Držite je i povucite bilo koji dio prozora da ga pomaknete"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Promjena veličine desnom tipkom"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Uz držanu tipku povucite desnom tipkom za promjenu veličine"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Naslovna traka"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Dvostruki klik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Srednji klik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Desni klik"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Maksimiziraj"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Maksimiziraj širinu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Maksimiziraj visinu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Minimiziraj"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Pošalji u pozadinu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Prikaži izbornik prozora"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Ne radi ništa"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Odvoji aplikacije po monitoru"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr "Svaki dok prikazuje samo aplikacije otvorene na vlastitom monitoru"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Aplikacije doka po monitoru ažurirane"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Nema dostupnih vizualnih efekata"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Ova verzija GNOME-a ne podržava Mat staklo."

@@ -61,12 +61,8 @@ _DISCOVERY_HELPER_BUILDS = {
     HELPER_UUID: 76,
 }
 
-_LEGACY_COMMUNITY_MENU_DIR = (
-    "/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/"
-)
-_COMMUNITY_MENU_DIR = (
-    "/usr/share/gnome-shell/extensions/community-menu@communitybig.org/"
-)
+_LEGACY_COMMUNITY_MENU_DIR = "/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/"
+_COMMUNITY_MENU_DIR = "/usr/share/gnome-shell/extensions/community-menu@communitybig.org/"
 
 LAYOUT_COMPONENT_UUID_MIGRATIONS = {
     LEGACY_COPYOUS_UUID: BIG_CLIPBOARD_UUID,
@@ -399,9 +395,7 @@ class HelperClient:
             return False, "running layout helper requires a new session"
 
         installed = cls.installed_extension_uuids()
-        requested = [
-            uuid for uuid in _DISCOVERABLE_COMPONENT_UUIDS if uuid in installed
-        ]
+        requested = [uuid for uuid in _DISCOVERABLE_COMPONENT_UUIDS if uuid in installed]
         from gi.repository import GLib
 
         payload = json.dumps({"uuids": requested})

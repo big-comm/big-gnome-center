@@ -9,6 +9,7 @@ from helper_client import HELPER_UUID, LEGACY_HELPER_UUID, HelperClient
 
 log = logging.getLogger("big-gnome-center-helper-guard")
 
+
 class HelperGuard:
     """Monitor only the two Shell lists that can disable the required helper."""
 

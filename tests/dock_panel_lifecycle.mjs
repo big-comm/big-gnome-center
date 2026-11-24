@@ -317,4 +317,27 @@ test('current fullscreen repair preserves geometry checks', () => {
     assert.equal(owner._fullscreenSurfaceRepairCount, 1);
     owner.destroy(); released(h, owner);
 });
+
+// Frosted Glass paints a panel it marks; its transparent style must survive
+// every overview transition, and the opacity returns once the mark goes.
+function frost(panel) {
+    const classes = new Set(['frosted-glass-shell-surface']);
+    panel.has_style_class_name = name => classes.has(name);
+    panel.set_style('background-color: transparent;');
+    return () => { classes.clear(); panel.emit('notify::style-class'); };
+}
+test('frosted panel keeps its transparent style through the overview', () => {
+    const h = harness(), owner = h.create();
+    const unfrost = frost(h.panel);
+    for (const signal of ['showing', 'shown', 'hiding', 'hidden']) {
+        h.overview.emit(signal);
+        for (const [id, timer] of [...h.timers]) { h.timers.delete(id); timer.callback(); }
+        assert.equal(h.panel.style, 'background-color: transparent;', signal);
+    }
+    h.settings.opacity = 30; h.settings.emit('changed');
+    assert.equal(h.panel.style, 'background-color: transparent;');
+    unfrost();
+    assert.match(h.panel.style, /rgba\(0, 0, 0, 0\.30\)/);
+    owner.destroy(); released(h, owner);
+});
 console.log(`${count} dock panel lifecycle scenarios passed`);

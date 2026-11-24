@@ -55,22 +55,28 @@ def matching_theme(accent, scheme, installed, palettes):
     light = scheme != "prefer-dark"
     candidates = {}
     for name, colors in palettes.items():
-        if (not re.fullmatch(r"[A-Za-z0-9-]+", name) or name == "Classic"
-                or name.endswith("-Light") != light or PREFIX + name not in installed
-                or not isinstance(colors, dict)):
+        if (
+            not re.fullmatch(r"[A-Za-z0-9-]+", name)
+            or name == "Classic"
+            or name.endswith("-Light") != light
+            or PREFIX + name not in installed
+            or not isinstance(colors, dict)
+        ):
             continue
-        if all(re.fullmatch(r"#[0-9a-fA-F]{6}", str(colors.get(key, "")))
-               for key in ("body", "primary")):
+        if all(
+            re.fullmatch(r"#[0-9a-fA-F]{6}", str(colors.get(key, "")))
+            for key in ("body", "primary")
+        ):
             candidates[name] = colors
     if not candidates:
         return ""
     # Avoid a neutral palette winning solely through similar luminance.
     family = _ACCENT_FAMILIES.get(accent, _ACCENT_FAMILIES["blue"])
-    matching_family = {name: colors for name, colors in candidates.items()
-                       if name.removesuffix("-Light") in family}
+    matching_family = {
+        name: colors for name, colors in candidates.items() if name.removesuffix("-Light") in family
+    }
     candidates = matching_family or candidates
-    name, _score = find_closest_theme(ACCENT_COLORS.get(accent, ACCENT_COLORS["blue"]),
-                                    candidates)
+    name, _score = find_closest_theme(ACCENT_COLORS.get(accent, ACCENT_COLORS["blue"]), candidates)
     return PREFIX + name
 
 
@@ -89,9 +95,12 @@ def set_enabled(enabled):
     if not enabled:
         return settings.set_boolean(KEY, False), ""
     interface = Gio.Settings.new("org.gnome.desktop.interface")
-    target = matching_theme(interface.get_string("accent-color"),
-                            interface.get_string("color-scheme"),
-                            installed_themes(), read_palettes())
+    target = matching_theme(
+        interface.get_string("accent-color"),
+        interface.get_string("color-scheme"),
+        installed_themes(),
+        read_palettes(),
+    )
     if not target:
         return False, tr("Install big-bibata-cursor-theme to use matching cursors.")
     if not interface.is_writable("cursor-theme"):
@@ -104,9 +113,13 @@ def set_enabled(enabled):
         return False, "Cannot apply cursor theme"
     Gio.Settings.sync()
     try:
-        subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--watch"],
-                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                         stderr=subprocess.DEVNULL, start_new_session=True)
+        subprocess.Popen(
+            [sys.executable, str(Path(__file__).resolve()), "--watch"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
     except OSError as error:
         settings.set_boolean(KEY, False)
         interface.set_string("cursor-theme", previous)
@@ -115,8 +128,15 @@ def set_enabled(enabled):
 
 
 class CursorAccentFollower:
-    def __init__(self, interface, settings, stopped, *,
-                 palette_loader=read_palettes, theme_loader=installed_themes):
+    def __init__(
+        self,
+        interface,
+        settings,
+        stopped,
+        *,
+        palette_loader=read_palettes,
+        theme_loader=installed_themes,
+    ):
         self.interface = interface
         self.settings = settings
         self.stopped = stopped
@@ -129,12 +149,18 @@ class CursorAccentFollower:
 
     def start(self):
         for key in ("accent-color", "color-scheme"):
-            self._signals.append((self.interface, self.interface.connect(
-                f"changed::{key}", lambda *_args: self.queue())))
-        self._signals.append((self.interface, self.interface.connect(
-            "changed::cursor-theme", self._cursor_changed)))
-        self._signals.append((self.settings, self.settings.connect(
-            f"changed::{KEY}", self._preference_changed)))
+            self._signals.append(
+                (
+                    self.interface,
+                    self.interface.connect(f"changed::{key}", lambda *_args: self.queue()),
+                )
+            )
+        self._signals.append(
+            (self.interface, self.interface.connect("changed::cursor-theme", self._cursor_changed))
+        )
+        self._signals.append(
+            (self.settings, self.settings.connect(f"changed::{KEY}", self._preference_changed))
+        )
         self.queue()
 
     def _preference_changed(self, *_args):
@@ -157,9 +183,12 @@ class CursorAccentFollower:
         self._pending = 0
         if not self.settings.get_boolean(KEY):
             return GLib.SOURCE_REMOVE
-        target = matching_theme(self.interface.get_string("accent-color"),
-                                self.interface.get_string("color-scheme"),
-                                self.theme_loader(), self.palette_loader())
+        target = matching_theme(
+            self.interface.get_string("accent-color"),
+            self.interface.get_string("color-scheme"),
+            self.theme_loader(),
+            self.palette_loader(),
+        )
         if not target or not self.interface.is_writable("cursor-theme"):
             return GLib.SOURCE_REMOVE
         self._expected = target

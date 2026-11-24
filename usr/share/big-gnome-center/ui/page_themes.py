@@ -207,11 +207,13 @@ class ThemesPage(Gtk.Box):
             self._cursor_follow_row.set_visible(self._section == "cursors")
             self._cursor_follow_row.set_active(enabled)
             self._cursor_follow_row.set_sensitive(
-                cursor_accent.preferences() is not None and (available or enabled))
+                cursor_accent.preferences() is not None and (available or enabled)
+            )
             self._cursor_follow_row.set_subtitle(
                 tr("Match the cursor to the system accent and light or dark appearance.")
-                if available else
-                tr("Install big-bibata-cursor-theme to use matching cursors."))
+                if available
+                else tr("Install big-bibata-cursor-theme to use matching cursors.")
+            )
         finally:
             self._syncing_cursor_follow = False
 

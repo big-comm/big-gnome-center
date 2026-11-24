@@ -87,7 +87,8 @@ class Settings:
         except OSError as exc:
             self.last_error = f"{SETTINGS_FILE}: {exc}"
             logging.getLogger("big-gnome-center").warning(
-                "Settings update failed: %s", self.last_error,
+                "Settings update failed: %s",
+                self.last_error,
             )
             return False
 
@@ -97,7 +98,8 @@ class Settings:
         except Exception as exc:
             self.last_error = f"{SETTINGS_FILE}: {exc}"
             logging.getLogger("big-gnome-center").warning(
-                "Settings write failed: %s", self.last_error,
+                "Settings write failed: %s",
+                self.last_error,
             )
             return False
         self._data = data
@@ -153,7 +155,9 @@ class GSettingsMonitor:
         state = {"active": False}
         try:
             if (
-                not isinstance(schema, str) or not schema or "\0" in schema
+                not isinstance(schema, str)
+                or not schema
+                or "\0" in schema
                 or not callable(callback)
             ):
                 return False

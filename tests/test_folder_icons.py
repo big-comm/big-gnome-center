@@ -186,6 +186,7 @@ def provider(monkeypatch):
 
     launches = []
     reloads = []
+
     class Application:
         def get_active_window(self):
             return SimpleNamespace(
@@ -202,7 +203,8 @@ def provider(monkeypatch):
     gi.require_version = lambda *args: None
     repository = ModuleType("gi.repository")
     repository.Gio = SimpleNamespace(
-        Subprocess=SimpleNamespace(new=launch), SubprocessFlags=SimpleNamespace(NONE=0),
+        Subprocess=SimpleNamespace(new=launch),
+        SubprocessFlags=SimpleNamespace(NONE=0),
         Application=SimpleNamespace(get_default=lambda: application),
     )
     repository.GLib = SimpleNamespace(Error=RuntimeError)
@@ -317,8 +319,10 @@ def test_folder_picker_messages_are_translated_in_every_compiled_catalog():
     for source in sources:
         for node in ast.walk(ast.parse(source.read_text())):
             if (
-                isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-                and node.func.id == "tr" and node.args
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "tr"
+                and node.args
                 and isinstance(node.args[0], ast.Constant)
             ):
                 messages.add(node.args[0].value)

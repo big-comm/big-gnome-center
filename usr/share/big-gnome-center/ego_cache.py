@@ -122,7 +122,10 @@ def thumb_put(url: str, data: bytes) -> Optional[Path]:
     try:
         path = thumb_path(url)
         with tempfile.NamedTemporaryFile(
-            prefix=f".{path.name}.", suffix=".tmp", dir=path.parent, delete=False,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            dir=path.parent,
+            delete=False,
         ) as stream:
             tmp = Path(stream.name)
             stream.write(data)
@@ -148,8 +151,7 @@ def _evict_thumbs_if_needed() -> None:
     try:
         base = thumbs_dir()
         files = [
-            (p, p.stat()) for p in base.iterdir()
-            if not p.name.startswith(".") and p.is_file()
+            (p, p.stat()) for p in base.iterdir() if not p.name.startswith(".") and p.is_file()
         ]
     except Exception:
         return

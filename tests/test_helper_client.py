@@ -210,15 +210,13 @@ class TestInstalledExtensionUuids:
 class TestComponentAssetMigration:
     def test_rewrites_legacy_community_menu_icon_path(self):
         legacy = (
-            "/usr/share/gnome-shell/extensions/"
-            "community-menu@bigcommunity.org/community-menu.svg"
+            "/usr/share/gnome-shell/extensions/community-menu@bigcommunity.org/community-menu.svg"
         )
 
         migrated = HelperClient.migrate_component_asset_path(legacy)
 
         assert migrated == (
-            "/usr/share/gnome-shell/extensions/"
-            "community-menu@communitybig.org/community-menu.svg"
+            "/usr/share/gnome-shell/extensions/community-menu@communitybig.org/community-menu.svg"
         )
 
     def test_preserves_unrelated_custom_icon_path(self):

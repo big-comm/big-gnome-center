@@ -21,6 +21,7 @@ import update_checker
 from constants import APP_VERSION, ICON_NAME, UPDATE_CHECK_INTERVAL, tr
 from settings_store import GSettingsMonitor, Settings
 from ui.dialog_backups import BackupsDialog
+from ui.page_behavior import BehaviorPage
 from ui.page_desktop import DesktopPage
 from ui.page_effects import EffectsPage
 from ui.page_extensions import ExtensionsPage
@@ -165,11 +166,13 @@ class MainWindow(Adw.ApplicationWindow):
         )
         for key in ("cursor-theme", "color-scheme"):
             self._monitor.watch(
-                "org.gnome.desktop.interface", key,
+                "org.gnome.desktop.interface",
+                key,
                 lambda: self._schedule_refresh("theme", self._on_theme_changed),
             )
         self._monitor.watch(
-            "org.communitybig.big-gnome-center.themes", "cursor-follow-accent",
+            "org.communitybig.big-gnome-center.themes",
+            "cursor-follow-accent",
             lambda: self._schedule_refresh("theme", self._on_theme_changed),
         )
 
@@ -296,6 +299,7 @@ class MainWindow(Adw.ApplicationWindow):
             "themes": lambda: ThemesPage(self._pool, self._toast),
             "desktop": lambda: DesktopPage(self._pool, self._toast),
             "panel-dock": lambda: PanelDockPage(self._pool, self._toast),
+            "behavior": lambda: BehaviorPage(self._pool, self._toast),
             "effects": lambda: EffectsPage(self._pool, self._toast),
             "extensions": lambda: ExtensionsPage(self._pool, self._toast),
             "startup": lambda: StartupPage(self._pool, self._toast),
@@ -419,6 +423,7 @@ class MainWindow(Adw.ApplicationWindow):
             ("themes", tr("Themes"), "applications-graphics-symbolic"),
             ("desktop", tr("Desktop"), "video-display-symbolic"),
             ("panel-dock", tr("Panel and Dock"), "view-more-horizontal-symbolic"),
+            ("behavior", tr("Behavior"), "preferences-system-symbolic"),
             ("effects", tr("Effects"), "layout-effect-lamp-symbolic"),
             ("extensions", tr("Extensions"), "application-x-addon-symbolic"),
             ("startup", tr("Startup Applications"), "folder-symbolic"),
@@ -513,6 +518,7 @@ class MainWindow(Adw.ApplicationWindow):
             "themes": tr("Themes"),
             "desktop": tr("Desktop"),
             "panel-dock": tr("Panel and Dock"),
+            "behavior": tr("Behavior"),
             "effects": tr("Effects"),
             "extensions": tr("Extensions"),
             "startup": tr("Startup Applications"),

@@ -41,7 +41,9 @@ def test_hide_marks_main_group_and_show_restores_exact_file(desktop):
     run(desktop, "hide")
     lines = desktop.read_text().splitlines()
     assert lines[:3] == [
-        "[Desktop Entry]", "NoDisplay=true", "X-BigGnomeCenter-Hidden=true",
+        "[Desktop Entry]",
+        "NoDisplay=true",
+        "X-BigGnomeCenter-Hidden=true",
     ]
     assert oct(desktop.stat().st_mode & 0o777) == "0o644"
 

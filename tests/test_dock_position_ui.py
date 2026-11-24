@@ -23,8 +23,9 @@ def test_position_choices_and_restore_follow_active_layout(monkeypatch):
     preferences = Mock()
     preferences.get.side_effect = lambda _key, _default="": layout[0]
     monkeypatch.setattr(page_panel_dock, "Settings", lambda: preferences)
-    monkeypatch.setattr(page_panel_dock.ExtMgr, "is_enabled",
-                        lambda uuid: uuid == page_panel_dock.RUNTIME_UUID)
+    monkeypatch.setattr(
+        page_panel_dock.ExtMgr, "is_enabled", lambda uuid: uuid == page_panel_dock.RUNTIME_UUID
+    )
 
     def backend(**kwargs):
         settings = settings_fixture()

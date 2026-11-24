@@ -13,7 +13,7 @@ import pytest
 
 import folder_accent as module
 
-SVG = '<svg><style>.ColorScheme-Highlight {color:#3584e4;}</style></svg>'
+SVG = "<svg><style>.ColorScheme-Highlight {color:#3584e4;}</style></svg>"
 
 
 @pytest.fixture
@@ -87,11 +87,17 @@ def test_fifo_icon_is_rejected_without_blocking(theme):
     icon.unlink()
     os.mkfifo(icon)
     result = subprocess.run(
-        [sys.executable, "-c", "from folder_accent import build_theme; "
-         f"from pathlib import Path; build_theme({module.BASES[0]!r}, 'red', "
-         f"[Path({str(root)!r})], Path({str(output)!r}))"],
+        [
+            sys.executable,
+            "-c",
+            "from folder_accent import build_theme; "
+            f"from pathlib import Path; build_theme({module.BASES[0]!r}, 'red', "
+            f"[Path({str(root)!r})], Path({str(output)!r}))",
+        ],
         env={**os.environ, "PYTHONPATH": str(Path(module.__file__).parent)},
-        capture_output=True, text=True, timeout=3,
+        capture_output=True,
+        text=True,
+        timeout=3,
     )
     assert result.returncode != 0
     assert "Invalid or oversized" in result.stderr
@@ -149,9 +155,10 @@ def test_concurrent_winner_is_verified_before_reuse(theme, monkeypatch, tmp_path
     if winner == "complete":
         result = build(theme)
         assert result["status"] == "ready"
-        assert module.ACCENT_COLORS["orange"] in (
-            theme[1] / result["theme"] / "scalable/places/folder.svg"
-        ).read_text()
+        assert (
+            module.ACCENT_COLORS["orange"]
+            in (theme[1] / result["theme"] / "scalable/places/folder.svg").read_text()
+        )
     else:
         with pytest.raises(ValueError, match="collision"):
             build(theme)
@@ -187,8 +194,9 @@ def test_simultaneous_publishers_share_one_complete_overlay(theme, monkeypatch):
 def test_failed_publication_keeps_previous_theme_and_cleans_stage(theme, monkeypatch, failure):
     previous = build(theme, "green")
     target = theme[1] / previous["theme"]
-    original = {path.relative_to(target): path.read_bytes() for path in target.rglob("*")
-                if path.is_file()}
+    original = {
+        path.relative_to(target): path.read_bytes() for path in target.rglob("*") if path.is_file()
+    }
     write = Path.write_bytes
 
     def failed_write(path, data):
@@ -218,19 +226,24 @@ def test_icon_data_home_defaults_to_absolute_path(tmp_path, monkeypatch, configu
         monkeypatch.delenv("XDG_DATA_HOME", raising=False)
     else:
         monkeypatch.setenv("XDG_DATA_HOME", configured)
-    expected = Path(configured) if configured and configured.startswith("/") else (
-        tmp_path / ".local/share"
+    expected = (
+        Path(configured)
+        if configured and configured.startswith("/")
+        else (tmp_path / ".local/share")
     )
     assert module._data_home() == expected
     assert module.icon_roots()[1] == expected / "icons"
 
 
-@pytest.mark.parametrize("configured,expected", [
-    (None, ["/usr/local/share/icons", "/usr/share/icons"]),
-    ("", ["/usr/local/share/icons", "/usr/share/icons"]),
-    ("relative:~/data", []),
-    (":/first:relative:/second:/first:", ["/first/icons", "/second/icons"]),
-])
+@pytest.mark.parametrize(
+    "configured,expected",
+    [
+        (None, ["/usr/local/share/icons", "/usr/share/icons"]),
+        ("", ["/usr/local/share/icons", "/usr/share/icons"]),
+        ("relative:~/data", []),
+        (":/first:relative:/second:/first:", ["/first/icons", "/second/icons"]),
+    ],
+)
 def test_icon_system_roots_preserve_absolute_precedence(
     tmp_path, monkeypatch, configured, expected
 ):

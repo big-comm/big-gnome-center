@@ -86,7 +86,7 @@ class TestDownloadInstallation:
     @pytest.mark.parametrize("uuid", ["../outside", "/tmp/outside", "", None])
     def test_invalid_uuid_never_starts_installation(self, uuid):
         with patch("extension_manager.run_cmd") as command:
-            assert not ExtMgr.install(uuid, 1, "")[0]
+            assert not ExtMgr.install(uuid, 1)[0]
             assert not ExtMgr._install_from_ego(uuid, 1)[0]
         command.assert_not_called()
 
@@ -319,23 +319,6 @@ class TestSchemaCompile:
         mock_run.assert_not_called()
 
 
-class TestInstall:
-    def test_empty_package_name_skips_package_managers(self):
-        def fake_which(cmd: str):
-            return "/usr/bin/pacman" if cmd == "pacman" else None
-
-        with (
-            patch("extension_manager.shutil.which", side_effect=fake_which),
-            patch("extension_manager.ExtMgr._install_from_ego", return_value=(False, "offline")),
-            patch("extension_manager.run_cmd") as mock_run,
-        ):
-            ok, msg = ExtMgr.install("uuid@x.com", ego_id=0, pkg="")
-
-        assert ok is False
-        assert msg == "offline"
-        mock_run.assert_not_called()
-
-
 class TestUpdate:
     def test_enable_after_install_marks_enabled_and_tries_live_activation(self):
         with (
@@ -492,9 +475,7 @@ class TestRemove:
             patch("extension_manager._PKEXEC", pkexec),
             patch("extension_manager._SYSTEM_EXTENSION_REMOVER", remover),
             patch("extension_manager.run_cmd", return_value=(False, "")),
-            patch(
-                "shell_reloader.ShellReloader.apply_extension_state"
-            ) as mock_apply,
+            patch("shell_reloader.ShellReloader.apply_extension_state") as mock_apply,
         ):
             ok, msg = ExtMgr.remove("test-ext@foo.com")
 

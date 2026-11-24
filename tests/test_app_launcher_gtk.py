@@ -43,8 +43,9 @@ def test_native_button_launch_keeps_child_window_alive(tmp_path, monkeypatch):
     monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
     errors, ticks = [], []
     button = Gtk.Button(label="Launch test")
-    button.connect("clicked", lambda widget: launcher.launch_command(
-        ["gnome-extensions-app"], errors.append))
+    button.connect(
+        "clicked", lambda widget: launcher.launch_command(["gnome-extensions-app"], errors.append)
+    )
     timer = GLib.timeout_add(20, lambda: ticks.append(True) or GLib.SOURCE_CONTINUE)
     start = time.monotonic()
     try:
@@ -118,17 +119,22 @@ def test_native_uri_handler_uses_isolated_associations(tmp_path, registered):
         "print('native URI activation passed')\n"
     )
     env = os.environ.copy()
-    env.update({
-        "XDG_CONFIG_HOME": str(tmp_path / "config"),
-        "XDG_CONFIG_DIRS": str(tmp_path / "empty-config"),
-        "XDG_DATA_HOME": str(tmp_path / "data"),
-        "XDG_DATA_DIRS": str(tmp_path / "empty-data"),
-        "XDG_CACHE_HOME": str(tmp_path / "cache"),
-        "XDG_CURRENT_DESKTOP": "BGC_TEST",
-        "GIO_USE_PORTALS": "0",
-    })
+    env.update(
+        {
+            "XDG_CONFIG_HOME": str(tmp_path / "config"),
+            "XDG_CONFIG_DIRS": str(tmp_path / "empty-config"),
+            "XDG_DATA_HOME": str(tmp_path / "data"),
+            "XDG_DATA_DIRS": str(tmp_path / "empty-data"),
+            "XDG_CACHE_HOME": str(tmp_path / "cache"),
+            "XDG_CURRENT_DESKTOP": "BGC_TEST",
+            "GIO_USE_PORTALS": "0",
+        }
+    )
     result = subprocess.run(
         ["dbus-run-session", "--", sys.executable, str(script)],
-        env=env, capture_output=True, text=True, timeout=10,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=10,
     )
     assert result.returncode == 0, result.stdout + result.stderr

@@ -195,7 +195,8 @@ def _tree_hash(path: Path) -> str:
         digest.update(path.read_bytes())
         return digest.hexdigest()
     files = sorted(
-        item for item in path.rglob("*")
+        item
+        for item in path.rglob("*")
         if item.is_file()
         and item.name != "gschemas.compiled"
         and item.suffix != ".pyc"
@@ -228,9 +229,7 @@ def _payload_hashes(root: Path) -> dict[str, str]:
         uuid: _tree_hash(extension_root / uuid)
         for uuid in (RUNTIME_UUID, HELPER_UUID, COMMUNITY_DOCK_UUID, COMMUNITY_PANEL_UUID)
     }
-    hashes["runtime-audit-tool"] = _tree_hash(
-        root / "usr/share/big-gnome-center/runtime_audit.py"
-    )
+    hashes["runtime-audit-tool"] = _tree_hash(root / "usr/share/big-gnome-center/runtime_audit.py")
     hashes["runtime-baseline-tool"] = _tree_hash(
         root / "usr/share/big-gnome-center/runtime_baseline.py"
     )
@@ -303,7 +302,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     shell_theme = diagnostics.get("shellTheme") or {}
     custom_stylesheets = shell_theme.get("customStylesheets") or []
     logical_monitor_indices = sorted(
-        monitor.get("index") for monitor in logical_monitors
+        monitor.get("index")
+        for monitor in logical_monitors
         if isinstance(monitor.get("index"), int)
     )
     surface = expected.get("surface")
@@ -312,8 +312,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
     expected_taskbars = surface == "taskbar"
     expected_native_panel = surface == "native"
     expected_light_shell_popovers = (
-        snapshot.active_layout != "Minimal"
-        and snapshot.color_scheme != "prefer-dark"
+        snapshot.active_layout != "Minimal" and snapshot.color_scheme != "prefer-dark"
     )
     desktop_icons_live = snapshot.desktop_icons_state == 1
 
@@ -348,8 +347,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
         _check(
             shell_popover_theme.get("layout") == snapshot.active_layout
             and shell_popover_theme.get("colorScheme") == snapshot.color_scheme
-            and shell_popover_theme.get("lightRequested")
-            is expected_light_shell_popovers,
+            and shell_popover_theme.get("lightRequested") is expected_light_shell_popovers,
             "shell-popover-theme-state",
             f"light={expected_light_shell_popovers}",
             f"integration={shell_popover_theme}",
@@ -360,8 +358,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             and shell_popover_theme.get("ownedActors") > 0
             and isinstance(shell_popover_theme.get("actorDestroyCount"), int)
             and shell_popover_theme.get("classActors")
-            == (shell_popover_theme.get("ownedActors")
-                if expected_light_shell_popovers else 0),
+            == (shell_popover_theme.get("ownedActors") if expected_light_shell_popovers else 0),
             "shell-popover-theme-ownership",
             "style ownership matches color scheme",
             f"integration={shell_popover_theme}",
@@ -370,8 +367,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             isinstance(shell_popover_theme.get("kinds"), dict)
             and shell_popover_theme.get("kinds", {}).get("quickSettings", 0) > 0
             and shell_popover_theme.get("kinds", {}).get("dateMenu", 0) > 0
-            and isinstance(
-                shell_popover_theme.get("kinds", {}).get("notificationBanners"), int),
+            and isinstance(shell_popover_theme.get("kinds", {}).get("notificationBanners"), int),
             "shell-popover-theme-targets",
             "Quick Settings, date menu, and banners tracked",
             f"integration={shell_popover_theme}",
@@ -384,30 +380,26 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"runtime={snapshot.active_layout or '<empty>'}",
         ),
         _check(
-            native_panel_opacity.get("implementation")
-            == "layout-switcher-runtime",
+            native_panel_opacity.get("implementation") == "layout-switcher-runtime",
             "native-panel-opacity-implementation",
             "runtime-owned",
             f"integration={native_panel_opacity}",
         ),
         _check(
             native_panel_opacity.get("active") is expected_native_panel
-            and native_panel_opacity.get("restorationPending")
-            is expected_native_panel,
+            and native_panel_opacity.get("restorationPending") is expected_native_panel,
             "native-panel-opacity-lifecycle",
             f"active={expected_native_panel}",
             f"integration={native_panel_opacity}",
         ),
         _check(
-            native_panel_opacity.get("styleSignalOwned")
-            is expected_native_panel,
+            native_panel_opacity.get("styleSignalOwned") is expected_native_panel,
             "native-panel-opacity-signals",
             f"owned={expected_native_panel}",
             f"integration={native_panel_opacity}",
         ),
         _check(
-            native_panel_opacity.get("visibilitySignalsOwned")
-            is expected_native_panel,
+            native_panel_opacity.get("visibilitySignalsOwned") is expected_native_panel,
             "native-panel-visibility-signals",
             f"owned={expected_native_panel}",
             f"integration={native_panel_opacity}",
@@ -415,8 +407,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
         _check(
             (
                 native_panel_opacity.get("opacity") == expected.get("opacity")
-                and native_panel_opacity.get("effectiveOpacity")
-                == expected.get("opacity")
+                and native_panel_opacity.get("effectiveOpacity") == expected.get("opacity")
                 and native_panel_opacity.get("styleOwned") is True
             )
             if expected_native_panel
@@ -459,8 +450,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"implementation={startup_overview.get('implementation')}",
         ),
         _check(
-            startup_overview.get("skipRequested")
-            == expected.get("skipStartupOverview"),
+            startup_overview.get("skipRequested") == expected.get("skipStartupOverview"),
             "startup-overview-setting",
             f"skip={expected.get('skipStartupOverview')}",
             "expected skip="
@@ -489,8 +479,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"expected active={expected_taskbars}, got {bool(taskbar.get('active'))}",
         ),
         _check(
-            (dock_desktop_bridge.get("implementation")
-             == "layout-switcher-runtime") == expected_docks,
+            (dock_desktop_bridge.get("implementation") == "layout-switcher-runtime")
+            == expected_docks,
             "dock-desktop-bridge-implementation",
             f"runtime-owned={expected_docks}",
             "expected runtime-owned Dock desktop bridge="
@@ -498,8 +488,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{dock_desktop_bridge.get('implementation')}",
         ),
         _check(
-            (dock_desktop_bridge.get("ownerUuid") == COMMUNITY_DOCK_UUID)
-            == expected_docks,
+            (dock_desktop_bridge.get("ownerUuid") == COMMUNITY_DOCK_UUID) == expected_docks,
             "dock-desktop-bridge-owner",
             COMMUNITY_DOCK_UUID if expected_docks else "none",
             f"owner={dock_desktop_bridge.get('ownerUuid')}",
@@ -525,12 +514,9 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{expected_taskbars}, got {bool(taskbar_lifecycle.get('managerOwned'))}",
         ),
         _check(
-            (
-                taskbar_lifecycle.get("rendererImplementation")
-                == "layout-switcher-runtime"
-            ) == expected_taskbars
-            and taskbar_lifecycle.get("rendererModules", 0)
-            == (13 if expected_taskbars else 0),
+            (taskbar_lifecycle.get("rendererImplementation") == "layout-switcher-runtime")
+            == expected_taskbars
+            and taskbar_lifecycle.get("rendererModules", 0) == (13 if expected_taskbars else 0),
             "taskbar-renderer-implementation",
             f"runtime-owned={expected_taskbars}",
             "expected runtime-owned Taskbar renderer="
@@ -607,15 +593,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             monitor_host.get("monitorCount") == len(logical_monitors),
             "taskbar-monitor-count",
             f"logical monitors={len(logical_monitors)}",
-            f"host={monitor_host.get('monitorCount')}, "
-            f"logical={len(logical_monitors)}",
+            f"host={monitor_host.get('monitorCount')}, logical={len(logical_monitors)}",
         ),
         _check(
             not monitor_host.get("resetFailures"),
             "taskbar-monitor-reset-failures",
             "no monitor reset failures",
-            f"failures={monitor_host.get('resetFailures')}, "
-            f"last={monitor_host.get('lastError')}",
+            f"failures={monitor_host.get('resetFailures')}, last={monitor_host.get('lastError')}",
         ),
         _check(
             bool(service_host.get("owned")) == expected_taskbars,
@@ -640,8 +624,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"overviewActive={service_host.get('overviewActive')}",
         ),
         _check(
-            (overview_integration.get("implementation")
-             == "layout-switcher-runtime") == expected_taskbars,
+            (overview_integration.get("implementation") == "layout-switcher-runtime")
+            == expected_taskbars,
             "taskbar-overview-implementation",
             f"runtime-owned={expected_taskbars}",
             "expected runtime-owned Overview integration="
@@ -656,14 +640,14 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={overview_integration}",
         ),
         _check(
-            not expected_taskbars or (
+            not expected_taskbars
+            or (
                 isinstance(overview_integration.get("signalsOwned"), int)
                 and overview_integration.get("signalsOwned") > 0
                 and isinstance(overview_integration.get("hooksOwned"), int)
                 and overview_integration.get("hooksOwned") > 0
                 and overview_integration.get("allocationHookOwned") is True
-                and "overview-allocation"
-                in overview_integration.get("hookLabels", [])
+                and "overview-allocation" in overview_integration.get("hookLabels", [])
                 and overview_integration.get("workspaceIsolationOwned")
                 == overview_integration.get("configuredWorkspaceIsolation")
                 and overview_integration.get("hotkeysEnabled")
@@ -678,7 +662,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={overview_integration}",
         ),
         _check(
-            not expected_taskbars or (
+            not expected_taskbars
+            or (
                 overview_integration.get("restorationPending") is True
                 and not overview_integration.get("restoreConflicts")
                 and not overview_integration.get("lastConflict")
@@ -688,19 +673,30 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={overview_integration}",
         ),
         _check(
-            not expected_taskbars or (
-                overview_integration.get("overviewState") in {
-                    "hidden", "entering", "window-picker",
-                    "transitioning", "app-grid",
+            not expected_taskbars
+            or (
+                overview_integration.get("overviewState")
+                in {
+                    "hidden",
+                    "entering",
+                    "window-picker",
+                    "transitioning",
+                    "app-grid",
                 }
-                and overview_integration.get("lastState") in {
-                    "hidden", "showing", "shown", "hiding",
+                and overview_integration.get("lastState")
+                in {
+                    "hidden",
+                    "showing",
+                    "shown",
+                    "hiding",
                 }
                 and all(
                     isinstance(overview_integration.get(key), int)
                     and overview_integration.get(key) >= 0
                     for key in (
-                        "entryCount", "exitCount", "stateChangeCount",
+                        "entryCount",
+                        "exitCount",
+                        "stateChangeCount",
                         "allocationCount",
                     )
                 )
@@ -710,7 +706,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={overview_integration}",
         ),
         _check(
-            not expected_taskbars or (
+            not expected_taskbars
+            or (
                 not overview_integration.get("hotkeyPreviewActive")
                 and not overview_integration.get("pendingTimeouts")
                 and overview_integration.get("actorsCreated") == 0
@@ -729,8 +726,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{bool(service_host.get('notificationsOwned'))}",
         ),
         _check(
-            (notification_monitor.get("implementation")
-             == "layout-switcher-runtime") == expected_taskbars,
+            (notification_monitor.get("implementation") == "layout-switcher-runtime")
+            == expected_taskbars,
             "taskbar-notification-implementation",
             f"runtime-owned={expected_taskbars}",
             "expected runtime-owned notification monitor="
@@ -746,7 +743,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{notification_monitor.get('connected')}",
         ),
         _check(
-            not expected_taskbars or (
+            not expected_taskbars
+            or (
                 all(
                     isinstance(notification_monitor.get(key), int)
                     and notification_monitor.get(key) >= 0
@@ -757,8 +755,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                         "updateCount",
                     )
                 )
-                and notification_monitor.get("stateApps")
-                == service_host.get("notificationApps")
+                and notification_monitor.get("stateApps") == service_host.get("notificationApps")
                 and isinstance(notification_monitor.get("urgentApps"), list)
                 and all(
                     isinstance(app_id, str) and app_id.endswith(".desktop")
@@ -771,8 +768,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             ),
             "taskbar-notification-telemetry",
             "notification telemetry is coherent",
-            f"monitor={notification_monitor}, "
-            f"apps={service_host.get('notificationApps')}",
+            f"monitor={notification_monitor}, apps={service_host.get('notificationApps')}",
         ),
         _check(
             bool(service_host.get("desktopIconsOwned")) == expected_taskbars,
@@ -783,16 +779,15 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{bool(service_host.get('desktopIconsOwned'))}",
         ),
         _check(
-            (desktop_bridge.get("implementation")
-             == "layout-switcher-runtime") == expected_taskbars,
+            (desktop_bridge.get("implementation") == "layout-switcher-runtime")
+            == expected_taskbars,
             "taskbar-desktop-bridge-implementation",
             f"runtime-owned={expected_taskbars}",
             "expected runtime-owned desktop bridge="
             f"{expected_taskbars}, got {desktop_bridge.get('implementation')}",
         ),
         _check(
-            (desktop_bridge.get("ownerUuid") == COMMUNITY_PANEL_UUID)
-            == expected_taskbars,
+            (desktop_bridge.get("ownerUuid") == COMMUNITY_PANEL_UUID) == expected_taskbars,
             "taskbar-desktop-bridge-owner",
             COMMUNITY_PANEL_UUID if expected_taskbars else "none",
             f"owner={desktop_bridge.get('ownerUuid')}",
@@ -818,8 +813,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"{expected_taskbars}, got {bool(service_host.get('signalsOwned'))}",
         ),
         _check(
-            service_host.get("signalGroups", 0)
-            == (9 if expected_taskbars else 0),
+            service_host.get("signalGroups", 0) == (9 if expected_taskbars else 0),
             "taskbar-manager-signal-groups",
             f"signal groups={9 if expected_taskbars else 0}",
             "expected signal groups="
@@ -877,8 +871,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"last={shell_hooks.get('lastConflict')}",
         ),
         _check(
-            (status_fullscreen.get("implementation")
-             == "layout-switcher-runtime") == expected_taskbars,
+            (status_fullscreen.get("implementation") == "layout-switcher-runtime")
+            == expected_taskbars,
             "taskbar-status-fullscreen-implementation",
             f"runtime-owned={expected_taskbars}",
             "expected runtime-owned status/fullscreen integration="
@@ -893,7 +887,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={status_fullscreen}",
         ),
         _check(
-            not expected_taskbars or (
+            not expected_taskbars
+            or (
                 status_fullscreen.get("panelsOwned") == len(taskbar_actors)
                 and status_fullscreen.get("styledPanels") == len(taskbar_actors)
                 and status_fullscreen.get("signalsOwned") == 5
@@ -904,7 +899,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={status_fullscreen}, actors={len(taskbar_actors)}",
         ),
         _check(
-            not expected_taskbars or (
+            not expected_taskbars
+            or (
                 status_fullscreen.get("restorationPending") is True
                 and not status_fullscreen.get("restoreConflicts")
                 and not status_fullscreen.get("lastConflict")
@@ -914,14 +910,17 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             f"integration={status_fullscreen}",
         ),
         _check(
-            not expected_taskbars or (
+            not expected_taskbars
+            or (
                 not status_fullscreen.get("orphanStyles")
                 and all(
-                    isinstance(status_fullscreen.get(key), int)
-                    and status_fullscreen.get(key) >= 0
+                    isinstance(status_fullscreen.get(key), int) and status_fullscreen.get(key) >= 0
                     for key in (
-                        "fullscreenEvents", "overviewEntries", "overviewExits",
-                        "visibilityUpdates", "trackMutations",
+                        "fullscreenEvents",
+                        "overviewEntries",
+                        "overviewExits",
+                        "visibilityUpdates",
+                        "trackMutations",
                     )
                 )
                 and not fullscreen_surface.get("repairPending")
@@ -929,8 +928,10 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     isinstance(fullscreen_surface.get(key), int)
                     and fullscreen_surface.get(key) >= 0
                     for key in (
-                        "windowSignalsOwned", "windowActorSignalsOwned",
-                        "surfaceSignalsOwned", "surfaceChildSignalsOwned",
+                        "windowSignalsOwned",
+                        "windowActorSignalsOwned",
+                        "surfaceSignalsOwned",
+                        "surfaceChildSignalsOwned",
                         "repairCount",
                     )
                 )
@@ -1033,12 +1034,14 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "shutdown-cleanup",
         }
         taskbar_monitor_indices = sorted(
-            actor.get("monitor") for actor in taskbar_actors
+            actor.get("monitor")
+            for actor in taskbar_actors
             if isinstance(actor.get("monitor"), int)
         )
 
         desktop_margin_indices = sorted(
-            int(index) for index in (service_host.get("desktopMargins") or {})
+            int(index)
+            for index in (service_host.get("desktopMargins") or {})
             if str(index).isdigit()
         )
         desktop_margins = service_host.get("desktopMargins") or {}
@@ -1049,26 +1052,26 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             "right": "right",
         }
         desktop_margin_geometry = all(
-            (desktop_margins.get(str(actor.get("monitor")))
-             or desktop_margins.get(actor.get("monitor")))
-            == {side: (actor.get("outerSize") if side == margin_sides.get(
-                actor.get("edge")) else 0)
-                for side in margin_sides}
+            (
+                desktop_margins.get(str(actor.get("monitor")))
+                or desktop_margins.get(actor.get("monitor"))
+            )
+            == {
+                side: (actor.get("outerSize") if side == margin_sides.get(actor.get("edge")) else 0)
+                for side in margin_sides
+            }
             for actor in taskbar_actors
         )
         checks.extend(
             (
                 _check(
-                    sorted(monitor_host.get("panelMonitors") or [])
-                    == taskbar_monitor_indices,
+                    sorted(monitor_host.get("panelMonitors") or []) == taskbar_monitor_indices,
                     "taskbar-monitor-coverage",
                     f"panel monitors={taskbar_monitor_indices}",
-                    f"host={monitor_host.get('panelMonitors')}, "
-                    f"actors={taskbar_monitor_indices}",
+                    f"host={monitor_host.get('panelMonitors')}, actors={taskbar_monitor_indices}",
                 ),
                 _check(
-                    monitor_host.get("primaryMonitor")
-                    in logical_monitor_indices,
+                    monitor_host.get("primaryMonitor") in logical_monitor_indices,
                     "taskbar-primary-monitor",
                     f"primary={monitor_host.get('primaryMonitor')}",
                     f"primary={monitor_host.get('primaryMonitor')}, "
@@ -1105,8 +1108,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     desktop_margin_indices == taskbar_monitor_indices,
                     "taskbar-desktop-margin-coverage",
                     f"margin monitors={taskbar_monitor_indices}",
-                    f"margins={desktop_margin_indices}, "
-                    f"actors={taskbar_monitor_indices}",
+                    f"margins={desktop_margin_indices}, actors={taskbar_monitor_indices}",
                 ),
                 _check(
                     desktop_margin_geometry,
@@ -1115,8 +1117,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     f"margins={desktop_margins}, actors={taskbar_actors}",
                 ),
                 _check(
-                    (DESKTOP_ICONS_UUID
-                     in desktop_bridge.get("recipientUuids", []))
+                    (DESKTOP_ICONS_UUID in desktop_bridge.get("recipientUuids", []))
                     == desktop_icons_live,
                     "taskbar-desktop-bridge-recipient",
                     "DING recipient matches live extension state",
@@ -1125,8 +1126,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     f"state={snapshot.desktop_icons_state}",
                 ),
                 _check(
-                    {"activities", "quickSettings", "dateMenu"}
-                    <= adopted_roles,
+                    {"activities", "quickSettings", "dateMenu"} <= adopted_roles,
                     "taskbar-native-status-adoption",
                     "activities/date/quick settings adopted",
                     f"adopted roles={sorted(adopted_roles)}",
@@ -1161,14 +1161,12 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
 
     if expected_docks:
         dock_monitor_indices = sorted(
-            actor.get("monitor") for actor in dock_actors
-            if isinstance(actor.get("monitor"), int)
+            actor.get("monitor") for actor in dock_actors if isinstance(actor.get("monitor"), int)
         )
         checks.extend(
             (
                 _check(
-                    (DESKTOP_ICONS_UUID
-                     in dock_desktop_bridge.get("recipientUuids", []))
+                    (DESKTOP_ICONS_UUID in dock_desktop_bridge.get("recipientUuids", []))
                     == desktop_icons_live,
                     "dock-desktop-bridge-recipient",
                     "DING recipient matches live extension state",
@@ -1186,15 +1184,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     dock.get("visibility") == expected.get("visibility"),
                     "dock-visibility",
                     str(expected.get("visibility")),
-                    "expected "
-                    f"{expected.get('visibility')}, got {dock.get('visibility')}",
+                    f"expected {expected.get('visibility')}, got {dock.get('visibility')}",
                 ),
                 _check(
                     dock.get("indicator") == expected.get("indicator"),
                     "dock-indicator",
                     str(expected.get("indicator")),
-                    "expected "
-                    f"{expected.get('indicator')}, got {dock.get('indicator')}",
+                    f"expected {expected.get('indicator')}, got {dock.get('indicator')}",
                 ),
                 _check(
                     dock.get("hover") == expected.get("hover"),
@@ -1203,8 +1199,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     f"expected {expected.get('hover')}, got {dock.get('hover')}",
                 ),
                 _check(
-                    dock.get("magnificationIntensity")
-                    == expected.get("magnificationIntensity"),
+                    dock.get("magnificationIntensity") == expected.get("magnificationIntensity"),
                     "dock-magnification-intensity",
                     f"{expected.get('magnificationIntensity')}%",
                     "expected "
@@ -1212,15 +1207,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     f"{dock.get('magnificationIntensity')}%",
                 ),
                 _check(
-                    dock.get("hoverState", {}).get("implementation")
-                    == "layout-switcher-runtime",
+                    dock.get("hoverState", {}).get("implementation") == "layout-switcher-runtime",
                     "dock-hover-implementation",
                     "runtime-owned",
                     "Dock hover implementation is not runtime-owned",
                 ),
                 _check(
-                    dock.get("hoverState", {}).get("effect")
-                    == expected.get("hover")
+                    dock.get("hoverState", {}).get("effect") == expected.get("hover")
                     and dock.get("hoverState", {}).get("intensity")
                     == expected.get("magnificationIntensity"),
                     "dock-hover-state",
@@ -1229,14 +1222,12 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 ),
                 _check(
                     (
-                        dock.get("hoverState", {}).get("connectedDocks")
-                        == len(dock_actors)
+                        dock.get("hoverState", {}).get("connectedDocks") == len(dock_actors)
                         and dock.get("hoverState", {}).get(
                             "pointerWatches", dock.get("hoverState", {}).get("pollSources")
                         )
                         == len(dock_actors)
-                        and dock.get("hoverState", {}).get("renderer")
-                        == "ui-group-clone"
+                        and dock.get("hoverState", {}).get("renderer") == "ui-group-clone"
                         and dock.get("hoverState", {}).get("cloneActors")
                         == dock.get("hoverState", {}).get("trackedActors")
                         and dock.get("hoverState", {}).get("highResolutionSources")
@@ -1269,8 +1260,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     dock.get("iconSize") == expected.get("iconSize"),
                     "dock-size-setting",
                     f"{expected.get('iconSize')} px",
-                    "expected "
-                    f"{expected.get('iconSize')} px, got {dock.get('iconSize')} px",
+                    f"expected {expected.get('iconSize')} px, got {dock.get('iconSize')} px",
                 ),
                 _check(
                     not panel.get("fullscreen") or not panel.get("visible"),
@@ -1281,10 +1271,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     "panel remains visible over the focused fullscreen window",
                 ),
                 _check(
-                    not panel.get("fullscreen") or (
-                        bool(panel.get("dockVisible"))
-                        and not any(panel.get("dockVisible", ()))
-                    ),
+                    not panel.get("fullscreen")
+                    or (bool(panel.get("dockVisible")) and not any(panel.get("dockVisible", ()))),
                     "fullscreen-dock",
                     "dock hidden while the focused window is fullscreen"
                     if panel.get("fullscreen")
@@ -1295,15 +1283,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                     dock.get("extended") == expected.get("extended"),
                     "dock-extended",
                     str(expected.get("extended")),
-                    "expected "
-                    f"{expected.get('extended')}, got {dock.get('extended')}",
+                    f"expected {expected.get('extended')}, got {dock.get('extended')}",
                 ),
                 _check(
                     dock.get("menuSide") == expected.get("menuSide"),
                     "dock-menu-side",
                     str(expected.get("menuSide")),
-                    "expected "
-                    f"{expected.get('menuSide')}, got {dock.get('menuSide')}",
+                    f"expected {expected.get('menuSide')}, got {dock.get('menuSide')}",
                 ),
             )
         )
@@ -1315,8 +1301,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                         or actor.get("menuSide") == expected.get("menuSide"),
                         "dock-menu-side-actor",
                         str(expected.get("menuSide")),
-                        "expected "
-                        f"{expected.get('menuSide')}, got {actor.get('menuSide')}",
+                        f"expected {expected.get('menuSide')}, got {actor.get('menuSide')}",
                     ),
                     _check(
                         actor.get("opacity") == expected.get("opacity")
@@ -1326,15 +1311,13 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                         ),
                         "dock-opacity",
                         f"{expected.get('opacity')}%",
-                        f"expected {expected.get('opacity')}%, got "
-                        f"{actor.get('opacity')}%",
+                        f"expected {expected.get('opacity')}%, got {actor.get('opacity')}%",
                     ),
                     _check(
                         actor.get("iconSize") == expected.get("iconSize"),
                         "dock-size",
                         f"{expected.get('iconSize')} px",
-                        f"expected {expected.get('iconSize')} px, got "
-                        f"{actor.get('iconSize')} px",
+                        f"expected {expected.get('iconSize')} px, got {actor.get('iconSize')} px",
                     ),
                 )
             )
@@ -1348,8 +1331,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 taskbar.get("indicator") == expected.get("indicator"),
                 "taskbar-indicator-setting",
                 str(expected.get("indicator")),
-                "expected "
-                f"{expected.get('indicator')}, got {taskbar.get('indicator')}",
+                f"expected {expected.get('indicator')}, got {taskbar.get('indicator')}",
             )
         )
         checks.append(
@@ -1357,8 +1339,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 indicator_renderer.get("style") == expected.get("indicator"),
                 "taskbar-indicator",
                 str(expected.get("indicator")),
-                "expected "
-                f"{expected.get('indicator')}, got {indicator_renderer.get('style')}",
+                f"expected {expected.get('indicator')}, got {indicator_renderer.get('style')}",
             )
         )
         checks.append(
@@ -1374,8 +1355,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                 taskbar.get("visibility") == expected.get("visibility"),
                 "taskbar-visibility",
                 str(expected.get("visibility")),
-                "expected "
-                f"{expected.get('visibility')}, got {taskbar.get('visibility')}",
+                f"expected {expected.get('visibility')}, got {taskbar.get('visibility')}",
             )
         )
         checks.append(
@@ -1398,15 +1378,14 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             )
         for actor in taskbar_actors:
             monitor = next(
-                (item for item in logical_monitors
-                 if item.get("index") == actor.get("monitor")),
+                (item for item in logical_monitors if item.get("index") == actor.get("monitor")),
                 {},
             )
             checks.extend(
                 (
                     _check(
-                        actor.get("width") == monitor.get("width") and
-                        actor.get("height") == expected.get("actorHeight"),
+                        actor.get("width") == monitor.get("width")
+                        and actor.get("height") == expected.get("actorHeight"),
                         "taskbar-exact-geometry",
                         f"{monitor.get('width')}x{expected.get('actorHeight')}",
                         f"got {actor.get('width')}x{actor.get('height')}",
@@ -1425,8 +1404,7 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
                         ),
                         "taskbar-opacity",
                         f"{expected.get('opacity')}%",
-                        f"expected {expected.get('opacity')}%, got "
-                        f"{actor.get('opacity')}%",
+                        f"expected {expected.get('opacity')}%, got {actor.get('opacity')}%",
                     ),
                     _check(
                         bool(actor.get("affectsStruts")) == expected_visible,
@@ -1448,7 +1426,8 @@ def _runtime_checks(snapshot: Snapshot) -> list[Check]:
             )
         )
         invalid_geometry = [
-            actor for actor in active_actors
+            actor
+            for actor in active_actors
             if actor.get("width", 0) <= 0 or actor.get("height", 0) <= 0
         ]
         checks.append(
@@ -1565,8 +1544,9 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
     folder_accent = snapshot.runtime_diagnostics.get("folderAccent")
     if isinstance(folder_accent, dict):
         status = folder_accent.get("status", "pending")
-        level = {"ready": "PASS", "original": "PASS", "error": "FAIL",
-                 "unavailable": "WARN"}.get(status, "INFO")
+        level = {"ready": "PASS", "original": "PASS", "error": "FAIL", "unavailable": "WARN"}.get(
+            status, "INFO"
+        )
         if folder_accent.get("pending"):
             level = "INFO"
         checks.append(Check(level, "folder-accent", json.dumps(folder_accent, sort_keys=True)))
@@ -1576,14 +1556,15 @@ def audit_snapshot(snapshot: Snapshot, root: Path, strict_layout: bool = False) 
 
     if strict_layout and snapshot.active_layout in SURFACES:
         layout = snapshot.active_layout
-        menu_expected = (snapshot.menu_override if isinstance(snapshot.menu_override, bool)
-                         else layout in MENU_LAYOUTS)
+        menu_expected = (
+            snapshot.menu_override
+            if isinstance(snapshot.menu_override, bool)
+            else layout in MENU_LAYOUTS
+        )
         icons_expected = layout in DESKTOP_ICON_LAYOUTS
         actual_indicator = snapshot.indicator_overrides.get(layout, INDICATOR_DEFAULTS[layout])
         actual_hover = (
-            (snapshot.runtime_diagnostics.get("runtime") or {})
-            .get("expected", {})
-            .get("hover")
+            (snapshot.runtime_diagnostics.get("runtime") or {}).get("expected", {}).get("hover")
         )
         checks.extend(
             (

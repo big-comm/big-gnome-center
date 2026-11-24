@@ -111,10 +111,15 @@ def test_svg_read_limit_survives_stale_size(tmp_path, monkeypatch, caplog):
         return SimpleNamespace(st_mode=original_fstat(fd).st_mode, st_size=1)
 
     monkeypatch.setattr(model.os, "fstat", stale_size)
-    monkeypatch.setattr(Path, "stat", lambda path, *a, **k: (
-        SimpleNamespace(st_size=1)
-        if path.name == "folder-big.svg" else original_stat(path, *a, **k)
-    ))
+    monkeypatch.setattr(
+        Path,
+        "stat",
+        lambda path, *a, **k: (
+            SimpleNamespace(st_size=1)
+            if path.name == "folder-big.svg"
+            else original_stat(path, *a, **k)
+        ),
+    )
     assert model.available_icons(model.BASES[0], [tmp_path]) == []
     assert "folder-big.svg" in caplog.text and "byte limit" in caplog.text
 

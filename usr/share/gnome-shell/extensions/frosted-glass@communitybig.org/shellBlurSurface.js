@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Clutter from 'gi://Clutter';
+import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
@@ -10,6 +11,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {RoundedCornersEffect} from './roundedCorners.js';
 import {createBackgroundEffect} from './roundedBackend.js';
 import {createRedrawGuard} from './redrawGuard.js';
+import {overscanWallpapers} from './wallpaperOverscan.js';
 
 const EFFECT_NAME = 'communitybig-frosted-glass-shell';
 const CORNER_EFFECT_NAME = 'communitybig-frosted-glass-shell-corners';
@@ -125,6 +127,7 @@ export class ShellBlurSurface {
         this._classes = new Map();
         this._styleMutationDepth = new Map();
         this._borderVisibility = null;
+        this._geometryLater = 0;
         this._dockSlider = this._kind === 'dash-to-dock'
             ? findDockSlider(this.actor)
             : null;
@@ -221,6 +224,14 @@ export class ShellBlurSurface {
         if (this._destroyed)
             return;
         this._destroyed = true;
+        if (this._geometryLater) {
+            try {
+                global.compositor.get_laters().remove(this._geometryLater);
+            } catch (error) {
+                // The callback is inert once the surface is destroyed.
+            }
+            this._geometryLater = 0;
+        }
         for (const [object, id] of this._signals.splice(0)) {
             try {
                 object.disconnect(id);
@@ -408,8 +419,13 @@ export class ShellBlurSurface {
     _connectGeometryHierarchy() {
         let current = this.actor;
         while (current && current !== Main.uiGroup) {
+            // Allocation is reported in the middle of the stage layout. Moving
+            // the overlay then leaves it unallocated until the next frame, and
+            // Clutter warns for every animated frame; follow it before that
+            // frame's layout instead.
+            this._connect(current, 'notify::allocation',
+                () => this._queueGeometryChanged());
             for (const signal of [
-                'notify::allocation',
                 'notify::mapped',
                 'notify::opacity',
                 'notify::visible',
@@ -473,6 +489,7 @@ export class ShellBlurSurface {
             this._newOverlayChild('_wallpaper');
             this._effect = new Shell.BlurEffect({mode: Shell.BlurMode.ACTOR});
             this._wallpaper.add_effect_with_name(EFFECT_NAME, this._effect);
+            overscanWallpapers(this._wallpaper);
             this._overlay.add_child(this._wallpaper);
             this._manager = new Background.BackgroundManager({
                 container: this._wallpaper,
@@ -507,16 +524,20 @@ export class ShellBlurSurface {
             if (width < 1 || height < 1)
                 return false;
 
-            const x = Math.round(stageX - groupX);
-            const y = Math.round(stageY - groupY);
-            this._overlay.set_position(x, y);
-            this._overlay.set_size(width, height);
-            const visibleClip = this._visibleDockClip({
+            const visibleClip = this._visibleClip({
                 x: stageX,
                 y: stageY,
                 width: stageWidth,
                 height: stageHeight,
             });
+            if (visibleClip === undefined) {
+                this._queueGeometryChanged();
+                return true;
+            }
+            const x = Math.round(stageX - groupX);
+            const y = Math.round(stageY - groupY);
+            this._overlay.set_position(x, y);
+            this._overlay.set_size(width, height);
             if (visibleClip) {
                 this._overlay.set_clip(
                     Math.round(visibleClip.x - stageX),
@@ -550,16 +571,37 @@ export class ShellBlurSurface {
         }
     }
 
-    _visibleDockClip(actorRect) {
-        if (!this._dockSlider)
-            return null;
-        try {
-            const [x, y] = this._dockSlider.get_transformed_position();
-            const [width, height] = this._dockSlider.get_transformed_size();
-            return intersectRect(actorRect, {x, y, width, height});
-        } catch (error) {
-            return null;
+    // The part of the target left on screen by the actors that clip it. The
+    // message tray clips a banner to the area below the panel; an unclipped
+    // overlay follows a closing banner over the panel and hides its icons.
+    _visibleClip(actorRect) {
+        const clips = [];
+        for (let current = this.actor.get_parent?.();
+            current && current !== Main.uiGroup;
+            current = current.get_parent?.()) {
+            if (current.clip_to_allocation)
+                clips.push(current);
         }
+        if (this._dockSlider)
+            clips.push(this._dockSlider);
+        let visible = null;
+        for (const clip of clips) {
+            // Mid-layout, the tray reports its unconstrained size; wait for
+            // the allocation it will clip with.
+            if (clip.has_allocation && !clip.has_allocation())
+                return undefined;
+            try {
+                const [x, y] = clip.get_transformed_position();
+                const [width, height] = clip.get_transformed_size();
+                // A tray that showed no banner keeps its empty size until the
+                // new banner's first layout; it clips nothing yet.
+                if ([x, y, width, height].every(Number.isFinite) && width >= 1 && height >= 1)
+                    visible = intersectRect(visible ?? actorRect, {x, y, width, height});
+            } catch (error) {
+                // A clipping actor may be disposed while the target closes.
+            }
+        }
+        return visible;
     }
 
     _isReady() {
@@ -572,6 +614,17 @@ export class ShellBlurSurface {
         } catch (error) {
             return false;
         }
+    }
+
+    _queueGeometryChanged() {
+        if (this._destroyed || this._geometryLater)
+            return;
+        this._geometryLater = global.compositor.get_laters().add(
+            Meta.LaterType.BEFORE_REDRAW, () => {
+                this._geometryLater = 0;
+                this._geometryChanged();
+                return false;
+            });
     }
 
     _geometryChanged() {

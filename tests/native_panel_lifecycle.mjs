@@ -203,4 +203,27 @@ test('reentrant teardown cannot reactivate owner', () => {
     owner.deactivate(); released(h, owner);
     assert.equal(h.shortcuts.length, 1);
 });
+
+// Frosted Glass paints a panel it marks; its transparent style must survive
+// every overview transition, and the opacity returns once the mark goes.
+function frost(panel) {
+    const classes = new Set(['frosted-glass-shell-surface']);
+    panel.has_style_class_name = name => classes.has(name);
+    panel.set_style('background-color: transparent;');
+    return () => { classes.clear(); panel.emit('notify::style-class'); };
+}
+test('frosted panel keeps its transparent style through the overview', () => {
+    const h = harness(), owner = h.create();
+    owner.activate(65, 'always-hidden');
+    const unfrost = frost(h.panel);
+    for (const signal of ['showing', 'shown', 'hidden']) {
+        h.overview.emit(signal);
+        assert.equal(h.panel.style, 'background-color: transparent;', signal);
+    }
+    owner.activate(30, 'always-hidden');
+    assert.equal(h.panel.style, 'background-color: transparent;');
+    unfrost();
+    assert.match(h.panel.style, /rgba\(10, 20, 30, 0\.30\)/);
+    owner.deactivate();
+});
 console.log(`${count} native panel lifecycle scenarios passed`);

@@ -666,6 +666,10 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Säilyttää haettavan historian kopioidusta sisällöstä."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr "Jakaa leikepöydän tämän tietokoneen ja puhelimesi välillä."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr ""
 "Näyttää siirrettävät laitteet ja mahdollistaa niiden turvallisen poistamisen."
@@ -1316,7 +1320,7 @@ msgstr "Kuvakkeet"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Osoittimet"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1362,25 +1366,26 @@ msgstr "Aktiivinen"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Lisää käynnistyssovellus"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Etsi sovelluksia"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Käynnistyssovellukset"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
 msgstr ""
+"Käynnistyssovellukset käynnistetään automaattisesti, kun kirjaudut sisään."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Ei käynnistyssovelluksia"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2163,7 +2168,9 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Asenna paketti big-bibata-cursor-theme, jotta voit käyttää yhteensopivia osoittimia."
+msgstr ""
+"Asenna paketti big-bibata-cursor-theme, jotta voit käyttää yhteensopivia "
+"osoittimia."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2171,7 +2178,8 @@ msgstr "Seuraa järjestelmän korostusväriä"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Sovita osoitin järjestelmän korostusväriin ja vaaleaan tai tummaan ulkoasuun."
+msgstr ""
+"Sovita osoitin järjestelmän korostusväriin ja vaaleaan tai tummaan ulkoasuun."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2180,3 +2188,158 @@ msgstr "Telakan sijainti"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Alhaalla"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Poista valinnaiset laajennukset käytöstä"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Poistetaanko valinnaiset laajennukset käytöstä?"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Valinnaiset laajennukset poistetaan käytöstä. Asettelun vaatimat osat "
+"pysyvät käytössä. Voit ottaa valinnaiset laajennukset uudelleen käyttöön "
+"yksitellen."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Valinnaiset laajennukset poistettu käytöstä"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Palauta tehosteen oletukset"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Palauttaa materiaalin ja virransäästöasetukset."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Tehosteen oletukset palautettu"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Hiiri ja kosketuslevy"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Liitä keskipainikkeella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Liittää valitun tekstin hiiren keskipainikkeella tai kolmen sormen "
+"napautuksella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Aktivoi ikkunat osoittimen ollessa päällä"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Kohdistaa osoittimen alla olevaan ikkunaan ilman napsautusta"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Liitä valintaikkunat niiden ikkunaan"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr ""
+"Valintaikkunat pysyvät ne avanneen ikkunan päällä ja liikkuvat sen mukana"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Näppäin ikkunoiden siirtämiseen"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr ""
+"Pidä sitä pohjassa ja vedä ikkunan mistä tahansa kohdasta siirtääksesi sitä"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Muuta kokoa oikealla painikkeella"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Näppäin pohjassa vedä oikealla painikkeella muuttaaksesi kokoa"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Otsikkopalkki"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Kaksoisnapsautus"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Keskinapsautus"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Oikea napsautus"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Suurenna"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Suurenna leveys"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Suurenna korkeus"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Pienennä"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Siirrä taakse"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Näytä ikkunavalikko"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Älä tee mitään"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Erottele sovellukset näytöittäin"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr ""
+"Jokainen telakka näyttää vain omalla näytöllään avoinna olevat sovellukset"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Telakan näyttökohtaiset sovellukset päivitetty"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Visuaalisia tehosteita ei ole saatavilla"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Tämä Gnomen versio ei tue hiekkapuhallettua lasia."

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import GLib from 'gi://GLib';
+import Meta from 'gi://Meta';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -102,6 +103,7 @@ export class ShellSurfaces {
         this._enabled = false;
         this._scanId = 0;
         this._refreshId = 0;
+        this._bannerRefreshId = 0;
         this._modalDialogSignal = 0;
         this._messageTraySignals = [];
         this._uiGroupSignal = 0;
@@ -143,7 +145,7 @@ export class ShellSurfaces {
                 try {
                     this._messageTraySignals.push([
                         bannerBin,
-                        bannerBin.connect(signal, () => this._queueRefresh()),
+                        bannerBin.connect(signal, () => this._queueBannerRefresh()),
                     ]);
                 } catch (error) {
                     // Message tray internals may differ across Shell releases.
@@ -232,6 +234,15 @@ export class ShellSurfaces {
     }
 
     _stopSources() {
+        const later = this._bannerRefreshId;
+        this._bannerRefreshId = 0;
+        if (later) {
+            try {
+                global.compositor.get_laters().remove(later);
+            } catch (error) {
+                console.debug(`Frosted Glass: cannot remove later: ${error}`);
+            }
+        }
         for (const property of ['_refreshId', '_scanId']) {
             const id = this[property];
             this[property] = 0;
@@ -294,6 +305,20 @@ export class ShellSurfaces {
             this.refresh();
             return GLib.SOURCE_REMOVE;
         });
+    }
+
+    // A banner slides in at once. Idle callbacks wait for the animation to
+    // end, so GNOME's opaque card would show until the glass replaced it.
+    _queueBannerRefresh() {
+        if (this._destroyed || this._bannerRefreshId)
+            return;
+        this._bannerRefreshId = global.compositor.get_laters().add(
+            Meta.LaterType.BEFORE_REDRAW, () => {
+                this._bannerRefreshId = 0;
+                if (!this._destroyed)
+                    this.refresh();
+                return false;
+            });
     }
 
     _discover(config, quickSubmenus) {

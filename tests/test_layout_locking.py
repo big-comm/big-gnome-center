@@ -48,10 +48,15 @@ def isolated(tmp_path, monkeypatch):
     return mocks
 
 
-@pytest.mark.parametrize("route,persist", [
-    (route, persist) for route in ("fallback", "incremental", "cleanroom", "staged")
-    for persist in (False, True) if route != "staged" or persist
-])
+@pytest.mark.parametrize(
+    "route,persist",
+    [
+        (route, persist)
+        for route in ("fallback", "incremental", "cleanroom", "staged")
+        for persist in (False, True)
+        if route != "staged" or persist
+    ],
+)
 def test_overlapping_apply_is_rejected_before_preflight(isolated, monkeypatch, route, persist):
     entered, release = threading.Event(), threading.Event()
 
@@ -186,6 +191,7 @@ def test_successful_marker_contains_pid_during_switch(isolated):
     def apply(*args, **kwargs):
         assert module._SYNC_LOCK_PATH.read_text() == f"{os.getpid()}\n"
         return True, ""
+
     isolated["_apply_via_helper_v7"].side_effect = apply
     assert module.LayoutApplier.load_dconf_safely(DATA)[0]
 
@@ -204,6 +210,7 @@ def test_reentrant_apply_is_rejected(isolated):
         assert not ok
         assert "in progress" in message
         return True, ""
+
     isolated["_apply_via_helper_v7"].side_effect = apply
     assert module.LayoutApplier.load_dconf_safely(DATA)[0]
     isolated["ensure_available"].assert_called_once()

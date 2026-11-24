@@ -36,15 +36,15 @@ Library use (import from your metadata generator, tests, etc.):
     best, score = find_closest_theme("#7fb0d8", themes)
 """
 
-import sys
 import json
 import math
+import sys
 from typing import Dict, Tuple
-
 
 # --------------------------------------------------------------------------
 # sRGB -> XYZ -> CIELAB
 # --------------------------------------------------------------------------
+
 
 def hex_to_rgb(hex_color: str) -> Tuple[float, float, float]:
     h = hex_color.lstrip("#")
@@ -52,7 +52,7 @@ def hex_to_rgb(hex_color: str) -> Tuple[float, float, float]:
         h = "".join(c * 2 for c in h)
     if len(h) != 6:
         raise ValueError(f"Invalid hex color: {hex_color!r}")
-    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    r, g, b = (int(h[i : i + 2], 16) for i in (0, 2, 4))
     return r / 255.0, g / 255.0, b / 255.0
 
 
@@ -75,9 +75,9 @@ _XN, _YN, _ZN = 95.0489, 100.0, 108.8840
 
 def _f(t: float) -> float:
     delta = 6.0 / 29.0
-    if t > delta ** 3:
+    if t > delta**3:
         return t ** (1.0 / 3.0)
-    return t / (3 * delta ** 2) + 4.0 / 29.0
+    return t / (3 * delta**2) + 4.0 / 29.0
 
 
 def xyz_to_lab(x: float, y: float, z: float) -> Tuple[float, float, float]:
@@ -96,9 +96,14 @@ def hex_to_lab(hex_color: str) -> Tuple[float, float, float]:
 # CIEDE2000
 # --------------------------------------------------------------------------
 
-def ciede2000(lab1: Tuple[float, float, float],
-              lab2: Tuple[float, float, float],
-              kL: float = 1.0, kC: float = 1.0, kH: float = 1.0) -> float:
+
+def ciede2000(
+    lab1: Tuple[float, float, float],
+    lab2: Tuple[float, float, float],
+    kL: float = 1.0,
+    kC: float = 1.0,
+    kH: float = 1.0,
+) -> float:
     """
     Standard CIEDE2000 Delta-E. kL/kC/kH are the parametric weighting
     factors from the spec (leave at 1.0 for "graphic arts" defaults,
@@ -111,7 +116,7 @@ def ciede2000(lab1: Tuple[float, float, float],
     C2 = math.hypot(a2, b2)
     C_bar = (C1 + C2) / 2.0
 
-    G = 0.5 * (1 - math.sqrt((C_bar ** 7) / (C_bar ** 7 + 25 ** 7)))
+    G = 0.5 * (1 - math.sqrt((C_bar**7) / (C_bar**7 + 25**7)))
     a1p = a1 * (1 + G)
     a2p = a2 * (1 + G)
 
@@ -156,24 +161,26 @@ def ciede2000(lab1: Tuple[float, float, float],
         else:
             h_barp = (s - 360) / 2.0
 
-    T = (1
-         - 0.17 * math.cos(math.radians(h_barp - 30))
-         + 0.24 * math.cos(math.radians(2 * h_barp))
-         + 0.32 * math.cos(math.radians(3 * h_barp + 6))
-         - 0.20 * math.cos(math.radians(4 * h_barp - 63)))
+    T = (
+        1
+        - 0.17 * math.cos(math.radians(h_barp - 30))
+        + 0.24 * math.cos(math.radians(2 * h_barp))
+        + 0.32 * math.cos(math.radians(3 * h_barp + 6))
+        - 0.20 * math.cos(math.radians(4 * h_barp - 63))
+    )
 
     d_theta = 30 * math.exp(-(((h_barp - 275) / 25) ** 2))
-    RC = 2 * math.sqrt((C_barp ** 7) / (C_barp ** 7 + 25 ** 7))
+    RC = 2 * math.sqrt((C_barp**7) / (C_barp**7 + 25**7))
     SL = 1 + (0.015 * (L_bar - 50) ** 2) / math.sqrt(20 + (L_bar - 50) ** 2)
     SC = 1 + 0.045 * C_barp
     SH = 1 + 0.015 * C_barp * T
     RT = -math.sin(math.radians(2 * d_theta)) * RC
 
     dE = math.sqrt(
-        (dLp / (kL * SL)) ** 2 +
-        (dCp / (kC * SC)) ** 2 +
-        (dHp / (kH * SH)) ** 2 +
-        RT * (dCp / (kC * SC)) * (dHp / (kH * SH))
+        (dLp / (kL * SL)) ** 2
+        + (dCp / (kC * SC)) ** 2
+        + (dHp / (kH * SH)) ** 2
+        + RT * (dCp / (kC * SC)) * (dHp / (kH * SH))
     )
     return dE
 
@@ -185,6 +192,7 @@ def delta_e_hex(hex1: str, hex2: str, kL=1.0, kC=1.0, kH=1.0) -> float:
 # --------------------------------------------------------------------------
 # Theme matching
 # --------------------------------------------------------------------------
+
 
 def find_closest_theme(
     target_hex: str,
@@ -228,6 +236,7 @@ def find_closest_theme(
 # --------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------
+
 
 def _main():
     if len(sys.argv) != 3:

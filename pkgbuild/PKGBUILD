@@ -8,6 +8,7 @@ depends=(
     'comm-gnome-config'
     'python-gobject'
     'gtk4'
+    'wayland'
     'libadwaita'
     'gnome-shell'
     'polkit'
@@ -19,15 +20,16 @@ depends=(
     'gnome-shell-extension-big-clipboard'
     'gnome-shell-extension-gtk4-desktop-icons-ng'
 )
-makedepends=('git')
+makedepends=('git' 'gtk4' 'wayland' 'wayland-protocols')
 checkdepends=('python-pytest')
-#optdepends=('')
-conflicts=('layout-switcher' 'gnome-layout-switcher')
+# The vendored BigStyle GTK 4 module installs at BigStyle's own path; two
+# copies would make GTK programs exit (see bigstyle-gtk4-module/UPSTREAM.md).
+conflicts=('layout-switcher' 'gnome-layout-switcher' 'bigstyle')
 provides=('layout-switcher' 'gnome-layout-switcher')
 replaces=('layout-switcher' 'gnome-layout-switcher')
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
-arch=('any')
+arch=('x86_64')
 license=('MIT' 'GPL-2.0-or-later' 'GPL-3.0-or-later' 'CC-BY-4.0')
 url="https://github.com/big-comm/big-gnome-center"
 source=("${pkgname}::git+${url}.git")
@@ -48,8 +50,11 @@ prepare() {
 
 build() {
     cd "${srcdir}/${pkgname}"
-    # Add build steps here, if needed
-    # For example: make
+    local pkgsrc="${PWD}"
+    [ -d "${pkgname}" ] && pkgsrc="${PWD}/${pkgname}"
+    # BigStyle's GTK 4 module: asks Mutter for the window blur without GTK's
+    # per-frame backdrop redraw.
+    make -C "${pkgsrc}/bigstyle-gtk4-module"
 }
 
 check() {
@@ -77,6 +82,8 @@ package() {
             cp -a "${pkgsrc}/${dir}" "${pkgdir}/"
         fi
     done
+
+    make -C "${pkgsrc}/bigstyle-gtk4-module" install DESTDIR="${pkgdir}"
 
     # Expose the optional GTK client without application-specific import paths.
     local python_site

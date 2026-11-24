@@ -7,12 +7,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DOCK = ROOT / "usr/share/gnome-shell/extensions/community-dock@communitybig.org"
 DOCK_MODULES = ROOT / (
-    "usr/share/gnome-shell/extensions/"
-    "layout-switcher-runtime@communitybig.org/dock"
+    "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dock"
 )
 DOCK_SURFACE = ROOT / (
-    "usr/share/gnome-shell/extensions/"
-    "layout-switcher-runtime@communitybig.org/dockSurface.js"
+    "usr/share/gnome-shell/extensions/layout-switcher-runtime@communitybig.org/dockSurface.js"
 )
 
 
@@ -25,9 +23,10 @@ def test_community_dock_is_a_private_resource_host():
 
 
 def test_community_dock_tracks_accepted_core_baseline():
-    # Includes deferred settings release and magnification visibility notifications.
+    # Includes deferred settings release, magnification visibility
+    # notifications and rebuilding the docks when monitor isolation changes.
     assert hashlib.sha256(DOCK_SURFACE.read_bytes()).hexdigest() == (
-        "1aa0eb20ed1cf82cf94fb44e039d87ff3d3c688417587ca66270e2e07dbc3167"
+        "87288849065a8d4a88db308cd7950fe02c3b5f8709fafcfa2298d545d4e9f029"
     )
 
 
@@ -156,9 +155,7 @@ def test_dormant_optional_dock_services_are_not_packaged():
     assert "WorkspaceIsolation" not in docking
     assert "appSpread" not in app_icons
     assert "isolateWorkspaces" not in app_icons
-    assert "isolateMonitors" not in app_icons
     assert "isolateWorkspaces" not in dash
-    assert "isolateMonitors" not in dash
     assert "buttonAction = clickAction.FOCUS_OR_PREVIEWS" in app_icons
     assert "buttonAction = clickAction.FOCUS_MINIMIZE_OR_PREVIEWS" in app_icons
 

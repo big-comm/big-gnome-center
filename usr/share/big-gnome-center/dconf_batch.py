@@ -59,9 +59,7 @@ def _atomic_change(resets, values):
     """Commit resets and writes as one libdconf changeset."""
     dconf = ctypes.CDLL(ctypes.util.find_library("dconf") or "libdconf.so.1")
     glib = ctypes.CDLL(ctypes.util.find_library("glib-2.0") or "libglib-2.0.so.0")
-    gobject = ctypes.CDLL(
-        ctypes.util.find_library("gobject-2.0") or "libgobject-2.0.so.0"
-    )
+    gobject = ctypes.CDLL(ctypes.util.find_library("gobject-2.0") or "libgobject-2.0.so.0")
 
     dconf.dconf_changeset_new.restype = ctypes.c_void_p
     dconf.dconf_changeset_set.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_void_p]
@@ -148,9 +146,7 @@ def main(argv=None):
         return 0
 
     keyfile = (
-        Path(args.input_file).read_text(encoding="utf-8")
-        if args.input_file
-        else sys.stdin.read()
+        Path(args.input_file).read_text(encoding="utf-8") if args.input_file else sys.stdin.read()
     )
     values = _parse_keyfile(keyfile)
     _atomic_change([*args.reset_tree, *args.reset], values)

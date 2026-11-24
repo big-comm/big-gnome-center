@@ -108,11 +108,13 @@ def test_process_updates_preserve_unrelated_values_and_deletions(settings_path):
     barrier = context.Barrier(4)
     ready, stop = context.Event(), context.Event()
     observations = context.Value("i", 0)
-    reader = context.Process(target=_process_reader,
-                             args=(str(settings_path.parent), ready, stop, observations))
-    children = [context.Process(target=_process_writer,
-                               args=(str(settings_path.parent), barrier, worker))
-                for worker in range(4)]
+    reader = context.Process(
+        target=_process_reader, args=(str(settings_path.parent), ready, stop, observations)
+    )
+    children = [
+        context.Process(target=_process_writer, args=(str(settings_path.parent), barrier, worker))
+        for worker in range(4)
+    ]
     try:
         reader.start()
         assert ready.wait(10)
@@ -132,8 +134,9 @@ def test_process_updates_preserve_unrelated_values_and_deletions(settings_path):
                 child.terminate()
                 child.join(timeout=5)
     expected = {"preserved": initial["preserved"]}
-    expected.update({f"worker-{worker}-{index}": index
-                     for worker in range(4) for index in range(25)})
+    expected.update(
+        {f"worker-{worker}-{index}": index for worker in range(4) for index in range(25)}
+    )
     assert json.loads(settings_path.read_text()) == expected
 
 
@@ -189,17 +192,24 @@ def test_terminated_writer_releases_persistent_lock(settings_path):
 
 @pytest.mark.parametrize("operation", ["create", "sync", "replace", "serialize"])
 def test_publication_failure_releases_lock_and_preserves_data(
-    settings_path, monkeypatch, operation,
+    settings_path,
+    monkeypatch,
+    operation,
 ):
     prefs = settings_store.Settings()
     assert prefs.set("key", "before")
     original = settings_path.read_bytes()
     with monkeypatch.context() as scoped:
-        targets = {"create": "utils.tempfile.mkstemp", "sync": "utils.os.fsync",
-                   "replace": "utils.os.replace"}
+        targets = {
+            "create": "utils.tempfile.mkstemp",
+            "sync": "utils.os.fsync",
+            "replace": "utils.os.replace",
+        }
         if operation != "serialize":
+
             def fail(*args, **kwargs):
                 raise OSError(errno.ENOSPC, "injected storage failure")
+
             scoped.setattr(targets[operation], fail)
         assert prefs.set("key", object() if operation == "serialize" else "after") is False
     assert prefs.last_error
@@ -253,16 +263,19 @@ def _single_process_update(directory, started, completed):
 
 @pytest.mark.parametrize("same_directory", [True, False])
 def test_interrupted_publication_recovers_without_blocking_other_profiles(
-    settings_path, same_directory,
+    settings_path,
+    same_directory,
 ):
     settings_path.write_text('{"preserved": true}')
     context = multiprocessing.get_context("spawn")
     ready, started, completed = context.Event(), context.Event(), context.Event()
     target_dir = settings_path.parent if same_directory else settings_path.parent / "other"
-    writer = context.Process(target=_interrupted_publication,
-                             args=(str(settings_path.parent), ready))
-    next_writer = context.Process(target=_single_process_update,
-                                  args=(str(target_dir), started, completed))
+    writer = context.Process(
+        target=_interrupted_publication, args=(str(settings_path.parent), ready)
+    )
+    next_writer = context.Process(
+        target=_single_process_update, args=(str(target_dir), started, completed)
+    )
     try:
         writer.start()
         assert ready.wait(10)

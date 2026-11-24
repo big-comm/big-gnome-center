@@ -668,6 +668,11 @@ msgid "Keeps a searchable history of copied content."
 msgstr "Διατηρεί ιστορικό αντιγραμμένου περιεχομένου με αναζήτηση."
 
 #: usr/share/big-gnome-center/ui/page_extensions.py:62
+msgid "Shares the clipboard between this computer and your phone."
+msgstr ""
+"Κοινοποιεί το πρόχειρο μεταξύ αυτού του υπολογιστή και του τηλεφώνου σας."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py:62
 msgid "Shows removable devices and lets you safely eject them."
 msgstr "Εμφανίζει αφαιρούμενες συσκευές και επιτρέπει την ασφαλή εξαγωγή τους."
 
@@ -1324,7 +1329,7 @@ msgstr "Εικονίδια"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:110
 msgid "Cursors"
-msgstr ""
+msgstr "Δρομείς"
 
 #: usr/share/big-gnome-center/ui/page_themes.py:168
 #: usr/share/big-gnome-center/ui/frosted_glass.py:145
@@ -1370,25 +1375,25 @@ msgstr "Ενεργό"
 #: usr/share/big-gnome-center/ui/page_startup.py:51
 #: usr/share/big-gnome-center/ui/page_startup.py:54
 msgid "Add a startup application"
-msgstr ""
+msgstr "Προσθήκη εφαρμογής εκκίνησης"
 
 #: usr/share/big-gnome-center/ui/dialog_startup_apps.py:84
 msgid "Search applications"
-msgstr ""
+msgstr "Αναζήτηση εφαρμογών"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:45
 #: usr/share/big-gnome-center/ui/window.py:414
 #: usr/share/big-gnome-center/ui/window.py:511
 msgid "Startup Applications"
-msgstr ""
+msgstr "Εφαρμογές εκκίνησης"
 
 #: usr/share/big-gnome-center/ui/page_startup.py:46
 msgid "Startup applications are automatically started when you log in."
-msgstr ""
+msgstr "Οι εφαρμογές εκκίνησης ξεκινούν αυτόματα όταν συνδέεστε."
 
 #: usr/share/big-gnome-center/ui/page_startup.py:87
 msgid "No Startup Applications"
-msgstr ""
+msgstr "Δεν υπάρχουν εφαρμογές εκκίνησης"
 
 #: usr/share/big-gnome-center/ui/frosted_glass.py:70
 msgid "Overview blur"
@@ -2150,8 +2155,7 @@ msgstr "Κείμενο"
 #: usr/share/big-gnome-center/folder_icons.py:189
 msgid "The folder icon changed. Close this window and try again."
 msgstr ""
-"Το εικονίδιο του φακέλου άλλαξε. Κλείστε αυτό το παράθυρο και δοκιμάστε "
-"ξανά."
+"Το εικονίδιο του φακέλου άλλαξε. Κλείστε αυτό το παράθυρο και δοκιμάστε ξανά."
 
 #: usr/share/big-gnome-center/folder_icons.py:68
 msgid "Unlocked"
@@ -2184,7 +2188,9 @@ msgstr ""
 #: usr/share/big-gnome-center/cursor_accent.py:79
 #: usr/share/big-gnome-center/ui/page_themes.py:185
 msgid "Install big-bibata-cursor-theme to use matching cursors."
-msgstr "Εγκαταστήστε το πακέτο big-bibata-cursor-theme για να χρησιμοποιήσετε ταιριαστούς δείκτες."
+msgstr ""
+"Εγκαταστήστε το πακέτο big-bibata-cursor-theme για να χρησιμοποιήσετε "
+"ταιριαστούς δείκτες."
 
 #: usr/share/big-gnome-center/ui/page_themes.py:69
 msgid "Follow system accent color"
@@ -2192,7 +2198,9 @@ msgstr "Ακολούθηση χρώματος έμφασης συστήματο�
 
 #: usr/share/big-gnome-center/ui/page_themes.py:183
 msgid "Match the cursor to the system accent and light or dark appearance."
-msgstr "Προσαρμογή του δείκτη στο χρώμα έμφασης και στη φωτεινή ή σκοτεινή εμφάνιση του συστήματος."
+msgstr ""
+"Προσαρμογή του δείκτη στο χρώμα έμφασης και στη φωτεινή ή σκοτεινή εμφάνιση "
+"του συστήματος."
 
 #. Dock placement on the monitor.
 msgid "Dock position"
@@ -2201,3 +2209,160 @@ msgstr "Θέση του dock"
 #. Dock placement on the monitor.
 msgid "Bottom"
 msgstr "Κάτω"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions"
+msgstr "Απενεργοποίηση προαιρετικών επεκτάσεων"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Disable optional extensions?"
+msgstr "Απενεργοποίηση προαιρετικών επεκτάσεων;"
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid ""
+"Optional extensions will be disabled. Required layout components will remain "
+"enabled. You can re-enable optional extensions individually."
+msgstr ""
+"Οι προαιρετικές επεκτάσεις θα απενεργοποιηθούν. Τα απαιτούμενα στοιχεία της "
+"διάταξης θα παραμείνουν ενεργά. Μπορείτε να ενεργοποιήσετε ξανά τις "
+"προαιρετικές επεκτάσεις μία προς μία."
+
+#: usr/share/big-gnome-center/ui/page_extensions.py
+msgid "Optional extensions disabled"
+msgstr "Οι προαιρετικές επεκτάσεις απενεργοποιήθηκαν"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Restore effect defaults"
+msgstr "Επαναφορά προεπιλογών του εφέ"
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Reset the material and power saving options."
+msgstr "Επαναφέρει το υλικό και τις επιλογές εξοικονόμησης ενέργειας."
+
+#: usr/share/big-gnome-center/ui/frosted_glass.py
+msgid "Effect defaults restored"
+msgstr "Οι προεπιλογές του εφέ επαναφέρθηκαν"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Mouse and touchpad"
+msgstr "Ποντίκι και touchpad"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click paste"
+msgstr "Επικόλληση με μεσαίο κλικ"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid ""
+"Paste the selected text with the middle mouse button or a three-finger tap"
+msgstr ""
+"Επικολλά το επιλεγμένο κείμενο με το μεσαίο κουμπί του ποντικιού ή με πάτημα "
+"τριών δαχτύλων"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Activate windows on hover"
+msgstr "Ενεργοποίηση παραθύρων με αιώρηση"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Focus the window under the pointer without clicking"
+msgstr "Εστιάζει στο παράθυρο κάτω από τον δείκτη χωρίς κλικ"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Attach dialogs to their window"
+msgstr "Προσάρτηση διαλόγων στο παράθυρό τους"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Dialogs stay over the window that opened them and move with it"
+msgstr ""
+"Οι διάλογοι μένουν πάνω από το παράθυρο που τους άνοιξε και μετακινούνται "
+"μαζί του"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Key to move windows"
+msgstr "Πλήκτρο μετακίνησης παραθύρων"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Hold it and drag any part of a window to move it"
+msgstr ""
+"Κρατήστε το πατημένο και σύρετε οποιοδήποτε σημείο ενός παραθύρου για να το "
+"μετακινήσετε"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Resize with the right button"
+msgstr "Αλλαγή μεγέθους με το δεξί κουμπί"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "With that key held, drag with the right button to resize"
+msgstr "Με το πλήκτρο πατημένο, σύρετε με το δεξί κουμπί για αλλαγή μεγέθους"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Title bar"
+msgstr "Γραμμή τίτλου"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Double-click"
+msgstr "Διπλό κλικ"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Middle-click"
+msgstr "Μεσαίο κλικ"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Right-click"
+msgstr "Δεξί κλικ"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize"
+msgstr "Μεγιστοποίηση"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize width"
+msgstr "Μεγιστοποίηση πλάτους"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Maximize height"
+msgstr "Μεγιστοποίηση ύψους"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Minimize"
+msgstr "Ελαχιστοποίηση"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Send to back"
+msgstr "Αποστολή στο παρασκήνιο"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Show window menu"
+msgstr "Εμφάνιση μενού παραθύρου"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Do nothing"
+msgstr "Καμία ενέργεια"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Super"
+msgstr "Super"
+
+#: usr/share/big-gnome-center/ui/page_behavior.py
+msgid "Alt"
+msgstr "Alt"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Separate apps by monitor"
+msgstr "Διαχωρισμός εφαρμογών ανά οθόνη"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Each dock shows only the apps open on its own monitor"
+msgstr ""
+"Κάθε dock εμφανίζει μόνο τις εφαρμογές που είναι ανοιχτές στη δική του οθόνη"
+
+#: usr/share/big-gnome-center/ui/page_panel_dock.py
+msgid "Dock monitor apps updated"
+msgstr "Οι εφαρμογές του dock ανά οθόνη ενημερώθηκαν"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:46
+msgid "No visual effects available"
+msgstr "Δεν υπάρχουν διαθέσιμα οπτικά εφέ"
+
+#: usr/share/big-gnome-center/ui/page_effects.py:47
+msgid "This GNOME version does not support Frosted Glass."
+msgstr "Αυτή η έκδοση του GNOME δεν υποστηρίζει το Παγωμένο γυαλί."

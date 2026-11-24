@@ -413,7 +413,7 @@ class ExtBrowseView(Gtk.Box):
 
     def _do_install(self, summary, card) -> None:
         def task():
-            ok, method = ExtMgr.install(summary.uuid, summary.pk, "")
+            ok, method = ExtMgr.install(summary.uuid, summary.pk)
             if ok:
                 ExtMgr.enable_after_install(summary.uuid)
                 GLib.idle_add(
